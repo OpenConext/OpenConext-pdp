@@ -1,0 +1,20 @@
+{
+   "Request" : {
+        "Category" : [ {
+        	"CategoryId" : "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        	"Attribute" : 
+	           {
+	              "Value" : "https://www.surfspot.nl/simplesaml/module.php/saml/sp/metadata.php/saml",
+	              "AttributeId" : "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+               }
+	    	}, {
+        	"CategoryId" : "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        	"Attribute" :
+               {
+	              "Value" : "member",
+	              "AttributeId" : "urn:mace:dir:attribute-def:eduPersonAffiliation"
+               }
+            }
+	       ]
+	  }
+}
