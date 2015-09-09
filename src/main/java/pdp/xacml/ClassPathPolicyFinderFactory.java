@@ -14,6 +14,9 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * StdPolicyFinderFactory works with absolute file names and we want to work with classpath resources
+ */
 public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
 
   private static Logger LOG = LoggerFactory.getLogger(ClassPathPolicyFinderFactory.class);
