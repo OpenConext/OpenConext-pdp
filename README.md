@@ -14,13 +14,15 @@ There is an integration test for PdpApplication that tests the various decisions
 
 One can also use cUrl to test. Start the server and go the directory src/test/resources. Use the following commands to test the different decisions:
 
-`curl -i --user admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Deny.json http://localhost:8080/decide`
+`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Deny.json http://localhost:8080/decide`
 
-`curl -i --user admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.NA.json http://localhost:8080/decide`
+`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.NA.json http://localhost:8080/decide`
 
-`curl -i --user admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Permit.CategoriesShorthand.json http://localhost:8080/decide`
+`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Permit.CategoriesShorthand.json http://localhost:8080/decide`
 
-`curl -i --user admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Permit.json http://localhost:8080/decide`
+`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @Request.01.Permit.json http://localhost:8080/decide`
+
+To test against the test2 environment change the endpoint to `https://pdp.test2.surfconext.nl/decide`
 
 # Configuration and Deployment
 

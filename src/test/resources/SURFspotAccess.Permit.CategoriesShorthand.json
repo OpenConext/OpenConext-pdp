@@ -2,13 +2,13 @@
   "Request": {
     "AccessSubject": {
       "Attribute": {
-        "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation", 
+        "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
         "Value": "member"
       }
-    }, 
+    },
     "Resource": {
       "Attribute": {
-        "AttributeId": "urn:oasis:names:tc:SAML:2.0:nameid-format:entity", 
+        "AttributeId": "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
         "Value": "https://www.surfspot.nl/simplesaml/module.php/saml/sp/metadata.php/saml"
       }
     }

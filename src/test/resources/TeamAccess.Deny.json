@@ -1,0 +1,20 @@
+{
+  "Request": {
+    "Category": [
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "Attribute": {
+          "Value": "http://admin-sp",
+          "AttributeId": "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+        }
+      },
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+        "Attribute": {
+          "Value": "john.doe",
+          "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
+        }
+      }
+    ]
+  }
+}

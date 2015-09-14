@@ -28,7 +28,7 @@ public class PdpApplicationTest {
   @Value("${local.server.port}")
   private int port;
   private MultiValueMap<String, String> headers;
-  private TestRestTemplate client = new TestRestTemplate("admin", "secret");
+  private TestRestTemplate client = new TestRestTemplate("pdp_admin", "secret");
 
   @Before
   public void before() {
@@ -37,23 +37,43 @@ public class PdpApplicationTest {
   }
 
   @Test
-  public void test_permit() throws Exception {
-    doDecide("Request.01.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  public void test_surfspot_permit() throws Exception {
+    doDecide("SURFspotAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
   }
 
   @Test
-  public void test_permit_with_categories_shorthand() throws Exception {
-    doDecide("Request.01.Permit.CategoriesShorthand.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  public void test_surfspot_permit_with_categories_shorthand() throws Exception {
+    doDecide("SURFspotAccess.Permit.CategoriesShorthand.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
   }
 
   @Test
-  public void test_indeterminate_no_policy_matches() throws Exception {
-    doDecide("Request.01.NA.json", Decision.INDETERMINATE, "urn:oasis:names:tc:xacml:1.0:status:processing-error");
+  public void test_surfspot_indeterminate_no_policy_matches() throws Exception {
+    doDecide("SURFspotAccess.Indeterminate.json", Decision.INDETERMINATE, "urn:oasis:names:tc:xacml:1.0:status:processing-error");
   }
 
   @Test
-  public void test_deny() throws Exception {
-    doDecide("Request.01.Deny.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  public void test_surfspot_no_eduperson_attribute() throws Exception {
+    doDecide("SURFspotAccess.Missing.EduPerson.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  }
+
+  @Test
+  public void test_surfspot_deny() throws Exception {
+    doDecide("SURFspotAccess.Deny.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  }
+
+  @Test
+  public void test_teams_pip_deny() throws Exception {
+    doDecide("TeamAccess.Deny.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  }
+
+  @Test
+  public void test_teams_pip_approve() throws Exception {
+    doDecide("TeamAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
+  }
+
+  @Test
+  public void test_teams_pip_no_name_id() throws Exception {
+    doDecide("TeamAccess.NoNameId.json", Decision.INDETERMINATE, "urn:oasis:names:tc:xacml:1.0:status:missing-attribute");
   }
 
   private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {

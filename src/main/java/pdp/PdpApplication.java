@@ -29,14 +29,13 @@ public class PdpApplication {
   @Autowired
   public PDPEngine pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation) throws IOException, FactoryException {
-    ClassPathResource xacmlResource = new ClassPathResource(xacmlPropertiesFileLocation);
-    String absolutePath = xacmlResource.getFile().getAbsolutePath();
+    Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
+    String absolutePath = resource.getFile().getAbsolutePath();
 
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
     PDPEngineFactory factory = PDPEngineFactory.newInstance();
-    PDPEngine pdpEngine = factory.newEngine();
-    return pdpEngine;
+    return factory.newEngine();
   }
 }

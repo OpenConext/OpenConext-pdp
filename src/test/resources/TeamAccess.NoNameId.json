@@ -1,0 +1,13 @@
+{
+  "Request": {
+    "Category": [
+      {
+        "CategoryId": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "Attribute": {
+          "Value": "http://admin-sp",
+          "AttributeId": "urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+        }
+      }
+    ]
+  }
+}
