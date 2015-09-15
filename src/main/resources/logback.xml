@@ -20,6 +20,7 @@
   </appender>
 
   <logger name="pdp" level="DEBUG"/>
+  <logger name="org.apache.openaz" level="DEBUG"/>
 
   <root level="WARN">
     <appender-ref ref="STDOUT" />
