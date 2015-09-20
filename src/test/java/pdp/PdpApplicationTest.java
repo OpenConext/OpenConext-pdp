@@ -78,10 +78,10 @@ public class PdpApplicationTest {
 
   private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {
     final String url = "http://localhost:" + port + "/decide";
-    String json = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
-    HttpEntity<String> request = new HttpEntity<String>(json, headers);
-    String s = client.postForObject(url, request, String.class);
-    Response response = JSONResponse.load(s);
+    String jsonRequest = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
+    HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
+    String jsonResponse = client.postForObject(url, request, String.class);
+    Response response = JSONResponse.load(jsonResponse);
     assertEquals(1, response.getResults().size());
     Result result = response.getResults().iterator().next();
     assertEquals(expectedDecision, result.getDecision());
