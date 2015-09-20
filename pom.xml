@@ -23,6 +23,8 @@
         <java.version>1.8</java.version>
         <httpclient.version>4.4</httpclient.version>
         <openaz.version>0.0.1-SNAPSHOT</openaz.version>
+        <flyway.version>3.1</flyway.version>
+        <mysql-jdbc-driver.version>5.1.34</mysql-jdbc-driver.version>
     </properties>
 
     <scm>
@@ -43,6 +45,10 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.openaz</groupId>
             <artifactId>openaz-xacml</artifactId>
             <version>${openaz.version}</version>
@@ -61,6 +67,17 @@
             <groupId>org.apache.openaz</groupId>
             <artifactId>openaz-pep</artifactId>
             <version>${openaz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql-jdbc-driver.version}</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>

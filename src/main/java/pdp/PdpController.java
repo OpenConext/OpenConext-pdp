@@ -18,19 +18,23 @@ public class PdpController {
 
   private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
-  @Autowired
   private PDPEngine pdpEngine;
+
+  @Autowired
+  public PdpController(PDPEngine pdpEngine) {
+    this.pdpEngine = pdpEngine;
+  }
 
   @RequestMapping(method = RequestMethod.POST, headers = {"content-type=application/json"}, value = "/decide")
   public String myGroups(@RequestBody String payload) throws Exception {
+    long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
 
     Request pdpRequest = JSONRequest.load(payload);
     Response pdpResponse = pdpEngine.decide(pdpRequest);
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
 
-    LOG.debug("decide response: {}", response);
-
+    LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
     return response;
 
   }

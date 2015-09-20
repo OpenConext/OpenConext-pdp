@@ -1,6 +1,18 @@
 # OpenConext-pdp
 OpenConext implementation of a XACML based PDP engine for access policy enforcement
 
+# Create database
+
+Connect to your local mysql database: `mysql -uroot`
+
+Execute the following:
+
+```sql
+CREATE DATABASE `pdp-server` DEFAULT CHARACTER SET latin1;
+create user 'pdp-serverrw'@'localhost' identified by 'secret';
+grant all on `pdp-server`.* to 'pdp-serverrw'@'localhost';
+```
+
 # Getting started
 This project uses Spring Boot and Maven. To run locally, type:
 
@@ -14,7 +26,7 @@ There is an integration test for PdpApplication that tests the various decisions
 
 One can also use cUrl to test. Start the server and go the directory src/test/resources. Use the following command to test the permit decision:
 
-`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
+`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
 
 The directory src/test/resources contains additional test JSON inputs. To test against the test2 environment change the endpoint to `https://pdp.test2.surfconext.nl/decide`. 
 
