@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true)
+@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.test.properties"})
 public class PdpApplicationTest {
 
   @Value("${local.server.port}")
