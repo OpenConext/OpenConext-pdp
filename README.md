@@ -46,15 +46,6 @@ Examples:
 
 `curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
 
-# API
-
-We use the Spring Boot capability to expose the REST endpoint for the pdpPolicies. You can create, update and delete pdpPolicies using the standard 
-[Spring Boot rest API](https://spring.io/guides/gs/accessing-data-rest/).
-
-`curl -i --user pdp_admin:secret -X POST -H "Content-Type:application/json" -d '{  "policyXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" }' http://localhost:8080/api/pdpPolicies`
-
-`curl -i --user pdp_admin:secret -X PATCH -H "Content-Type:application/json" -d '{"policyXml" : "wtf" }' http://localhost:8080/api/pdpPolicies/8`
-
 # Configuration and Deployment
 
 On its classpath, the application has an [application.properties](src/main/resources/application.properties) file that

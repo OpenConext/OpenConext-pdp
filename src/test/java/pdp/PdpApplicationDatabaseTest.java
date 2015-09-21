@@ -22,6 +22,10 @@ public class PdpApplicationDatabaseTest extends PdpApplicationTest {
 
   @Before
   public void before() throws IOException {
+    /*
+     * We can't use Transactional rollback as the Application runs in a different process. This would only
+     * work if we would test against the local PdpPolicyRepository - and this is an Intgeration test.
+     */
     super.before();
     repository.deleteAll();
     repository.save(Arrays.asList(

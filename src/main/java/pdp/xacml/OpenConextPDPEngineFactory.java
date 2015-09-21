@@ -5,12 +5,9 @@ import org.apache.openaz.xacml.pdp.OpenAZPDPEngine;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngineFactory;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
 import org.apache.openaz.xacml.util.FactoryException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pdp.PdpPolicyRepository;
 
 import java.io.IOException;
-import java.util.Properties;
 
 public class OpenConextPDPEngineFactory extends OpenAZPDPEngineFactory {
 

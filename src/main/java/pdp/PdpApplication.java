@@ -4,10 +4,14 @@ import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
@@ -19,6 +23,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import pdp.xacml.*;
 
 import java.io.IOException;
+
+import static org.springframework.beans.factory.config.AutowireCapableBeanFactory.AUTOWIRE_NO;
 
 @SpringBootApplication()
 public class PdpApplication {
@@ -44,6 +50,7 @@ public class PdpApplication {
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
     PDPEngineFactory factory = PDPEngineFactory.newInstance();
+
     //We want to be properties driven for testability, but we can't otherwise hook into the PdpPolicyRepository
     if (factory instanceof OpenConextPDPEngineFactory) {
       return ((OpenConextPDPEngineFactory) factory).newEngine(pdpPolicyRepository);
