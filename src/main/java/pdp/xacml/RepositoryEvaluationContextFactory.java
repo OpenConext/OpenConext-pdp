@@ -50,6 +50,7 @@ public class RepositoryEvaluationContextFactory extends StdEvaluationContextFact
   private PolicyFinder loadPolicyFinder() {
     Collection<PolicyDef> rootPolicies =
         stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> convertToPolicyDef(policy.getPolicyXml())).collect(toCollection(ArrayList::new));
+    LOG.info("(Re)-loaded {} policies from the database", rootPolicies.size());
     return new StdPolicyFinder(rootPolicies, null);
   }
 
