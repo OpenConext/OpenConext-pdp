@@ -29,9 +29,12 @@ a database with policies you can load the same policies used in testing with the
 
 # Testing
 
-There is an integration test for PdpApplication that tests the various decisions against a running Spring app. 
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. The integration tests all use different configurations for loading
+the policies. See [PdpApplicationDatabaseTest](src/test/java/pdp/PdpApplicationDatabaseTest) and [PdpApplicationTest](src/test/java/pdp/PdpApplicationTest)
 
-One can also use cUrl to test. Start the server and go the directory src/test/resources. Use the following command to test the permit decision:
+One can also use cUrl to test against a running Spring application but you will need to load the policies as described in the previous step. 
+
+Start the server and go the directory src/test/resources. Use the following command to test the permit decision:
 
 `curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
 
