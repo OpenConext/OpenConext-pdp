@@ -18,6 +18,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.io.IOException;
+
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,12 +28,12 @@ import static org.junit.Assert.assertEquals;
 public class PdpApplicationTest {
 
   @Value("${local.server.port}")
-  private int port;
+  protected int port;
   private MultiValueMap<String, String> headers;
-  private TestRestTemplate client = new TestRestTemplate("pdp_admin", "secret");
+  protected TestRestTemplate client = new TestRestTemplate("pdp_admin", "secret");
 
   @Before
-  public void before() {
+  public void before() throws IOException {
     headers = new LinkedMultiValueMap<>();
     headers.add("Content-Type", "application/json");
   }
@@ -68,6 +70,7 @@ public class PdpApplicationTest {
 
   @Test
   public void test_teams_pip_approve() throws Exception {
+    doDecide("TeamAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
     doDecide("TeamAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
   }
 

@@ -26,7 +26,7 @@ public class PdpController {
   }
 
   @RequestMapping(method = RequestMethod.POST, headers = {"content-type=application/json"}, value = "/decide")
-  public String myGroups(@RequestBody String payload) throws Exception {
+  public String decide(@RequestBody String payload) throws Exception {
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
 

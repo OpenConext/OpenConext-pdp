@@ -20,6 +20,13 @@ This project uses Spring Boot and Maven. To run locally, type:
 
 When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](src/main/java/pdp/PdpApplication).
 
+# Local database content
+
+We don't provide flyway migrations to load initial policies. You need to work with the GUI to define and store them. However to test locally against
+a database with policies you can load the same policies used in testing with the following command
+
+`mysql -u root pdp-server < ./src/test/resources/sql/policies.sql`
+
 # Testing
 
 There is an integration test for PdpApplication that tests the various decisions against a running Spring app. 
@@ -35,6 +42,15 @@ Examples:
 `curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/TeamAccess.Permit.json https://pdp.test2.surfconext.nl/decide`
 
 `curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
+
+# API
+
+We use the Spring Boot capability to expose the REST endpoint for the pdpPolicies. You can create, update and delete pdpPolicies using the standard 
+[Spring Boot rest API](https://spring.io/guides/gs/accessing-data-rest/).
+
+`curl -i --user pdp_admin:secret -X POST -H "Content-Type:application/json" -d '{  "policyXml" : "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" }' http://localhost:8080/api/pdpPolicies`
+
+`curl -i --user pdp_admin:secret -X PATCH -H "Content-Type:application/json" -d '{"policyXml" : "wtf" }' http://localhost:8080/api/pdpPolicies/8`
 
 # Configuration and Deployment
 
