@@ -1,6 +1,7 @@
 package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
+import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngine;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngineFactory;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
