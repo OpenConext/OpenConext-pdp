@@ -1,4 +1,4 @@
-INSERT INTO `pdp_policies` (`policy_xml`)
+INSERT INTO `pdp_policies` (`policy_xml`,`name`)
   VALUES (
 '<?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:com:att:xacml:policy:id:4ec39305-37d5-40c4-a614-8a258683b114"
@@ -97,7 +97,7 @@ INSERT INTO `pdp_policies` (`policy_xml`)
         </AdviceExpressions>
     </Rule>
 </Policy>
-'),
+', 'SURFspotAccess'),
 ('
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:com:att:xacml:policy:id:4ec39305-37d5-40c4-a614-8a258683b114"
@@ -118,12 +118,12 @@ INSERT INTO `pdp_policies` (`policy_xml`)
         </AnyOf>
     </Target>
     <Rule RuleId="SURFconext.TeamAccess.permitAccess" Effect="Permit">
-        <Description>To access admin-sp one must be a member of the team xacml-admins</Description>
+        <Description>To access admin-sp one must be a member of the team urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo</Description>
         <Target>
             <AnyOf>
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">xacml-admins</AttributeValue>
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo</AttributeValue>
                         <AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                                              AttributeId="urn:mace:dir:attribute-def:group-name"
                                              DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -138,4 +138,4 @@ INSERT INTO `pdp_policies` (`policy_xml`)
         <Target />
     </Rule>
 </Policy>
-');
+', 'TeamAccess');

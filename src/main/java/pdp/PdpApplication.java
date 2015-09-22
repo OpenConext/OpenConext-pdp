@@ -14,6 +14,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -21,6 +22,7 @@ import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguratio
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import pdp.xacml.*;
+import pdp.xacml.teams.VootClient;
 
 import java.io.IOException;
 
@@ -35,6 +37,9 @@ public class PdpApplication {
   @Autowired
   private PdpPolicyRepository pdpPolicyRepository;
 
+  @Autowired
+  private VootClient vootClient;
+
   public static void main(String[] args) {
     SpringApplication.run(PdpApplication.class, args);
   }
@@ -42,7 +47,10 @@ public class PdpApplication {
   @Bean
   @Autowired
   public PDPEngine pdpEngine(
-      @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation) throws IOException, FactoryException {
+      @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+      Environment environment) throws IOException, FactoryException {
+    String[] activeProfiles = environment.getActiveProfiles();
+
     Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
     String absolutePath = resource.getFile().getAbsolutePath();
 
@@ -53,7 +61,7 @@ public class PdpApplication {
 
     //We want to be properties driven for testability, but we can't otherwise hook into the PdpPolicyRepository
     if (factory instanceof OpenConextPDPEngineFactory) {
-      return ((OpenConextPDPEngineFactory) factory).newEngine(pdpPolicyRepository);
+      return ((OpenConextPDPEngineFactory) factory).newEngine(pdpPolicyRepository, vootClient);
     } else {
       return factory.newEngine();
     }

@@ -8,6 +8,7 @@ import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
@@ -19,13 +20,17 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.test.properties"})
+@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.test.database.properties", "spring.profiles.active=dev"})
 public class PdpApplicationTest {
+
+  @Autowired
+  private PdpPolicyRepository repository;
 
   @Value("${local.server.port}")
   protected int port;
@@ -36,6 +41,18 @@ public class PdpApplicationTest {
   public void before() throws IOException {
     headers = new LinkedMultiValueMap<>();
     headers.add("Content-Type", "application/json");
+
+    /*
+     * We can't use Transactional rollback as the Application runs in a different process. This would only
+     * work if we would test against the local PdpPolicyRepository - and this is an Integration test.
+     *
+     * For this to work we have configured the OpenConextEvaluationContextFactory not to cache policies but
+     * to retrieve them from the database each request (e.g. openconext.pdp.cachePolicies=false)
+     */
+    repository.deleteAll();
+    repository.save(Arrays.asList(
+        new PdpPolicy(IOUtils.toString(new ClassPathResource("SURFconext.SURFspotAccess.xml").getInputStream()), "SURFspotAccess"),
+        new PdpPolicy(IOUtils.toString(new ClassPathResource("SURFconext.TeamAccess.xml").getInputStream()), "TeamAccess")));
   }
 
   @Test
@@ -71,7 +88,6 @@ public class PdpApplicationTest {
   @Test
   public void test_teams_pip_approve() throws Exception {
     doDecide("TeamAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
-    doDecide("TeamAccess.Permit.json", Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
   }
 
   @Test
@@ -90,5 +106,6 @@ public class PdpApplicationTest {
     assertEquals(expectedDecision, result.getDecision());
     assertEquals(statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());
   }
+
 
 }

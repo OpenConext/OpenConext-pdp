@@ -2,6 +2,7 @@ package pdp.xacml.teams;
 
 import org.apache.openaz.xacml.api.Attribute;
 import org.apache.openaz.xacml.api.AttributeValue;
+import org.apache.openaz.xacml.api.Identifier;
 import org.apache.openaz.xacml.api.pip.PIPException;
 import org.apache.openaz.xacml.api.pip.PIPFinder;
 import org.apache.openaz.xacml.api.pip.PIPRequest;
@@ -14,8 +15,11 @@ import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public class TeamsPIP implements ConfigurableEngine {
+public class TeamsPIP implements ConfigurableEngine, VootClientAware {
+
+  private VootClient vootClient;
 
   private PIPRequest requiredAttribute;
   private PIPRequest providedAttribute;
@@ -93,14 +97,15 @@ public class TeamsPIP implements ConfigurableEngine {
     if (CollectionUtils.isEmpty(values)) {
       return missingNameId;
     }
-    String name = (String) values.stream().findFirst().get().getValue();
-    if ("mary.doe".equals(name)) {
-      StdAttributeValue<String> sss = new StdAttributeValue(providedAttribute.getDataTypeId(), "xacml-admins");
-      Collection<AttributeValue<?>> stdAttributeValues = Arrays.asList(sss);
-      Attribute responseAttr = new StdAttribute(providedAttribute.getCategory(), providedAttribute.getAttributeId(), stdAttributeValues, null, true);
-      return new StdSinglePIPResponse(responseAttr);
-    } else {
-      return empty;
-    }
+    String userUrn = (String) values.stream().findFirst().get().getValue();
+    List<String> groups = vootClient.groups(userUrn);
+    Identifier groupNameDataTypeId = providedAttribute.getDataTypeId();
+    List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<String>(groupNameDataTypeId, group)).collect(Collectors.toList());
+    Attribute responseAttr = new StdAttribute(providedAttribute.getCategory(), providedAttribute.getAttributeId(), stdAttributeValues, null, true);
+    return new StdSinglePIPResponse(responseAttr);
+  }
+
+  public void setVootClient(VootClient vootClient) {
+    this.vootClient = vootClient;
   }
 }

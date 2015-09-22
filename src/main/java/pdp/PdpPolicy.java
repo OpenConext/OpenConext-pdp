@@ -15,16 +15,15 @@ public class PdpPolicy {
   @Column(nullable = false)
   private String policyXml;
 
+  @Column(nullable = false)
+  private String name;
+
   public PdpPolicy() {
   }
 
-  public PdpPolicy(String policyXml) {
-    this(null, policyXml);
-  }
-
-  public PdpPolicy(Long id, String policyXml) {
-    this.id = id;
+  public PdpPolicy(String policyXml, String name) {
     this.policyXml = policyXml;
+    this.name = name;
   }
 
   public Long getId() {
@@ -43,4 +42,11 @@ public class PdpPolicy {
     this.policyXml = policyXml;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }

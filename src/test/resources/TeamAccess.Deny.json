@@ -11,7 +11,7 @@
       {
         "CategoryId": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
         "Attribute": {
-          "Value": "john.doe",
+          "Value": "urn:collab:person:example.com:non_admin",
           "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"
         }
       }

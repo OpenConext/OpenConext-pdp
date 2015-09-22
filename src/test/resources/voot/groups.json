@@ -1,0 +1,128 @@
+[
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:authz-admins",
+    "displayName": "authz-admins",
+    "description": "People that are allowed to use the oauth2-admin application",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:bar",
+    "displayName": "Bar",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:bazenteam",
+    "displayName": "Bazenteam",
+    "description": "Eh",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:burr",
+    "displayName": "burr",
+    "description": "fffff",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:dummy_team",
+    "displayName": "dummy team",
+    "description": "Dummy team",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:make_it_slower",
+    "displayName": "Make it slower",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:make_it_slower_2",
+    "displayName": "Make it slower 2",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:make_it_slower_3",
+    "displayName": "Make it slower 3",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:make_it_slower_4",
+    "displayName": "Make it slower 4",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+    "displayName": "managementvo",
+    "description": "",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:mijn_mooie_team_dat_demote_dat_t_weer_werkt",
+    "displayName": "Mijn mooie team dat demote dat t weer werkt",
+    "description": "de invite procedure dus",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:test_15",
+    "displayName": "Test 15",
+    "description": "Invite 2",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:testgroup",
+    "displayName": "testGroup",
+    "description": "Testing this super group",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  },
+  {
+    "id": "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:yesh",
+    "displayName": "Yesh",
+    "description": "Guest aangemaakt team",
+    "sourceID": "SURFteams",
+    "membership": {
+      "basic": "member"
+    }
+  }
+]

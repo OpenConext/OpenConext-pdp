@@ -1,5 +1,6 @@
 package pdp.xacml;
 
+import org.apache.openaz.xacml.api.pip.PIPFinder;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.pdp.policy.PolicyDef;
 import org.apache.openaz.xacml.pdp.policy.PolicyFinder;
@@ -12,24 +13,25 @@ import org.apache.openaz.xacml.util.XACMLProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pdp.PdpPolicyRepository;
+import pdp.xacml.teams.VootClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Properties;
 
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.StreamSupport.stream;
 
-public class RepositoryEvaluationContextFactory extends StdEvaluationContextFactory {
+public class OpenConextEvaluationContextFactory extends StdEvaluationContextFactory {
 
-  private static Logger LOG = LoggerFactory.getLogger(RepositoryEvaluationContextFactory.class);
+  private static Logger LOG = LoggerFactory.getLogger(OpenConextEvaluationContextFactory.class);
 
   private PdpPolicyRepository pdpPolicyRepository;
   private boolean cachePolicies;
+  private VootClient vootClient;
 
-  public RepositoryEvaluationContextFactory() throws IOException {
+  public OpenConextEvaluationContextFactory() throws IOException {
     this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
   }
 
@@ -64,4 +66,20 @@ public class RepositoryEvaluationContextFactory extends StdEvaluationContextFact
     }
   }
 
+
+  public void setVootClient(VootClient vootClient) {
+    this.vootClient = vootClient;
+    PIPFinder pipFinder;
+    setPIPFinder(loadPIPFinder(vootClient));
+  }
+
+  private PIPFinder loadPIPFinder(VootClient vootClient) {
+    OpenConextConfigurableEngineFinder pipFinder = new OpenConextConfigurableEngineFinder(vootClient);
+    try {
+      pipFinder.configure(XACMLProperties.getProperties());
+      return pipFinder;
+    } catch (Exception ex) {
+      throw new RuntimeException(ex);
+    }
+  }
 }
