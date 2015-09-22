@@ -29,7 +29,6 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private PdpPolicyRepository pdpPolicyRepository;
   private boolean cachePolicies;
-  private VootClient vootClient;
 
   public OpenConextEvaluationContextFactory() throws IOException {
     this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
@@ -66,10 +65,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     }
   }
 
-
   public void setVootClient(VootClient vootClient) {
-    this.vootClient = vootClient;
-    PIPFinder pipFinder;
     setPIPFinder(loadPIPFinder(vootClient));
   }
 
