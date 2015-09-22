@@ -43,7 +43,7 @@ public class PdpController {
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PDPEngineHolder pdpEngineHolder) {
     this.pdpEngineHolder = pdpEngineHolder;
-    this.pdpEngine = pdpEngineHolder.pdpEngine();
+    this.pdpEngine = pdpEngineHolder.newPdpEngine();
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
 
     ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -88,7 +88,7 @@ public class PdpController {
     long start = System.currentTimeMillis();
     lock.writeLock().lock();
     try {
-      this.pdpEngine = pdpEngineHolder.pdpEngine();
+      this.pdpEngine = pdpEngineHolder.newPdpEngine();
     } finally {
       lock.writeLock().unlock();
     }

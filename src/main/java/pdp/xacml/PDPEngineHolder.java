@@ -19,7 +19,7 @@ public class PDPEngineHolder {
     this.vootClient = vootClient;
   }
 
-  public PDPEngine pdpEngine() {
+  public PDPEngine newPdpEngine() {
     try {
       PDPEngineFactory factory = PDPEngineFactory.newInstance();
 
