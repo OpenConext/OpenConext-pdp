@@ -35,5 +35,14 @@
     <Rule Effect="Deny" RuleId="SURFconext.TeamAccess.denyAccess">
         <Description />
         <Target />
+        <AdviceExpressions>
+            <AdviceExpression AdviceId="urn:unique:advice:reasonForDeny"
+                              AppliesTo="Deny">
+                <AttributeAssignmentExpression AttributeId="DenyMessage" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not a member of the ManagemetVO group</AttributeValue>
+                </AttributeAssignmentExpression>
+            </AdviceExpression>
+        </AdviceExpressions>
     </Rule>
 </Policy>

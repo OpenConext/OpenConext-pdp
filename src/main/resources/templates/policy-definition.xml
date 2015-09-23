@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="urn:surfconext:xacml:policy:id:{{nameId}}"
+        Version="1"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+    <Description>{{description}}</Description>
+    <PolicyDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicyDefaults>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{serviceProviderId}}</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
+                </Match>
+                {{#identityProviderId}}
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{identityProviderId}}</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
+                </Match>
+                {{/identityProviderId}}
+            </AllOf>
+        </AnyOf>
+    </Target>
+    <Rule Effect="Permit"
+          RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target>
+            <AnyOf>
+                {{#attributes}}
+                 <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string">{{value}}</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="{{name}}"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
+                    </Match>
+                </AllOf>
+                {{/attributes}}
+            </AnyOf>
+        </Target>
+    </Rule>
+    <Rule Effect="Deny"
+          RuleId="urn:surfconext:xacml:rule:id:deny">
+        <Description />
+        <Target />
+        <AdviceExpressions>
+            <AdviceExpression AdviceId="urn:surfconext:xacml:advice:id:{{nameId}}"
+                              AppliesTo="Deny">
+                <AttributeAssignmentExpression
+                        AttributeId="DenyMessage"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdvice}}</AttributeValue>
+                </AttributeAssignmentExpression>
+            </AdviceExpression>
+        </AdviceExpressions>
+    </Rule>
+</Policy>

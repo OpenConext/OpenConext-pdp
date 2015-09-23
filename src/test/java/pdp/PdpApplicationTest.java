@@ -21,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -30,7 +31,10 @@ import static org.junit.Assert.assertEquals;
 public class PdpApplicationTest {
 
   @Autowired
-  private PdpPolicyRepository repository;
+  private PdpPolicyRepository pdpPolicyRepository;
+
+  @Autowired
+  private PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
   @Value("${local.server.port}")
   protected int port;
@@ -49,10 +53,11 @@ public class PdpApplicationTest {
      * For this to work we have configured the OpenConextEvaluationContextFactory not to cache policies but
      * to retrieve them from the database each request (e.g. openconext.pdp.cachePolicies=false)
      */
-    repository.deleteAll();
-    repository.save(Arrays.asList(
+    pdpPolicyRepository.deleteAll();
+    pdpPolicyRepository.save(Arrays.asList(
         new PdpPolicy(IOUtils.toString(new ClassPathResource("SURFconext.SURFspotAccess.xml").getInputStream()), "SURFspotAccess"),
         new PdpPolicy(IOUtils.toString(new ClassPathResource("SURFconext.TeamAccess.xml").getInputStream()), "TeamAccess")));
+    pdpPolicyViolationRepository.deleteAll();
   }
 
   @Test
@@ -83,6 +88,8 @@ public class PdpApplicationTest {
   @Test
   public void test_teams_pip_deny() throws Exception {
     doDecide("TeamAccess.Deny.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+    List<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findByAssociatedAdviceId("urn:unique:advice:reasonForDeny");
+    assertEquals(1, violations.size());
   }
 
   @Test

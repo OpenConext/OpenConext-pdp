@@ -100,7 +100,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     String userUrn = (String) values.stream().findFirst().get().getValue();
     List<String> groups = vootClient.groups(userUrn);
     Identifier groupNameDataTypeId = providedAttribute.getDataTypeId();
-    List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<String>(groupNameDataTypeId, group)).collect(Collectors.toList());
+    List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<>(groupNameDataTypeId, group)).collect(Collectors.toList());
     Attribute responseAttr = new StdAttribute(providedAttribute.getCategory(), providedAttribute.getAttributeId(), stdAttributeValues, null, true);
     return new StdSinglePIPResponse(responseAttr);
   }
