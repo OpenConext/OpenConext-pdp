@@ -1,4 +1,4 @@
-package pdp.xacml.teams;
+package pdp.teams;
 
 import org.apache.openaz.xacml.api.Attribute;
 import org.apache.openaz.xacml.api.AttributeValue;

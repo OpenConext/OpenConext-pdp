@@ -1,7 +1,8 @@
-package pdp;
+package pdp.repositories;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import pdp.domain.PdpPolicyViolation;
 
 import java.util.List;
 

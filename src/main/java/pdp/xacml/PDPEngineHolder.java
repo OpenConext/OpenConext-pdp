@@ -4,8 +4,8 @@ import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pdp.PdpPolicyRepository;
-import pdp.xacml.teams.VootClient;
+import pdp.repositories.PdpPolicyRepository;
+import pdp.teams.VootClient;
 
 public class PDPEngineHolder {
 

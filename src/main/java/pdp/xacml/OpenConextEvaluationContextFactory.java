@@ -12,8 +12,8 @@ import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pdp.PdpPolicyRepository;
-import pdp.xacml.teams.VootClient;
+import pdp.repositories.PdpPolicyRepository;
+import pdp.teams.VootClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;

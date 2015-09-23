@@ -1,4 +1,4 @@
-package pdp.xacml.teams;
+package pdp.teams;
 
 public interface VootClientAware {
 

@@ -1,7 +1,5 @@
 package pdp;
 
-import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,16 +8,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import pdp.xacml.OpenConextPDPEngineFactory;
+import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PDPEngineHolder;
-import pdp.xacml.teams.VootClient;
+import pdp.teams.VootClient;
 
 import java.io.IOException;
 
@@ -38,7 +35,7 @@ public class PdpApplication {
   public PDPEngineHolder pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
       final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
-      ) throws IOException, FactoryException {
+  ) throws IOException, FactoryException {
     Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
     String absolutePath = resource.getFile().getAbsolutePath();
 

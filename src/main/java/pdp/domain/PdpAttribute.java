@@ -1,4 +1,4 @@
-package pdp;
+package pdp.domain;
 
 import java.util.List;
 

@@ -1,13 +1,12 @@
 package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngine;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngineFactory;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
 import org.apache.openaz.xacml.util.FactoryException;
-import pdp.PdpPolicyRepository;
-import pdp.xacml.teams.VootClient;
+import pdp.repositories.PdpPolicyRepository;
+import pdp.teams.VootClient;
 
 import java.io.IOException;
 

@@ -2,8 +2,8 @@ package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pip.PIPEngine;
 import org.apache.openaz.xacml.std.pip.finders.ConfigurableEngineFinder;
-import pdp.xacml.teams.VootClient;
-import pdp.xacml.teams.VootClientAware;
+import pdp.teams.VootClient;
+import pdp.teams.VootClientAware;
 
 public class OpenConextConfigurableEngineFinder extends ConfigurableEngineFinder {
 
