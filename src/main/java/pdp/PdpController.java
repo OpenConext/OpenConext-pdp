@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyDefintion;
 import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -29,6 +30,7 @@ import pdp.xacml.PDPEngineHolder;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,10 +39,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 
 @RestController
+@RequestMapping("/api")
 public class PdpController {
 
   private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
@@ -87,21 +91,11 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/api/policies", produces = {"application/json"})
-  public Map<String, PolicyDef> compoundPolicies() throws DOMStructureException {
+  @RequestMapping(method = RequestMethod.GET, value = "/policies", produces = {"application/json"})
+  public List<PdpPolicyDefintion> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    return stream(all.spliterator(), false).collect(Collectors.toMap(PdpPolicy::getName, (policy) -> convertToPolicyDef(policy.getPolicyXml())));
+    return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefintion(policy.getName(), policy.getPolicyXml())).collect(toList());
   }
-
-  private PolicyDef convertToPolicyDef(String policyXml) {
-    try {
-      return DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
-    } catch (DOMStructureException e) {
-      LOG.error("Error loading policy from " + policyXml, e);
-      return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
-    }
-  }
-
 
   private void reportPolicyViolation(Response pdpResponse, String payload) {
     Collection<Result> results = pdpResponse.getResults();

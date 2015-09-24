@@ -8,7 +8,7 @@
     },
     "Resource": {
       "Attribute": {
-        "AttributeId": "urn:oasis:names:tc:SAML:2.0:nameid-format:entity",
+        "AttributeId": "SPentityID",
         "Value": "https://www.surfspot.nl/simplesaml/module.php/saml/sp/metadata.php/saml"
       }
     }

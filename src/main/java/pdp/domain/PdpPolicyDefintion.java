@@ -6,6 +6,7 @@ import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -40,22 +41,27 @@ public class PdpPolicyDefintion {
     this.denyAdvice = denyAdvice;
   }
 
-  public PdpPolicyDefintion(String policyName, String policyXml) throws DOMStructureException {
+  public PdpPolicyDefintion(String policyName, String policyXml) {
     this.setName(policyName);
 
-    Policy policy = (Policy) DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+    Policy policy = null;
+    try {
+      policy = (Policy) DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+    } catch (DOMStructureException e) {
+      throw new RuntimeException(e);
+    }
     this.setDescription(policy.getDescription());
 
     List<AnyOf> targetAnyOfs = iteratorToList(policy.getTarget().getAnyOfs());
-    if (StringUtils.isEmpty(targetAnyOfs) || targetAnyOfs.size() > 1) {
+    if (CollectionUtils.isEmpty(targetAnyOfs) || targetAnyOfs.size() > 1) {
       throw new RuntimeException("Expected 1 and only one anyOf in the Target section "+ policyXml);
     }
     List<AllOf> targetAllOfs = iteratorToList(targetAnyOfs.get(0).getAllOfs());
-    if (StringUtils.isEmpty(targetAllOfs) || targetAllOfs.size() > 1) {
+    if (CollectionUtils.isEmpty(targetAllOfs) || targetAllOfs.size() > 1) {
       throw new RuntimeException("Expected 1 and only one allOfs in the Target anyOf section "+ policyXml);
     }
     List<Match> targetMatches = iteratorToList(targetAllOfs.get(0).getMatches());
-    if (StringUtils.isEmpty(targetMatches) || targetMatches.size() > 2) {
+    if (CollectionUtils.isEmpty(targetMatches) || targetMatches.size() > 2) {
       throw new RuntimeException("Only 1 or 2 matches allowed in the Target anyOf section "+ policyXml);
     }
     Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase("SPentityID")).findFirst();
@@ -77,11 +83,11 @@ public class PdpPolicyDefintion {
       throw new RuntimeException("No Permit rule defined in the Policy "+ policyXml);
     }
     List<AnyOf> anyOfsPermit = iteratorToList(permitRule.get().getTarget().getAnyOfs());
-    if (StringUtils.isEmpty(anyOfsPermit) || anyOfsPermit.size() > 1) {
+    if (CollectionUtils.isEmpty(anyOfsPermit) || anyOfsPermit.size() > 1) {
       throw new RuntimeException("Expected 1 and only one anyOf in the Permit rule "+ policyXml);
     }
     List<AllOf> allOfsPermit = iteratorToList(anyOfsPermit.get(0).getAllOfs());
-    if (StringUtils.isEmpty(allOfsPermit)) {
+    if (CollectionUtils.isEmpty(allOfsPermit)) {
       throw new RuntimeException("Expected at least one allOf in the Permit rule "+ policyXml);
     }
     List<Match> permitMatches = allOfsPermit.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(matches -> matches.stream()).collect(toList());
@@ -98,13 +104,13 @@ public class PdpPolicyDefintion {
       throw new RuntimeException("No Deny rule defined in the Policy "+ policyXml);
     }
     List<AdviceExpression> adviceExpressions = iteratorToList(denyRule.get().getAdviceExpressions());
-    if (StringUtils.isEmpty(adviceExpressions) || adviceExpressions.size() > 1) {
+    if (CollectionUtils.isEmpty(adviceExpressions) || adviceExpressions.size() > 1) {
       throw new RuntimeException("Expected 1 and only one adviceExpressions in the Deny rule "+ policyXml);
     }
     AdviceExpression adviceExpression = adviceExpressions.get(0);
 
     List<AttributeAssignmentExpression> attributeAssignmentExpressions = iteratorToList(adviceExpression.getAttributeAssignmentExpressions());
-    if (StringUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() > 1) {
+    if (CollectionUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() > 1) {
       throw new RuntimeException("Expected 1 and only one attributeAssignmentExpressions in the Deny rule "+ policyXml);
     }
     String denyAttributeValue = (String) ((AttributeValueExpression)attributeAssignmentExpressions.get(0).getExpression()).getAttributeValue().getValue();

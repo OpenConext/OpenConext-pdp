@@ -9,7 +9,7 @@
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://admin-sp</AttributeValue>
                     <AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                                         AttributeId="urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+                                         AttributeId="SPentityID"
                                          DataType="http://www.w3.org/2001/XMLSchema#string"
                                          MustBePresent="true" />
                 </Match>

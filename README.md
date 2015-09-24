@@ -18,7 +18,8 @@ This project uses Spring Boot and Maven. To run locally, type:
 
 `mvn spring-boot:run`
 
-When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](src/main/java/pdp/PdpApplication.java).
+When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](src/main/java/pdp/PdpApplication.java). Don't forget
+to set the active profile to dev otherwise the application uses the real VOOT client on the test environment.
 
 # Local database content
 
@@ -29,8 +30,7 @@ a database with policies you can load the same policies used in testing with the
 
 # Testing
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. The integration tests all use different configurations for loading
-the policies. See [PdpApplicationDatabaseTest](src/test/java/pdp/PdpApplicationDatabaseTest.java) and [PdpApplicationTest](src/test/java/pdp/PdpApplicationTest.java)
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](src/test/java/pdp/PdpApplicationTest.java)
 
 One can also use cUrl to test against a running Spring application but you will need to load the policies as described in the previous step. 
 

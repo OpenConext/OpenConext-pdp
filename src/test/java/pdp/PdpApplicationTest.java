@@ -105,7 +105,7 @@ public class PdpApplicationTest {
   }
 
   private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {
-    final String url = "http://localhost:" + port + "/decide";
+    final String url = "http://localhost:" + port + "/api/decide";
     String jsonRequest = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
     HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
     String jsonResponse = client.postForObject(url, request, String.class);

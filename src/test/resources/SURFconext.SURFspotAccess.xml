@@ -13,7 +13,7 @@
                     <AttributeValue
                         DataType="http://www.w3.org/2001/XMLSchema#string">https://www.surfspot.nl/simplesaml/module.php/saml/sp/metadata.php/saml</AttributeValue>
                     <AttributeDesignator 
-                        AttributeId="urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+                        AttributeId="SPentityID"
                         DataType="http://www.w3.org/2001/XMLSchema#string"
                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                         MustBePresent="false"

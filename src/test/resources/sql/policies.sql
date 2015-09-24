@@ -15,7 +15,7 @@ INSERT INTO `pdp_policies` (`policy_xml`,`name`)
                     <AttributeValue
                         DataType="http://www.w3.org/2001/XMLSchema#string">https://www.surfspot.nl/simplesaml/module.php/saml/sp/metadata.php/saml</AttributeValue>
                     <AttributeDesignator
-                        AttributeId="urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+                        AttributeId="SPentityID"
                         DataType="http://www.w3.org/2001/XMLSchema#string"
                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                         MustBePresent="false"
@@ -110,7 +110,7 @@ INSERT INTO `pdp_policies` (`policy_xml`,`name`)
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://admin-sp</AttributeValue>
                     <AttributeDesignator Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                                         AttributeId="urn:oasis:names:tc:SAML:2.0:nameid-format:entity"
+                                         AttributeId="SPentityID"
                                          DataType="http://www.w3.org/2001/XMLSchema#string"
                                          MustBePresent="true" />
                 </Match>
@@ -136,6 +136,15 @@ INSERT INTO `pdp_policies` (`policy_xml`,`name`)
     <Rule Effect="Deny" RuleId="SURFconext.TeamAccess.denyAccess">
         <Description />
         <Target />
+        <AdviceExpressions>
+            <AdviceExpression AdviceId="http://example.com/advice/managementvo_team_access"
+                                     AppliesTo="Deny">
+                <AttributeAssignmentExpression AttributeId="DenyMessage" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not a member of the Management VO team</AttributeValue>
+                </AttributeAssignmentExpression>
+            </AdviceExpression>
+        </AdviceExpressions>
     </Rule>
 </Policy>
 ', 'TeamAccess');
