@@ -1,0 +1,59 @@
+.mod-connect
+  .content
+    padding: 40px
+    position: relative
+
+  h2
+    @extend %h2
+    margin-bottom: 10px
+
+  ul
+    margin-bottom: 10px
+    list-style: square
+    list-style-position: inside
+    margin-left: 2px
+
+  p
+    margin-bottom: 10px
+
+  p + h2,
+  ul + h2
+    margin-top: 20px
+
+  textarea
+    border-radius: $br
+    border-color: $medium-grey
+    font-size: 14px
+    padding: 10px
+    width: 100%
+    height: 100px
+
+  hr
+    border: 2px solid $border
+    margin: 0
+
+  .number
+    position: absolute
+    width: 40px
+    height: 40px
+    border-radius: 40px
+    background-color: $blue
+    color: #fff
+    line-height: 40px
+    font-size: 18px
+    text-align: center
+    left: -20px
+
+  .cta
+    margin: 20px 0 0
+
+    .c-button
+      margin-right: 20px
+
+      &.cancel
+        background: $medium-grey
+        float: right
+        margin-right: 0
+
+    em
+      opacity: .8

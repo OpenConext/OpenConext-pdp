@@ -1,0 +1,35 @@
+.mod-connection
+  padding: 20px 0
+  margin-bottom: 20px
+  border-top: 1px solid $border
+  border-bottom: 1px solid $border
+  +clearfix
+
+  .split
+    float: left
+    width: 50%
+
+  .yes
+    h2, i
+      color: $green
+
+  .no
+    h2, i
+      color: $red
+
+  .no-needed
+    h2, i
+      color: $blue
+
+  .unknown
+    h2, i
+      color: $medium-grey
+
+  h2
+    @extend %h3
+    margin-bottom: 0
+
+  i
+    font-size: 3.3em
+    float: left
+    margin-right: 15px

@@ -1,0 +1,36 @@
+.mod-super-user
+  @extend %table
+
+  h1
+    @extend %h1
+    margin-bottom: 20px
+
+  form
+    @extend %box
+    margin-bottom: 30px
+
+    fieldset
+      border: 0
+      padding: 0
+      margin: 0
+
+    button
+      display: none
+
+    input
+      display: block
+      border: 0
+      border-radius: $br
+      width: 100%
+      padding: 10px 20px
+      line-height: 40px
+      font-size: 20px
+
+  table
+    @extend %box
+
+    .center
+      text-align: center
+
+    .c-button
+      margin-left: 10px

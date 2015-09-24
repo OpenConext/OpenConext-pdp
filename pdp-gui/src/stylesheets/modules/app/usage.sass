@@ -1,0 +1,58 @@
+.mod-usage
+  @extend %box
+  margin-bottom: 20px
+
+  .header
+    +clearfix
+    padding: 20px
+    border-bottom: 1px solid $border
+
+    h1
+      float: left
+      @extend %h3
+
+    .options
+      float: right
+
+      & > div
+        display: inline-block
+        margin-left: 20px
+
+      .surf_chart.download
+        @extend .c-button
+
+      .surf_chart.period_select
+        margin-left: 10px
+
+  .body
+    padding: 20px
+
+    .chart-container
+      position: relative
+
+      .detail
+        .x_label
+          display: none
+
+        .date
+          color: #808080
+
+      .x_tick
+        border: 0
+
+      .y
+        position: absolute
+        left: 0
+        width: 40px
+        height: 100%
+        top: -1px
+
+      .y_grid
+        .tick
+          stroke: #808080
+          display: none
+          stroke-dasharray: 0
+
+          &:first-child
+            display: block
+

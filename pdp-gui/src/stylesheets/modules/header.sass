@@ -1,0 +1,102 @@
+.mod-header
+  +pie-clearfix
+  padding: 25px 30px 10px
+  background: #fff
+  border-bottom: 2px solid $blue
+
+  // Main app title
+  .title
+    background: url("/images/logo@2x.png") no-repeat left center
+    background-size: 161px 50px
+    height: 50px
+    float: left
+    @extend %h2
+
+    a
+      color: $dark-grey
+      padding-left: 170px
+
+      &:hover
+        color: $blue
+
+  // Meta = right aligned stuff
+  .meta
+    float: right
+
+  // Styling for elements
+  a
+    text-decoration: none
+    &:hover
+      text-decoration: underline
+
+  .language,
+  .links
+    float: left
+    margin-left: 40px
+    line-height: 30px
+
+    li
+      float: left
+      list-style: none
+
+    a
+      display: block
+      padding: 0 14px
+      border-right: 1px solid $light-grey
+
+    li:last-child a
+      border: 0
+
+  // EN / NL language switch
+  .language
+    overflow: hidden
+    border-radius: $br
+
+    a
+      background: $light-grey
+      border-color: #fff
+
+      &:hover,
+      &.selected
+        background: $blue
+        color: #fff
+
+      &.selected:hover
+        text-decoration: none
+
+  .name
+    float: left
+    line-height: 30px
+
+    .fa-caret-down,
+    .fa-caret-up
+      padding-left: 5px
+
+    > ul
+      @extend %box, %z2
+      position: absolute
+      z-index: 100
+      padding: 20px 20px 0
+      max-width: 400px
+      min-width: 200px
+      top: 60px
+
+      &.show
+        display: block
+
+    li li,
+    h2
+      border-bottom: 1px solid $border
+
+    ul ul
+      margin-bottom: 20px
+
+    .select-idp
+      li
+        padding-left: 15px
+        position: relative
+
+        .fa-caret-right
+          position: absolute
+          left: 0
+          top: 8px
