@@ -67,7 +67,7 @@ When you browse to the [application homepage](http://localhost:8001/) you will b
 ### Design considerations
 
 The XACML framework works with policies defined in XML. We store the policies as XML strings in the database. However to
-effectively let XACML evaluate policies we need to convert them to the internal XACML format - see [PdpApplicationTest](pdp-server/src/main/java/pdp/xacml/OpenConextEvaluationContextFactory).
+effectively let XACML evaluate policies we need to convert them to the internal XACML format - see [OpenConextEvaluationContextFactory](pdp-server/src/main/java/pdp/xacml/OpenConextEvaluationContextFactory.java).
 
 Working with XML on the pdp-gui does not work well and we want to keep the pdp-gui simple. Therefore the PdpPolicyDefinition is used as an
 intermediate format for policies that is easy to work with for the pdp-gui and also enables the server to transform
