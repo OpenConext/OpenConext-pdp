@@ -49,6 +49,7 @@ public class PdpController {
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
   private PdpPolicyRepository pdpPolicyRepository;
   private ReadWriteLock lock = new ReentrantReadWriteLock();
+  private PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
 
   @Autowired
   public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
@@ -111,7 +112,6 @@ public class PdpController {
       pdpPolicyViolationRepository.save(new PdpPolicyViolation(associatedAdviceId, payload));
     }
   }
-
 
   private void refreshPolicies() {
     LOG.info("Starting reloading policies");

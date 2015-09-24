@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:surfconext:xacml:policy:id:{{nameId}}"
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:surfconext:xacml:policy:id:leiden_enquetetool"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
     <Description>Medewerkers van de lerarenopleiding in Leiden hebben toegang tot Enquetetool van Leiden.</Description>
@@ -41,13 +41,13 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding</AttributeValue>
-                        <AttributeDesignator 
-                            AttributeId="faculty"
-                            DataType="http://www.w3.org/2001/XMLSchema#string"
-                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                            MustBePresent="false"
-                        />
+                                DataType="http://www.w3.org/2001/XMLSchema#string">teacher</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
                     </Match>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue

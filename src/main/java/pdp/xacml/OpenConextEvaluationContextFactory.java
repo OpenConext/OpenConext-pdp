@@ -32,6 +32,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   public OpenConextEvaluationContextFactory() throws IOException {
     this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
+    System.out.println("DEBUG!!!" + XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies"));
   }
 
   public void setPdpPolicyRepository(PdpPolicyRepository pdpPolicyRepository) {

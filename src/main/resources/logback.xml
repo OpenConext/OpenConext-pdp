@@ -19,10 +19,10 @@
     </encoder>
   </appender>
 
-  <logger name="pdp" level="INFO"/>
-  <logger name="org.apache.openaz" level="INFO"/>
+  <logger name="pdp" level="DEBUG"/>
+  <logger name="org.apache.openaz" level="DEBUG"/>
 
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="FILE" />
   </root>
