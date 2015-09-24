@@ -103,7 +103,7 @@ Examples:
 
 ### Configuration and Deployment
 
-On its classpath, the application has an [application.properties](src/main/resources/application.properties) file that
+On its classpath, the application has an [application.properties](pdp-server/src/main/resources/application.properties) file that
 contains configuration defaults that are convenient when developing.
 
 When the application actually gets deployed to a meaningful platform, it is pre-provisioned with ansible and the application.properties depends on
