@@ -64,6 +64,18 @@ When you browse to the [application homepage](http://localhost:8001/) you will b
 
 ## Miscellaneous
 
+### Design considerations
+
+The XACML framework works with policies defined in XML. We store the policies as XML strings in the database. However to
+effectively let XACML evaluate policies we need to convert them to the internal XACML format - see [PdpApplicationTest](pdp-server/src/main/java/pdp/xacml/OpenConextEvaluationContextFactory).
+
+Working with XML on the pdp-gui does not work well and we want to keep the pdp-gui simple. Therefore the PdpPolicyDefinition is used as an
+intermediate format for policies that is easy to work with for the pdp-gui and also enables the server to transform
+it easily into the desired - yet very complex - XML format.
+
+Using the internal XACML Policy class hierarchy for communication back and forth with the client was not an option because
+of the cyclic dependencies in the hierarchy (and not desirable because of the complexity it would have caused).
+
 ### Local database content
 
 We don't provide flyway migrations to load initial policies. You need to work with the GUI to define and store them. However to test locally against
@@ -73,7 +85,7 @@ a database with policies you can load the same policies used in testing with the
 
 ### Testing
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](src/test/java/pdp/PdpApplicationTest.java)
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
 
 One can also use cUrl to test against a running Spring application but you will need to load the policies as described in the previous step. 
 

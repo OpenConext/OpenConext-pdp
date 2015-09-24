@@ -5,10 +5,6 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.pdp.policy.Policy;
-import org.apache.openaz.xacml.pdp.policy.PolicyDef;
-import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
-import org.apache.openaz.xacml.std.StdStatusCode;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -16,11 +12,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.servlet.LocaleResolver;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefintion;
 import pdp.domain.PdpPolicyViolation;
@@ -28,22 +25,23 @@ import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PDPEngineHolder;
 
-import java.io.ByteArrayInputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
+@RequestMapping(headers = {"content-type=application/json"}, produces = {"application/json"})
 public class PdpController {
 
   private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
@@ -70,7 +68,7 @@ public class PdpController {
     executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
   }
 
-  @RequestMapping(method = RequestMethod.POST, headers = {"content-type=application/json"}, value = "/decide")
+  @RequestMapping(method = RequestMethod.POST, value = "/decide")
   public String decide(@RequestBody String payload) throws Exception {
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
@@ -90,10 +88,25 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/policies", produces = {"application/json"})
+  @RequestMapping(method = RequestMethod.GET, value = "/policies")
   public List<PdpPolicyDefintion> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefintion(policy.getName(), policy.getPolicyXml())).collect(toList());
+  }
+
+  @RequestMapping(method = POST, value = "policies")
+  public List<PdpPolicyDefintion> post(@RequestBody @Valid PdpPolicyDefintion policyDefintion) throws DOMStructureException {
+    String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
+    try {
+      pdpPolicyRepository.save(new PdpPolicy(policyXml, policyDefintion.getName()));
+    } catch (DataIntegrityViolationException e) {
+      if (e.getMessage().contains("pdp_policy_name_unique")) {
+        throw new PdpPolicyException("name", "Policy name must be unique. " + policyDefintion.getName() + " is already taken");
+      } else {
+        throw e;
+      }
+    }
+    return policyDefinitions();
   }
 
   private void reportPolicyViolation(Response pdpResponse, String payload) {

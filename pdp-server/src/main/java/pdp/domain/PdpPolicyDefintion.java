@@ -9,6 +9,9 @@ import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.ByteArrayInputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,12 +24,25 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 public class PdpPolicyDefintion {
-
+  @NotNull
+  @Size(min = 1)
   private String name;
+
+  @NotNull
+  @Size(min = 1)
   private String description;
+
+  @NotNull
+  @Size(min = 1)
   private String serviceProviderId;
+
   private String identityProviderId;
+
+  @Valid
   private List<PdpAttribute> attributes = new ArrayList<>();
+
+  @NotNull
+  @Size(min = 1)
   private String denyAdvice;
 
   public PdpPolicyDefintion() {
