@@ -1,7 +1,17 @@
 # OpenConext-pdp
-OpenConext implementation of a XACML based PDP engine for access policy enforcement
 
-# Create database
+OpenConext implementation of a XACML based PDP engine for access policy enforcement including a GUI for maintaining policies
+
+## Getting started
+
+### System Requirements
+
+- Java 8
+- Maven 3
+- MySQL 5.5
+- Gruntjs
+
+### Create database
 
 Connect to your local mysql database: `mysql -uroot`
 
@@ -13,22 +23,55 @@ create user 'pdp-serverrw'@'localhost' identified by 'secret';
 grant all on `pdp-server`.* to 'pdp-serverrw'@'localhost';
 ```
 
-# Getting started
+## Building and running
+
+### The pdp-server
+
 This project uses Spring Boot and Maven. To run locally, type:
 
-`mvn spring-boot:run`
+`cd pdp-server`
+`mvn spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=dev"`
 
-When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](src/main/java/pdp/PdpApplication.java). Don't forget
+When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](pdp-server/src/main/java/pdp/PdpApplication.java). Don't forget
 to set the active profile to dev otherwise the application uses the real VOOT client on the test environment.
 
-# Local database content
+### The pdp-gui
+
+The client is build with react.js and to get initially started:
+
+`cd pdp-gui`
+
+`brew install npm;`
+`gem install sass;`
+`gem install sass-globbing;`
+`gem install compass;`
+`npm install -g grunt-cli;`
+`npm install;`
+
+When new grunt dependencies are added:
+
+`npm install`
+
+To build:
+
+`grunt watch`
+
+To run locally:
+
+`grunt server`
+
+When you browse to the [application homepage](http://localhost:8001/) you will be prompted for a login. Anything - for now - is accepted.
+
+## Miscellaneous
+
+### Local database content
 
 We don't provide flyway migrations to load initial policies. You need to work with the GUI to define and store them. However to test locally against
 a database with policies you can load the same policies used in testing with the following command
 
-`mysql -u root pdp-server < ./src/test/resources/sql/policies.sql`
+`mysql -u root pdp-server < .pdp-server/src/test/resources/sql/policies.sql`
 
-# Testing
+### Testing
 
 There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](src/test/java/pdp/PdpApplicationTest.java)
 
@@ -46,7 +89,7 @@ Examples:
 
 `curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
 
-# Configuration and Deployment
+### Configuration and Deployment
 
 On its classpath, the application has an [application.properties](src/main/resources/application.properties) file that
 contains configuration defaults that are convenient when developing.
