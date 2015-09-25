@@ -60,25 +60,6 @@ public class PdpPolicyDefinitionParser {
     parseAttributes(policyXml, definition, denyRule, Decision.DENY);
   }
 
-  private void parseAttributes(String policyXml, PdpPolicyDefinition definition, Rule rule, Decision decision) {
-    List<AnyOf> anyOfs = iteratorToList(rule.getTarget().getAnyOfs());
-    if (CollectionUtils.isEmpty(anyOfs)) {
-      throw new RuntimeException("Expected at least 1 anyOf in the " + decision + " rule for " + decision + " policy " + policyXml);
-    }
-    List<AllOf> allOfs = anyOfs.stream().map(anyOf -> iteratorToList(anyOf.getAllOfs())).flatMap(allOf -> allOf.stream()).collect(toList());
-    if (CollectionUtils.isEmpty(allOfs)) {
-      throw new RuntimeException("Expected at least one allOf in the " + decision + " rule for " + decision + " policy " + policyXml);
-    }
-    List<Match> matches = allOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(m -> m.stream()).collect(toList());
-    List<PdpAttribute> pdpAttributes = matches.stream().map(match -> {
-      String attributeName = ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString();
-      String attributeValue = (String) match.getAttributeValue().getValue();
-      return new PdpAttribute(attributeName, attributeValue);
-    }).collect(toList());
-    definition.setAttributes(pdpAttributes);
-  }
-
-
   private void parsePermit(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
     if (definition.isDenyRule()) {
       return;
@@ -95,20 +76,38 @@ public class PdpPolicyDefinitionParser {
   private Rule getRule(String policyXml, List<Rule> rules, Decision decision) {
     Optional<Rule> permitRule = rules.stream().filter(rule -> rule.getRuleEffect().getDecision().equals(decision)).findFirst();
     if (!permitRule.isPresent()) {
-      throw new RuntimeException("No " + decision + " rule defined in the Policy " + policyXml);
+      throw new PdpParseException("No " + decision + " rule defined in the Policy " + policyXml);
     }
     return permitRule.get();
+  }
+
+  private void parseAttributes(String policyXml, PdpPolicyDefinition definition, Rule rule, Decision decision) {
+    List<AnyOf> anyOfs = iteratorToList(rule.getTarget().getAnyOfs());
+    if (CollectionUtils.isEmpty(anyOfs)) {
+      throw new PdpParseException("Expected at least 1 anyOf in the " + decision + " rule for " + decision + " policy " + policyXml);
+    }
+    List<AllOf> allOfs = anyOfs.stream().map(anyOf -> iteratorToList(anyOf.getAllOfs())).flatMap(allOf -> allOf.stream()).collect(toList());
+    if (CollectionUtils.isEmpty(allOfs)) {
+      throw new PdpParseException("Expected at least one allOf in the " + decision + " rule for " + decision + " policy " + policyXml);
+    }
+    List<Match> matches = allOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(m -> m.stream()).collect(toList());
+    List<PdpAttribute> pdpAttributes = matches.stream().map(match -> {
+      String attributeName = ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString();
+      String attributeValue = (String) match.getAttributeValue().getValue();
+      return new PdpAttribute(attributeName, attributeValue);
+    }).collect(toList());
+    definition.setAttributes(pdpAttributes);
   }
 
   private void parseTargets(String policyXml, PdpPolicyDefinition definition, Policy policy) {
     List<AnyOf> targetAnyOfs = iteratorToList(policy.getTarget().getAnyOfs());
     if (CollectionUtils.isEmpty(targetAnyOfs) || targetAnyOfs.size() > 2) {
-      throw new RuntimeException("Expected 2 and only two anyOf in the Target section " + policyXml);
+      throw new PdpParseException("Expected 2 and only two anyOf in the Target section " + policyXml);
     }
     targetAnyOfs.forEach(anyOf -> {
       List<AllOf> targetAllOfs = iteratorToList(anyOf.getAllOfs());
       if (CollectionUtils.isEmpty(targetAllOfs)) {
-        throw new RuntimeException("Expected at least 1 allOfs in the Target anyOf sections " + policyXml);
+        throw new PdpParseException("Expected at least 1 allOfs in the Target anyOf sections " + policyXml);
       }
       List<Match> targetMatches = targetAllOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(Collection::stream).collect(toList());
       Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
@@ -122,20 +121,20 @@ public class PdpPolicyDefinitionParser {
     });
 
     if (definition.getServiceProviderId() == null) {
-      throw new RuntimeException("SPentityID is required " + policyXml);
+      throw new PdpParseException("SPentityID is required " + policyXml);
     }
   }
 
   private void parseAdviceExpression(String policyXml, PdpPolicyDefinition definition, Rule denyRule) {
     List<AdviceExpression> adviceExpressions = iteratorToList(denyRule.getAdviceExpressions());
     if (CollectionUtils.isEmpty(adviceExpressions) || adviceExpressions.size() > 1) {
-      throw new RuntimeException("Expected 1 and only one adviceExpressions in the Deny rule " + policyXml);
+      throw new PdpParseException("Expected 1 and only one adviceExpressions in the Deny rule " + policyXml);
     }
     AdviceExpression adviceExpression = adviceExpressions.get(0);
 
     List<AttributeAssignmentExpression> attributeAssignmentExpressions = iteratorToList(adviceExpression.getAttributeAssignmentExpressions());
     if (CollectionUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() > 1) {
-      throw new RuntimeException("Expected 1 and only one attributeAssignmentExpressions in the Deny rule " + policyXml);
+      throw new PdpParseException("Expected 1 and only one attributeAssignmentExpressions in the Deny rule " + policyXml);
     }
     String denyAttributeValue = (String) ((AttributeValueExpression) attributeAssignmentExpressions.get(0).getExpression()).getAttributeValue().getValue();
     definition.setDenyAdvice(denyAttributeValue);
