@@ -44,6 +44,7 @@ public class PdpPolicyDefinitionParser {
     parsePermit(policyXml, definition, rules);
     parseDeny(policyXml, definition, rules);
 
+    //we need to sort to get a consistent attribute list for testing - run-time it makes no difference
     Collections.sort(definition.getAttributes(), (a1, a2) -> a1.getName().compareTo(a2.getName()));
 
     return definition;
