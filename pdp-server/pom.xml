@@ -3,12 +3,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
- <parent>
-<groupId>org.openconext</groupId>
-    <artifactId>pdp</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <parent>
+        <groupId>org.openconext</groupId>
+        <artifactId>pdp</artifactId>
+        <version>0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
-  </parent>
+    </parent>
 
     <artifactId>pdp-server</artifactId>
     <packaging>jar</packaging>
@@ -117,6 +117,7 @@
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
             <version>2.0.2-beta</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -175,29 +176,29 @@
         </extensions>
     </build>
     <repositories>
-    <repository>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <id>openconext-snapshots</id>
-      <name>OpenConext public snapshot repository</name>
-      <url>https://build.surfconext.nl/repository/public/snapshots</url>
-    </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <id>openconext-releases</id>
-      <name>OpenConext public releases repository</name>
-      <url>https://build.surfconext.nl/repository/public/releases</url>
-    </repository>
-  </repositories>
+        <repository>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <id>openconext-snapshots</id>
+            <name>OpenConext public snapshot repository</name>
+            <url>https://build.surfconext.nl/repository/public/snapshots</url>
+        </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <id>openconext-releases</id>
+            <name>OpenConext public releases repository</name>
+            <url>https://build.surfconext.nl/repository/public/releases</url>
+        </repository>
+    </repositories>
 
 </project>

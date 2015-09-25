@@ -49,6 +49,7 @@ public class ServiceRegistry {
     if (names != null) {
       name = names.get(lang.toLowerCase());
       if (name == null) {
+        // try the other language
         name = names.get(lang.equalsIgnoreCase("nl") ? "en" : "nl");
       }
     }

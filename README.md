@@ -30,6 +30,7 @@ grant all on `pdp-server`.* to 'pdp-serverrw'@'localhost';
 This project uses Spring Boot and Maven. To run locally, type:
 
 `cd pdp-server`
+
 `mvn spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=dev"`
 
 When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](pdp-server/src/main/java/pdp/PdpApplication.java). Don't forget
@@ -42,10 +43,15 @@ The client is build with react.js and to get initially started:
 `cd pdp-gui`
 
 `brew install npm;`
+
 `gem install sass;`
+
 `gem install sass-globbing;`
+
 `gem install compass;`
+
 `npm install -g grunt-cli;`
+
 `npm install;`
 
 When new grunt dependencies are added:

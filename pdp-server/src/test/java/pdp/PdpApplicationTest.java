@@ -91,8 +91,10 @@ public class PdpApplicationTest {
   public void test_teams_pip_deny() throws Exception {
     doDecide("TeamAccess.Deny.json", Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
     String associatedAdviceId = "urn:unique:advice:reasonForDeny";
+    //test the repo
     List<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findByAssociatedAdviceId(associatedAdviceId);
     assertEquals(1, violations.size());
+    //test the repo for countBy
     Long count = pdpPolicyViolationRepository.countByAssociatedAdviceId(associatedAdviceId);
     assertEquals(1L, count.longValue());
   }

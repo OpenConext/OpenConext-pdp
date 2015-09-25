@@ -20,34 +20,34 @@
 
     <modules>
         <module>pdp-server</module>
-    <module>pdp-gui</module>
-  </modules>
+        <module>pdp-gui</module>
+    </modules>
 
- 
+
     <scm>
         <connection>scm:git:git@github.com:OpenConext/OpenConext-pdp.git</connection>
     </scm>
 
     <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-webdav</artifactId>
-        <version>1.0-beta-2</version>
-      </extension>
-    </extensions>
-  </build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-webdav</artifactId>
+                <version>1.0-beta-2</version>
+            </extension>
+        </extensions>
+    </build>
 
-  <distributionManagement>
-    <repository>
-      <id>openconext-releases</id>
-      <name>OpenConext public releases repository</name>
-      <url>dav:https://build.surfconext.nl/repository/public/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>openconext-snapshots</id>
-      <name>OpenConext public snapshot repository</name>
-      <url>dav:https://build.surfconext.nl/repository/public/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+    <distributionManagement>
+        <repository>
+            <id>openconext-releases</id>
+            <name>OpenConext public releases repository</name>
+            <url>dav:https://build.surfconext.nl/repository/public/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>openconext-snapshots</id>
+            <name>OpenConext public snapshot repository</name>
+            <url>dav:https://build.surfconext.nl/repository/public/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
