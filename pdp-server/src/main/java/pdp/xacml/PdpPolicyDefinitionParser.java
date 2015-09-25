@@ -70,16 +70,16 @@ public class PdpPolicyDefinitionParser {
   }
 
   private boolean isPermitRule(String policyXml, List<Rule> rules) {
-    Rule permitRule = getRule(policyXml, rules, Decision.PERMIT);
-    return permitRule.getTarget().getAnyOfs() != null;
+    Rule rule = getRule(policyXml, rules, Decision.PERMIT);
+    return rule.getTarget().getAnyOfs() != null;
   }
 
   private Rule getRule(String policyXml, List<Rule> rules, Decision decision) {
-    Optional<Rule> permitRule = rules.stream().filter(rule -> rule.getRuleEffect().getDecision().equals(decision)).findFirst();
-    if (!permitRule.isPresent()) {
+    Optional<Rule> rule = rules.stream().filter(r -> r.getRuleEffect().getDecision().equals(decision)).findFirst();
+    if (!rule.isPresent()) {
       throw new PdpParseException("No " + decision + " rule defined in the Policy " + policyXml);
     }
-    return permitRule.get();
+    return rule.get();
   }
 
   private void parseAttributes(String policyXml, PdpPolicyDefinition definition, Rule rule, Decision decision) {
