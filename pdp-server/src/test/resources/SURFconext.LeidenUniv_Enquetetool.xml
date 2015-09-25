@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:surfconext:xacml:policy:id:leiden_enquetetool"
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="http://axiomatics.com/alfa/identifier/SURFconext.LeidenUniv_Enquetetool"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
     <Description>Medewerkers van de lerarenopleiding in Leiden hebben toegang tot Enquetetool van Leiden.</Description>
@@ -11,28 +12,28 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">https://enquetetool.nl/LeidenUniv</AttributeValue>
-                    <AttributeDesignator 
-                        AttributeId="SPentityID"
-                        DataType="http://www.w3.org/2001/XMLSchema#string"
-                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                        MustBePresent="false"
-                    />
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://enquetetool.nl/LeidenUniv</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
                 </Match>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">LeidenUniv_IDP</AttributeValue>
-                    <AttributeDesignator 
-                        AttributeId="IDPentityID"
-                        DataType="http://www.w3.org/2001/XMLSchema#string"
-                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                        MustBePresent="false"
-                    />
+                            DataType="http://www.w3.org/2001/XMLSchema#string">LeidenUniv_IDP</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
                 </Match>
             </AllOf>
         </AnyOf>
     </Target>
-    <Rule 
+    <Rule
             Effect="Permit"
             RuleId="http://axiomatics.com/alfa/identifier/SURFconext.LeidenUniv_Enquetetool.permitAccess1">
         <Description />
@@ -41,9 +42,9 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">teacher</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding</AttributeValue>
                         <AttributeDesignator
-                                AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
+                                AttributeId="faculty"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"
@@ -51,29 +52,29 @@
                     </Match>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
-                        <AttributeDesignator 
-                            AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
-                            DataType="http://www.w3.org/2001/XMLSchema#string"
-                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                            MustBePresent="false"
-                        />
+                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
                     </Match>
                 </AllOf>
             </AnyOf>
         </Target>
     </Rule>
-    <Rule 
+    <Rule
             Effect="Deny"
             RuleId="http://axiomatics.com/alfa/identifier/SURFconext.LeidenUniv_Enquetetool.denyAccess">
         <Description />
         <Target />
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
-            AppliesTo="Deny">
+                                     AppliesTo="Deny">
                 <AttributeAssignmentExpression AttributeId="DenyMessage" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Enquetetool.</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Enquetetool.</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

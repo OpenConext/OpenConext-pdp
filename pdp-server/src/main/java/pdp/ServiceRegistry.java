@@ -22,12 +22,12 @@ public class ServiceRegistry {
   private ObjectMapper objectMapper = new ObjectMapper();
   private List<String> allowedLanguages = Arrays.asList("en","nl");
 
-  @RequestMapping(method = RequestMethod.GET, value = "/serviceProviders")
+  @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")
   public List<EntityMetaData> serviceProviders(@RequestParam(value = "lang", defaultValue = "en") String lang) {
     return parseEntities("saml20-sp-remote.json", lang);
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/identityProviders")
+  @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders")
   public List<EntityMetaData> identityProviders(@RequestParam(value = "lang", defaultValue = "en") String lang) {
     return parseEntities("saml20-idp-remote.json", lang);
   }

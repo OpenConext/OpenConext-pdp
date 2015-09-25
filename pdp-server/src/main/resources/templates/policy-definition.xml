@@ -20,10 +20,10 @@
                             MustBePresent="false"
                             />
                 </Match>
-                {{#identityProviderId}}
+                {{#identityProviderIds}}
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">{{identityProviderId}}</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -31,7 +31,7 @@
                             MustBePresent="false"
                             />
                 </Match>
-                {{/identityProviderId}}
+                {{/identityProviderIds}}
             </AllOf>
         </AnyOf>
     </Target>

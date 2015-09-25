@@ -41,7 +41,7 @@ public class PdpApplicationTest {
   @Value("${local.server.port}")
   protected int port;
   private MultiValueMap<String, String> headers;
-  protected TestRestTemplate client = new TestRestTemplate("pdp_admin", "secret");
+  protected TestRestTemplate client = new TestRestTemplate("pdp-admin", "secret");
 
   @Before
   public void before() throws IOException {
@@ -110,7 +110,7 @@ public class PdpApplicationTest {
   }
 
   private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {
-    final String url = "http://localhost:" + port + "/pdp/api/decide";
+    final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
     String jsonRequest = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
     HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
     String jsonResponse = client.postForObject(url, request, String.class);

@@ -6,21 +6,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import pdp.repositories.PdpPolicyRepository;
-import pdp.xacml.PDPEngineHolder;
+import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
+import pdp.shibboleth.ShibbolethUserDetailService;
+import pdp.shibboleth.mock.MockShibbolethFilter;
 import pdp.teams.VootClient;
+import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
-import java.util.Locale;
+import java.util.Arrays;
 
 @SpringBootApplication()
 public class PdpApplication {
@@ -48,7 +63,71 @@ public class PdpApplication {
   }
 
   @Configuration
-  public static class WebMvcConfig extends WebMvcConfigurerAdapter {
+  @EnableWebSecurity
+  public static class ShibbolethSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Value("${policy.enforcement.point.user.name}")
+    private String policyEnforcementPointUserName;
+
+    @Value("${policy.enforcement.point.user.password}")
+    private String policyEnforcementPointPassword;
+
+    @Bean
+    @Profile("dev")
+    public FilterRegistrationBean mockShibbolethFilter() {
+      FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+      filterRegistrationBean.setFilter(new MockShibbolethFilter());
+      filterRegistrationBean.addUrlPatterns("/*");
+      return filterRegistrationBean;
+    }
+
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+      web
+          .ignoring()
+          .antMatchers("/health");
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+      http
+          .csrf()
+          .disable()
+          .addFilterBefore(
+              new BasicAuthenticationFilter(getBasicAuthenticationManager()), AbstractPreAuthenticatedProcessingFilter.class
+          )
+          .authorizeRequests()
+          .antMatchers("/decide/**")
+          .authenticated()
+          .and()
+          .addFilterAfter(
+              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean()),
+              BasicAuthenticationFilter.class
+          )
+          .authorizeRequests()
+          .antMatchers("/internal/**")
+          .authenticated()
+          .and()
+          .sessionManagement()
+          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+
+    private AuthenticationManager getBasicAuthenticationManager() {
+      return authentication -> {
+        if (authentication.getPrincipal().equals(policyEnforcementPointUserName)
+            && authentication.getCredentials().equals(policyEnforcementPointPassword)) {
+          return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("PEP")));
+        }
+        return null;
+      };
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+      PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
+      authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
+      auth.authenticationProvider(authenticationProvider);
+    }
   }
 
   @Configuration

@@ -7,14 +7,12 @@ import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.ByteArrayInputStream;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.Spliterator.ORDERED;
@@ -36,7 +34,7 @@ public class PdpPolicyDefintion {
   @Size(min = 1)
   private String serviceProviderId;
 
-  private String identityProviderId;
+  private List<String> identityProviderIds = new ArrayList<>();
 
   @Valid
   private List<PdpAttribute> attributes = new ArrayList<>();
@@ -68,8 +66,8 @@ public class PdpPolicyDefintion {
       throw new RuntimeException("Expected 1 and only one allOfs in the Target anyOf section "+ policyXml);
     }
     List<Match> targetMatches = iteratorToList(targetAllOfs.get(0).getMatches());
-    if (CollectionUtils.isEmpty(targetMatches) || targetMatches.size() > 2) {
-      throw new RuntimeException("Only 1 or 2 matches allowed in the Target anyOf section "+ policyXml);
+    if (CollectionUtils.isEmpty(targetMatches)) {
+      throw new RuntimeException("Expected a minimal of 1 matches in the Target anyOf section "+ policyXml);
     }
     Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase("SPentityID")).findFirst();
     if (!spEntityID.isPresent()) {
@@ -77,9 +75,11 @@ public class PdpPolicyDefintion {
     }
     this.setServiceProviderId((String) spEntityID.get().getAttributeValue().getValue());
 
-    Optional<Match> idpEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase("IDPentityID")).findFirst();
-    if (idpEntityID.isPresent()) {
-      this.setIdentityProviderId((String) idpEntityID.get().getAttributeValue().getValue());
+    List<String> idpEntityIDs = targetMatches.stream().filter(match ->
+        ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase("IDPentityID"))
+        .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());
+    if (!CollectionUtils.isEmpty(idpEntityIDs)) {
+      this.setIdentityProviderIds(idpEntityIDs);
     }
 
     List<Rule> rules = iteratorToList(policy.getRules());
@@ -150,12 +150,12 @@ public class PdpPolicyDefintion {
     this.serviceProviderId = serviceProviderId;
   }
 
-  public String getIdentityProviderId() {
-    return identityProviderId;
+  public List<String> getIdentityProviderIds() {
+    return identityProviderIds;
   }
 
-  public void setIdentityProviderId(String identityProviderId) {
-    this.identityProviderId = identityProviderId;
+  public void setIdentityProviderIds(List<String> identityProviderIds) {
+    this.identityProviderIds = identityProviderIds;
   }
 
   public List<PdpAttribute> getAttributes() {
@@ -190,14 +190,14 @@ public class PdpPolicyDefintion {
     return Objects.equals(name, defintion.name) &&
         Objects.equals(description, defintion.description) &&
         Objects.equals(serviceProviderId, defintion.serviceProviderId) &&
-        Objects.equals(identityProviderId, defintion.identityProviderId) &&
+        Objects.equals(identityProviderIds, defintion.identityProviderIds) &&
         Objects.equals(attributes, defintion.attributes) &&
         Objects.equals(denyAdvice, defintion.denyAdvice);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, description, serviceProviderId, identityProviderId, attributes, denyAdvice);
+    return Objects.hash(name, description, serviceProviderId, identityProviderIds, attributes, denyAdvice);
   }
 
   @Override
@@ -206,7 +206,7 @@ public class PdpPolicyDefintion {
         "name='" + name + '\'' +
         ", description='" + description + '\'' +
         ", serviceProviderId='" + serviceProviderId + '\'' +
-        ", identityProviderId='" + identityProviderId + '\'' +
+        ", identityProviderIds='" + identityProviderIds + '\'' +
         ", attributes=" + attributes +
         ", denyAdvice='" + denyAdvice + '\'' +
         '}';

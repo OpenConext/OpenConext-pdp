@@ -97,15 +97,15 @@ One can also use cUrl to test against a running Spring application but you will 
 
 Start the server and go the directory src/test/resources. Use the following command to test the permit decision:
 
-`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
+`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
 
 The directory src/test/resources contains additional test JSON inputs. To test against the test2 environment change the endpoint to `https://pdp.test2.surfconext.nl/decide`. 
 
 Examples:
 
-`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/TeamAccess.Permit.json https://pdp.test2.surfconext.nl/decide`
+`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/TeamAccess.Permit.json https://pdp.test2.surfconext.nl/decide`
 
-`curl -i --user pdp_admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
+`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
 
 ### Configuration and Deployment
 

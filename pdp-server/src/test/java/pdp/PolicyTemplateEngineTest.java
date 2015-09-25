@@ -21,7 +21,7 @@ public class PolicyTemplateEngineTest {
     defintion.setDescription("The long description");
     defintion.setDenyAdvice("Sorry, no access");
     defintion.setAttributes(Arrays.asList(new PdpAttribute("attr1", "value1"), new PdpAttribute("attr2", "value2")));
-    defintion.setIdentityProviderId("http://mock-idp");
+    defintion.setIdentityProviderIds(Arrays.asList("http://mock-idp"));
     defintion.setServiceProviderId("http://mock-sp");
 
   }

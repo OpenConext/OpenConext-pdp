@@ -31,9 +31,9 @@ public class PdpPolicyDefintionTest {
     assertEquals(policyName, defintion.getName());
     assertEquals("Medewerkers van de lerarenopleiding in Leiden hebben toegang tot Enquetetool van Leiden.", defintion.getDescription());
     assertEquals("https://enquetetool.nl/LeidenUniv",defintion.getServiceProviderId());
-    assertEquals("LeidenUniv_IDP", defintion.getIdentityProviderId());
+    assertEquals(Arrays.asList("LeidenUniv_IDP"), defintion.getIdentityProviderIds());
     assertEquals("You are not authorized to access Enquetetool.", defintion.getDenyAdvice());
-    List<PdpAttribute> attributesExpected = Arrays.asList(new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "teacher"), new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "employee"));
+    List<PdpAttribute> attributesExpected = Arrays.asList(new PdpAttribute("faculty", "lerarenopleiding"), new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "employee"));
     assertEquals(attributesExpected, defintion.getAttributes());
   }
 

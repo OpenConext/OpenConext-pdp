@@ -68,7 +68,7 @@ public class PdpController {
     executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
   }
 
-  @RequestMapping(method = RequestMethod.POST, value = "/decide")
+  @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
   public String decide(@RequestBody String payload) throws Exception {
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
@@ -88,13 +88,13 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/policies")
+  @RequestMapping(method = RequestMethod.GET, value = "/internal/policies")
   public List<PdpPolicyDefintion> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefintion(policy.getName(), policy.getPolicyXml())).collect(toList());
   }
 
-  @RequestMapping(method = POST, value = "policies")
+  @RequestMapping(method = POST, value = "/internal/policies")
   public List<PdpPolicyDefintion> post(@RequestBody @Valid PdpPolicyDefintion policyDefintion) throws DOMStructureException {
     String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
     try {
