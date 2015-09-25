@@ -3,13 +3,10 @@ package pdp;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import org.apache.openaz.xacml.pdp.policy.PolicyDef;
-import pdp.domain.PdpAttribute;
-import pdp.domain.PdpPolicyDefintion;
+import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Arrays;
 
 public class PolicyTemplateEngine {
 
@@ -21,7 +18,7 @@ public class PolicyTemplateEngine {
     mf = new DefaultMustacheFactory();
   }
 
-  public String createPolicyXml(PdpPolicyDefintion pdpPolicyDefintion) {
+  public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
     Mustache mustache = mf.compile("templates/policy-definition.xml");
     StringWriter writer = new StringWriter();
     try {

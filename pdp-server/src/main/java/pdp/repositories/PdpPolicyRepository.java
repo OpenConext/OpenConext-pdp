@@ -4,7 +4,10 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import pdp.domain.PdpPolicy;
 
+import java.util.List;
+
 public interface PdpPolicyRepository extends CrudRepository<PdpPolicy, Long> {
 
-  Long countByName(@Param("name") String name);
+  List<PdpPolicy> findByName(@Param("name") String name);
+
 }

@@ -10,6 +10,7 @@ import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -32,6 +33,7 @@ import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import pdp.shibboleth.ShibbolethUserDetailService;
 import pdp.shibboleth.mock.MockShibbolethFilter;
 import pdp.teams.VootClient;
+import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
@@ -51,6 +53,7 @@ public class PdpApplication {
   @Autowired
   public PDPEngineHolder pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+      final Environment environment,
       final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
   ) throws IOException, FactoryException {
     Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
@@ -58,6 +61,10 @@ public class PdpApplication {
 
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
+
+    if (environment.acceptsProfiles("dev")) {
+      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository);
+    }
 
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
   }

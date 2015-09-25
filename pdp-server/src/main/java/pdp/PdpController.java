@@ -15,18 +15,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.LocaleResolver;
 import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefintion;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PDPEngineHolder;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -89,13 +85,13 @@ public class PdpController {
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/internal/policies")
-  public List<PdpPolicyDefintion> policyDefinitions() throws DOMStructureException {
+  public List<PdpPolicyDefinition> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefintion(policy.getName(), policy.getPolicyXml())).collect(toList());
+    return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefinitionParser().parse(policy.getName(), policy.getPolicyXml())).collect(toList());
   }
 
   @RequestMapping(method = POST, value = "/internal/policies")
-  public List<PdpPolicyDefintion> post(@RequestBody @Valid PdpPolicyDefintion policyDefintion) throws DOMStructureException {
+  public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion) throws DOMStructureException {
     String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
     try {
       pdpPolicyRepository.save(new PdpPolicy(policyXml, policyDefintion.getName()));

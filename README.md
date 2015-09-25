@@ -84,10 +84,11 @@ of the cyclic dependencies in the hierarchy (and not desirable because of the co
 
 ### Local database content
 
-We don't provide flyway migrations to load initial policies. You need to work with the GUI to define and store them. However to test locally against
-a database with policies you can load the same policies used in testing with the following command
+We don't provide flyway migrations to load initial policies. 
 
-`mysql -u root pdp-server < .pdp-server/src/test/resources/sql/policies.sql`
+However if you start up the application with the spring.profiles.active=dev then all the policies
+in the folder `` ara added to the database. Do note that any any policy with the name of one of the policy files
+is overwritten.
 
 ### Testing
 
