@@ -25,12 +25,13 @@ public class PolicyTemplateEngineTest {
     definition.setAttributes(Arrays.asList(new PdpAttribute("attr1", "value1"), new PdpAttribute("attr2", "value2")));
     definition.setIdentityProviderIds(Arrays.asList("http://mock-idp"));
     definition.setServiceProviderId("http://mock-sp");
-
+    definition.setDenyRule(true);
   }
 
   @Test
   public void testTemplate() throws Exception {
     String policyXml = engine.createPolicyXml(definition);
+    System.out.println(policyXml);
     PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getName(), policyXml);
     assertEquals(fromPolicyXml, definition);
   }
