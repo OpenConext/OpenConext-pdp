@@ -10,13 +10,9 @@ import java.io.StringWriter;
 
 public class PolicyTemplateEngine {
 
-  private MustacheFactory mf;
+  private MustacheFactory mf = new DefaultMustacheFactory();
 
   public static final String adviceIdPrefix = "urn:surfconext:xacml:advice:id:";
-
-  public PolicyTemplateEngine() {
-    mf = new DefaultMustacheFactory();
-  }
 
   public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
     Mustache mustache = mf.compile("templates/policy-definition.xml");
