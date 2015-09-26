@@ -23,7 +23,7 @@ public class PolicyTemplateEngineTest {
     definition.setDescription("The long description");
     definition.setDenyAdvice("Sorry, no access");
     definition.setAttributes(Arrays.asList(new PdpAttribute("attr1", "value1"), new PdpAttribute("attr2", "value2")));
-    definition.setIdentityProviderIds(Arrays.asList("http://mock-idp"));
+    definition.setIdentityProviderIds(Arrays.asList("http://mock-idp", "http://mock-ipd2"));
     definition.setServiceProviderId("http://mock-sp");
     definition.setDenyRule(true);
   }
@@ -31,7 +31,6 @@ public class PolicyTemplateEngineTest {
   @Test
   public void testTemplate() throws Exception {
     String policyXml = engine.createPolicyXml(definition);
-    System.out.println(policyXml);
     PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getName(), policyXml);
     assertEquals(fromPolicyXml, definition);
   }
