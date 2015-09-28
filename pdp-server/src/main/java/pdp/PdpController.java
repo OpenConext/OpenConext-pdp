@@ -5,6 +5,8 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
+import org.apache.openaz.xacml.pdp.policy.PolicyDef;
+import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -29,6 +31,7 @@ import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import javax.validation.Valid;
+import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -47,100 +50,105 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping(produces = {"application/json"})
 public class PdpController {
 
-    private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
-    private final PDPEngineHolder pdpEngineHolder;
-    private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
-    private final PdpPolicyRepository pdpPolicyRepository;
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
-    private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
+  private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
+  private final PDPEngineHolder pdpEngineHolder;
+  private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
+  private final PdpPolicyRepository pdpPolicyRepository;
+  private final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
+  private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
 
-    private PDPEngine pdpEngine;
+  private PDPEngine pdpEngine;
 
-    @Autowired
-    public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
-                         @Value("${period.policies.refresh.minutes}") int period,
-                         PdpPolicyViolationRepository pdpPolicyViolationRepository,
-                         PdpPolicyRepository pdpPolicyRepository,
-                         PDPEngineHolder pdpEngineHolder) {
-        this.pdpEngineHolder = pdpEngineHolder;
-        this.pdpEngine = pdpEngineHolder.newPdpEngine();
-        this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
-        this.pdpPolicyRepository = pdpPolicyRepository;
+  @Autowired
+  public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
+                       @Value("${period.policies.refresh.minutes}") int period,
+                       PdpPolicyViolationRepository pdpPolicyViolationRepository,
+                       PdpPolicyRepository pdpPolicyRepository,
+                       PDPEngineHolder pdpEngineHolder) {
+    this.pdpEngineHolder = pdpEngineHolder;
+    this.pdpEngine = pdpEngineHolder.newPdpEngine();
+    this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
+    this.pdpPolicyRepository = pdpPolicyRepository;
 
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        Runnable task = () -> this.refreshPolicies();
-        executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
+    ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    Runnable task = () -> this.refreshPolicies();
+    executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
+  }
+
+  @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
+  public String decide(@RequestBody String payload) throws Exception {
+    long start = System.currentTimeMillis();
+    LOG.debug("decide request: {}", payload);
+
+    Request pdpRequest = JSONRequest.load(payload);
+
+    Response pdpResponse;
+    try {
+      lock.readLock().lock();
+      pdpResponse = pdpEngine.decide(pdpRequest);
+    } finally {
+      lock.readLock().unlock();
     }
+    String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
+    LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
 
-    @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
-    public String decide(@RequestBody String payload) throws Exception {
-        long start = System.currentTimeMillis();
-        LOG.debug("decide request: {}", payload);
+    reportPolicyViolation(pdpResponse, payload);
+    return response;
+  }
 
-        Request pdpRequest = JSONRequest.load(payload);
+  @RequestMapping(method = GET, value = "/internal/policies")
+  public List<PdpPolicyDefinition> policyDefinitions() throws DOMStructureException {
+    Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
+    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> pdpPolicyDefinitionParser.parse(policy.getName(), policy.getPolicyXml())).collect(toList());
+    return policies;
+  }
 
-        Response pdpResponse;
-        try {
-            lock.readLock().lock();
-            pdpResponse = pdpEngine.decide(pdpRequest);
-        } finally {
-            lock.readLock().unlock();
-        }
-        String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
-        LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
-
-        reportPolicyViolation(pdpResponse, payload);
-        return response;
+  @RequestMapping(method = POST, value = "/internal/policies")
+  public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion)  {
+    String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
+    try {
+      DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+      pdpPolicyRepository.save(new PdpPolicy(policyXml, policyDefintion.getName()));
+      return policyDefinitions();
+    } catch (DOMStructureException e) {
+      throw new PdpPolicyException("policyXml", e.getMessage());
+    } catch (DataIntegrityViolationException e) {
+      if (e.getMessage().contains("pdp_policy_name_unique")) {
+        throw new PdpPolicyException("name", "Policy name must be unique. " + policyDefintion.getName() + " is already taken");
+      } else {
+        throw e;
+      }
     }
+  }
 
-    @RequestMapping(method = GET, value = "/internal/policies")
-    public List<PdpPolicyDefinition> policyDefinitions() throws DOMStructureException {
-        Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-        return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefinitionParser().parse(policy.getName(), policy.getPolicyXml())).collect(toList());
-    }
+  @RequestMapping(method = GET, value = "internal/users/me")
+  public Object user() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication;
+  }
 
-    @RequestMapping(method = POST, value = "/internal/policies")
-    public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion) throws DOMStructureException {
-        String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
-        try {
-            pdpPolicyRepository.save(new PdpPolicy(policyXml, policyDefintion.getName()));
-        } catch (DataIntegrityViolationException e) {
-            if (e.getMessage().contains("pdp_policy_name_unique")) {
-                throw new PdpPolicyException("name", "Policy name must be unique. " + policyDefintion.getName() + " is already taken");
-            } else {
-                throw e;
-            }
-        }
-        return policyDefinitions();
+  private void reportPolicyViolation(Response pdpResponse, String payload) {
+    Collection<Result> results = pdpResponse.getResults();
+    List<Result> denies = results.stream().filter(result -> result.getDecision().equals(DENY)).collect(toList());
+    if (!CollectionUtils.isEmpty(denies)) {
+      Collection<Advice> associatedAdvices = denies.get(0).getAssociatedAdvice();
+      String associatedAdviceId = CollectionUtils.isEmpty(associatedAdvices) ?
+          "No associated advice present on Policy. Please check all policies and repair those without Deny advice" : associatedAdvices.iterator().next().getId().stringValue();
+      pdpPolicyViolationRepository.save(new PdpPolicyViolation(associatedAdviceId, payload));
     }
+  }
 
-    @RequestMapping(method = GET, value = "internal/users/me")
-    public Object user() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication;
+  private void refreshPolicies() {
+    LOG.info("Starting reloading policies");
+    long start = System.currentTimeMillis();
+    lock.writeLock().lock();
+    try {
+      this.pdpEngine = pdpEngineHolder.newPdpEngine();
+    } finally {
+      lock.writeLock().unlock();
     }
-
-    private void reportPolicyViolation(Response pdpResponse, String payload) {
-        Collection<Result> results = pdpResponse.getResults();
-        List<Result> denies = results.stream().filter(result -> result.getDecision().equals(DENY)).collect(toList());
-        if (!CollectionUtils.isEmpty(denies)) {
-            Collection<Advice> associatedAdvices = denies.get(0).getAssociatedAdvice();
-            String associatedAdviceId = CollectionUtils.isEmpty(associatedAdvices) ?
-                    "No associated advice present on Policy. Please check all policies and repair those without Deny advice" : associatedAdvices.iterator().next().getId().stringValue();
-            pdpPolicyViolationRepository.save(new PdpPolicyViolation(associatedAdviceId, payload));
-        }
-    }
-
-    private void refreshPolicies() {
-        LOG.info("Starting reloading policies");
-        long start = System.currentTimeMillis();
-        lock.writeLock().lock();
-        try {
-            this.pdpEngine = pdpEngineHolder.newPdpEngine();
-        } finally {
-            lock.writeLock().unlock();
-        }
-        LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
-    }
+    LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
+  }
 
 }
