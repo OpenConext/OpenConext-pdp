@@ -10,18 +10,18 @@ import java.io.StringWriter;
 
 public class PolicyTemplateEngine {
 
-  private MustacheFactory mf = new DefaultMustacheFactory();
+    private MustacheFactory mf = new DefaultMustacheFactory();
 
-  public static final String adviceIdPrefix = "urn:surfconext:xacml:advice:id:";
+    public static final String adviceIdPrefix = "urn:surfconext:xacml:advice:id:";
 
-  public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
-    Mustache mustache = mf.compile("templates/policy-definition.xml");
-    StringWriter writer = new StringWriter();
-    try {
-      mustache.execute(writer, pdpPolicyDefintion).flush();
-      return writer.toString();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
+        Mustache mustache = mf.compile("templates/policy-definition.xml");
+        StringWriter writer = new StringWriter();
+        try {
+            mustache.execute(writer, pdpPolicyDefintion).flush();
+            return writer.toString();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

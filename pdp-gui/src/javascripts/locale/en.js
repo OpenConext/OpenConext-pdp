@@ -20,7 +20,7 @@ I18n.translations.en = {
   },
 
   header: {
-    title: "Dashboard",
+    title: "Policy Administration Point",
     welcome: "Welcome,",
     links: {
       help_html: "<a href=\"https://wiki.surfnet.nl/display/conextsupport/Dashboard+van+SURFconext+%28EN%29\" target=\"_blank\">Help</a>",
@@ -38,6 +38,12 @@ I18n.translations.en = {
     history: "History",
     stats: "Statistics",
     my_idp: "My institute"
+  },
+
+  policies: {
+    name: "Name",
+    description: "Description",
+    serviceProviderId: "Service Provider"
   },
 
   facets: {

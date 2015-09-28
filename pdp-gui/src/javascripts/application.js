@@ -1,4 +1,3 @@
-var BASE_URL = "/dashboard/api";
-var STATS_HOST = "stats.surfconext.nl";
+var BASE_URL = "/pdp/api";
 
 App.initialize();

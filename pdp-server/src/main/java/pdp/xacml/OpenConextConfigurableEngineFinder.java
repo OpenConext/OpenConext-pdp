@@ -7,17 +7,17 @@ import pdp.teams.VootClientAware;
 
 public class OpenConextConfigurableEngineFinder extends ConfigurableEngineFinder {
 
-  private final VootClient vootClient;
+    private final VootClient vootClient;
 
-  public OpenConextConfigurableEngineFinder(VootClient vootClient) {
-    this.vootClient = vootClient;
-  }
-
-  @Override
-  public void register(PIPEngine pipEngine) {
-    if (pipEngine instanceof VootClientAware) {
-      ((VootClientAware) pipEngine).setVootClient(this.vootClient);
+    public OpenConextConfigurableEngineFinder(VootClient vootClient) {
+        this.vootClient = vootClient;
     }
-    super.register(pipEngine);
-  }
+
+    @Override
+    public void register(PIPEngine pipEngine) {
+        if (pipEngine instanceof VootClientAware) {
+            ((VootClientAware) pipEngine).setVootClient(this.vootClient);
+        }
+        super.register(pipEngine);
+    }
 }

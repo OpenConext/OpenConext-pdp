@@ -42,111 +42,111 @@ import java.util.Arrays;
 @SpringBootApplication()
 public class PdpApplication {
 
-  @Autowired
-  private ResourceLoader resourceLoader;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
-  public static void main(String[] args) {
-    SpringApplication.run(PdpApplication.class, args);
-  }
-
-  @Bean
-  @Autowired
-  public PDPEngineHolder pdpEngine(
-      @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
-      final Environment environment,
-      final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
-  ) throws IOException, FactoryException {
-    Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
-    String absolutePath = resource.getFile().getAbsolutePath();
-
-    //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
-    System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
-
-    if (environment.acceptsProfiles("dev")) {
-      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository, true);
+    public static void main(String[] args) {
+        SpringApplication.run(PdpApplication.class, args);
     }
-
-    return new PDPEngineHolder(pdpPolicyRepository, vootClient);
-  }
-
-  @Configuration
-  @EnableWebSecurity
-  public static class ShibbolethSecurityConfig extends WebSecurityConfigurerAdapter {
-
-    @Value("${policy.enforcement.point.user.name}")
-    private String policyEnforcementPointUserName;
-
-    @Value("${policy.enforcement.point.user.password}")
-    private String policyEnforcementPointPassword;
 
     @Bean
-    @Profile("dev")
-    public FilterRegistrationBean mockShibbolethFilter() {
-      FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-      filterRegistrationBean.setFilter(new MockShibbolethFilter());
-      filterRegistrationBean.addUrlPatterns("/*");
-      return filterRegistrationBean;
-    }
+    @Autowired
+    public PDPEngineHolder pdpEngine(
+            @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+            final Environment environment,
+            final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
+    ) throws IOException, FactoryException {
+        Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
+        String absolutePath = resource.getFile().getAbsolutePath();
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-      web
-          .ignoring()
-          .antMatchers("/health", "/info");
-    }
+        //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
+        System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-          .csrf()
-          .disable()
-          .addFilterBefore(
-              new BasicAuthenticationFilter(getBasicAuthenticationManager()), AbstractPreAuthenticatedProcessingFilter.class
-          )
-          .authorizeRequests()
-          .antMatchers("/decide/**")
-          .authenticated()
-          .and()
-          .addFilterAfter(
-              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean()),
-              BasicAuthenticationFilter.class
-          )
-          .authorizeRequests()
-          .antMatchers("/internal/**")
-          .authenticated()
-          .and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
-
-    private AuthenticationManager getBasicAuthenticationManager() {
-      return authentication -> {
-        if (authentication.getPrincipal().equals(policyEnforcementPointUserName)
-            && authentication.getCredentials().equals(policyEnforcementPointPassword)) {
-          return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("PEP")));
+        if (environment.acceptsProfiles("dev")) {
+            new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository, true);
         }
-        return null;
-      };
+
+        return new PDPEngineHolder(pdpPolicyRepository, vootClient);
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-      PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-      authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
-      auth.authenticationProvider(authenticationProvider);
-    }
-  }
+    @Configuration
+    @EnableWebSecurity
+    public static class ShibbolethSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Configuration
-  public static class RestMvcConfiguration extends RepositoryRestMvcConfiguration {
+        @Value("${policy.enforcement.point.user.name}")
+        private String policyEnforcementPointUserName;
 
-    @Override
-    public RepositoryRestConfiguration config() {
-      RepositoryRestConfiguration config = super.config();
-      config.setDefaultMediaType(MediaType.APPLICATION_JSON);
-      config.setReturnBodyOnCreate(true);
-      return config;
+        @Value("${policy.enforcement.point.user.password}")
+        private String policyEnforcementPointPassword;
+
+        @Bean
+        @Profile("dev")
+        public FilterRegistrationBean mockShibbolethFilter() {
+            FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+            filterRegistrationBean.setFilter(new MockShibbolethFilter());
+            filterRegistrationBean.addUrlPatterns("/*");
+            return filterRegistrationBean;
+        }
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                    .ignoring()
+                    .antMatchers("/health", "/info");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                    .csrf()
+                    .disable()
+                    .addFilterBefore(
+                            new BasicAuthenticationFilter(getBasicAuthenticationManager()), AbstractPreAuthenticatedProcessingFilter.class
+                    )
+                    .authorizeRequests()
+                    .antMatchers("/decide/**")
+                    .authenticated()
+                    .and()
+                    .addFilterAfter(
+                            new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean()),
+                            BasicAuthenticationFilter.class
+                    )
+                    .authorizeRequests()
+                    .antMatchers("/internal/**")
+                    .authenticated()
+                    .and()
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        }
+
+        private AuthenticationManager getBasicAuthenticationManager() {
+            return authentication -> {
+                if (authentication.getPrincipal().equals(policyEnforcementPointUserName)
+                        && authentication.getCredentials().equals(policyEnforcementPointPassword)) {
+                    return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("PEP")));
+                }
+                return null;
+            };
+        }
+
+        @Override
+        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+            PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
+            authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
+            auth.authenticationProvider(authenticationProvider);
+        }
     }
-  }
+
+    @Configuration
+    public static class RestMvcConfiguration extends RepositoryRestMvcConfiguration {
+
+        @Override
+        public RepositoryRestConfiguration config() {
+            RepositoryRestConfiguration config = super.config();
+            config.setDefaultMediaType(MediaType.APPLICATION_JSON);
+            config.setReturnBodyOnCreate(true);
+            return config;
+        }
+    }
 
 }

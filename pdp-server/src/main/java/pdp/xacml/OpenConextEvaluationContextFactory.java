@@ -25,57 +25,57 @@ import static java.util.stream.StreamSupport.stream;
 
 public class OpenConextEvaluationContextFactory extends StdEvaluationContextFactory {
 
-  private static Logger LOG = LoggerFactory.getLogger(OpenConextEvaluationContextFactory.class);
+    private static Logger LOG = LoggerFactory.getLogger(OpenConextEvaluationContextFactory.class);
 
-  private PdpPolicyRepository pdpPolicyRepository;
-  private boolean cachePolicies;
+    private PdpPolicyRepository pdpPolicyRepository;
+    private boolean cachePolicies;
 
-  public OpenConextEvaluationContextFactory() throws IOException {
-    this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
-  }
-
-  public void setPdpPolicyRepository(PdpPolicyRepository pdpPolicyRepository) {
-    this.pdpPolicyRepository = pdpPolicyRepository;
-    setPolicyFinder(loadPolicyFinder());
-  }
-
-  @Override
-  protected PolicyFinder getPolicyFinder() {
-    if (cachePolicies) {
-      return super.getPolicyFinder();
-    } else {
-      return loadPolicyFinder();
+    public OpenConextEvaluationContextFactory() throws IOException {
+        this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
     }
-  }
 
-  private PolicyFinder loadPolicyFinder() {
-    Collection<PolicyDef> rootPolicies =
-        stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> convertToPolicyDef(policy.getPolicyXml())).collect(toCollection(ArrayList::new));
-    LOG.info("(Re)-loaded {} policies from the database", rootPolicies.size());
-    return new StdPolicyFinder(rootPolicies, null);
-  }
-
-
-  private PolicyDef convertToPolicyDef(String policyXml) {
-    try {
-      return DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
-    } catch (DOMStructureException e) {
-      LOG.error("Error loading policy from " + policyXml, e);
-      return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
+    public void setPdpPolicyRepository(PdpPolicyRepository pdpPolicyRepository) {
+        this.pdpPolicyRepository = pdpPolicyRepository;
+        setPolicyFinder(loadPolicyFinder());
     }
-  }
 
-  public void setVootClient(VootClient vootClient) {
-    setPIPFinder(loadPIPFinder(vootClient));
-  }
-
-  private PIPFinder loadPIPFinder(VootClient vootClient) {
-    OpenConextConfigurableEngineFinder pipFinder = new OpenConextConfigurableEngineFinder(vootClient);
-    try {
-      pipFinder.configure(XACMLProperties.getProperties());
-      return pipFinder;
-    } catch (Exception ex) {
-      throw new RuntimeException(ex);
+    @Override
+    protected PolicyFinder getPolicyFinder() {
+        if (cachePolicies) {
+            return super.getPolicyFinder();
+        } else {
+            return loadPolicyFinder();
+        }
     }
-  }
+
+    private PolicyFinder loadPolicyFinder() {
+        Collection<PolicyDef> rootPolicies =
+                stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> convertToPolicyDef(policy.getPolicyXml())).collect(toCollection(ArrayList::new));
+        LOG.info("(Re)-loaded {} policies from the database", rootPolicies.size());
+        return new StdPolicyFinder(rootPolicies, null);
+    }
+
+
+    private PolicyDef convertToPolicyDef(String policyXml) {
+        try {
+            return DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+        } catch (DOMStructureException e) {
+            LOG.error("Error loading policy from " + policyXml, e);
+            return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
+        }
+    }
+
+    public void setVootClient(VootClient vootClient) {
+        setPIPFinder(loadPIPFinder(vootClient));
+    }
+
+    private PIPFinder loadPIPFinder(VootClient vootClient) {
+        OpenConextConfigurableEngineFinder pipFinder = new OpenConextConfigurableEngineFinder(vootClient);
+        try {
+            pipFinder.configure(XACMLProperties.getProperties());
+            return pipFinder;
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
 }

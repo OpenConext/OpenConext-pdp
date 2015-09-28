@@ -13,21 +13,17 @@ var App = {
     $(document).ajaxError(this.ajaxError.bind(this));
     $(document).ajaxStart(this.showSpinner.bind(this));
     $(document).ajaxStop(this.hideSpinner.bind(this));
-    $(document).ajaxComplete(this.checkSessionExpired.bind(this));
+
+    $(document).ajaxSend(function (event, jqxhr, settings) {
+      jqxhr.setRequestHeader("Content-Type", "application/json");
+    }.bind(this));
+
+    $.ajaxSetup({
+      contentType: "application/json"
+    });
 
     this.fetchUserData(function (user) {
       this.currentUser = user;
-
-      this.currentUser.statsToken = this.fetchStatsToken();
-      if (!this.currentUser.statsToken) {
-        return this.authorizeStats();
-      }
-
-      $(document).ajaxSend(function (event, jqxhr, settings) {
-        if (settings.url.indexOf(STATS_HOST) < 0) {
-          jqxhr.setRequestHeader("X-IDP-ENTITY-ID", this.currentIdpId());
-        }
-      }.bind(this));
 
       for (controller in App.Controllers) {
         App.Controllers[controller].initialize();
@@ -36,12 +32,7 @@ var App = {
       page("/", this.rootPath.bind(this));
       page("*", this.actionNotFound.bind(this));
 
-      if (this.superUserNotSwitched()) {
-        page.start({dispatch: false});
-        page("/users/search");
-      } else {
-        page.start();
-      }
+      page.start();
     }.bind(this));
   },
 
@@ -49,33 +40,8 @@ var App = {
     this.render(App.Pages.NotFound());
   },
 
-  superUserNotSwitched: function () {
-    return this.currentUser.superUser && !this.currentUser.switchedToIdp;
-  },
-
-  pageRequested: function () {
-    //the redirect_uri goes to /, but we have stored the requested href in the state parameter
-    var locationHash = window.location.hash.substr(1);
-    var url = locationHash.substr(locationHash.indexOf("state=")).split("&")[0].split("=")[1];
-    if (!url) {
-      return url;
-    }
-    var parser = document.createElement('a');
-    parser.href = decodeURIComponent(url);
-    return parser.pathname
-  },
-
   rootPath: function () {
-    if (this.superUserNotSwitched()) {
-      page.redirect("/users/search");
-    } else {
-      var requestedPage = this.pageRequested();
-      if (requestedPage) {
-        page.redirect(requestedPage);
-      } else {
-        page.redirect("/apps");
-      }
-    }
+    page.redirect("/policies");
   },
 
   render: function (page) {
@@ -103,30 +69,16 @@ var App = {
     return <td className={word}>{I18n.t("boolean." + word)}</td>;
   },
 
-  authorizeStats: function () {
-    window.location = this.currentUser.statsUrl + "&state=" + window.location;
-  },
-
-  fetchStatsToken: function () {
-    var locationHash = window.location.hash.substr(1);
-    return locationHash.substr(locationHash.indexOf("access_token=")).split("&")[0].split("=")[1];
-  },
-
   fetchUserData: function (callback) {
-
-    var redirectTo403Server = function () {
-      window.location = window.location.protocol + "//" + window.location.host + "/dashboard/api/forbidden";
-    };
-
-    $.get(App.apiUrl("/users/me" + window.location.search), function (data) {
-      if (!data.payload) {
-        redirectTo403Server();
-        return;
+    var self = this;
+    $.get(App.apiUrl("/internal/users/me" + window.location.search), function (data) {
+      if (!data) {
+        self.render(App.Pages.NotFound());
+      } else {
+        callback(data);
       }
-      I18n.locale = data.language;
-      callback(data.payload);
     }).fail(function (data) {
-      redirectTo403Server();
+      self.render(App.Pages.NotFound());
     });
   },
 
@@ -150,29 +102,6 @@ var App = {
       default:
         this.render(App.Pages.ServerError());
         console.error("Ajax request failed");
-    }
-  },
-
-  checkSessionExpired: function (event, xhr) {
-    //do not handle anything other then 200 and 302 as the others are handled by ajaxError
-    if (xhr.getResponseHeader("sessionAlive") !== "success" && (xhr.status === 0 || xhr.status === 200 || xhr.status === 302)) {
-      if (window.location.hostname === "localhost") {
-        window.location.href = window.location.protocol + "//" + window.location.host + "/dashboard/api/home?redirectTo=" + window.location.pathname;
-      } else {
-        window.location.href = window.location.protocol + "//" + window.location.host + "/apps";
-      }
-    }
-  },
-
-  currentIdpId: function () {
-    return this.currentIdp().id;
-  },
-
-  currentIdp: function () {
-    if (this.currentUser.superUser && this.currentUser.switchedToIdp) {
-      return this.currentUser.switchedToIdp;
-    } else {
-      return (this.currentUser.switchedToIdp || this.currentUser.currentIdp);
     }
   }
 };

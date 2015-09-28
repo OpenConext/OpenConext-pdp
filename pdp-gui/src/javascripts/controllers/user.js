@@ -14,11 +14,11 @@ App.Controllers.User = {
   },
 
   loadUsers: function(ctx, next) {
-    $.get(App.apiUrl("/users/super/idps"), function(data) {
-      ctx.idps = data.payload.idps;
-      ctx.roles = data.payload.roles;
-      next();
-    });
+    //$.get(App.apiUrl("/users/super/idps"), function(data) {
+    //  ctx.idps = data.payload.idps;
+    //  ctx.roles = data.payload.roles;
+    //  next();
+    //});
   },
 
   logoutUser: function() {

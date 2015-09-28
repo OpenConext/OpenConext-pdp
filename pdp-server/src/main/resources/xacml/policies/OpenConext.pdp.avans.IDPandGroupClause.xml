@@ -15,7 +15,8 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">avans_sp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">avans_sp
+                    </AttributeValue>
 
                     <AttributeDesignator
                             AttributeId="SPentityID"
@@ -30,7 +31,8 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">avans_idp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">avans_idp
+                    </AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -50,7 +52,8 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">surfnet.nl</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">surfnet.nl
+                        </AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -65,7 +68,8 @@
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <!-- See pdp.teams.VootClientConfig#mockVootClient -->
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:avans.nl:HRemployees</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:avans.nl:HRemployees
+                        </AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:group-name"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -79,7 +83,8 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">employee
+                        </AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:terena.org:attribute-def:eduPersonAffiliation"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"

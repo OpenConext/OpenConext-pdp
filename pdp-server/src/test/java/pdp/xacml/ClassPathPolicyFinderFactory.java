@@ -19,31 +19,31 @@ import java.util.Properties;
  */
 public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
 
-  private static Logger LOG = LoggerFactory.getLogger(ClassPathPolicyFinderFactory.class);
+    private static Logger LOG = LoggerFactory.getLogger(ClassPathPolicyFinderFactory.class);
 
-  public static String POLICY_LOCATION_FILE_KEY = "policy.location.file.key";
+    public static String POLICY_LOCATION_FILE_KEY = "policy.location.file.key";
 
-  @Override
-  protected PolicyDef loadPolicyDef(String policyId, Properties properties) {
-    String classPathLocation = System.getProperty(POLICY_LOCATION_FILE_KEY);
-    Assert.notNull(classPathLocation, POLICY_LOCATION_FILE_KEY + " is null");
-    ClassPathResource resource = new ClassPathResource(classPathLocation);
-    try {
-      LOG.info("Loading policy file " + getAbsolutePath(resource));
-      return DOMPolicyDef.load(resource.getInputStream());
-    } catch (DOMStructureException e) {
-      LOG.error("Error loading policy file " + getAbsolutePath(resource), e);
-      return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    @Override
+    protected PolicyDef loadPolicyDef(String policyId, Properties properties) {
+        String classPathLocation = System.getProperty(POLICY_LOCATION_FILE_KEY);
+        Assert.notNull(classPathLocation, POLICY_LOCATION_FILE_KEY + " is null");
+        ClassPathResource resource = new ClassPathResource(classPathLocation);
+        try {
+            LOG.info("Loading policy file " + getAbsolutePath(resource));
+            return DOMPolicyDef.load(resource.getInputStream());
+        } catch (DOMStructureException e) {
+            LOG.error("Error loading policy file " + getAbsolutePath(resource), e);
+            return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 
-  private String getAbsolutePath(ClassPathResource resource) {
-    try {
-      return resource.getFile().getAbsolutePath();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    private String getAbsolutePath(ClassPathResource resource) {
+        try {
+            return resource.getFile().getAbsolutePath();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 }

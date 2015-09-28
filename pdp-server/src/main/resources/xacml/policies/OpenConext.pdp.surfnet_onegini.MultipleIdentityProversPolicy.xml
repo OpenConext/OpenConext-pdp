@@ -4,10 +4,11 @@
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
     <Description>Policy met multiple IDP's in target
-    Toegang tot wiki is voor gebruikers van SURFnet.nl en OneGini.nl IDP's die lid zijn van SURFnetWikiAccess
-    group
-    NB: dit is niet een heel goed voorbeeld maar is slechts ter illustratie van het gebruik van multiple IDP's
-    in een target</Description>
+        Toegang tot wiki is voor gebruikers van SURFnet.nl en OneGini.nl IDP's die lid zijn van SURFnetWikiAccess
+        group
+        NB: dit is niet een heel goed voorbeeld maar is slechts ter illustratie van het gebruik van multiple IDP's
+        in een target
+    </Description>
     <PolicyDefaults>
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
@@ -16,13 +17,14 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">surfnet_sp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">surfnet_sp
+                    </AttributeValue>
                     <AttributeDesignator
-                        AttributeId="SPentityID"
-                        DataType="http://www.w3.org/2001/XMLSchema#string"
-                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                        MustBePresent="false"
-                    />
+                            AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
                 </Match>
             </AllOf>
         </AnyOf>
@@ -30,25 +32,27 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">surfnet_idp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">surfnet_idp
+                    </AttributeValue>
                     <AttributeDesignator
-                        AttributeId="IDPentityID"
-                        DataType="http://www.w3.org/2001/XMLSchema#string"
-                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                        MustBePresent="false"
-                    />
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
                 </Match>
             </AllOf>
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">onegine_idp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">onegine_idp
+                    </AttributeValue>
                     <AttributeDesignator
-                        AttributeId="IDPentityID"
-                        DataType="http://www.w3.org/2001/XMLSchema#string"
-                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                        MustBePresent="false"
-                    />
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
                 </Match>
             </AllOf>
         </AnyOf>
@@ -56,19 +60,21 @@
     <Rule
             Effect="Permit"
             RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProversPolicy.permitAccess">
-        <Description />
+        <Description/>
         <Target>
             <AnyOf>
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">
+                            urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess
+                        </AttributeValue>
                         <AttributeDesignator
-                            AttributeId="urn:mace:dir:attribute-def:group-name"
-                            DataType="http://www.w3.org/2001/XMLSchema#string"
-                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                            MustBePresent="false"
-                        />
+                                AttributeId="urn:mace:dir:attribute-def:group-name"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
                     </Match>
                 </AllOf>
             </AnyOf>
@@ -77,14 +83,19 @@
     <Rule
             Effect="Deny"
             RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProversPolicy.denyAccess">
-        <Description />
-        <Target />
+        <Description/>
+        <Target/>
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
-            AppliesTo="Deny">
-                <AttributeAssignmentExpression AttributeId="DenyMessage" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                              AppliesTo="Deny">
+                <AttributeAssignmentExpression AttributeId="DenyMessage"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access the SURFnet wiki. Please contact <a href="mailto:femke@surfnet.nl">Femke Morsch</a> for details</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access the
+                        SURFnet wiki. Please contact
+                        <a href="mailto:femke@surfnet.nl">Femke Morsch</a>
+                        for details
+                    </AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
