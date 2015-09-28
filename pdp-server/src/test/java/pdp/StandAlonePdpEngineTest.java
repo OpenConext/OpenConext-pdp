@@ -45,6 +45,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     assertEquals(1, pdpResponse.getResults().size());
 
     Result result = pdpResponse.getResults().iterator().next();
+
     assertEquals(Decision.PERMIT, result.getDecision());
     assertEquals(1, result.getPolicyIdentifiers().size());
     assertEquals("http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause", result.getPolicyIdentifiers().iterator().next().getId().stringValue());

@@ -34,7 +34,7 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 /**
- * Not this class is slow. it starts up the entire Spring boot app.
+ * Note this class is slow. it starts up the entire Spring boot app.
  * <p/>
  * If you want to test policies quickly then see StandAlonePdpEngineTest
  */

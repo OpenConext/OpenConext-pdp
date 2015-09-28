@@ -87,26 +87,13 @@ of the cyclic dependencies in the hierarchy (and not desirable because of the co
 We don't provide flyway migrations to load initial policies. 
 
 However if you start up the application with the spring.profiles.active=dev then all the policies
-in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any any policy with the name of one of the policy files
-is overwritten.
+in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any other policies already in the database are deleted.
 
 ### Testing
 
 There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
 
-One can also use cUrl to test against a running Spring application but you will need to load the policies as described in the previous step. 
-
-Start the server and go the directory src/test/resources. Use the following command to test the permit decision:
-
-`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Permit.CategoriesShorthand.json http://localhost:8080/decide`
-
-The directory src/test/resources contains additional test JSON inputs. To test against the test2 environment change the endpoint to `https://pdp.test2.surfconext.nl/decide`. 
-
-Examples:
-
-`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/TeamAccess.Permit.json https://pdp.test2.surfconext.nl/decide`
-
-`curl -i --user pdp-admin:secret -X POST --header "Content-Type: application/json" -d @./src/test/resources/SURFspotAccess.Deny.json https://pdp.test2.surfconext.nl/decide`
+If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
 
 ### Configuration and Deployment
 
