@@ -24,12 +24,12 @@ public class ServiceRegistry {
 
   @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")
   public List<EntityMetaData> serviceProviders(@RequestParam(value = "lang", defaultValue = "en") String lang) {
-    return parseEntities("saml20-sp-remote.json", lang);
+    return parseEntities("service-registry/saml20-sp-remote.json", lang);
   }
 
   @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders")
   public List<EntityMetaData> identityProviders(@RequestParam(value = "lang", defaultValue = "en") String lang) {
-    return parseEntities("saml20-idp-remote.json", lang);
+    return parseEntities("service-registry/saml20-idp-remote.json", lang);
   }
 
   private List<EntityMetaData> parseEntities(String path, String lang) {

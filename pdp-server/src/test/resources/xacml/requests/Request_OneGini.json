@@ -4,25 +4,25 @@
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:mail", 
-          "Value": "peter.clijsters@onegini.nl"
+          "Value": "john.doe@onegini.nl"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:displayName", 
-          "Value": "Peter Clijsters"
+          "Value": "John Doe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:givenName", 
-          "Value": "Peter"
+          "Value": "John"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:sn", 
-          "Value": "Clijsters"
+          "Value": "Doe"
         }
       }, 
       {
@@ -40,25 +40,25 @@
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:cn", 
-          "Value": "Peter Clijsters"
+          "Value": "John Doe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:eduPersonTargetedID", 
-          "Value": "urn:collab:person:surfguest.nl:peterclijsters"
+          "Value": "urn:collab:person:surfguest.nl:johndoe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified", 
-          "Value": "urn:collab:person:surfguest.nl:peterclijsters"
+          "Value": "urn:collab:person:surfguest.nl:johndoe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:oid:0.9.2342.19200300.100.1.1", 
-          "Value": "peterclijsters"
+          "Value": "johndoe"
         }
       }, 
       {

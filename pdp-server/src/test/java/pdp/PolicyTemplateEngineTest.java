@@ -1,5 +1,7 @@
 package pdp;
 
+import org.apache.openaz.xacml.util.XACMLProperties;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import pdp.domain.PdpAttribute;
@@ -10,7 +12,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class PolicyTemplateEngineTest {
+public class PolicyTemplateEngineTest implements AbstractXacmlTest {
 
   private PolicyTemplateEngine engine = new PolicyTemplateEngine();
   private PdpPolicyDefinitionParser parser = new PdpPolicyDefinitionParser();
@@ -27,6 +29,7 @@ public class PolicyTemplateEngineTest {
     definition.setServiceProviderId("http://mock-sp");
     definition.setDenyRule(true);
   }
+
 
   @Test
   public void testTemplate() throws Exception {

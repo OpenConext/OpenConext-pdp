@@ -1,28 +1,30 @@
 {
   "Request": {
+    "ReturnPolicyIdList": true,
+    "CombinedDecision": true,
     "AccessSubject": [
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:mail", 
-          "Value": "peter.clijsters@surfnet.nl"
+          "Value": "john.doe@surfnet.nl"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:displayName", 
-          "Value": "Peter Clijsters"
+          "Value": "John Doe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:givenName", 
-          "Value": "Peter"
+          "Value": "John"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:sn", 
-          "Value": "Clijsters"
+          "Value": "Doe"
         }
       }, 
       {
@@ -40,25 +42,25 @@
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:cn", 
-          "Value": "Peter Clijsters"
+          "Value": "John Doe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:mace:dir:attribute-def:eduPersonTargetedID", 
-          "Value": "urn:collab:person:surfnet.nl:peter.clijsters"
+          "Value": "urn:collab:person:surfnet.nl:john.doe"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified", 
-          "Value": "urn:collab:person:surfnet.nl:peter.clijsters"
+          "Value": "urn:collab:person:example.com:admin"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "urn:oid:0.9.2342.19200300.100.1.1", 
-          "Value": "peter.clijsters"
+          "Value": "john.doe"
         }
       }, 
       {
@@ -84,13 +86,13 @@
       {
         "Attribute": {
           "AttributeId": "SPentityID", 
-          "Value": "https://engine.surfconext.nl/authentication/sp/metadata"
+          "Value": "avans_sp"
         }
       }, 
       {
         "Attribute": {
           "AttributeId": "IDPentityID", 
-          "Value": "https://www.surfnet.nl"
+          "Value": "avans_idp"
         }
       }
     ]

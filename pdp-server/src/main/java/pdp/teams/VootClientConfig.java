@@ -12,6 +12,8 @@ import java.util.List;
 @Configuration
 public class VootClientConfig {
 
+  public static final String URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN = "urn:collab:person:example.com:admin";
+
   @Value("${voot.accessTokenUri}")
   private String accessTokenUri;
 
@@ -42,7 +44,16 @@ public class VootClientConfig {
     return new VootClient(vootRestTemplate(), vootServiceUrl) {
       @Override
       public List<String> groups(String userUrn) {
-        return "urn:collab:person:example.com:admin".equals(userUrn) ? Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo") : Collections.EMPTY_LIST;
+        /*
+         * These are the groups names defined in the test set of policies
+         */
+        return URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
+            Arrays.asList(
+                "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+                "urn:collab:group:avans.nl:HRemployees",
+                "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+                "urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess"
+            ) : Collections.EMPTY_LIST;
       }
     };
   }

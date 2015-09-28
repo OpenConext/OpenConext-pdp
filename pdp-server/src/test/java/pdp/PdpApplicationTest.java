@@ -1,5 +1,6 @@
 package pdp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Response;
@@ -18,14 +19,23 @@ import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyViolation;
-import pdp.repositories.*;
+import pdp.domain.JsonPolicyRequest;
+import pdp.domain.PdpAttribute;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.repositories.PdpPolicyRepository;
+import pdp.repositories.PdpPolicyViolationRepository;
+import pdp.teams.VootClientConfig;
+import pdp.xacml.PdpPolicyDefinitionParser;
+
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.io.StringWriter;
+import java.util.*;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
+import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
@@ -39,9 +49,11 @@ public class PdpApplicationTest {
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
   @Value("${local.server.port}")
-  protected int port;
+  private int port;
   private MultiValueMap<String, String> headers;
-  protected TestRestTemplate client = new TestRestTemplate("pdp-admin", "secret");
+  private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
+  private ObjectMapper objectMapper = new ObjectMapper();
+  private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
 
   @Before
   public void before() throws IOException {
@@ -55,6 +67,7 @@ public class PdpApplicationTest {
      * For this to work we have configured the OpenConextEvaluationContextFactory not to cache policies but
      * to retrieve them from the database each request (e.g. openconext.pdp.cachePolicies=false)
      */
+    pdpPolicyViolationRepository.deleteAll();
 //    pdpPolicyRepository.deleteAll();
 //    pdpPolicyRepository.save(Arrays.asList(
 //        new PdpPolicy(IOUtils.toString(new ClassPathResource("SURFconext.SURFspotAccess.xml").getInputStream()), "SURFspotAccess"),
@@ -111,14 +124,31 @@ public class PdpApplicationTest {
 
   @Test
   public void tmp() throws Exception {
-    System.out.println("");
+    doDecide("xacml/requests/avans_request.json", Decision.DENY,"");
+//    JsonPolicyRequest policyRequest = objectMapper.readValue(new ClassPathResource("xacml/requests/Request_SURFnet.json").getInputStream(), JsonPolicyRequest.class);
+//    ClassPathResource classPathResource = new ClassPathResource("xacml/policies/OpenConext.pdp.avans.IDPandGroupClause.xml");
+//    PdpPolicyDefinition definition = policyDefinitionParser.parse(classPathResource.getFilename(), IOUtils.toString(classPathResource.getInputStream()));
+//    JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
+//    permitPolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, definition.getServiceProviderId());
+//    if (definition.getIdentityProviderIds().isEmpty()) {
+//      permitPolicyRequest.deleteAttribute(IDP_ENTITY_ID);
+//    } else {
+//      permitPolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID,definition.getIdentityProviderIds().get(0));
+//    }
+//    Map<String, List<PdpAttribute>> groupedAttributes = definition.getAttributes().stream().collect(Collectors.groupingBy(PdpAttribute::getName));
+//    Set<Map.Entry<String, List<PdpAttribute>>> entries = groupedAttributes.entrySet();
+//    entries.forEach(entry -> permitPolicyRequest.addOrReplaceAccessSubjectAttribute(entry.getKey(), entry.getValue().get(0).getValue()));
+//    if (definition.getAttributes().stream().filter(pdpAttribute -> pdpAttribute.getName().equalsIgnoreCase(GROUP_URN)).findFirst().isPresent()) {
+//      permitPolicyRequest.addOrReplaceAccessSubjectAttribute(NAME_ID, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN);
+//    }
+//    postDecide(permitPolicyRequest, Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
   }
 
-  private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {
+  private void postDecide(JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {
     final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
-    String jsonRequest = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
+    String jsonRequest = objectMapper.writeValueAsString(policyRequest);
     HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
-    String jsonResponse = client.postForObject(url, request, String.class);
+    String jsonResponse = restTemplate.postForObject(url, request, String.class);
     Response response = JSONResponse.load(jsonResponse);
     assertEquals(1, response.getResults().size());
     Result result = response.getResults().iterator().next();
@@ -126,5 +156,29 @@ public class PdpApplicationTest {
     assertEquals(statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());
   }
 
+  private void doDecide(String requestJsonFile, Decision expectedDecision, String statusCodeValue) throws Exception {
+    final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
+    String jsonRequest = IOUtils.toString(new ClassPathResource(requestJsonFile).getInputStream());
+    HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
+    String jsonResponse = restTemplate.postForObject(url, request, String.class);
+    Response response = JSONResponse.load(jsonResponse);
+    assertEquals(1, response.getResults().size());
+    Result result = response.getResults().iterator().next();
+    assertEquals(expectedDecision, result.getDecision());
+    assertEquals(statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());
+  }
+
+  private <T> Collector<T, List<T>, T> singletonCollector() {
+    return Collector.of(ArrayList::new, List::add, (left, right) -> {
+          left.addAll(right);
+          return left;
+        }, list -> {
+          if (list.isEmpty()) {
+            return null;
+          }
+          return list.get(0);
+        }
+    );
+  }
 
 }

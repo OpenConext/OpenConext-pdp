@@ -87,7 +87,7 @@ of the cyclic dependencies in the hierarchy (and not desirable because of the co
 We don't provide flyway migrations to load initial policies. 
 
 However if you start up the application with the spring.profiles.active=dev then all the policies
-in the folder `` ara added to the database. Do note that any any policy with the name of one of the policy files
+in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any any policy with the name of one of the policy files
 is overwritten.
 
 ### Testing

@@ -24,9 +24,13 @@ import static java.util.stream.StreamSupport.stream;
  */
 public class PdpPolicyDefinitionParser {
 
-  private static final String SP_ENTITY_ID = "SPentityID";
+  public static final String SP_ENTITY_ID = "SPentityID";
 
-  private static final String IDP_ENTITY_ID = "IDPentityID";
+  public static final String IDP_ENTITY_ID = "IDPentityID";
+
+  public static final String GROUP_URN = "urn:mace:dir:attribute-def:group-name";
+
+  public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
 
   public PdpPolicyDefinition parse(String policyName, String policyXml) {
     PdpPolicyDefinition definition = new PdpPolicyDefinition();

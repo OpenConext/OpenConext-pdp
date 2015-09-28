@@ -45,7 +45,7 @@
     <Rule Effect="Permit"
           RuleId="urn:surfconext:xacml:rule:id:permit">
         <Description />
-        {{> target.xml}}
+        {{> target-partial.xml}}
     </Rule>
     <Rule Effect="Deny"
           RuleId="urn:surfconext:xacml:rule:id:deny">
@@ -68,7 +68,7 @@
     <Rule Effect="Deny"
           RuleId="urn:surfconext:xacml:rule:id:deny">
         <Description />
-        {{> target.xml}}
+        {{> target-partial.xml}}
         <AdviceExpressions>
             <AdviceExpression AdviceId="urn:surfconext:xacml:advice:id:{{nameId}}"
                               AppliesTo="Deny">

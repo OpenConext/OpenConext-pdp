@@ -92,7 +92,7 @@ public class PdpApplication {
     public void configure(WebSecurity web) throws Exception {
       web
           .ignoring()
-          .antMatchers("/health");
+          .antMatchers("/health","/info");
     }
 
     @Override

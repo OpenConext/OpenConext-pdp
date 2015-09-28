@@ -5,6 +5,7 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
+import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -42,11 +43,12 @@ public class PdpController {
 
   private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
   private final PDPEngineHolder pdpEngineHolder;
+  private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
+  private final PdpPolicyRepository pdpPolicyRepository;
+  private final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
+
   private PDPEngine pdpEngine;
-  private PdpPolicyViolationRepository pdpPolicyViolationRepository;
-  private PdpPolicyRepository pdpPolicyRepository;
-  private ReadWriteLock lock = new ReentrantReadWriteLock();
-  private PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
 
   @Autowired
   public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
@@ -70,6 +72,7 @@ public class PdpController {
     LOG.debug("decide request: {}", payload);
 
     Request pdpRequest = JSONRequest.load(payload);
+
     Response pdpResponse;
     try {
       lock.readLock().lock();

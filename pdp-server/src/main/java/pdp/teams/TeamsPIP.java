@@ -17,6 +17,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static pdp.xacml.PdpPolicyDefinitionParser.GROUP_URN;
+import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
+
 public class TeamsPIP implements ConfigurableEngine, VootClientAware {
 
   private VootClient vootClient;
@@ -27,8 +30,6 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
   private PIPResponse empty;
   private PIPResponse missingNameId;
 
-  private String groupNameUri = "urn:mace:dir:attribute-def:group-name";
-
   @Override
   public void configure(String id, Properties properties) throws PIPException {
     IdentifierImpl identifierDataType = new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string");
@@ -37,13 +38,13 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
         // identifierCategory
         new IdentifierImpl("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"),
         // identifierAttribute
-        new IdentifierImpl("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"),
+        new IdentifierImpl(NAME_ID),
         // identifierDataType
         identifierDataType);
 
 
     IdentifierImpl attributeCategory = new IdentifierImpl("urn:oasis:names:tc:xacml:3.0:attribute-category:resource");
-    IdentifierImpl identifierAttribute = new IdentifierImpl("urn:mace:dir:attribute-def:group-name");
+    IdentifierImpl identifierAttribute = new IdentifierImpl(GROUP_URN);
 
     providedAttribute = new StdPIPRequest(
         // identifierCategory
@@ -58,7 +59,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
         Collections.EMPTY_LIST, null, true);
     empty = new StdSinglePIPResponse(attribute);
 
-    missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified attribute missing"));
+    missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
   }
 
   @Override
@@ -83,19 +84,19 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
 
   @Override
   public PIPResponse getAttributes(PIPRequest pipRequest, PIPFinder pipFinder) throws PIPException {
-    if (!this.groupNameUri.equals(pipRequest.getAttributeId().getUri().toString())) {
+    if (!GROUP_URN.equals(pipRequest.getAttributeId().getUri().toString())) {
       //this PIP requires a groupName rule to be present in the Policy
       return empty;
     }
     PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(requiredAttribute, this);
     Optional<Attribute> nameAttributeOptional = matchingAttributes.getAttributes().stream().findFirst();
     if (!nameAttributeOptional.isPresent()) {
-      return missingNameId;
+      return empty;//missingNameId;
     }
     Attribute nameAttribute = nameAttributeOptional.get();
     Collection<AttributeValue<?>> values = nameAttribute.getValues();
     if (CollectionUtils.isEmpty(values)) {
-      return missingNameId;
+      return empty;//missingNameId;
     }
     String userUrn = (String) values.stream().findFirst().get().getValue();
     List<String> groups = vootClient.groups(userUrn);
