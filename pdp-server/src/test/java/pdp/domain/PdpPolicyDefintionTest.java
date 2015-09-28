@@ -13,7 +13,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 
-public class PdpPolicyDefintionTest implements AbstractXacmlTest{
+public class PdpPolicyDefintionTest extends AbstractXacmlTest{
 
   private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();

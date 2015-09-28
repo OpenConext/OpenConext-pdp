@@ -143,6 +143,7 @@ public class PdpPolicyDefinitionParser {
     }
     String denyAttributeValue = (String) ((AttributeValueExpression) attributeAssignmentExpressions.get(0).getExpression()).getAttributeValue().getValue();
     definition.setDenyAdvice(denyAttributeValue);
+    definition.setDenyId(adviceExpression.getAdviceId().getUri().toString());
   }
 
   private Policy parsePolicy(String policyXml) {

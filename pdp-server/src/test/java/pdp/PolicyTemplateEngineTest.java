@@ -12,7 +12,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
-public class PolicyTemplateEngineTest implements AbstractXacmlTest {
+public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
   private PolicyTemplateEngine engine = new PolicyTemplateEngine();
   private PdpPolicyDefinitionParser parser = new PdpPolicyDefinitionParser();

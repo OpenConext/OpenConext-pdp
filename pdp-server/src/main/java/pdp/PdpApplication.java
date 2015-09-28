@@ -63,7 +63,7 @@ public class PdpApplication {
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
     if (environment.acceptsProfiles("dev")) {
-      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository);
+      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository, true);
     }
 
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
@@ -92,7 +92,7 @@ public class PdpApplication {
     public void configure(WebSecurity web) throws Exception {
       web
           .ignoring()
-          .antMatchers("/health","/info");
+          .antMatchers("/health", "/info");
     }
 
     @Override

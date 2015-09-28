@@ -25,20 +25,20 @@
                 </Match>
             </AllOf>
         </AnyOf>
-        <!--<AnyOf>-->
-            <!--<AllOf>-->
-                <!--<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">-->
-                    <!--<AttributeValue-->
-                        <!--DataType="http://www.w3.org/2001/XMLSchema#string">avans_idp</AttributeValue>-->
-                    <!--<AttributeDesignator-->
-                        <!--AttributeId="IDPentityID"-->
-                        <!--DataType="http://www.w3.org/2001/XMLSchema#string"-->
-                        <!--Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"-->
-                        <!--MustBePresent="false"-->
-                    <!--/>-->
-                <!--</Match>-->
-            <!--</AllOf>-->
-        <!--</AnyOf>-->
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">avans_idp</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
+                </Match>
+            </AllOf>
+        </AnyOf>
     </Target>
     <Rule
             Effect="Permit"
@@ -49,9 +49,9 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:avans.nl:HRemployees</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">surfnet.nl</AttributeValue>
                         <AttributeDesignator
-                            AttributeId="urn:mace:dir:attribute-def:group-name"
+                            AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
                             Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                             MustBePresent="false"
@@ -59,21 +59,34 @@
                     </Match>
                 </AllOf>
             </AnyOf>
-            <!--<AnyOf>-->
-                <!--<AllOf>-->
-                    <!--<Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">-->
-                        <!--<AttributeValue-->
-                                <!--DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>-->
-                        <!--<AttributeDesignator-->
-                                <!--AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"-->
-                                <!--DataType="http://www.w3.org/2001/XMLSchema#string"-->
-                                <!--Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"-->
-                                <!--MustBePresent="false"-->
-                                <!--/>-->
-                    <!--</Match>-->
-                <!--</AllOf>-->
-
-            <!--</AnyOf>-->
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string">what</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:terena.org:attribute-def:edu"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
+                    </Match>
+                </AllOf>
+            </AnyOf>
+            <AnyOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:terena.org:attribute-def:eduPersonAffiliation"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
+                    </Match>
+                </AllOf>
+            </AnyOf>
         </Target>
     </Rule>
     <Rule

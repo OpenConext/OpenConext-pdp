@@ -110,8 +110,9 @@ public class PdpController {
 
   private void reportPolicyViolation(Response pdpResponse, String payload) {
     Collection<Result> results = pdpResponse.getResults();
-    if (!CollectionUtils.isEmpty(results) && results.stream().anyMatch(result -> result.getDecision().equals(DENY))) {
-      Collection<Advice> associatedAdvices = results.iterator().next().getAssociatedAdvice();
+    List<Result> denies = results.stream().filter(result -> result.getDecision().equals(DENY)).collect(toList());
+    if (!CollectionUtils.isEmpty(denies)) {
+      Collection<Advice> associatedAdvices = denies.get(0).getAssociatedAdvice();
       String associatedAdviceId = CollectionUtils.isEmpty(associatedAdvices) ?
           "No associated advice present on Policy. Please check all policies and repair those without Deny advice" : associatedAdvices.iterator().next().getId().stringValue();
       pdpPolicyViolationRepository.save(new PdpPolicyViolation(associatedAdviceId, payload));

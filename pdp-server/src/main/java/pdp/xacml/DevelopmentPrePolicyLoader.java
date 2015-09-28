@@ -30,14 +30,17 @@ public class DevelopmentPrePolicyLoader {
   public List<PdpPolicy> getPolicies() {
     List<File> policyFiles;
     try {
-      policyFiles = Arrays.asList(resource.getFile().listFiles((dir, name) -> name.endsWith("OpenConext.pdp.avans.IDPandGroupClause.xml")));
+      policyFiles = Arrays.asList(resource.getFile().listFiles((dir, name) -> name.endsWith(".xml")));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
     return policyFiles.stream().map(file -> this.createPdpPolicy(file)).collect(toList());
   }
 
-  public void loadPolicies(PdpPolicyRepository pdpPolicyRepository) {
+  public void loadPolicies(PdpPolicyRepository pdpPolicyRepository, boolean clearDatabase) {
+    if (clearDatabase) {
+      pdpPolicyRepository.deleteAll();
+    }
     List<PdpPolicy> policies = getPolicies();
     policies.forEach(policy -> {
       this.deletePolicyIfExists(policy, pdpPolicyRepository);

@@ -47,6 +47,8 @@ public class PdpPolicyDefinition {
 
   private boolean denyRule;
 
+  private String denyId;
+
   public PdpPolicyDefinition() {
   }
 
@@ -104,6 +106,14 @@ public class PdpPolicyDefinition {
 
   public void setDenyRule(boolean denyRule) {
     this.denyRule = denyRule;
+  }
+
+  public String getDenyId() {
+    return denyId;
+  }
+
+  public void setDenyId(String denyId) {
+    this.denyId = denyId;
   }
 
   public String getNameId() {
