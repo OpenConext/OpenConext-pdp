@@ -34,7 +34,6 @@ public class JsonPolicyRequestTest {
         resourceAttributes.add(new JsonPolicyRequest.Attribute("IDPentityID", "avans_idp"));
 
         String json = objectMapper.writeValueAsString(policyRequest);
-        System.out.println(json);
         String expected = IOUtils.toString(new ClassPathResource("xacml/requests/json_policy_request.json").getInputStream());
         assertEquals(expected, json);
     }

@@ -35,7 +35,7 @@ public class PdpPolicyDefintionTest extends AbstractXacmlTest {
                     def,
                     output.stream().filter(outputDef -> outputDef.getName().equals(def.getName())).findFirst().get());
         });
-        //assertEquals(input, output);
+        assertEquals(input, output);
 
     }
 
