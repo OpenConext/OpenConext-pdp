@@ -91,9 +91,9 @@ in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are 
 
 ### Testing
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java){:target="_blank"}
 
-If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
+If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java){:target="_blank"}
 
 ### Configuration and Deployment
 
