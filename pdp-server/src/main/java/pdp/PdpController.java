@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import pdp.domain.PdpPolicy;
@@ -35,6 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
@@ -87,7 +91,7 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/policies")
+  @RequestMapping(method = GET, value = "/internal/policies")
   public List<PdpPolicyDefinition> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     return stream(all.spliterator(), false).map(policy -> new PdpPolicyDefinitionParser().parse(policy.getName(), policy.getPolicyXml())).collect(toList());
@@ -106,6 +110,12 @@ public class PdpController {
       }
     }
     return policyDefinitions();
+  }
+
+  @RequestMapping(method = GET, value = "internal/user")
+  public Object user() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return authentication;
   }
 
   private void reportPolicyViolation(Response pdpResponse, String payload) {

@@ -17,6 +17,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
+import static pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter.*;
+
 public class MockShibbolethFilter extends GenericFilterBean {
 
   private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
@@ -59,8 +61,9 @@ public class MockShibbolethFilter extends GenericFilterBean {
   @Override
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
     SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
-    wrapper.setHeader(ShibbolethPreAuthenticatedProcessingFilter.UID_HEADER_NAME, "urn:collab:person:example.com:admin");
-    wrapper.setHeader(ShibbolethPreAuthenticatedProcessingFilter.DISPLAY_NAME_HEADER_NAME, "John Doe");
+    wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
+    wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
+    wrapper.setHeader(IS_MEMBER_OF, "surfnet");
     filterChain.doFilter(wrapper, servletResponse);
   }
 }

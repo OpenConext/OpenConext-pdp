@@ -28,7 +28,6 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
   private PIPRequest providedAttribute;
 
   private PIPResponse empty;
-  private PIPResponse missingNameId;
 
   @Override
   public void configure(String id, Properties properties) throws PIPException {
@@ -59,7 +58,6 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
         Collections.EMPTY_LIST, null, true);
     empty = new StdSinglePIPResponse(attribute);
 
-    missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
   }
 
   @Override
@@ -91,12 +89,12 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(requiredAttribute, this);
     Optional<Attribute> nameAttributeOptional = matchingAttributes.getAttributes().stream().findFirst();
     if (!nameAttributeOptional.isPresent()) {
-      return empty;//missingNameId;
+      return empty;
     }
     Attribute nameAttribute = nameAttributeOptional.get();
     Collection<AttributeValue<?>> values = nameAttribute.getValues();
     if (CollectionUtils.isEmpty(values)) {
-      return empty;//missingNameId;
+      return empty;
     }
     String userUrn = (String) values.stream().findFirst().get().getValue();
     List<String> groups = vootClient.groups(userUrn);
