@@ -10,10 +10,11 @@ import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
-import org.junit.Before;
+import org.junit.*;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import pdp.xacml.ClassPathPolicyFinderFactory;
 
 import java.io.IOException;
 
@@ -33,11 +34,13 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
     PDPEngineFactory pdpEngineFactory = PDPEngineFactory.newInstance();
     this.pdpEngine = pdpEngineFactory.newEngine();
-
   }
 
   @Test
   public void testStandAlonePolicy() throws Exception {
+    //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/OpenConext.pdp.test.Policy.xml");
+
     String payload = IOUtils.toString(new ClassPathResource("xacml/requests/test_request.json").getInputStream());
     Request pdpRequest = JSONRequest.load(payload);
 

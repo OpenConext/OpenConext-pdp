@@ -104,4 +104,3 @@ When the application actually gets deployed to a meaningful platform, it is pre-
 environment specific properties in the group_vars. See the project OpenConext-deploy and the role pdp for more information.
 
 For details, see the [Spring Boot manual](http://docs.spring.io/spring-boot/docs/1.2.1.RELEASE/reference/htmlsingle/).
-

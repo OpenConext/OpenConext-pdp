@@ -21,11 +21,13 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
 
   private static Logger LOG = LoggerFactory.getLogger(ClassPathPolicyFinderFactory.class);
 
+  public static String POLICY_LOCATION_FILE_KEY = "policy.location.file.key";
+
   @Override
   protected PolicyDef loadPolicyDef(String policyId, Properties properties) {
-    String propLocation = properties.getProperty(policyId + PROP_FILE);
-    Assert.notNull(propLocation, policyId + PROP_FILE + " is null");
-    ClassPathResource resource = new ClassPathResource(propLocation);
+    String classPathLocation = System.getProperty(POLICY_LOCATION_FILE_KEY);
+    Assert.notNull(classPathLocation, POLICY_LOCATION_FILE_KEY + " is null");
+    ClassPathResource resource = new ClassPathResource(classPathLocation);
     try {
       LOG.info("Loading policy file " + getAbsolutePath(resource));
       return DOMPolicyDef.load(resource.getInputStream());
