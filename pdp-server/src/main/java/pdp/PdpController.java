@@ -5,7 +5,6 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.pdp.policy.PolicyDef;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
@@ -105,7 +104,7 @@ public class PdpController {
   }
 
   @RequestMapping(method = POST, value = "/internal/policies")
-  public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion)  {
+  public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion) {
     String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
     try {
       DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));

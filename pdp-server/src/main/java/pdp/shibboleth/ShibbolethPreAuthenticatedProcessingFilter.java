@@ -13,30 +13,30 @@ import java.util.Collections;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-    public static final String UID_HEADER_NAME = "uid";
-    public static final String DISPLAY_NAME_HEADER_NAME = "displayname";
-    public static final String IS_MEMBER_OF = "is-member-of";
-    public static final String SCHAC_HOME_ORGANIZATION = "schacHomeOrganization";
+  public static final String UID_HEADER_NAME = "uid";
+  public static final String DISPLAY_NAME_HEADER_NAME = "displayname";
+  public static final String IS_MEMBER_OF = "is-member-of";
+  public static final String SCHAC_HOME_ORGANIZATION = "schacHomeOrganization";
 
-    public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager) {
-        super();
-        setAuthenticationManager(authenticationManager);
-    }
+  public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager) {
+    super();
+    setAuthenticationManager(authenticationManager);
+  }
 
-    @Override
-    protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
-        String uid = request.getHeader(UID_HEADER_NAME);
-        String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
-        String isMemberOf = request.getHeader(IS_MEMBER_OF);
-        String schacHomeOrganization = request.getHeader(SCHAC_HOME_ORGANIZATION);
+  @Override
+  protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
+    String uid = request.getHeader(UID_HEADER_NAME);
+    String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
+    String isMemberOf = request.getHeader(IS_MEMBER_OF);
+    String schacHomeOrganization = request.getHeader(SCHAC_HOME_ORGANIZATION);
 
-        Collection<GrantedAuthority> authorities = StringUtils.hasText(isMemberOf) ? Arrays.asList(new SimpleGrantedAuthority("PAP_CLIENT")) : Collections.EMPTY_LIST;
-        return StringUtils.hasText(uid) && StringUtils.hasText(displayName) ?
-                new ShibbolethUser(uid, displayName, schacHomeOrganization, authorities) : null;
-    }
+    Collection<GrantedAuthority> authorities = StringUtils.hasText(isMemberOf) ? Arrays.asList(new SimpleGrantedAuthority("PAP_CLIENT")) : Collections.EMPTY_LIST;
+    return StringUtils.hasText(uid) && StringUtils.hasText(displayName) ?
+        new ShibbolethUser(uid, displayName, schacHomeOrganization, authorities) : null;
+  }
 
-    @Override
-    protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-        return "N/A";
-    }
+  @Override
+  protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
+    return "N/A";
+  }
 }

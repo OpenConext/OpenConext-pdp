@@ -8,56 +8,56 @@ import java.sql.Date;
 
 @Entity(name = "pdp_policy_violations")
 public class PdpPolicyViolation {
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id
+  @GeneratedValue
+  private Long id;
 
-    @Column(nullable = false)
-    private String associatedAdviceId;
+  @Column(nullable = false)
+  private String associatedAdviceId;
 
-    @Column(nullable = false)
-    private String jsonRequest;
+  @Column(nullable = false)
+  private String jsonRequest;
 
-    @Column()
-    private Date created;
+  @Column()
+  private Date created;
 
-    public PdpPolicyViolation() {
-    }
+  public PdpPolicyViolation() {
+  }
 
-    public PdpPolicyViolation(String associatedAdviceId, String jsonRequest) {
-        this.associatedAdviceId = associatedAdviceId;
-        this.jsonRequest = jsonRequest;
-    }
+  public PdpPolicyViolation(String associatedAdviceId, String jsonRequest) {
+    this.associatedAdviceId = associatedAdviceId;
+    this.jsonRequest = jsonRequest;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+  public void setId(Long id) {
+    this.id = id;
+  }
 
-    public String getAssociatedAdviceId() {
-        return associatedAdviceId;
-    }
+  public String getAssociatedAdviceId() {
+    return associatedAdviceId;
+  }
 
-    public void setAssociatedAdviceId(String associatedAdviceId) {
-        this.associatedAdviceId = associatedAdviceId;
-    }
+  public void setAssociatedAdviceId(String associatedAdviceId) {
+    this.associatedAdviceId = associatedAdviceId;
+  }
 
-    public String getJsonRequest() {
-        return jsonRequest;
-    }
+  public String getJsonRequest() {
+    return jsonRequest;
+  }
 
-    public void setJsonRequest(String jsonRequest) {
-        this.jsonRequest = jsonRequest;
-    }
+  public void setJsonRequest(String jsonRequest) {
+    this.jsonRequest = jsonRequest;
+  }
 
-    public Date getCreated() {
-        return created;
-    }
+  public Date getCreated() {
+    return created;
+  }
 
-    public void setCreated(Date created) {
-        this.created = created;
-    }
+  public void setCreated(Date created) {
+    this.created = created;
+  }
 }

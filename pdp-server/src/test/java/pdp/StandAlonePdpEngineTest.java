@@ -10,6 +10,7 @@ import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -22,35 +23,41 @@ import static org.junit.Assert.assertEquals;
 
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
-    private PDPEngine pdpEngine;
+  private PDPEngine pdpEngine;
 
-    @Before
-    public void before() throws IOException, FactoryException {
-        Resource resource = new ClassPathResource("test.standalone.engine.xacml.properties");
-        String absolutePath = resource.getFile().getAbsolutePath();
+  @Before
+  public void before() throws IOException, FactoryException {
+    Resource resource = new ClassPathResource("test.standalone.engine.xacml.properties");
+    String absolutePath = resource.getFile().getAbsolutePath();
 
-        //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
-        System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
+    //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
+    System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-        PDPEngineFactory pdpEngineFactory = PDPEngineFactory.newInstance();
-        this.pdpEngine = pdpEngineFactory.newEngine();
-    }
+    PDPEngineFactory pdpEngineFactory = PDPEngineFactory.newInstance();
+    this.pdpEngine = pdpEngineFactory.newEngine();
+  }
 
-    @Test
-    public void testStandAlonePolicy() throws Exception {
-        //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
-        System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/OpenConext.pdp.test.Policy.xml");
+  @After
+  public void after() throws Exception {
+    super.after();
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "not to be found");
+  }
 
-        String payload = IOUtils.toString(new ClassPathResource("xacml/requests/test_request.json").getInputStream());
-        Request pdpRequest = JSONRequest.load(payload);
+  @Test
+  public void testStandAlonePolicy() throws Exception {
+    //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/OpenConext.pdp.test.Policy.xml");
 
-        Response pdpResponse = pdpEngine.decide(pdpRequest);
-        assertEquals(1, pdpResponse.getResults().size());
+    String payload = IOUtils.toString(new ClassPathResource("xacml/requests/test_request.json").getInputStream());
+    Request pdpRequest = JSONRequest.load(payload);
 
-        Result result = pdpResponse.getResults().iterator().next();
+    Response pdpResponse = pdpEngine.decide(pdpRequest);
+    assertEquals(1, pdpResponse.getResults().size());
 
-        assertEquals(Decision.PERMIT, result.getDecision());
-        assertEquals(1, result.getPolicyIdentifiers().size());
-        assertEquals("http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause", result.getPolicyIdentifiers().iterator().next().getId().stringValue());
-    }
+    Result result = pdpResponse.getResults().iterator().next();
+
+    assertEquals(Decision.PERMIT, result.getDecision());
+    assertEquals(1, result.getPolicyIdentifiers().size());
+    assertEquals("http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause", result.getPolicyIdentifiers().iterator().next().getId().stringValue());
+  }
 }

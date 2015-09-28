@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PdpPolicyRepository extends CrudRepository<PdpPolicy, Long> {
 
-    List<PdpPolicy> findByName(@Param("name") String name);
+  List<PdpPolicy> findByName(@Param("name") String name);
 
 }

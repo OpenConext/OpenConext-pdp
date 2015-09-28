@@ -7,20 +7,20 @@ import java.util.Collection;
 
 public class ShibbolethUser extends User {
 
-    private final String uid;
-    private final String schacHomeOrganization;
+  private final String uid;
+  private final String schacHomeOrganization;
 
-    public ShibbolethUser(String uid, String username, String schacHomeOrganization, Collection<? extends GrantedAuthority> authorities) {
-        super(username, "N/A", authorities);
-        this.uid = uid;
-        this.schacHomeOrganization = schacHomeOrganization;
-    }
+  public ShibbolethUser(String uid, String username, String schacHomeOrganization, Collection<? extends GrantedAuthority> authorities) {
+    super(username, "N/A", authorities);
+    this.uid = uid;
+    this.schacHomeOrganization = schacHomeOrganization;
+  }
 
-    public String getUid() {
-        return uid;
-    }
+  public String getUid() {
+    return uid;
+  }
 
-    public String getSchacHomeOrganization() {
-        return schacHomeOrganization;
-    }
+  public String getSchacHomeOrganization() {
+    return schacHomeOrganization;
+  }
 }

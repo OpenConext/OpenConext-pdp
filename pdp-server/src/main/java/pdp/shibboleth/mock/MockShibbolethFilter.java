@@ -20,49 +20,49 @@ import static pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter.*;
 
 public class MockShibbolethFilter extends GenericFilterBean {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
+  private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
 
-    public MockShibbolethFilter() {
-        LOG.info("====================================");
-        LOG.info("MockShibbolethFilter initializing...");
-        LOG.info("====================================");
+  public MockShibbolethFilter() {
+    LOG.info("====================================");
+    LOG.info("MockShibbolethFilter initializing...");
+    LOG.info("====================================");
+  }
+
+  private static class SetHeader extends HttpServletRequestWrapper {
+
+    private final HashMap<String, String> headers;
+
+    public SetHeader(HttpServletRequest request) {
+      super(request);
+      this.headers = new HashMap<>();
     }
 
-    private static class SetHeader extends HttpServletRequestWrapper {
-
-        private final HashMap<String, String> headers;
-
-        public SetHeader(HttpServletRequest request) {
-            super(request);
-            this.headers = new HashMap<>();
-        }
-
-        public void setHeader(String name, String value) {
-            this.headers.put(name, value);
-        }
-
-        @Override
-        public Enumeration<String> getHeaderNames() {
-            List<String> names = Collections.list(super.getHeaderNames());
-            names.addAll(headers.keySet());
-            return Collections.enumeration(names);
-        }
-
-        @Override
-        public String getHeader(String name) {
-            if (headers.containsKey(name)) {
-                return headers.get(name);
-            }
-            return super.getHeader(name);
-        }
+    public void setHeader(String name, String value) {
+      this.headers.put(name, value);
     }
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
-        wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
-        wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
-        wrapper.setHeader(IS_MEMBER_OF, "surfnet");
-        filterChain.doFilter(wrapper, servletResponse);
+    public Enumeration<String> getHeaderNames() {
+      List<String> names = Collections.list(super.getHeaderNames());
+      names.addAll(headers.keySet());
+      return Collections.enumeration(names);
     }
+
+    @Override
+    public String getHeader(String name) {
+      if (headers.containsKey(name)) {
+        return headers.get(name);
+      }
+      return super.getHeader(name);
+    }
+  }
+
+  @Override
+  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
+    wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
+    wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
+    wrapper.setHeader(IS_MEMBER_OF, "surfnet");
+    filterChain.doFilter(wrapper, servletResponse);
+  }
 }

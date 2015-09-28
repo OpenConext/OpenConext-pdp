@@ -7,9 +7,9 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 public class ShibbolethUserDetailService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
-    @Override
-    public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken authentication) throws UsernameNotFoundException {
-        ShibbolethUser principal = (ShibbolethUser) authentication.getPrincipal();
-        return principal;
-    }
+  @Override
+  public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken authentication) throws UsernameNotFoundException {
+    ShibbolethUser principal = (ShibbolethUser) authentication.getPrincipal();
+    return principal;
+  }
 }
