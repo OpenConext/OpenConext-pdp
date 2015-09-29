@@ -7,7 +7,9 @@ import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
+import org.apache.openaz.xacml.api.pdp.PDPException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
+import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
@@ -44,11 +46,37 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
-  public void testStandAlonePolicy() throws Exception {
-    //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
-    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/OpenConext.pdp.test.Policy.xml");
+  public void testMultiplaAndPolicy() throws Exception {
+    doDecideTest("OpenConext.pdp.test.multiple.and.Policy.xml", "test_request_multiple_and.json", Decision.PERMIT);
+  }
 
-    String payload = IOUtils.toString(new ClassPathResource("xacml/requests/test_request.json").getInputStream());
+  @Test
+  public void testDenyPolicyWithPermit() throws Exception {
+    doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_permit.json", Decision.PERMIT);
+  }
+
+  @Test
+  public void testDenyPolicyWithDeny() throws Exception {
+    doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_deny.json", Decision.DENY);
+  }
+
+  @Test
+  public void testDenyPolicyWithMissingAttribute() throws Exception {
+    Result result = doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE);
+    assertEquals("Missing required attribute", result.getStatus().getStatusMessage());
+  }
+
+  @Test
+  public void testDenyPolicyWithNoPolicyFound() throws Exception {
+    Result result = doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_no_matching_target.json", Decision.NOTAPPLICABLE);
+    assertEquals("No matching root policy found", result.getStatus().getStatusMessage());
+  }
+
+  private Result doDecideTest(String policyFile, final String requestFile, Decision decision) throws IOException, JSONStructureException, PDPException {
+    //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/" + policyFile);
+
+    String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
     Request pdpRequest = JSONRequest.load(payload);
 
     Response pdpResponse = pdpEngine.decide(pdpRequest);
@@ -56,8 +84,9 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
     Result result = pdpResponse.getResults().iterator().next();
 
-    assertEquals(Decision.PERMIT, result.getDecision());
-    assertEquals(1, result.getPolicyIdentifiers().size());
-    assertEquals("http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause", result.getPolicyIdentifiers().iterator().next().getId().stringValue());
+    assertEquals(decision, result.getDecision());
+
+    return result;
   }
+
 }

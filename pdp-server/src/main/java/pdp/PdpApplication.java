@@ -37,7 +37,11 @@ import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collector;
 
 @SpringBootApplication()
 public class PdpApplication {
@@ -147,6 +151,19 @@ public class PdpApplication {
       config.setReturnBodyOnCreate(true);
       return config;
     }
+  }
+
+  public static <T> Collector<T, List<T>, Optional<T>> singletonOptionalCollector() {
+    return Collector.of(ArrayList::new, List::add, (left, right) -> {
+          left.addAll(right);
+          return left;
+        }, list -> {
+          if (list.isEmpty()) {
+            return Optional.empty();
+          }
+          return Optional.of(list.get(0));
+        }
+    );
   }
 
 }

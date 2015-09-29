@@ -33,17 +33,17 @@ I18n.translations.en = {
   },
 
   navigation: {
-    apps: "Services",
-    notifications: "Notifications",
-    history: "History",
-    stats: "Statistics",
+    policies: "Policies",
+    violations: "Violations",
+    playground: "Playground",
     my_idp: "My institute"
   },
 
   policies: {
     name: "Name",
     description: "Description",
-    serviceProviderId: "Service Provider"
+    serviceProviderId: "Service Provider",
+    identityProviderIds: "Identity Providers"
   },
 
   facets: {

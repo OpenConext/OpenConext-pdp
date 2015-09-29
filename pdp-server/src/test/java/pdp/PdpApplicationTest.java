@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static pdp.PdpApplication.singletonOptionalCollector;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
@@ -126,20 +127,6 @@ public class PdpApplicationTest {
     //test the repo for countBy
     Long count = pdpPolicyViolationRepository.countByAssociatedAdviceId(associatedAdviceId);
     assertEquals(1L, count.longValue());
-  }
-
-
-  private <T> Collector<T, List<T>, Optional<T>> singletonOptionalCollector() {
-    return Collector.of(ArrayList::new, List::add, (left, right) -> {
-          left.addAll(right);
-          return left;
-        }, list -> {
-          if (list.isEmpty()) {
-            return Optional.empty();
-          }
-          return Optional.of(list.get(0));
-        }
-    );
   }
 
 }

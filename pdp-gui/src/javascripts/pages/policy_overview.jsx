@@ -59,6 +59,15 @@ App.Pages.PolicyOverview = React.createClass({
     return (
         <div className="table-responsive">
           <table className="table table-bordered" id="policies_table">
+            <thead>
+            <tr className="success">
+              <th className="policy_name_col">{I18n.t("policies.name")}</th>
+              <th className="policy_description_col">{I18n.t("policies.description")}</th>
+              <th className="policy_sp_col">{I18n.t("policies.serviceProviderId")}</th>
+              <th className="policy_idps_col">{I18n.t("policies.identityProviderIds")}</th>
+            </tr>
+            </thead>
+
           </table>
         </div>
     )

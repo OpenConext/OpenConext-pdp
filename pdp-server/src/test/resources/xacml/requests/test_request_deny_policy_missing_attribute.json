@@ -1,0 +1,21 @@
+{
+  "Request": {
+    "ReturnPolicyIdList": true,
+    "CombinedDecision": false,
+    "AccessSubject": {
+      "Attribute": []
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "SPentityID",
+          "Value": "umcn_sp"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "umcn_idp"
+        }
+      ]
+    }
+  }
+}
