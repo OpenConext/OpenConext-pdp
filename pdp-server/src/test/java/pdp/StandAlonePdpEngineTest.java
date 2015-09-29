@@ -9,21 +9,27 @@ import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.api.pdp.PDPException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
+import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import pdp.xacml.ClassPathPolicyFinderFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static org.junit.Assert.assertEquals;
 
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
+
+  private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
   private PDPEngine pdpEngine;
 
@@ -42,48 +48,58 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   @After
   public void after() throws Exception {
     super.after();
-    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "not to be found");
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_FILES, "not to be found");
   }
 
   @Test
   public void testMultiplaAndPolicy() throws Exception {
-    doDecideTest("OpenConext.pdp.test.multiple.and.Policy.xml", "test_request_multiple_and.json", Decision.PERMIT);
+    doDecideTest("test_request_multiple_and.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.and.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithPermit() throws Exception {
-    doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_permit.json", Decision.PERMIT);
+    doDecideTest("test_request_deny_policy_permit.json", Decision.PERMIT, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithDeny() throws Exception {
-    doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_deny.json", Decision.DENY);
+    doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithMissingAttribute() throws Exception {
-    Result result = doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE);
+    Result result = doDecideTest("test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE, "OpenConext.pdp.test.deny.Policy.xml");
     assertEquals("Missing required attribute", result.getStatus().getStatusMessage());
   }
 
   @Test
   public void testDenyPolicyWithNoPolicyFound() throws Exception {
-    Result result = doDecideTest("OpenConext.pdp.test.deny.Policy.xml", "test_request_no_matching_target.json", Decision.NOTAPPLICABLE);
-    assertEquals("No matching root policy found", result.getStatus().getStatusMessage());
+    doDecideTest("test_request_no_matching_target.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
-  private Result doDecideTest(String policyFile, final String requestFile, Decision decision) throws IOException, JSONStructureException, PDPException {
-    //Policy file is lazily loaded by standard XACML implementation and will be picked up by ClassPathPolicyFinderFactory
-    System.setProperty(ClassPathPolicyFinderFactory.POLICY_LOCATION_FILE_KEY, "xacml/test-policies/" + policyFile);
+  @Test
+  public void testConflictingPolicies() throws Exception {
+    Result result = doDecideTest("test_request_conflicting_polices.json", Decision.DENY,
+        "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
+        "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
+        );
+    result.getPolicyIdentifiers()//check the "Id" : "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
+  }
+
+  private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
+    //Policies file will be picked up by ClassPathPolicyFinderFactory
+    System.setProperty(ClassPathPolicyFinderFactory.POLICY_FILES, String.join(",", Arrays.asList(policyFiles)));
 
     String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
     Request pdpRequest = JSONRequest.load(payload);
 
     Response pdpResponse = pdpEngine.decide(pdpRequest);
+
+    LOG.debug(JSONResponse.toString(pdpResponse, true));
+
     assertEquals(1, pdpResponse.getResults().size());
 
     Result result = pdpResponse.getResults().iterator().next();
-
     assertEquals(decision, result.getDecision());
 
     return result;

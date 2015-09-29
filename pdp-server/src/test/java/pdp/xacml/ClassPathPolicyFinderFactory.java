@@ -12,7 +12,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * StdPolicyFinderFactory works with absolute file names and we want to work with classpath resources
@@ -21,13 +27,17 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
 
   private static Logger LOG = LoggerFactory.getLogger(ClassPathPolicyFinderFactory.class);
 
-  public static String POLICY_LOCATION_FILE_KEY = "policy.location.file.key";
+  public static String POLICY_FILES = "policy.files.key";
 
   @Override
-  protected PolicyDef loadPolicyDef(String policyId, Properties properties) {
-    String classPathLocation = System.getProperty(POLICY_LOCATION_FILE_KEY);
-    Assert.notNull(classPathLocation, POLICY_LOCATION_FILE_KEY + " is null");
-    ClassPathResource resource = new ClassPathResource(classPathLocation);
+  protected List<PolicyDef> getPolicyDefs(String propertyName, Properties properties) {
+    String policyFiles = System.getProperty(POLICY_FILES);
+    Assert.notNull(policyFiles, "One ore more comma seperated policy file locations are requried in the " +POLICY_FILES+ " system properties");
+    return Arrays.asList(policyFiles.split(",")).stream().map(policyFile -> loadPolicyDef(policyFile)).collect(toList());
+  }
+
+  private PolicyDef loadPolicyDef(String policyFile) {
+    ClassPathResource resource = new ClassPathResource("xacml/test-policies/"+policyFile);
     try {
       LOG.info("Loading policy file " + getAbsolutePath(resource));
       return DOMPolicyDef.load(resource.getInputStream());

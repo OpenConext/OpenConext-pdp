@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PolicySet xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+                  PolicySetId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.topLevelPolicySetReference"
+                  PolicyCombiningAlgId="urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-unless-permit"
+                  Version="1.0">
+    <Description />
+    <PolicySetDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicySetDefaults>
+    <Target />
+
+    <PolicyIdReference>http://axiomatics.com/alfa/identifier/OpenConext.pdp.SingleAttribute</PolicyIdReference>
+    <PolicyIdReference>OpenConext.pdp.test.conflicting.policies.2.Policy.xml</PolicyIdReference>
+</PolicySet>

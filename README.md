@@ -104,3 +104,11 @@ When the application actually gets deployed to a meaningful platform, it is pre-
 environment specific properties in the group_vars. See the project OpenConext-deploy and the role pdp for more information.
 
 For details, see the [Spring Boot manual](http://docs.spring.io/spring-boot/docs/1.2.1.RELEASE/reference/htmlsingle/).
+
+### OpenAZ dependency
+
+The OpenConext-pdp project heavily uses the PD framework https://github.com/apache/incubator-openaz. The repo is cloned in 
+https://github.com/oharsta/incubator-openaz-openconext and changes - e.g. distributionManagement and minor optimizations - are
+pushed to openconext/develop branch in https://github.com/oharsta/incubator-openaz-openconext.
+
+To pull in changes from upstream run `./git-fetch-upstream.sh`
