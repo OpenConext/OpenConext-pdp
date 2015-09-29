@@ -1,16 +1,11 @@
 package pdp;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.openaz.xacml.api.Decision;
-import org.apache.openaz.xacml.api.Request;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
-import org.apache.openaz.xacml.api.pdp.PDPException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
-import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
@@ -24,8 +19,10 @@ import pdp.xacml.ClassPathPolicyFinderFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
@@ -82,8 +79,11 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     Result result = doDecideTest("test_request_conflicting_polices.json", Decision.DENY,
         "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
         "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
-        );
-    result.getPolicyIdentifiers()//check the "Id" : "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
+    );
+    Optional<IdReference> policy = result.getPolicyIdentifiers().stream().collect(PdpApplication.singletonOptionalCollector());
+    assertTrue(policy.isPresent());
+    //the violated policy
+    assertEquals("OpenConext.pdp.test.conflicting.policies.2.Policy.xml", policy.get().getId().stringValue());
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {

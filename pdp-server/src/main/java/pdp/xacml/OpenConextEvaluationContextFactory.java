@@ -65,6 +65,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     String combiningAlgorithm = XACMLProperties.getProperties().getProperty(OpenAZPDPProperties.PROP_POLICYFINDERFACTORY_COMBINEROOTPOLICIES, "urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides");
     CombiningAlgorithm<PolicySetChild> algorithm = CombiningAlgorithmFactory.newInstance()
         .getPolicyCombiningAlgorithm(new IdentifierImpl(combiningAlgorithm));
+
     LOG.info("Combining root policies with " + algorithm);
 
     PolicySet root = new PolicySet();
