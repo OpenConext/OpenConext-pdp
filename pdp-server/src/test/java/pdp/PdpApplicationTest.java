@@ -25,14 +25,16 @@ import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static pdp.PdpApplication.singletonOptionalCollector;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
@@ -98,6 +100,11 @@ public class PdpApplicationTest {
     if (definition.getAttributes().stream().anyMatch(attr -> attr.getName().equalsIgnoreCase(GROUP_URN))) {
       permitPolicyRequest.addOrReplaceAccessSubjectAttribute(NAME_ID, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN);
     }
+
+    JsonPolicyRequest indeterminatePolicyRequest = permitPolicyRequest.copy();
+    indeterminatePolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, UUID.randomUUID().toString());
+    indeterminatePolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, UUID.randomUUID().toString());
+
     try {
       //We can't use Transactional rollback as the Application runs in a different process.
       pdpPolicyViolationRepository.deleteAll();
@@ -107,6 +114,7 @@ public class PdpApplicationTest {
       postDecide(policy, denyIndeterminatePolicyRequest,
           definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
           definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
+      postDecide(policy, indeterminatePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
 
       assertViolations(definition.getDenyId());
     } catch (Exception e) {
