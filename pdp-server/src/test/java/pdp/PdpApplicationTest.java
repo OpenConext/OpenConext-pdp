@@ -101,9 +101,9 @@ public class PdpApplicationTest {
       permitPolicyRequest.addOrReplaceAccessSubjectAttribute(NAME_ID, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN);
     }
 
-    JsonPolicyRequest indeterminatePolicyRequest = permitPolicyRequest.copy();
-    indeterminatePolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, UUID.randomUUID().toString());
-    indeterminatePolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, UUID.randomUUID().toString());
+    JsonPolicyRequest notApplicablePolicyRequest = permitPolicyRequest.copy();
+    notApplicablePolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, UUID.randomUUID().toString());
+    notApplicablePolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, UUID.randomUUID().toString());
 
     try {
       //We can't use Transactional rollback as the Application runs in a different process.
@@ -114,7 +114,7 @@ public class PdpApplicationTest {
       postDecide(policy, denyIndeterminatePolicyRequest,
           definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
           definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
-      postDecide(policy, indeterminatePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
+      postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
 
       assertViolations(definition.getDenyId());
     } catch (Exception e) {
