@@ -1,12 +1,15 @@
 package pdp.xacml;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.pdp.policy.*;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicyDefinition;
 
@@ -91,6 +94,9 @@ public class PdpPolicyDefinitionParser {
     if (CollectionUtils.isEmpty(anyOfs)) {
       throw new PdpParseException("Expected at least 1 anyOf in the " + decision + " rule for " + decision + " policy " + policyXml);
     }
+    if (anyOfs.size() > 1) {
+      definition.setAllAttributesMustMatch(true);
+    }
     List<AllOf> allOfs = anyOfs.stream().map(anyOf -> iteratorToList(anyOf.getAllOfs())).flatMap(allOf -> allOf.stream()).collect(toList());
     if (CollectionUtils.isEmpty(allOfs)) {
       throw new PdpParseException("Expected at least one allOf in the " + decision + " rule for " + decision + " policy " + policyXml);
@@ -143,7 +149,6 @@ public class PdpPolicyDefinitionParser {
     }
     String denyAttributeValue = (String) ((AttributeValueExpression) attributeAssignmentExpressions.get(0).getExpression()).getAttributeValue().getValue();
     definition.setDenyAdvice(denyAttributeValue);
-    definition.setDenyId(adviceExpression.getAdviceId().getUri().toString());
   }
 
   private Policy parsePolicy(String policyXml) {
@@ -159,4 +164,6 @@ public class PdpPolicyDefinitionParser {
   private <E> List<E> iteratorToList(Iterator<E> iterator) {
     return stream(spliteratorUnknownSize(iterator, ORDERED), false).collect(toCollection(ArrayList::new));
   }
+
+
 }

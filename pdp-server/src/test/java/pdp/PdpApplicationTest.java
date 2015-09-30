@@ -16,6 +16,7 @@ import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import pdp.domain.*;
@@ -25,9 +26,10 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.PdpApplication.singletonOptionalCollector;
@@ -74,7 +76,7 @@ public class PdpApplicationTest {
 
     JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
 
-    // We don't want INDETERMINATE Decisions so we ensure the SP and  - optional - IDP is set on the JSON request
+    // We don't want INDETERMINATE Decisions based on the Target of the policy so we ensure the SP and  - optional - IDP is set on the JSON request
     permitPolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, definition.getServiceProviderId());
     if (definition.getIdentityProviderIds().isEmpty()) {
       permitPolicyRequest.deleteAttribute(IDP_ENTITY_ID);
@@ -82,12 +84,14 @@ public class PdpApplicationTest {
       permitPolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, definition.getIdentityProviderIds().get(0));
     }
     JsonPolicyRequest denyPolicyRequest = permitPolicyRequest.copy();
+    JsonPolicyRequest denyIndeterminatePolicyRequest = permitPolicyRequest.copy();
 
     Set<Map.Entry<String, List<PdpAttribute>>> entries = definition.getAttributes().stream().collect(Collectors.groupingBy(PdpAttribute::getName)).entrySet();
     entries.forEach(entry -> {
       //The permitPolicyRequest is mangled so every required attribute from the Policy is included
       permitPolicyRequest.addOrReplaceAccessSubjectAttribute(entry.getKey(), entry.getValue().get(0).getValue());
-      denyPolicyRequest.deleteAttribute(entry.getKey());
+      denyPolicyRequest.addOrReplaceAccessSubjectAttribute(entry.getKey(), "will-not-match-" + UUID.randomUUID().toString());
+      denyIndeterminatePolicyRequest.deleteAttribute(entry.getKey());
     });
 
     //See VootClientConfig#mockVootClient for groups to be returned and VootClientConfig#URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN for the user it expects
@@ -98,8 +102,11 @@ public class PdpApplicationTest {
       //We can't use Transactional rollback as the Application runs in a different process.
       pdpPolicyViolationRepository.deleteAll();
 
-      postDecide(permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
-      postDecide(denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+      postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
+      postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+      postDecide(policy, denyIndeterminatePolicyRequest,
+          definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
+          definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
 
       assertViolations(definition.getDenyId());
     } catch (Exception e) {
@@ -108,25 +115,23 @@ public class PdpApplicationTest {
     }
   }
 
-  private void postDecide(JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {
+  private void postDecide(PdpPolicy policy, JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {
     final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
     String jsonRequest = objectMapper.writeValueAsString(policyRequest);
     HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
     String jsonResponse = restTemplate.postForObject(url, request, String.class);
     Response response = JSONResponse.load(jsonResponse);
-    assertEquals(1, response.getResults().size());
+    assertEquals(policy.getName(), 1, response.getResults().size());
     Result result = response.getResults().iterator().next();
-    assertEquals(expectedDecision, result.getDecision());
-    assertEquals(statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());
+    assertEquals(policy.getName(), expectedDecision, result.getDecision());
+    assertEquals(policy.getName(), statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());
   }
 
-  private void assertViolations(String associatedAdviceId) throws Exception {
+  private void assertViolations(String policyId) throws Exception {
     //test the repo
-    Optional<PdpPolicyViolation> violation = pdpPolicyViolationRepository.findByAssociatedAdviceId(associatedAdviceId).stream().collect(singletonOptionalCollector());
-    assertTrue(violation.isPresent());
-    //test the repo for countBy
-    Long count = pdpPolicyViolationRepository.countByAssociatedAdviceId(associatedAdviceId);
-    assertEquals(1L, count.longValue());
+    List<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findByPolicyId(policyId).stream().collect(toList());
+    assertFalse(policyId, CollectionUtils.isEmpty(violations));
+    violations.forEach(violation -> assertTrue(violation.isValid()));
   }
 
 }

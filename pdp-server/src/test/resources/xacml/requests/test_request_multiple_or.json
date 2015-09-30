@@ -1,0 +1,26 @@
+{
+  "Request": {
+    "ReturnPolicyIdList": true,
+    "CombinedDecision": false,
+    "AccessSubject": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:mace:terena.org:attribute-def:edu",
+          "Value": "what"
+        }
+      ]
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "SPentityID",
+          "Value": "avans_sp"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "avans_idp"
+        }
+      ]
+    }
+  }
+}

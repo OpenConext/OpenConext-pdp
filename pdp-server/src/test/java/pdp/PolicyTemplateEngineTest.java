@@ -22,15 +22,32 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
     definition.setName("Name Instelling");
     definition.setDescription("The long description");
     definition.setDenyAdvice("Sorry, no access");
-    definition.setAttributes(Arrays.asList(new PdpAttribute("attr1", "value1"), new PdpAttribute("attr2", "value2")));
+    definition.setAttributes(Arrays.asList(
+        new PdpAttribute("attr1", "value1"),
+        new PdpAttribute("attr1", "value1a"),
+        new PdpAttribute("attr2", "value2")));
     definition.setIdentityProviderIds(Arrays.asList("http://mock-idp", "http://mock-ipd2"));
     definition.setServiceProviderId("http://mock-sp");
-    definition.setDenyRule(true);
   }
 
+  @Test
+  public void testTemplateWithLogicalOr() throws Exception {
+    assertEquality();
+  }
 
   @Test
-  public void testTemplate() throws Exception {
+  public void testTemplateWithLogicalAnd() throws Exception {
+    definition.setAllAttributesMustMatch(true);
+    assertEquality();
+  }
+
+  @Test
+  public void testTemplateWithDenyRule() throws Exception {
+    definition.setDenyRule(true);
+    assertEquality();
+  }
+
+  private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
     PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getName(), policyXml);
     assertEquals(fromPolicyXml, definition);

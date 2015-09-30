@@ -2,6 +2,7 @@ package pdp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.CollectionUtils;
+import pdp.PolicyTemplateEngine;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -34,7 +35,7 @@ public class PdpPolicyDefinition {
 
   private boolean denyRule;
 
-  private String denyId;
+  private boolean allAttributesMustMatch;
 
   public PdpPolicyDefinition() {
   }
@@ -96,15 +97,19 @@ public class PdpPolicyDefinition {
   }
 
   public String getDenyId() {
-    return denyId;
+    return getNameId();
   }
 
-  public void setDenyId(String denyId) {
-    this.denyId = denyId;
+  public boolean isAllAttributesMustMatch() {
+    return allAttributesMustMatch;
+  }
+
+  public void setAllAttributesMustMatch(boolean allAttributesMustMatch) {
+    this.allAttributesMustMatch = allAttributesMustMatch;
   }
 
   public String getNameId() {
-    return name.replace(" ", "_").toLowerCase();
+    return PolicyTemplateEngine.getNameId(name);
   }
 
   @JsonIgnore
@@ -122,32 +127,33 @@ public class PdpPolicyDefinition {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    PdpPolicyDefinition defintion = (PdpPolicyDefinition) o;
-    return Objects.equals(denyRule, defintion.denyRule) &&
-        Objects.equals(name, defintion.name) &&
-        Objects.equals(description, defintion.description) &&
-        Objects.equals(serviceProviderId, defintion.serviceProviderId) &&
-        Objects.equals(identityProviderIds, defintion.identityProviderIds) &&
-        Objects.equals(attributes, defintion.attributes) &&
-        Objects.equals(denyAdvice, defintion.denyAdvice);
+    PdpPolicyDefinition that = (PdpPolicyDefinition) o;
+    return Objects.equals(denyRule, that.denyRule) &&
+        Objects.equals(allAttributesMustMatch, that.allAttributesMustMatch) &&
+        Objects.equals(name, that.name) &&
+        Objects.equals(description, that.description) &&
+        Objects.equals(serviceProviderId, that.serviceProviderId) &&
+        Objects.equals(identityProviderIds, that.identityProviderIds) &&
+        Objects.equals(attributes, that.attributes) &&
+        Objects.equals(denyAdvice, that.denyAdvice) ;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(name, description, serviceProviderId, identityProviderIds, attributes, denyAdvice, denyRule);
+    return Objects.hash(name, description, serviceProviderId, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
   }
 
   @Override
   public String toString() {
-    return "PdpPolicyDefinition{" +
-        "\n" + "name='" + name + '\'' +
-        "\n" + ", description='" + description + '\'' +
-        "\n" + ", serviceProviderId='" + serviceProviderId + '\'' +
-        "\n" + ", identityProviderIds=" + identityProviderIds +
-        "\n" + ", attributes=" + attributes +
-        "\n" + ", denyAdvice='" + denyAdvice + '\'' +
-        "\n" + ", denyRule=" + denyRule +
-        "\n" + '}';
+    return "PdpPolicyDefinition{" +"\n" +
+        "name='" + name + '\'' +"\n" +
+        ", description='" + description + '\'' +"\n" +
+        ", serviceProviderId='" + serviceProviderId + '\'' +"\n" +
+        ", identityProviderIds=" + identityProviderIds +"\n" +
+        ", attributes=" + attributes +"\n" +
+        ", denyAdvice='" + denyAdvice + '\'' +"\n" +
+        ", denyRule=" + denyRule +"\n" +
+        ", allAttributesMustMatch=" + allAttributesMustMatch +"\n" +
+        '}';
   }
-
 }

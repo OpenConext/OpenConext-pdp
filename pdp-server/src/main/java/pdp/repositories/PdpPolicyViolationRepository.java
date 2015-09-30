@@ -8,7 +8,9 @@ import java.util.List;
 
 public interface PdpPolicyViolationRepository extends CrudRepository<PdpPolicyViolation, Long> {
 
-  List<PdpPolicyViolation> findByAssociatedAdviceId(@Param("associatedAdviceId") String associatedAdviceId);
+  String NO_POLICY_ID = "no_policy_id";
 
-  Long countByAssociatedAdviceId(@Param("associatedAdviceId") String associatedAdviceId);
+  List<PdpPolicyViolation> findByPolicyId(@Param("policyId") String policyId);
+
+  Long countByPolicyId(@Param("policyId") String policyId);
 }

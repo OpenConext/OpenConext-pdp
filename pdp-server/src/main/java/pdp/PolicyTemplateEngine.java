@@ -3,6 +3,7 @@ package pdp;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
+import org.springframework.util.Assert;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
@@ -11,8 +12,6 @@ import java.io.StringWriter;
 public class PolicyTemplateEngine {
 
   private MustacheFactory mf = new DefaultMustacheFactory();
-
-  public static final String adviceIdPrefix = "urn:surfconext:xacml:advice:id:";
 
   public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
     Mustache mustache = mf.compile("templates/policy-definition.xml");
@@ -24,4 +23,10 @@ public class PolicyTemplateEngine {
       throw new RuntimeException(e);
     }
   }
+
+  public static String getNameId(String name) {
+    Assert.notNull(name, "name is null");
+    return name.replace(" ", "_").toLowerCase();
+  }
+
 }

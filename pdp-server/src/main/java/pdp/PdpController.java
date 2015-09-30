@@ -1,11 +1,10 @@
 package pdp;
 
-import org.apache.openaz.xacml.api.Advice;
-import org.apache.openaz.xacml.api.Request;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
+import org.apache.openaz.xacml.std.StdMutableRequest;
+import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -27,12 +26,14 @@ import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PDPEngineHolder;
+import pdp.xacml.PdpParseException;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import javax.validation.Valid;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -42,8 +43,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
+import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static pdp.PdpApplication.singletonOptionalCollector;
+import static pdp.repositories.PdpPolicyViolationRepository.NO_POLICY_ID;
 
 @RestController
 @RequestMapping(produces = {"application/json"})
@@ -80,20 +84,31 @@ public class PdpController {
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
 
-    Request pdpRequest = JSONRequest.load(payload);
+    Request request = JSONRequest.load(payload);
+
+    if (!request.getReturnPolicyIdList()) {
+      request = createReturnPolicyIdListRequest(request);
+    }
 
     Response pdpResponse;
     try {
       lock.readLock().lock();
-      pdpResponse = pdpEngine.decide(pdpRequest);
+      pdpResponse = pdpEngine.decide(request);
     } finally {
       lock.readLock().unlock();
     }
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
     LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
 
-    reportPolicyViolation(pdpResponse, payload);
+    reportPolicyViolation(pdpResponse, response, payload);
     return response;
+  }
+
+  private Request createReturnPolicyIdListRequest(Request originalRequest) {
+    StdMutableRequest request = new StdMutableRequest();
+    originalRequest.getRequestAttributes().stream().forEach(reqAttr -> request.add(reqAttr));
+    request.setReturnPolicyIdList(true);
+    return new StdRequest(originalRequest);
   }
 
   @RequestMapping(method = GET, value = "/internal/policies")
@@ -127,15 +142,24 @@ public class PdpController {
     return authentication;
   }
 
-  private void reportPolicyViolation(Response pdpResponse, String payload) {
+  private void reportPolicyViolation(Response pdpResponse, String response, String payload) {
     Collection<Result> results = pdpResponse.getResults();
-    List<Result> denies = results.stream().filter(result -> result.getDecision().equals(DENY)).collect(toList());
-    if (!CollectionUtils.isEmpty(denies)) {
-      Collection<Advice> associatedAdvices = denies.get(0).getAssociatedAdvice();
-      String associatedAdviceId = CollectionUtils.isEmpty(associatedAdvices) ?
-          "No associated advice present on Policy. Please check all policies and repair those without Deny advice" : associatedAdvices.iterator().next().getId().stringValue();
-      pdpPolicyViolationRepository.save(new PdpPolicyViolation(associatedAdviceId, payload));
+    List<Result> deniesOrIndeterminates = results.stream().filter(result ->
+        result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).collect(toList());
+    if (!CollectionUtils.isEmpty(deniesOrIndeterminates)) {
+      String policyId = getPolicyId(deniesOrIndeterminates);
+      pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyId, payload, response));
     }
+  }
+
+  private String getPolicyId(List<Result> deniesOrIndeterminates) {
+    Result result = deniesOrIndeterminates.get(0);
+    Collection<IdReference> policyIdentifiers = result.getPolicyIdentifiers();
+    Collection<IdReference> policySetIdentifiers = result.getPolicySetIdentifiers();
+    Optional<IdReference> idReference = !CollectionUtils.isEmpty(policyIdentifiers) ?
+        policyIdentifiers.stream().collect(singletonOptionalCollector()) :
+        policySetIdentifiers.stream().collect(singletonOptionalCollector());
+    return idReference.isPresent() ? idReference.get().getId().stringValue() : NO_POLICY_ID;
   }
 
   private void refreshPolicies() {

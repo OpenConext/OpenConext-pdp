@@ -30,7 +30,8 @@ public class DevelopmentPrePolicyLoader {
   public List<PdpPolicy> getPolicies() {
     List<File> policyFiles;
     try {
-      policyFiles = Arrays.asList(resource.getFile().listFiles((dir, name) -> name.endsWith(".xml")));
+      policyFiles = Arrays.asList(resource.getFile().listFiles((dir, name) ->
+          name.endsWith("xml")));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

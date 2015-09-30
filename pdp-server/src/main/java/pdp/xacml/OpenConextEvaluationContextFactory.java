@@ -1,5 +1,6 @@
 package pdp.xacml;
 
+import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.pip.PIPFinder;
 import org.apache.openaz.xacml.pdp.policy.*;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
@@ -14,16 +15,20 @@ import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pdp.PolicyTemplateEngine;
+import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.teams.VootClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.StreamSupport.stream;
+import static pdp.PolicyTemplateEngine.getNameId;
 
 public class OpenConextEvaluationContextFactory extends StdEvaluationContextFactory {
 
@@ -46,13 +51,13 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     if (cachePolicies) {
       return super.getPolicyFinder();
     } else {
-        return loadPolicyFinder();
+      return loadPolicyFinder();
     }
   }
 
-  private PolicyFinder loadPolicyFinder()  {
+  private PolicyFinder loadPolicyFinder() {
     Collection<PolicySetChild> polices =
-        stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> (PolicySetChild) convertToPolicyDef(policy.getPolicyXml())).collect(toCollection(ArrayList::new));
+        stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> (PolicySetChild) convertToPolicyDef(policy)).collect(toCollection(ArrayList::new));
     LOG.info("(Re)-loaded {} policies from the database", polices.size());
     try {
       return new StdPolicyFinder(combinePolicies(polices), null);
@@ -77,11 +82,21 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     return root;
   }
 
-  private PolicyDef convertToPolicyDef(String policyXml) {
+  private PolicyDef convertToPolicyDef(PdpPolicy pdpPolicy) {
     try {
-      return DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+      PolicyDef policyDef = DOMPolicyDef.load(new ByteArrayInputStream(pdpPolicy.getPolicyXml().replaceFirst("\n", "").getBytes()));
+      policyDef.setIdentifier(new IdentifierImpl(getNameId(pdpPolicy.getName())));
+      ((Policy) policyDef).getRules().forEachRemaining(rule -> {
+            if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {
+              rule.getAdviceExpressions().forEachRemaining(adviceExpression ->
+                      adviceExpression.setAdviceId(new IdentifierImpl(getNameId(pdpPolicy.getName())))
+              );
+            }
+          }
+      );
+      return policyDef;
     } catch (DOMStructureException e) {
-      LOG.error("Error loading policy from " + policyXml, e);
+      LOG.error("Error loading policy from " + pdpPolicy.getPolicyXml(), e);
       return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
     }
   }

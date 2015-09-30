@@ -1,9 +1,8 @@
 package pdp.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
 import java.sql.Date;
 
 @Entity(name = "pdp_policy_violations")
@@ -13,10 +12,13 @@ public class PdpPolicyViolation {
   private Long id;
 
   @Column(nullable = false)
-  private String associatedAdviceId;
+  private String policyId;
 
   @Column(nullable = false)
   private String jsonRequest;
+
+  @Column(nullable = false)
+  private String response;
 
   @Column()
   private Date created;
@@ -24,9 +26,10 @@ public class PdpPolicyViolation {
   public PdpPolicyViolation() {
   }
 
-  public PdpPolicyViolation(String associatedAdviceId, String jsonRequest) {
-    this.associatedAdviceId = associatedAdviceId;
+  public PdpPolicyViolation(String policyId, String jsonRequest, String response) {
+    this.policyId = policyId;
     this.jsonRequest = jsonRequest;
+    this.response = response;
   }
 
   public Long getId() {
@@ -37,12 +40,12 @@ public class PdpPolicyViolation {
     this.id = id;
   }
 
-  public String getAssociatedAdviceId() {
-    return associatedAdviceId;
+  public String getPolicyId() {
+    return policyId;
   }
 
-  public void setAssociatedAdviceId(String associatedAdviceId) {
-    this.associatedAdviceId = associatedAdviceId;
+  public void setPolicyId(String policyId) {
+    this.policyId = policyId;
   }
 
   public String getJsonRequest() {
@@ -59,5 +62,20 @@ public class PdpPolicyViolation {
 
   public void setCreated(Date created) {
     this.created = created;
+  }
+
+  public String getResponse() {
+    return response;
+  }
+
+  public void setResponse(String response) {
+    this.response = response;
+  }
+
+  @Transient
+  public boolean isValid() {
+    return StringUtils.hasText(policyId)
+        && StringUtils.hasText(jsonRequest)
+        && StringUtils.hasText(response);
   }
 }
