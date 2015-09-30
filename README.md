@@ -82,6 +82,20 @@ it easily into the desired - yet very complex - XML format.
 Using the internal XACML Policy class hierarchy for communication back and forth with the client was not an option because
 of the cyclic dependencies in the hierarchy (and not desirable because of the complexity it would have caused).
 
+### Policy limitations
+
+The policies that can be created are limited in functionality:
+
+* All string comparisons are 'urn:oasis:names:tc:xacml:1.0:function:string-equal'
+* Every policy has exactly one Permit rule and one Deny rule
+* The target of the policy is limited to exactly one SPENtityID and zero or more IDPEntityIDs
+* A policy is either a Deny policy or a Permit policy
+* All policies have a RuleCombiningAlgId of 'urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable'
+* All attributes with the same name are treated with the logical OR operator
+* All attributes with a different name are exclusively treated with the logical OR or AND operator depending on the type of policy
+* Rule targets if not empty only can contain the attributes of the category 'urn:oasis:names:tc:xacml:1.0:subject-category:access-subject'
+* The combining set of polices has the policy combining algorithm 'urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides'
+
 ### Local database content
 
 We don't provide flyway migrations to load initial policies. 
