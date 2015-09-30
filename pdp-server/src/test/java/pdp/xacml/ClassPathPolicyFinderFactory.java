@@ -52,7 +52,7 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
     boolean parsePolicyXml = Boolean.parseBoolean(System.getProperty(PARSE_POLICY_XML));
     ClassPathResource resource = new ClassPathResource("xacml/test-policies/" + policyFile);
     if (parsePolicyXml) {
-      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(policyFile, IOUtils.toString(resource.getInputStream()));
+      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(1L, policyFile, IOUtils.toString(resource.getInputStream()));
       String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
       return IOUtils.toInputStream(policyXml);
     } else {

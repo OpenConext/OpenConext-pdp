@@ -18,6 +18,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static pdp.xacml.PdpPolicyDefinitionParser.GROUP_URN;
 import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
 
@@ -57,8 +58,8 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     Attribute attribute = new StdAttribute(attributeCategory,
         identifierAttribute,
         Collections.EMPTY_LIST, null, true);
-    empty = new StdSinglePIPResponse(attribute);
 
+    empty = new StdSinglePIPResponse(attribute);
   }
 
   @Override
@@ -103,7 +104,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
       return empty;
     }
     Identifier groupNameDataTypeId = providedAttribute.getDataTypeId();
-    List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<>(groupNameDataTypeId, group)).collect(Collectors.toList());
+    List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<>(groupNameDataTypeId, group)).collect(toList());
     Attribute responseAttr = new StdAttribute(providedAttribute.getCategory(), providedAttribute.getAttributeId(), stdAttributeValues, null, true);
     return new StdSinglePIPResponse(responseAttr);
   }

@@ -30,9 +30,8 @@ App.Components.LanguageSelector = React.createClass({
     return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (I18n.currentLocale() != locale) {
-        window.location.search = "lang=" + locale;
-      }
-    }
+      I18n.locale = locale;
+      window.location.href = "/?lang="+locale;
+    }.bind(this);
   }
 });

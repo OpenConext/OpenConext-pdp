@@ -74,7 +74,7 @@ public class PdpApplicationTest {
   }
 
   private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) {
-    PdpPolicyDefinition definition = policyDefinitionParser.parse(policy.getName(), policy.getPolicyXml());
+    PdpPolicyDefinition definition = policyDefinitionParser.parse(policy);
 
     JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
 

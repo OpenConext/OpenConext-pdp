@@ -114,7 +114,7 @@ public class PdpController {
   @RequestMapping(method = GET, value = "/internal/policies")
   public List<PdpPolicyDefinition> policyDefinitions() throws DOMStructureException {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> pdpPolicyDefinitionParser.parse(policy.getName(), policy.getPolicyXml())).collect(toList());
+    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
     return policies;
   }
 

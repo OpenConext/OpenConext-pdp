@@ -19,6 +19,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
   @Before
   public void before() {
     definition = new PdpPolicyDefinition();
+    definition.setId(1L);
     definition.setName("Name Instelling");
     definition.setDescription("The long description");
     definition.setDenyAdvice("Sorry, no access");
@@ -49,7 +50,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
   private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
-    PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getName(), policyXml);
+    PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getId(), definition.getName(), policyXml);
     assertEquals(fromPolicyXml, definition);
   }
 }

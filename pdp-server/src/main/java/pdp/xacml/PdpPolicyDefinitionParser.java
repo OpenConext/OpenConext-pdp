@@ -11,6 +11,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpAttribute;
+import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.ByteArrayInputStream;
@@ -35,11 +36,16 @@ public class PdpPolicyDefinitionParser {
 
   public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
 
-  public PdpPolicyDefinition parse(String policyName, String policyXml) {
+  public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
+    return parse(pdpPolicy.getId(), pdpPolicy.getName(), pdpPolicy.getPolicyXml());
+  }
+
+  public PdpPolicyDefinition parse(Long id, String policyName, String policyXml) {
     PdpPolicyDefinition definition = new PdpPolicyDefinition();
 
     Policy policy = parsePolicy(policyXml);
 
+    definition.setId(id);
     definition.setName(policyName);
     definition.setDescription(policy.getDescription());
 
