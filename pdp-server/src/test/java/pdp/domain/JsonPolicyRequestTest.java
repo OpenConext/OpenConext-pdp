@@ -23,6 +23,7 @@ public class JsonPolicyRequestTest {
     JsonPolicyRequest.Request request = new JsonPolicyRequest.Request();
     JsonPolicyRequest policyRequest = new JsonPolicyRequest(request);
     request.returnPolicyIdList = true;
+
     List<JsonPolicyRequest.Attribute> accessSubjectAttributes = request.accessSubject.attributes;
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:schacHomeOrganization", "surfnet.nl"));
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:edu", "what"));

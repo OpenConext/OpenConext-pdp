@@ -6,7 +6,7 @@ App.Controllers.Policies = {
         this.overview.bind(this)
     );
 
-    page("/policies/:id/",
+    page("/policy/:id/",
         this.loadPolicy.bind(this),
         this.detail.bind(this)
     );
@@ -20,16 +20,10 @@ App.Controllers.Policies = {
   },
 
   loadPolicy: function (ctx, next) {
-    if (ctx.init && ctx.init.policy) {
-      ctx.policy = ctx.init.policy;
+    $.get(App.apiUrl("/internal/policies/" + ctx.params.id), function (data) {
+      ctx.policy = data;
       next();
-    } else {
-      $.get(App.apiUrl("/internal/policies/id/" + ctx.params.id), function (data) {
-        ctx.policy = data;
-        //TODO App.apiUrl("/pdpPolicyViolations/search/findByAssociatedAdviceId?associatedAdviceId=http%3A%2F%2Fexample.com%2Fadvice%2FreasonForDeny
-        next();
-      });
-    }
+    });
   },
 
   overview: function (ctx) {
@@ -38,8 +32,7 @@ App.Controllers.Policies = {
 
   detail: function (ctx) {
     App.render(App.Pages.PolicyDetail({
-      key: "policies",
-      policies: ctx.policies,
+      key: "policy",
       policy: ctx.policy
     }));
   }

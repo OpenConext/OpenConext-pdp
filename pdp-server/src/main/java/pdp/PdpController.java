@@ -16,10 +16,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
@@ -116,6 +113,13 @@ public class PdpController {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
     return policies;
+  }
+
+  @RequestMapping(method = GET, value = "/internal/policies/{id}")
+  public PdpPolicyDefinition policyDefinition(@PathVariable Long id) throws DOMStructureException {
+    PdpPolicy policy = pdpPolicyRepository.findOne(id);
+    //TODO ensure the violations are also in there
+    return pdpPolicyDefinitionParser.parse(policy);
   }
 
   @RequestMapping(method = POST, value = "/internal/policies")

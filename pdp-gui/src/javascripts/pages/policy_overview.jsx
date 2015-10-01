@@ -8,27 +8,34 @@ App.Pages.PolicyOverview = React.createClass({
 
   componentDidMount: function () {
     var self = this;
-    $('#policies_table').DataTable({
-      'ajax': {
-        url: '/pdp/api/internal/policies',
-        dataSrc: ''
-      },
-      'columns': [
-        {'data': 'name'},
-        {'data': 'description'},
-        {'data': 'serviceProviderId'},
-        {'data': 'identityProviderIds'},
-        {
-          'searchable': false, 'orderable': false, 'data': null, 'render': function (data, type, row) {
-          return '<a class="red" href="/policy/' + row.id + '"><i class="fa fa-remove"></i></a>' +
-              '<a href="/policy/' + row.id + '"><i class="fa fa-edit"></i></a>';
-        }
-        }
-      ]
-    });
+    $('#policies_table').DataTable({});
+  },
+
+  handleShowPolicyDetail: function (policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      page("/policy/:id", {id: policy.id});
+    }
   },
 
   render: function () {
+    var self = this;
+    var renderRows = this.props.policies.map(function (policy, index) {
+      return (
+          <tr key={policy.id}>
+            <td>{policy.name}</td>
+            <td>{policy.description}</td>
+            <td>{policy.serviceProviderId}</td>
+            <td>{policy.identityProviderIds}</td>
+            <td>
+              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}>
+                <i className="fa fa-edit"></i>
+            </a>
+            <a className="red" href="#"><i className="fa fa-remove"></i></a></td>
+          </tr>)
+    });
+
     return (
         <div>
           <div className="new-policy"><a className="c-button" href="#">New Policy</a></div>
@@ -43,7 +50,9 @@ App.Pages.PolicyOverview = React.createClass({
                 <th className='policy_controls'></th>
               </tr>
               </thead>
-
+              <tbody>
+              {renderRows}
+              </tbody>
             </table>
           </div>
         </div>
