@@ -3,13 +3,15 @@ package pdp.domain;
 public class EntityMetaData {
 
   private final String entityId;
+  private final String institutionId;
   private final String descriptionEn;
   private final String nameEn;
   private final String descriptionNl;
   private final String nameNl;
 
-  public EntityMetaData(String entityId, String descriptionEn, String nameEn, String descriptionNl, String nameNl) {
+  public EntityMetaData(String entityId, String institutionId, String descriptionEn, String nameEn, String descriptionNl, String nameNl) {
     this.entityId = entityId;
+    this.institutionId= institutionId;
     this.descriptionEn = descriptionEn;
     this.nameEn = nameEn;
     this.descriptionNl = descriptionNl;
@@ -34,5 +36,9 @@ public class EntityMetaData {
 
   public String getNameNl() {
     return nameNl;
+  }
+
+  public String getInstitutionId() {
+    return institutionId;
   }
 }

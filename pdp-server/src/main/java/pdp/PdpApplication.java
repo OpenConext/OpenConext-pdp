@@ -29,6 +29,9 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.serviceregistry.ServiceRegistry;
+import pdp.serviceregistry.UrlResourceServiceRegistry;
 import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import pdp.shibboleth.ShibbolethUserDetailService;
 import pdp.shibboleth.mock.MockShibbolethFilter;
@@ -73,6 +76,19 @@ public class PdpApplication {
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
   }
 
+  @Bean
+  @Profile("!production")
+  public ServiceRegistry classPathResourceServiceRegistry() {
+    return new ClassPathResourceServiceRegistry();
+  }
+
+  @Bean
+  @Profile("production")
+  public ServiceRegistry urlResourceServiceRegistry(@Value("${initial.delay.metadata.refresh.minutes}") int initialDelay,
+                                                    @Value("${period.metadata.refresh.minutes}") int period) {
+    return new UrlResourceServiceRegistry(initialDelay, period);
+  }
+
   @Configuration
   @EnableWebSecurity
   public static class ShibbolethSecurityConfig extends WebSecurityConfigurerAdapter {
@@ -82,6 +98,9 @@ public class PdpApplication {
 
     @Value("${policy.enforcement.point.user.password}")
     private String policyEnforcementPointPassword;
+
+    @Autowired
+    private ServiceRegistry serviceRegistry;
 
     @Bean
     @Profile("dev")
@@ -112,7 +131,7 @@ public class PdpApplication {
           .authenticated()
           .and()
           .addFilterAfter(
-              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean()),
+              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
               BasicAuthenticationFilter.class
           )
           .authorizeRequests()

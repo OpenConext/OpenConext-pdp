@@ -50,12 +50,12 @@ public class PdpApplicationTest {
 
   @Autowired
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
+  private static ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${local.server.port}")
   private int port;
   private MultiValueMap<String, String> headers;
   private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
-  private ObjectMapper objectMapper = new ObjectMapper();
   private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
   private DevelopmentPrePolicyLoader developmentPrePolicyLoader = new DevelopmentPrePolicyLoader();
 

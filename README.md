@@ -68,6 +68,12 @@ To run locally:
 
 When you browse to the [application homepage](http://localhost:8001/) you will be prompted for a login. Anything - for now - is accepted.
 
+## Testing
+
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
+
+If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
+
 ## Miscellaneous
 
 ### Design considerations
@@ -103,11 +109,19 @@ We don't provide flyway migrations to load initial policies.
 However if you start up the application with the spring.profiles.active=dev then all the policies
 in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any other policies already in the database are deleted.
 
-### Testing
+### Service Registry
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
+The pdp-server needs to access the metadata of Identity and Service providers from the Service Registry. In production modus the content is read (and periodically refreshed) from:
+  
+* https://tools.surfconext.nl/export/saml20-idp-remote.json
+* https://tools.surfconext.nl/export/saml20-sp-remote.json
 
-If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
+In any modus the content is read from the file system:
+
+* [saml20-idp-remote.json](pdp-server/src/main/resources/service-registry/saml20-idp-remote.json)
+* [saml20-sp-remote.json](pdp-server/src/main/resources/service-registry/saml20-sp-remote.json)
+
+To sync the data of the file system with the actual production data of `https://tools.surfconext.nl` run the [refreshEntityMetadata](pdp-server/scripts/refreshEntityMetadata.sh) script.
 
 ### Configuration and Deployment
 
