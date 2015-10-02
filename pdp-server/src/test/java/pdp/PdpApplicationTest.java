@@ -107,7 +107,7 @@ public class PdpApplicationTest {
 
     try {
       //We can't use Transactional rollback as the Application runs in a different process.
-      pdpPolicyViolationRepository.deleteAll();
+     // pdpPolicyViolationRepository.deleteAll();
 
       postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
       postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");

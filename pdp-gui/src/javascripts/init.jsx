@@ -42,7 +42,7 @@ var App = {
   },
 
   rootPath: function () {
-    page.redirect("/policies");
+    page.redirect("/welcome");
   },
 
   render: function (page) {
