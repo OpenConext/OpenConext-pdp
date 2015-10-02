@@ -1,4 +1,4 @@
-App.Controllers.Policies = {
+App.Controllers.Welcome = {
 
   initialize: function () {
     page("/welcome",

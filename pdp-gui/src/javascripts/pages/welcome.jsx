@@ -6,7 +6,7 @@ App.Pages.Welcome = React.createClass({
     return (
         <div className="l-center l-middle">
           <p>Welcome</p>
-          <p>Descriptive text....</p>
+          <p>Descriptive text.... .. ... ... ...</p>
         </div>
     )
   }

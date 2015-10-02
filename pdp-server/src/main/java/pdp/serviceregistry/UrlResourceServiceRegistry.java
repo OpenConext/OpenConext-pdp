@@ -20,20 +20,19 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
 
   @Override
   protected Resource getIdpResource() {
-    try {
-      return new UrlResource("https://tools.surfconext.nl/export/saml20-idp-remote.json");
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
+    return getResource("https://tools.surfconext.nl/export/saml20-idp-remote.json");
   }
 
   @Override
   protected Resource getSpResource() {
+    return getResource("https://tools.surfconext.nl/export/saml20-sp-remote.json");
+  }
+
+  private Resource getResource(String path) {
     try {
-      return new UrlResource("https://tools.surfconext.nl/export/saml20-sp-remote.json");
+      return new UrlResource(path);
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
   }
-
 }

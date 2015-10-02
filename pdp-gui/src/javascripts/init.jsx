@@ -43,6 +43,7 @@ var App = {
 
   rootPath: function () {
     page.redirect("/welcome");
+    //page.redirect("/policies");
   },
 
   render: function (page) {

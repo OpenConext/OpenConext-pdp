@@ -8,7 +8,10 @@ App.Pages.PolicyOverview = React.createClass({
 
   componentDidMount: function () {
     var self = this;
-    $('#policies_table').DataTable({});
+    $('#policies_table').DataTable({
+      "paging": false
+
+    });
   },
 
   handleShowPolicyDetail: function (policy) {
