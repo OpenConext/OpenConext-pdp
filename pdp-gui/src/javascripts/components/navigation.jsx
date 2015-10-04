@@ -25,6 +25,7 @@ App.Components.Navigation = React.createClass({
           {this.renderItem("/policies", "policies")}
           {this.renderItem("/violations", "violations")}
           {this.renderItem("/playground", "playground")}
+          {this.renderItem("/about", "about")}
         </ul>
 
         {this.renderSpinner()}

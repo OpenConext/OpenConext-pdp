@@ -1,5 +1,6 @@
 table.dataTable tbody tr:nth-child(odd)
   background-color: #F9F9F9
+
 .dataTables_wrapper
   .dataTables_length, .dataTables_info, .dataTables_filter
     margin: 10px
@@ -10,13 +11,54 @@ table.dataTable a
   &.red
     color: #70000e
 
+  &.orange
+    color: orange
+
 th.policy_name_col
   width: 20%
+
 th.policy_description_col
   width: 30%
+
 th.policy_sp_col
-  width: 20%
+  width: 14%
+
 th.policy_idps_col
-  width: 20%
+  width: 14%
+
 th.policy_controls
-  width: 10%
+  width: 22%
+
+div.dataTables_wrapper
+  margin: 0px auto
+  width: 1000px
+
+.dataTables_wrapper .dataTables_filter
+  float: none
+  text-align: center
+  width: 100%
+  margin: 0px
+
+.dataTables_wrapper .dataTables_filter input
+  width: 1000px
+  height: 30px
+  font-size: 18px
+  margin: 20px 0px
+  padding: 12px
+  border: none
+  background: #fff
+  border-radius: $br
+  box-shadow: 1px 1px $br rgba(black,.2)
+
+
+table.dataTable thead
+  background-color: white
+
+table.dataTable.no-footer
+  border-radius: 3px
+  border: none white
+  border-top-style: solid
+
+table.dataTable thead
+  td, th
+    border-bottom: 1px solid #E2DFDF

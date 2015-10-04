@@ -21,8 +21,8 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private final static List<String> allowedLanguages = Arrays.asList("en", "nl");
-  protected final ReadWriteLock lock = new ReentrantReadWriteLock();
-  protected Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
+  private final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
 
   public ClassPathResourceServiceRegistry() {
     initializeMetadata();

@@ -37,6 +37,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
@@ -71,9 +72,8 @@ public class PdpController {
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
     this.pdpPolicyRepository = pdpPolicyRepository;
 
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-    Runnable task = () -> this.refreshPolicies();
-    executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(() ->
+        this.refreshPolicies(), initialDelay, period, TimeUnit.MINUTES);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")

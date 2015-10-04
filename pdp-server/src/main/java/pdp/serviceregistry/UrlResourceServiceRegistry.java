@@ -8,14 +8,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.Executors.newScheduledThreadPool;
+
 public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry {
 
   public UrlResourceServiceRegistry(int initialDelay, int period) {
     super();
-
-    ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-    Runnable task = () -> this.initializeMetadata();
-    executor.scheduleAtFixedRate(task, initialDelay, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(() ->
+        this.initializeMetadata(), initialDelay, period, TimeUnit.MINUTES);
   }
 
   @Override

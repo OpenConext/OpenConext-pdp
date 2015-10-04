@@ -1,12 +1,12 @@
-App.Controllers.Welcome = {
+App.Controllers.About = {
 
   initialize: function () {
-    page("/welcome",
-        this.welcome.bind(this)
+    page("/about",
+        this.about.bind(this)
     );
   },
 
-  welcome: function (ctx) {
-    App.render(App.Pages.Welcome());
+  about: function (ctx) {
+    App.render(App.Pages.About());
   }
 }

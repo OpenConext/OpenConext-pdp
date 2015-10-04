@@ -8,6 +8,7 @@ module.exports = function(grunt) {
       'src/javascripts/lib/spin.js',
       'src/javascripts/lib/d3.js',
       'src/javascripts/lib/rickshaw.js',
+      'src/javascripts/lib/select2.js',
       'src/javascripts/lib/datatables.min.js',
       'src/javascripts/lib/jquery.cookie.js',
       'tmp/init.js',                    // initializes the namespaces

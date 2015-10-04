@@ -32,8 +32,6 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   private PDPEngine pdpEngine;
 
-  private ObjectMapper objectMapper = new ObjectMapper();
-
   @Before
   public void before() throws IOException, FactoryException {
     doBefore(false);

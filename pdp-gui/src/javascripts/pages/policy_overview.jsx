@@ -9,7 +9,15 @@ App.Pages.PolicyOverview = React.createClass({
   componentDidMount: function () {
     var self = this;
     $('#policies_table').DataTable({
-      "paging": false
+      paging: false,
+      language: {
+        search: "_INPUT_",
+        searchPlaceholder: "Search policies..."
+      },
+      columnDefs: [ {
+        targets: [ 4 ],
+        orderable: false
+      } ]
 
     });
   },
@@ -32,10 +40,12 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.serviceProviderId}</td>
             <td>{policy.identityProviderIds}</td>
             <td>
-              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}>
+              <a href="#" data-tooltip="View"><i className="fa fa-eye"></i></a>
+              <a className="orange" href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
+                 data-tooltip="Edit">
                 <i className="fa fa-edit"></i>
             </a>
-            <a className="red" href="#"><i className="fa fa-remove"></i></a></td>
+            <a className="red" href="#" data-tooltip="Delete"><i className="fa fa-remove"></i></a></td>
           </tr>)
     });
 
@@ -43,7 +53,7 @@ App.Pages.PolicyOverview = React.createClass({
         <div>
           <div className="new-policy"><a className="c-button" href="#">New Policy</a></div>
           <div className='table-responsive'>
-            <table className='table table-bordered' id='policies_table'>
+            <table className='table table-bordered box' id='policies_table'>
               <thead>
               <tr className='success'>
                 <th className='policy_name_col'>{I18n.t('policies.name')}</th>
