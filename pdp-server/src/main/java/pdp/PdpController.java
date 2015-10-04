@@ -1,6 +1,9 @@
 package pdp;
 
-import org.apache.openaz.xacml.api.*;
+import org.apache.openaz.xacml.api.IdReference;
+import org.apache.openaz.xacml.api.Request;
+import org.apache.openaz.xacml.api.Response;
+import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.std.StdMutableRequest;
@@ -23,7 +26,6 @@ import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PDPEngineHolder;
-import pdp.xacml.PdpParseException;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import javax.validation.Valid;
@@ -31,8 +33,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -118,6 +118,9 @@ public class PdpController {
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) throws DOMStructureException {
     PdpPolicy policy = pdpPolicyRepository.findOne(id);
+    if (policy == null) {
+      throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
+    }
     //TODO ensure the violations are also in there
     return pdpPolicyDefinitionParser.parse(policy);
   }

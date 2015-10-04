@@ -1,0 +1,48 @@
+input[type=checkbox].ios
+  display: none
+
+.ios-ui-select
+  background: $red
+  border: none !important
+  height: 36px
+  border-radius: 16px
+  width: 110px
+  -webkit-transition: all 0.1s ease-in-out
+  -moz-transition: all 0.1s ease-in-out
+  -ms-transition: all 0.1s ease-in-out
+  -o-transition: all 0.1s ease-in-out
+  transition: all 0.3s ease-in-out
+  box-shadow: inset 0 0 0 36px #4CD964
+  cursor: pointer
+  position: relative
+  display: inline-block
+
+  .inner
+    width: 30px
+    height: 30px
+    position: absolute
+    top: 3px
+    left: 3px
+    -webkit-border-radius: 100%
+    border-radius: 100%
+    background: white
+    -webkit-transition: all 0.1s ease-in-out
+    -moz-transition: all 0.1s ease-in-out
+    -ms-transition: all 0.1s ease-in-out
+    -o-transition: all 0.1s ease-in-out
+    -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.1)
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2), 0 3px 4px 0 rgba(0, 0, 0, 0.1)
+
+  p
+    float: right
+    margin: 8px 24px 0px 1px
+    color: white
+
+  &.checked
+    box-shadow: none
+
+    .inner
+      left: 75px
+
+    p
+      margin: 8px 52px 0px 1px

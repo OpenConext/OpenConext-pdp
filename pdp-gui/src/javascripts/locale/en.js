@@ -37,7 +37,8 @@ I18n.translations.en = {
     violations: "Violations",
     playground: "Playground",
     about: "About",
-    my_idp: "My institute"
+    my_idp: "My institute",
+    new_policy: "+ New Policy"
   },
 
   policies: {

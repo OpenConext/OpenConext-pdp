@@ -50,8 +50,7 @@ App.Pages.PolicyOverview = React.createClass({
     });
 
     return (
-        <div>
-          <div className="new-policy"><a className="c-button" href="#">New Policy</a></div>
+        <div className="mod-policy-overview">
           <div className='table-responsive'>
             <table className='table table-bordered box' id='policies_table'>
               <thead>

@@ -1,8 +1,9 @@
 /** @jsx React.DOM */
 var MySelect = React.createClass({
+
   getInitialState: function () {
     return {
-      value: 'select'
+      value: ''
     }
   },
   propTypes: {
@@ -27,7 +28,11 @@ var MySelect = React.createClass({
   },
   componentDidMount: function () {
     var rootNode = $('[data-id]');
-    $(rootNode).select2();
+    rootNode.select2({
+      width: '100%',
+      placeholder: "Select a Service Provider",
+      allowClear: true
+    });
 
     if (this.props.defaultValue != null) {
       rootNode.select2("val", this.props.defaultValue);
@@ -36,7 +41,10 @@ var MySelect = React.createClass({
     rootNode.on("change", this._handleChange);
 
   },
-
+  componentWillUnmount: function () {
+    var rootNode = $('[data-id]');
+    rootNode.select2("destroy");
+  },
   _handleChange: function (e) {
     var newValue = $('[data-id]').val();
     //this.state.value = value;
@@ -49,6 +57,7 @@ var MySelect = React.createClass({
     return (
         <div>
           <select id="lang" data-id="whatever" onChange={this.change} value={this.state.value}>
+            <option></option>
             <option value="select">Select</option>
             <option value="Java">Java</option>
             <option value="C++">C++</option>
@@ -64,20 +73,48 @@ var MySelect = React.createClass({
 
 App.Pages.PolicyDetail = React.createClass({
 
+  getInitialState: function () {
+    return this.props.policy;
+  },
+
+  toggleDenyRule: function (e) {
+    this.setState({denyRule: !this.state.denyRule});
+
+  },
 
   render: function () {
-    var policy = this.props.policy;
+    var policy = this.state;
+    var policyPermit = policy.denyRule ? "Deny" : "Permit";
+    var classNameSelected = policy.denyRule ? "checked" : "";
     return (
-        <div className="l-center">
-          <div className="l-middle mod-about no-left box">
-            <p></p>
+        <div className="l-center mod-policy-detail">
+          <div className="l-middle form-element-container box">
 
-            <p/>
+            <p className="form-element form-title">Create new policy</p>
 
-            <p>With the PAP you can maintain XACML policies to configure fine-grained access rules for your Institution
-              and the connected Service Providers.</p>
+            <div className="form-element success">
+              <p className="label">Service Provider</p>
+              <MySelect />
+            </div>
+            <div className="bottom"></div>
+            <div className="form-element failure">
+              <p className="label">Identity Provider</p>
+              <MySelect />
+            </div>
+            <div className="bottom"></div>
+            <div className="form-element failure" onClick={this.toggleDenyRule}>
+              <p className="label">Access</p>
+
+              <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}>
+                <div className="inner"></div>
+                <p>{policyPermit}</p>
+              </div>
+            </div>
+            <div className="bottom"></div>
+            <div className="actions">
+              <a className="c-button" href="#">Submit</a>
+            </div>
           </div>
-          <MySelect />
         </div>
     )
   }

@@ -26,6 +26,7 @@ App.Components.Navigation = React.createClass({
           {this.renderItem("/violations", "violations")}
           {this.renderItem("/playground", "playground")}
           {this.renderItem("/about", "about")}
+          {this.renderItem("/new-policy", "new_policy", true)}
         </ul>
 
         {this.renderSpinner()}
@@ -33,11 +34,15 @@ App.Components.Navigation = React.createClass({
     );
   },
 
-  renderItem: function(href, value) {
-    var className = (this.props.active == value ? "active" : "");
-
+  renderItem: function(href, value, right) {
+    var classNameLi = (this.props.active == value ? "active" : "");
+    var classNameA = "";
+    if (right) {
+      classNameLi = classNameLi + " action";
+      classNameA = "action";
+    }
     return (
-      <li className={className}><a href={href}>{I18n.t("navigation." + value)}</a></li>
+      <li className={classNameLi}><a href={href} className={classNameA}>{I18n.t("navigation." + value)}</a></li>
     );
   },
 
