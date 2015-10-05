@@ -10,7 +10,7 @@ import pdp.serviceregistry.ServiceRegistry;
 import java.util.List;
 
 @RestController
-@RequestMapping(headers = {"content-type=application/json"}, produces = {"application/json"})
+@RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
 public class ServiceRegistryController {
 
   private final ServiceRegistry serviceRegistry;

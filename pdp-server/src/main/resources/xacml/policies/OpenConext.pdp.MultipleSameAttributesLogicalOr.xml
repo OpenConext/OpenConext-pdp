@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
-        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleDifferentAttributesLogicalAnd"
+        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleSameAttributesLogicalOr"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
-    <Description>Policy met multiple different attributes AND-ed together
-        Medewerkers van de lerarenopleiding in Leiden hebben toegang tot Enquetetool van Leiden
-    </Description>
+    <Description>Docenten en assistenten hebben toegang tot Mentorix.</Description>
     <PolicyDefaults>
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
@@ -14,7 +12,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">utrecht_sp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">http://sts.acc.edugroepen.netricity.nl/adfs/services/trust</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -28,7 +26,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">utrecht_idp</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">http://fides-test.rivm.nl/adfs/services/trust</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -41,16 +39,17 @@
     </Target>
     <Rule
             Effect="Permit"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleDifferentAttributesLogicalAnd.permitAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleSameAttributesLogicalOr.permitAccess1">
         <Description/>
         <Target>
             <AnyOf>
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">teacher
+                        </AttributeValue>
                         <AttributeDesignator
-                                AttributeId="faculty"
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonEntitlement"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"
@@ -60,9 +59,10 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">assistant
+                        </AttributeValue>
                         <AttributeDesignator
-                                AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonEntitlement"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"
@@ -74,7 +74,7 @@
     </Rule>
     <Rule
             Effect="Deny"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleDifferentAttributesLogicalAnd.denyAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleSameAttributesLogicalOr.denyAccess">
         <Description/>
         <Target/>
         <AdviceExpressions>
@@ -83,8 +83,10 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access
-                        Enquetetool.
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Mentorix
+                        from Hogeschool Utrecht. Please
+                        <a href="mailto:mentorix@hu.nl">contact us</a>
+                        for details
                     </AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>

@@ -25,8 +25,10 @@ public class PdpPolicyDefinition {
   @NotNull
   @Size(min = 1)
   private String serviceProviderId;
+  private String serviceProviderName;
 
   private List<String> identityProviderIds = new ArrayList<>();
+  private List<String> identityProviderNames = new ArrayList<>();
 
   @Valid
   private List<PdpAttribute> attributes = new ArrayList<>();
@@ -38,6 +40,8 @@ public class PdpPolicyDefinition {
   private boolean denyRule;
 
   private boolean allAttributesMustMatch;
+
+  private int numberOfViolations;
 
   public PdpPolicyDefinition() {
   }
@@ -106,10 +110,6 @@ public class PdpPolicyDefinition {
     this.denyRule = denyRule;
   }
 
-  public String getDenyId() {
-    return getNameId();
-  }
-
   public boolean isAllAttributesMustMatch() {
     return allAttributesMustMatch;
   }
@@ -120,6 +120,30 @@ public class PdpPolicyDefinition {
 
   public String getNameId() {
     return PolicyTemplateEngine.getNameId(name);
+  }
+
+  public String getServiceProviderName() {
+    return serviceProviderName;
+  }
+
+  public void setServiceProviderName(String serviceProviderName) {
+    this.serviceProviderName = serviceProviderName;
+  }
+
+  public List<String> getIdentityProviderNames() {
+    return identityProviderNames;
+  }
+
+  public void setIdentityProviderNames(List<String> identityProviderNames) {
+    this.identityProviderNames = identityProviderNames;
+  }
+
+  public int getNumberOfViolations() {
+    return numberOfViolations;
+  }
+
+  public void setNumberOfViolations(int numberOfViolations) {
+    this.numberOfViolations = numberOfViolations;
   }
 
   @JsonIgnore

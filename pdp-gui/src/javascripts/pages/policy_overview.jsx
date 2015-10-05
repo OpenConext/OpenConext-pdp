@@ -14,12 +14,22 @@ App.Pages.PolicyOverview = React.createClass({
         search: "_INPUT_",
         searchPlaceholder: "Search policies..."
       },
-      columnDefs: [ {
-        targets: [ 4 ],
+      columnDefs: [{
+        targets: [4],
         orderable: false
-      } ]
+      }]
 
     });
+  },
+
+  handleDeletePolicyDetail: function(policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm("Are your sure you want to remove policy '" + policy.name + "'?")) {
+        App.Controllers.Policies.deletePolicy(policy);
+      }
+    }
   },
 
   handleShowPolicyDetail: function (policy) {
@@ -37,15 +47,14 @@ App.Pages.PolicyOverview = React.createClass({
           <tr key={policy.id}>
             <td>{policy.name}</td>
             <td>{policy.description}</td>
-            <td>{policy.serviceProviderId}</td>
-            <td>{policy.identityProviderIds}</td>
-            <td>
-              <a href="#" data-tooltip="View"><i className="fa fa-eye"></i></a>
-              <a className="orange" href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
+            <td>{policy.serviceProviderName}</td>
+            <td>{policy.identityProviderNames}</td>
+            <td className="policy_controls">
+              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
                  data-tooltip="Edit">
                 <i className="fa fa-edit"></i>
-            </a>
-            <a className="red" href="#" data-tooltip="Delete"><i className="fa fa-remove"></i></a></td>
+              </a>
+              <a href="#" data-tooltip="Delete" onClick={self.handleDeletePolicyDetail(policy)}><i className="fa fa-remove"></i></a></td>
           </tr>)
     });
 

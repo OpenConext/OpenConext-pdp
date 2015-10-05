@@ -3,24 +3,19 @@ package pdp.xacml;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.pip.PIPFinder;
 import org.apache.openaz.xacml.pdp.policy.*;
-import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.std.StdEvaluationContextFactory;
 import org.apache.openaz.xacml.pdp.std.StdPolicyFinder;
 import org.apache.openaz.xacml.pdp.util.OpenAZPDPProperties;
 import org.apache.openaz.xacml.std.IdentifierImpl;
-import org.apache.openaz.xacml.std.StdStatusCode;
 import org.apache.openaz.xacml.std.StdVersion;
-import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.teams.VootClient;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -84,22 +79,17 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
   }
 
   private PolicyDef convertToPolicyDef(PdpPolicy pdpPolicy) {
-    try {
-      PolicyDef policyDef = DOMPolicyDef.load(new ByteArrayInputStream(pdpPolicy.getPolicyXml().replaceFirst("\n", "").getBytes()));
-      policyDef.setIdentifier(new IdentifierImpl(getNameId(pdpPolicy.getName())));
-      ((Policy) policyDef).getRules().forEachRemaining(rule -> {
-            if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {
-              rule.getAdviceExpressions().forEachRemaining(adviceExpression ->
-                      adviceExpression.setAdviceId(new IdentifierImpl(getNameId(pdpPolicy.getName())))
-              );
-            }
+    Policy policyDef = PdpPolicyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml());
+    policyDef.setIdentifier(new IdentifierImpl(getNameId(pdpPolicy.getName())));
+    policyDef.getRules().forEachRemaining(rule -> {
+          if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {
+            rule.getAdviceExpressions().forEachRemaining(adviceExpression ->
+                    adviceExpression.setAdviceId(new IdentifierImpl(getNameId(pdpPolicy.getName())))
+            );
           }
-      );
-      return policyDef;
-    } catch (DOMStructureException e) {
-      LOG.error("Error loading policy from " + pdpPolicy.getPolicyXml(), e);
-      return new Policy(StdStatusCode.STATUS_CODE_SYNTAX_ERROR, e.getMessage());
-    }
+        }
+    );
+    return policyDef;
   }
 
   public void setVootClient(VootClient vootClient) {

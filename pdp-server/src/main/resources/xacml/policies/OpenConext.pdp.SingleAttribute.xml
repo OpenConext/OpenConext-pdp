@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
-        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.NoIDPonlyGroupClause"
+        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.SingleAttribute"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
-    <Description>Personen die tot de managementvo behoren (bepaald aan de hand van een group) hebben toegang tot de VO
-        dienst
-        Zit dus geen IDP regel op (kan ook niet in dit VO scenario)
-    </Description>
+    <Description>Guests can access SURFspot when they are a member of the SURF organization</Description>
     <PolicyDefaults>
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
@@ -15,10 +12,23 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">google
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://sp.tshhosting.com/shibboleth</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="false"
+                            />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://fedlogin.studienet.ou.nl</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
                             MustBePresent="false"
@@ -29,18 +39,17 @@
     </Target>
     <Rule
             Effect="Permit"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.NoIDPonlyGroupClause.permitAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.SingleAttribute.permitAccess">
         <Description/>
         <Target>
             <AnyOf>
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">
-                            urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:org:surf.nl
                         </AttributeValue>
                         <AttributeDesignator
-                                AttributeId="urn:mace:dir:attribute-def:group-name"
+                                AttributeId="urn:mace:dir:attribute-def:isMemberOf"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"
@@ -52,7 +61,7 @@
     </Rule>
     <Rule
             Effect="Deny"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.NoIDPonlyGroupClause.denyAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.SingleAttribute.denyAccess">
         <Description/>
         <Target/>
         <AdviceExpressions>
@@ -61,8 +70,8 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not part of managementvo. Please
-                        contact us if you think this is incorrect.
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not a member of the SURF
+                        organization
                     </AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>

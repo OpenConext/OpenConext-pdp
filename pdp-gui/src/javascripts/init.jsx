@@ -5,6 +5,7 @@ var App = {
   Pages: {},
   Controllers: {},
   Mixins: {},
+  Utils: {},
 
   store: {}, // in memory key/value store, to save temporary settings
 
@@ -18,10 +19,6 @@ var App = {
     $(document).ajaxSend(function (event, jqxhr, settings) {
       jqxhr.setRequestHeader("Content-Type", "application/json");
     }.bind(this));
-
-    $.ajaxSetup({
-      contentType: "application/json"
-    });
 
     this.fetchUserData(function (user) {
       this.currentUser = user;
@@ -106,10 +103,10 @@ var App = {
     }
   },
 
-  getParameterByName: function(name) {
-  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-      results = regex.exec(location.search);
-  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-}
+  getParameterByName: function (name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  }
 };

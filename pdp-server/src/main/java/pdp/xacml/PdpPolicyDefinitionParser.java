@@ -157,19 +157,17 @@ public class PdpPolicyDefinitionParser {
     definition.setDenyAdvice(denyAttributeValue);
   }
 
-  private Policy parsePolicy(String policyXml) {
-    Policy policy;
+  public static final Policy parsePolicy(String policyXml) {
+    String cleanedXml = policyXml.trim().replaceAll("\n", "").replaceAll(" +", " ");
     try {
-      policy = (Policy) DOMPolicyDef.load(new ByteArrayInputStream(policyXml.replaceFirst("\n", "").getBytes()));
+      return (Policy) DOMPolicyDef.load(new ByteArrayInputStream(cleanedXml.getBytes()));
     } catch (DOMStructureException e) {
       throw new RuntimeException(e);
     }
-    return policy;
   }
 
   private <E> List<E> iteratorToList(Iterator<E> iterator) {
     return stream(spliteratorUnknownSize(iterator, ORDERED), false).collect(toCollection(ArrayList::new));
   }
-
 
 }

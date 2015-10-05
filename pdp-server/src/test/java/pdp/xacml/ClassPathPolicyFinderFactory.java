@@ -1,6 +1,7 @@
 package pdp.xacml;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.pdp.policy.PolicyDef;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.std.StdPolicyFinderFactory;
@@ -41,9 +42,10 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
 
   private PolicyDef loadPolicyDef(String policyFile) {
     try {
-      InputStream policyInputStream = getPolicyInputStream(policyFile);
-      return DOMPolicyDef.load(policyInputStream);
-    } catch (Exception e) {
+      String policyXml = IOUtils.toString(getPolicyInputStream(policyFile));
+      Policy policyDef = PdpPolicyDefinitionParser.parsePolicy(policyXml);
+      return policyDef;
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }

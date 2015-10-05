@@ -1,76 +1,12 @@
 /** @jsx React.DOM */
-var MySelect = React.createClass({
-
-  getInitialState: function () {
-    return {
-      value: ''
-    }
-  },
-  propTypes: {
-    // Array of <option /> components to be placed into the select
-    children: React.PropTypes.array,
-
-    name: React.PropTypes.string,
-    multiple: React.PropTypes.bool,
-
-    // The initial selected value; one of the option children should have a
-    // matching value="..."
-    defaultValue: React.PropTypes.string,
-
-    // Callback executed when the selected value changes; receives a single
-    // jQuery event object `e` from select2; `e.target` refers to the real
-    // <select> element and `e.val` refers to the new selected value
-    onChange: React.PropTypes.func
-  },
-
-  change: function (event) {
-    this.setState({value: event.target.value});
-  },
-  componentDidMount: function () {
-    var rootNode = $('[data-id]');
-    rootNode.select2({
-      width: '100%',
-      placeholder: "Select a Service Provider",
-      allowClear: true
-    });
-
-    if (this.props.defaultValue != null) {
-      rootNode.select2("val", this.props.defaultValue);
-    }
-
-    rootNode.on("change", this._handleChange);
-
-  },
-  _handleChange: function (e) {
-    var newValue = $('[data-id]').val();
-    //this.state.value = value;
-    this.setState({value: newValue});
-    //this.props.onChange && this.props.onChange(e);
-  },
-
-
-  render: function () {
-    return (
-        <div>
-          <select id="lang" data-id="whatever" onChange={this.change} value={this.state.value}>
-            <option></option>
-            <option value="select">Select</option>
-            <option value="Java">Java</option>
-            <option value="C++">C++</option>
-          </select>
-
-          <p></p>
-
-          <p>{this.state.value}</p>
-        </div>
-    );
-  }
-});
-
 App.Pages.PolicyDetail = React.createClass({
 
   getInitialState: function () {
-    return this.props.policy;
+    var policy = this.props.policy;
+    if (_.isEmpty(policy)) {
+      policy = {attributes: [], denyRule: false};
+    }
+    return policy;
   },
 
   toggleDenyRule: function (e) {
@@ -78,38 +14,126 @@ App.Pages.PolicyDetail = React.createClass({
 
   },
 
+  parseEntities: function (entities, filterValues) {
+    var options = entities.map(function (entity) {
+      return {value: entity.entityId, display: entity.nameEn};
+    });
+    return options;
+  },
+
+  handleChangeServiceProvider: function (newValue) {
+    this.setState({serviceProviderId: newValue});
+  },
+
+  handleChangeIdentityProvider: function (newValue) {
+    this.setState({identityProviderIds: newValue});
+  },
+
+  cancelForm: function () {
+    if (confirm("Are your sure you want to leave this page?")) {
+      page("/policies");
+    }
+  },
+
+  submitForm: function (policy) {
+    App.Controllers.Policies.saveOrUpdatePolicy(policy);
+  },
+
+  addAttribute: function (name, value) {
+    this.state.attributes = this.state.attributes || [];
+    this.state.attributes.push({"name": name, "value": value});
+  },
+
+  removeAttribute: function (name, value) {
+    this.state.attributes = this.state.attributes || [];
+
+    this.state.attributes = this.state.attributes.filter(function (attribute) {
+      return attribute.name !== name && attribute.value !== value;
+    });
+  },
+
+  isValidPolicy: function () {
+    var policy = this.state;
+    var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
+        || _.isEmpty(policy.attributes) || _.isEmpty(policy.denyAdvice);
+    return !inValid;
+  },
+
+  renderServiceProvider: function (policy) {
+    var workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
+    return (
+        <div>
+          <div className={"form-element "+workflow}>
+            <p className="label">Service Provider</p>
+            <App.Components.Select2Selector
+                defaultValue={policy.serviceProviderId}
+                placeholder={"Select a Service Provider (required)"}
+                select2selectorId={"serviceProvider"}
+                options={this.parseEntities(this.props.serviceProviders, policy.serviceProviderId)}
+                handleChange={this.handleChangeServiceProvider}/>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
+
+  renderIdentityProvider: function (policy) {
+    return (
+        <div>
+          <div className="form-element success">
+            <p className="label">Identity Provider(s)</p>
+            <App.Components.Select2Selector
+                defaultValue={this.state.identityProviderIds}
+                placeholder={"Select a Identity Provider (zero or more)"}
+                select2selectorId={"identityProvider"}
+                options={this.parseEntities(this.props.identityProviders, this.state.identityProviderIds)}
+                multiple={true}
+                handleChange={this.handleChangeIdentityProvider}/>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
+
+  renderDenyPermitRule: function (policy) {
+    var classNameSelected = policy.denyRule ? "checked" : "";
+    var policyPermit = policy.denyRule ? "Deny" : "Permit";
+    return (
+        <div>
+          <div className="form-element success" onClick={this.toggleDenyRule}>
+            <p className="label">Access</p>
+
+            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}>
+              <div className="inner"></div>
+              <p>{policyPermit}</p>
+            </div>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
+
+  renderActions: function (policy) {
+    var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
+    return (
+        <div className="form-element">
+          <a className={classNameSubmit + " submit c-button"} href="#" onClick={this.submitForm}>Submit</a>
+          <a className="c-button cancel" href="#" onClick={this.cancelForm}>Cancel</a>
+        </div>
+    );
+  },
+
   render: function () {
     var policy = this.state;
-    var policyPermit = policy.denyRule ? "Deny" : "Permit";
-    var classNameSelected = policy.denyRule ? "checked" : "";
     return (
         <div className="l-center mod-policy-detail">
           <div className="l-middle form-element-container box">
 
             <p className="form-element form-title">Create new policy</p>
-
-            <div className="form-element success">
-              <p className="label">Service Provider</p>
-              <MySelect />
-            </div>
-            <div className="bottom"></div>
-            <div className="form-element failure">
-              <p className="label">Identity Provider</p>
-              <MySelect />
-            </div>
-            <div className="bottom"></div>
-            <div className="form-element failure" onClick={this.toggleDenyRule}>
-              <p className="label">Access</p>
-
-              <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}>
-                <div className="inner"></div>
-                <p>{policyPermit}</p>
-              </div>
-            </div>
-            <div className="bottom"></div>
-            <div className="actions">
-              <a className="c-button" href="#">Submit</a>
-            </div>
+            {this.renderServiceProvider(policy)}
+            {this.renderIdentityProvider(policy)}
+            {this.renderDenyPermitRule(policy)}
+            {this.renderActions(policy)}
           </div>
         </div>
     )
