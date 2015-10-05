@@ -15,7 +15,7 @@ App.Pages.PolicyOverview = React.createClass({
         searchPlaceholder: "Search policies..."
       },
       columnDefs: [{
-        targets: [4],
+        targets: [5],
         orderable: false
       }]
 
@@ -49,6 +49,7 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.description}</td>
             <td>{policy.serviceProviderName}</td>
             <td>{policy.identityProviderNames}</td>
+            <td>{policy.numberOfViolations}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
                  data-tooltip="Edit">
@@ -68,6 +69,7 @@ App.Pages.PolicyOverview = React.createClass({
                 <th className='policy_description_col'>{I18n.t('policies.description')}</th>
                 <th className='policy_sp_col'>{I18n.t('policies.serviceProviderId')}</th>
                 <th className='policy_idps_col'>{I18n.t('policies.identityProviderIds')}</th>
+                <th className='policy_violations'>{I18n.t('policies.violations')}</th>
                 <th className='policy_controls'></th>
               </tr>
               </thead>

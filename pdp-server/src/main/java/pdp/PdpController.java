@@ -5,7 +5,6 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.std.StdMutableRequest;
 import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
@@ -29,9 +28,9 @@ import pdp.serviceregistry.ServiceRegistry;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
-import javax.validation.Valid;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -39,6 +38,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
@@ -74,8 +74,7 @@ public class PdpController {
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(() ->
-        this.refreshPolicies(), initialDelay, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshPolicies, initialDelay, period, TimeUnit.MINUTES);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
@@ -105,7 +104,7 @@ public class PdpController {
 
   private Request createReturnPolicyIdListRequest(Request originalRequest) {
     StdMutableRequest request = new StdMutableRequest();
-    originalRequest.getRequestAttributes().stream().forEach(reqAttr -> request.add(reqAttr));
+    originalRequest.getRequestAttributes().stream().forEach(request::add);
     request.setReturnPolicyIdList(true);
     return new StdRequest(originalRequest);
   }
@@ -114,8 +113,10 @@ public class PdpController {
   public List<PdpPolicyDefinition> policyDefinitions() {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
-    List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
-    //todo - add the count to each policyDefintion
+
+    Map<String, Long> countPerPolicyIdMap = pdpPolicyViolationRepository.findCountPerPolicyId().stream().collect(toMap((objects) -> (String) objects[0], (objects) -> (Long) objects[1]));
+
+    policies.forEach(policy -> policy.setNumberOfViolations(countPerPolicyIdMap.getOrDefault(policy.getNameId(), 0L).intValue()));
     return policies;
   }
 
@@ -143,9 +144,17 @@ public class PdpController {
     } else {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName());
     }
-    PdpPolicy saved = pdpPolicyRepository.save(policy);
-    LOG.info("Created PdpPolicy {}", saved.getPolicyXml());
-    return saved;
+    try {
+      PdpPolicy saved = pdpPolicyRepository.save(policy);
+      LOG.info("Created PdpPolicy {}", saved.getPolicyXml());
+      return saved;
+    } catch (DataIntegrityViolationException e) {
+      if (e.getMessage().contains("pdp_policy_name_unique")) {
+        throw new PdpPolicyException("name", "Policy name must be unique. " + pdpPolicyDefinition.getName() + " is already taken");
+      } else {
+        throw e;
+      }
+    }
   }
 
   @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
@@ -164,25 +173,6 @@ public class PdpController {
     pd.setIdentityProviderNames(pd.getIdentityProviderIds().stream().map(idpId ->
         serviceRegistry.identityProviders().stream().filter(idp -> idp.getEntityId().equals(idpId)).collect(singletonOptionalCollector()).get().getNameEn()).collect(toList()));
     return pd;
-  }
-
-  @RequestMapping(method = POST, value = "/internal/policies")
-  public List<PdpPolicyDefinition> post(@RequestBody @Valid PdpPolicyDefinition policyDefintion) {
-    String policyXml = policyTemplateEngine.createPolicyXml(policyDefintion);
-    try {
-      Policy policyDef = PdpPolicyDefinitionParser.parsePolicy(policyXml);
-      if (!policyDef.validate()) {
-        throw new RuntimeException("Policy could not be saved because of validation errors in the policyXml " + policyXml);
-      }
-      pdpPolicyRepository.save(new PdpPolicy(policyXml, policyDefintion.getName()));
-      return policyDefinitions();
-    } catch (DataIntegrityViolationException e) {
-      if (e.getMessage().contains("pdp_policy_name_unique")) {
-        throw new PdpPolicyException("name", "Policy name must be unique. " + policyDefintion.getName() + " is already taken");
-      } else {
-        throw e;
-      }
-    }
   }
 
   @RequestMapping(method = GET, value = "internal/users/me")

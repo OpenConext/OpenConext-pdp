@@ -45,7 +45,8 @@ I18n.translations.en = {
     name: "Name",
     description: "Description",
     serviceProviderId: "Service Provider",
-    identityProviderIds: "Identity Providers"
+    identityProviderIds: "Identity Providers",
+    violations: "Bad logins"
   },
 
   facets: {
