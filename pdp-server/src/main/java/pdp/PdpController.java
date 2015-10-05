@@ -122,11 +122,7 @@ public class PdpController {
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-    PdpPolicy policy = pdpPolicyRepository.findOne(id);
-    if (policy == null) {
-      throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
-    }
-
+    PdpPolicy policy = findOneAndOnly(id);
     return addEntityMetaData(pdpPolicyDefinitionParser.parse(policy));
   }
 
@@ -137,10 +133,7 @@ public class PdpController {
     PdpPolicyDefinitionParser.parsePolicy(policyXml);
     PdpPolicy policy;
     if (pdpPolicyDefinition.getId() != null) {
-      policy = pdpPolicyRepository.findOne(pdpPolicyDefinition.getId());
-      if (policy == null) {
-        throw new PolicyNotFoundException("PdpPolicy with id " + pdpPolicyDefinition.getId() + " not found");
-      }
+      policy = findOneAndOnly(pdpPolicyDefinition.getId());
     } else {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName());
     }
@@ -157,12 +150,17 @@ public class PdpController {
     }
   }
 
-  @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
-  public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
+  private PdpPolicy findOneAndOnly(Long id) {
     PdpPolicy policy = pdpPolicyRepository.findOne(id);
     if (policy == null) {
       throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
     }
+    return policy;
+  }
+
+  @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
+  public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
+    PdpPolicy policy = findOneAndOnly(id);
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     pdpPolicyRepository.delete(policy);
   }
