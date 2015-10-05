@@ -41,10 +41,6 @@ var MySelect = React.createClass({
     rootNode.on("change", this._handleChange);
 
   },
-  componentWillUnmount: function () {
-    var rootNode = $('[data-id]');
-    rootNode.select2("destroy");
-  },
   _handleChange: function (e) {
     var newValue = $('[data-id]').val();
     //this.state.value = value;
