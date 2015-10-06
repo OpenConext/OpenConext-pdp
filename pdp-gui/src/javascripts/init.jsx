@@ -93,6 +93,9 @@ var App = {
   },
 
   ajaxError: function (event, xhr) {
+    if (xhr.isConsumed) {
+      return;
+    }
     switch (xhr.status) {
       case 404:
         App.actionNotFound();
@@ -108,5 +111,15 @@ var App = {
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+  },
+
+  setFlash: function(message){
+    this.store.flash = message;
+  },
+
+  getFlash: function(){
+    var message = this.store.flash;
+    this.store.flash = undefined;
+    return message;
   }
 };

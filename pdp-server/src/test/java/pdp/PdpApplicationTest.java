@@ -20,6 +20,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import pdp.domain.*;
+import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
@@ -50,6 +51,7 @@ public class PdpApplicationTest {
 
   @Autowired
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
+  private PdpPolicyRepository pdpPolicyRepository;
   private static ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${local.server.port}")
@@ -63,6 +65,11 @@ public class PdpApplicationTest {
   public void before() throws IOException {
     headers = new LinkedMultiValueMap<>();
     headers.add("Content-Type", "application/json");
+  }
+
+  @Test
+  public void addAndDeletePolicy() {
+    //TODO
   }
 
   @Test

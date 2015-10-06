@@ -4,7 +4,7 @@ App.Pages.PolicyDetail = React.createClass({
   getInitialState: function () {
     var policy = this.props.policy;
     if (_.isEmpty(policy)) {
-      policy = {attributes: [], denyRule: false};
+      policy = {attributes: [], denyRule: false, submitCalled: false, errors: {} };
     }
     return policy;
   },
@@ -35,21 +35,30 @@ App.Pages.PolicyDetail = React.createClass({
     }
   },
 
-  submitForm: function (policy) {
-    App.Controllers.Policies.saveOrUpdatePolicy(policy);
+  submitForm: function () {
+    var self = this;
+    if (this.isValidPolicy()) {
+      App.Controllers.Policies.saveOrUpdatePolicy(this.state, function(jqxhr){
+        jqxhr.isConsumed = true;
+        this.setState({flash: jqxhr.responseJSON.details.name});
+      }.bind(this));
+    } else {
+      this.setState({submitCalled: true});
+    }
   },
 
   addAttribute: function (name, value) {
-    this.state.attributes = this.state.attributes || [];
-    this.state.attributes.push({"name": name, "value": value});
+    var attributes = this.state.attributes || [];
+    attributes.push({"name": name, "value": value});
+    this.setState({attributes:attributes});
   },
 
   removeAttribute: function (name, value) {
-    this.state.attributes = this.state.attributes || [];
-
-    this.state.attributes = this.state.attributes.filter(function (attribute) {
+    var attributes = this.state.attributes || [];
+    attributes = this.state.attributes.filter(function (attribute) {
       return attribute.name !== name && attribute.value !== value;
     });
+    this.setState({attributes:attributes});
   },
 
   isValidPolicy: function () {
@@ -57,6 +66,29 @@ App.Pages.PolicyDetail = React.createClass({
     var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
         || _.isEmpty(policy.attributes) || _.isEmpty(policy.denyAdvice);
     return !inValid;
+  },
+
+  handleOnChangeName: function(e) {
+    this.setState({name: e.target.value});
+  },
+
+  handleOnChangeDescription: function(e) {
+    this.setState({description: e.target.value});
+  },
+
+  renderNameDescription:function(policy) {
+    var workflow = _.isEmpty(policy.name) ||  _.isEmpty(policy.description) ? "failure" : "success";
+    return (
+        <div>
+          <div className={"form-element "+workflow}>
+            <p className="label">Name</p>
+            <input type="text" name="name" className="form-input" value={policy.name} onChange={this.handleOnChangeName}/>
+            <p className="label">Description</p>
+            <textarea cols="3" name="description" className="form-input" value={policy.description} onChange={this.handleOnChangeDescription} />
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
   },
 
   renderServiceProvider: function (policy) {
@@ -113,8 +145,20 @@ App.Pages.PolicyDetail = React.createClass({
     );
   },
 
+  closeFlash:function() {
+    this.setState({flash: undefined});
+  },
+
+  renderFlash:function() {
+    if (this.state.flash) {
+      return (
+          <div className="flash"><p className="error">{this.state.flash}</p><a href="#" onClick={this.closeFlash}>X</a></div>
+      );
+    }
+  },
+
   renderActions: function (policy) {
-    var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
+    var classNameSubmit = this.isValidPolicy() || !policy.submitCalled  ? "" : "disabled";
     return (
         <div className="form-element">
           <a className={classNameSubmit + " submit c-button"} href="#" onClick={this.submitForm}>Submit</a>
@@ -127,9 +171,11 @@ App.Pages.PolicyDetail = React.createClass({
     var policy = this.state;
     return (
         <div className="l-center mod-policy-detail">
+          {this.renderFlash()}
           <div className="l-middle form-element-container box">
 
             <p className="form-element form-title">Create new policy</p>
+            {this.renderNameDescription(policy)}
             {this.renderServiceProvider(policy)}
             {this.renderIdentityProvider(policy)}
             {this.renderDenyPermitRule(policy)}

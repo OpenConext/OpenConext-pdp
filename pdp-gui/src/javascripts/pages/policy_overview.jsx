@@ -8,6 +8,7 @@ App.Pages.PolicyOverview = React.createClass({
 
   componentDidMount: function () {
     var self = this;
+    $('#policies_table').DataTable().destroy();
     $('#policies_table').DataTable({
       paging: false,
       language: {
@@ -20,6 +21,10 @@ App.Pages.PolicyOverview = React.createClass({
       }]
 
     });
+  },
+
+  componentWillReceiveProps: function() {
+    console.log("componentWillReceiveProps");
   },
 
   handleDeletePolicyDetail: function(policy) {
@@ -40,8 +45,22 @@ App.Pages.PolicyOverview = React.createClass({
     }
   },
 
+  closeFlash:function() {
+    this.setState({hideFlash: true});
+  },
+
+  renderFlash:function() {
+    var flash = this.props.flash;
+    if (flash && !this.state.hideFlash) {
+      return (
+          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}>X</a></div>
+      );
+    }
+  },
+
   render: function () {
     var self = this;
+    this.componentDidMount();
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
           <tr key={policy.id}>
@@ -61,6 +80,7 @@ App.Pages.PolicyOverview = React.createClass({
 
     return (
         <div className="mod-policy-overview">
+          {this.renderFlash()}
           <div className='table-responsive'>
             <table className='table table-bordered box' id='policies_table'>
               <thead>

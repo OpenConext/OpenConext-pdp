@@ -44,7 +44,7 @@ App.Controllers.Policies = {
 
   loadPolicy: function (ctx, next) {
     if (ctx.params.id) {
-      $.get(App.apiUrl("/internal/policies/:id" ,{id: ctx.params.id}), function (data) {
+      $.get(App.apiUrl("/internal/policies/:id", {id: ctx.params.id}), function (data) {
         ctx.policy = data;
         next();
       });
@@ -55,7 +55,7 @@ App.Controllers.Policies = {
   },
 
   overview: function (ctx) {
-    App.render(App.Pages.PolicyOverview({key: "policies", policies: ctx.policies}));
+    App.render(App.Pages.PolicyOverview({key: "policies", policies: ctx.policies, flash: App.getFlash()}));
   },
 
   detail: function (ctx) {
@@ -69,25 +69,28 @@ App.Controllers.Policies = {
     ;
   },
 
-  saveOrUpdatePolicy: function(policy) {
+  saveOrUpdatePolicy: function (policy, failureCallback) {
     var type = policy.id ? "PUT" : "POST";
-    $.ajax({
+    var json = JSON.stringify(policy);
+    var jqxhr = $.ajax({
       url: App.apiUrl("/internal/policies"),
       type: type,
-      data: policy,
-      success: function(result) {
-        page("/policies");
-      }
+      data: json
+    }).done(function () {
+      App.setFlash("Policy '" + policy.name + "' was successfully created");
+      page("/policies");
+    }).fail(function () {
+      failureCallback(jqxhr);
     });
   },
 
-  deletePolicy: function(policy) {
+  deletePolicy: function (policy) {
     $.ajax({
-      url: App.apiUrl("/internal/policies/:id", { id: policy.id }),
-      type: 'DELETE',
-      success: function(result) {
-        page("/policies");
-      }
+      url: App.apiUrl("/internal/policies/:id", {id: policy.id}),
+      type: 'DELETE'
+    }).done(function () {
+      App.setFlash("Policy '" + policy.name + "' was successfully deleted");
+      page("/policies");
     });
   }
 

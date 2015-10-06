@@ -134,12 +134,14 @@ public class PdpController {
     PdpPolicy policy;
     if (pdpPolicyDefinition.getId() != null) {
       policy = findOneAndOnly(pdpPolicyDefinition.getId());
+      policy.setName(pdpPolicyDefinition.getName());
+      policy.setPolicyXml(policyXml);
     } else {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName());
     }
     try {
       PdpPolicy saved = pdpPolicyRepository.save(policy);
-      LOG.info("Created PdpPolicy {}", saved.getPolicyXml());
+      LOG.info("{} PdpPolicy {}",policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
       return saved;
     } catch (DataIntegrityViolationException e) {
       if (e.getMessage().contains("pdp_policy_name_unique")) {
