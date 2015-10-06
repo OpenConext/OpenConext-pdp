@@ -43,41 +43,49 @@ App.Controllers.Policies = {
   },
 
   loadPolicy: function (ctx, next) {
-    if (ctx.params.id) {
-      $.get(App.apiUrl("/internal/policies/:id", {id: ctx.params.id}), function (data) {
-        ctx.policy = data;
-        next();
-      });
-    } else {
-      ctx.policy = {};
+    var url = ctx.params.id ?
+        App.apiUrl("/internal/policies/:id", {id: ctx.params.id}) : App.apiUrl("/internal/default-policy");
+    $.get(url, function (data) {
+      ctx.policy = data;
       next();
-    }
+    });
   },
 
   overview: function (ctx) {
-    App.render(App.Pages.PolicyOverview({key: "policies", policies: ctx.policies, flash: App.getFlash()}));
+    App.render(App.Pages.PolicyOverview({key: "policies", tada: "aa", policies: ctx.policies, flash: App.getFlash()}));
   },
 
   detail: function (ctx) {
-    App.render(App.Pages.PolicyDetail({
-          key: "policy",
-          policy: ctx.policy,
-          identityProviders: ctx.identityProviders,
-          serviceProviders: ctx.serviceProviders
-        }
-    ))
-    ;
+    if (ctx.policy.id) {
+      App.render(App.Pages.PolicyDetail({
+            key: "policy",
+            policy: ctx.policy,
+            identityProviders: ctx.identityProviders,
+            serviceProviders: ctx.serviceProviders
+          }
+      ),false);
+    } else {
+      App.render(App.Pages.PolicyDetail({
+            key: "policy",
+            policy: ctx.policy,
+            identityProviders: ctx.identityProviders,
+            serviceProviders: ctx.serviceProviders
+          }
+      ),false);
+    }
+    //TODO ugly hack - find out why we need to unmount to get proper refresh
   },
 
   saveOrUpdatePolicy: function (policy, failureCallback) {
     var type = policy.id ? "PUT" : "POST";
     var json = JSON.stringify(policy);
+    var action = policy.id ? "updated" : "created";
     var jqxhr = $.ajax({
       url: App.apiUrl("/internal/policies"),
       type: type,
       data: json
     }).done(function () {
-      App.setFlash("Policy '" + policy.name + "' was successfully created");
+      App.setFlash("Policy '" + policy.name + "' was successfully " + action);
       page("/policies");
     }).fail(function () {
       failureCallback(jqxhr);

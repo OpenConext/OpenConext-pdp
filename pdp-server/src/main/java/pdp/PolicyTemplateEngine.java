@@ -25,7 +25,9 @@ public class PolicyTemplateEngine {
   }
 
   public static String getNameId(String name) {
-    Assert.notNull(name, "name is null");
+    if (name == null) {
+      return null;
+    }
     return name.replace(" ", "_").toLowerCase();
   }
 

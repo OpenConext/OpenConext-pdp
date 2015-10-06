@@ -6,9 +6,15 @@ App.Pages.PolicyOverview = React.createClass({
     return {data: []}
   },
 
-  componentDidMount: function () {
-    var self = this;
+  destroyDataTable: function () {
     $('#policies_table').DataTable().destroy();
+  },
+
+  redrawDataTable: function () {
+    $('#policies_table').DataTable().destroy();
+  },
+
+  initDataTable: function () {
     $('#policies_table').DataTable({
       paging: false,
       language: {
@@ -19,15 +25,32 @@ App.Pages.PolicyOverview = React.createClass({
         targets: [5],
         orderable: false
       }]
-
     });
   },
 
-  componentWillReceiveProps: function() {
-    console.log("componentWillReceiveProps");
+  componentWillReceiveProps: function (nextProps) {
+    this.destroyDataTable();
+    if (!_.isEmpty(this.props) && this.props.flash !== nextProps.flash) {
+      this.setState({hideFlash: false});
+    }
   },
 
-  handleDeletePolicyDetail: function(policy) {
+  componentDidUpdate: function (prevProps, prevState) {
+    if ( ! $.fn.DataTable.isDataTable( '#policies_table' ) ) {
+      this.initDataTable();
+    }
+
+  },
+
+  componentDidMount: function () {
+    this.initDataTable();
+  },
+
+  componentWillUnmount: function () {
+    this.destroyDataTable();
+  },
+
+  handleDeletePolicyDetail: function (policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -35,7 +58,8 @@ App.Pages.PolicyOverview = React.createClass({
         App.Controllers.Policies.deletePolicy(policy);
       }
     }
-  },
+  }
+  ,
 
   handleShowPolicyDetail: function (policy) {
     return function (e) {
@@ -45,22 +69,22 @@ App.Pages.PolicyOverview = React.createClass({
     }
   },
 
-  closeFlash:function() {
+  closeFlash: function () {
     this.setState({hideFlash: true});
   },
 
-  renderFlash:function() {
+  renderFlash: function () {
     var flash = this.props.flash;
     if (flash && !this.state.hideFlash) {
       return (
           <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}>X</a></div>
       );
     }
-  },
+  }
+  ,
 
   render: function () {
     var self = this;
-    this.componentDidMount();
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
           <tr key={policy.id}>
@@ -74,11 +98,12 @@ App.Pages.PolicyOverview = React.createClass({
                  data-tooltip="Edit">
                 <i className="fa fa-edit"></i>
               </a>
-              <a href="#" data-tooltip="Delete" onClick={self.handleDeletePolicyDetail(policy)}><i className="fa fa-remove"></i></a></td>
+              <a href="#" data-tooltip="Delete" onClick={self.handleDeletePolicyDetail(policy)}><i
+                  className="fa fa-remove"></i></a></td>
           </tr>)
     });
 
-    return (
+    var html = (
         <div className="mod-policy-overview">
           {this.renderFlash()}
           <div className='table-responsive'>
@@ -99,6 +124,8 @@ App.Pages.PolicyOverview = React.createClass({
             </table>
           </div>
         </div>
-    )
+    );
+    return html;
   }
-});
+})
+;

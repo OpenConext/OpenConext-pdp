@@ -28,10 +28,7 @@ import pdp.serviceregistry.ServiceRegistry;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -125,6 +122,13 @@ public class PdpController {
     PdpPolicy policy = findOneAndOnly(id);
     return addEntityMetaData(pdpPolicyDefinitionParser.parse(policy));
   }
+
+  @RequestMapping(method = GET, value = "internal/default-policy")
+  public PdpPolicyDefinition defaultPolicy() {
+    PdpPolicyDefinition definition = new PdpPolicyDefinition();
+    return definition;
+  }
+
 
   @RequestMapping(method = {PUT, POST}, value = "/internal/policies")
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {

@@ -21,7 +21,11 @@ App.Components.Select2Selector = React.createClass({
     rootNode.val(initialValue).trigger("change");
     //This is not the react way, but this react version does not support native Select2 ports
     rootNode.on("change", this.handleChange);
+  },
 
+  componentWillUnmount: function () {
+    var rootNode = $('[data-select2selector-id="' + this.props.select2selectorId + '"]');
+    rootNode.select2("destroy");
   },
 
   handleChange: function (e) {
