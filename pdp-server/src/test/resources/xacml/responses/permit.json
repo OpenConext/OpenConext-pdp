@@ -1,0 +1,25 @@
+[
+  {
+    "Status": {
+      "StatusCode": {
+        "Value": "urn:oasis:names:tc:xacml:1.0:status:ok"
+      }
+    },
+    "PolicyIdentifier": {
+      "PolicySetIdReference": [
+        {
+          "Version": "1.0",
+          "Id": "18c4a7c6-4164-4659-9bcb-cd0cb1e37573"
+        }
+      ],
+      "PolicyIdReference": [
+        {
+          "Version": "1",
+          "Id": "http://axiomatics.com/alfa/identifier/OpenConext.pdp.DenyRulePolicyEmptyPermit"
+        }
+      ]
+    },
+    "Decision": "Permit"
+  }
+]
+}
