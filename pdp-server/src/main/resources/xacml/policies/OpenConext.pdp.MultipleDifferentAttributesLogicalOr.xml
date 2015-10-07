@@ -48,9 +48,21 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
+                                DataType="http://www.w3.org/2001/XMLSchema#string">tilburg</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                                />
+                    </Match>
+                </AllOf>
+                <AllOf>
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <AttributeValue
                                 DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding</AttributeValue>
                         <AttributeDesignator
-                                AttributeId="faculty"
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"

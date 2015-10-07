@@ -153,6 +153,55 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
 
+  handleAttributeValueChanged: function(attrName, value) {
+    return function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      //change attribute value
+      console.log(e.target.value);
+    }.bind(this);
+  } ,
+
+  renderAllowedAttributes: function(policy) {
+    var grouped = _.groupBy(policy.attributes, function(attr){return attr.name;});
+    var attrNames = Object.keys(grouped);
+    var allowedAttributes = this.props.allowedAttributes;
+    var handleAttributeValueChanged = this.handleAttributeValueChanged;
+    return (
+        <div className="form-element success">
+          {
+            attrNames.map(function (attrName, index) {
+              return (
+                  <div>
+                    <p className="label">Attribute</p>
+                    <select value={attrName}>
+                      {
+                        allowedAttributes.filter(function(allowedAttr){
+                          return grouped[attrName] !== allowedAttr.AttributeId
+                        }).map(function(allowedAttribute){
+                          return (<option value={allowedAttribute.AttributeId}>{allowedAttribute.Value}</option>);
+                        })
+                      }
+                    </select>
+                    <div className="attribute-values">
+                      <p className="label">Values(s)</p>
+                      {
+                        grouped[attrName].map(function(attribute){
+                          return (
+                              <input type="text" name="value" className="form-input" value={attribute.value}
+                                     onChange={handleAttributeValueChanged(attrName, attribute.value)}/>
+                          )
+                        })
+                      }
+                    </div>
+                  </div>
+              );
+            })
+          }
+        </div>);
+
+  },
+
   renderDenyPermitRule: function (policy) {
     var classNameSelected = policy.denyRule ? "checked" : "";
     var policyPermit = policy.denyRule ? "Deny" : "Permit";
@@ -267,6 +316,7 @@ App.Pages.PolicyDetail = React.createClass({
             {this.renderServiceProvider(policy)}
             {this.renderIdentityProvider(policy)}
             {this.renderLogicalRule(policy)}
+            {this.renderAllowedAttributes(policy)}
             {this.renderDenyAdvice(policy)}
             {this.renderActions(policy)}
           </div>

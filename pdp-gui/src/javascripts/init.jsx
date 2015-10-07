@@ -43,10 +43,6 @@ var App = {
   },
 
   render: function (page) {
-    this.render(page, false);
-  },
-
-  render: function (page, unmount) {
     if (this.mainComponent) {
       //stupid hack - TODO find out why when the page remains the same some updates do not go well
       this.mainComponent.setProps({
@@ -56,8 +52,6 @@ var App = {
         page: page
       });
     } else {
-      //var node = document.getElementById("app");
-      //React.unmountComponentAtNode(node);
       this.mainComponent = React.renderComponent(App.Components.Main({page: page}), document.getElementById("app"));
     }
 

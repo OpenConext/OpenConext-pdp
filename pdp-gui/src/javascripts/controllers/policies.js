@@ -10,6 +10,7 @@ App.Controllers.Policies = {
         this.loadPolicy.bind(this),
         this.loadIdentityProviders.bind(this),
         this.loadServiceProviders.bind(this),
+        this.loadAllowedAttributes.bind(this),
         this.detail.bind(this)
     );
 
@@ -42,6 +43,13 @@ App.Controllers.Policies = {
     });
   },
 
+  loadAllowedAttributes: function (ctx, next) {
+    $.get(App.apiUrl("/internal/attributes"), function (data) {
+      ctx.allowedAttributes = data;
+      next();
+    });
+  },
+
   loadPolicy: function (ctx, next) {
     var url = ctx.params.id ?
         App.apiUrl("/internal/policies/:id", {id: ctx.params.id}) : App.apiUrl("/internal/default-policy");
@@ -56,24 +64,14 @@ App.Controllers.Policies = {
   },
 
   detail: function (ctx) {
-    if (ctx.policy.id) {
       App.render(App.Pages.PolicyDetail({
             key: "policy",
             policy: ctx.policy,
             identityProviders: ctx.identityProviders,
-            serviceProviders: ctx.serviceProviders
+            serviceProviders: ctx.serviceProviders,
+            allowedAttributes: ctx.allowedAttributes
           }
-      ),false);
-    } else {
-      App.render(App.Pages.PolicyDetail({
-            key: "policy",
-            policy: ctx.policy,
-            identityProviders: ctx.identityProviders,
-            serviceProviders: ctx.serviceProviders
-          }
-      ),false);
-    }
-    //TODO ugly hack - find out why we need to unmount to get proper refresh
+      ));
   },
 
   saveOrUpdatePolicy: function (policy, failureCallback) {

@@ -133,9 +133,15 @@ public class PdpController {
   @RequestMapping(method = GET, value = "internal/attributes")
   public List<JsonPolicyRequest.Attribute> allowedAttributes() {
     return Arrays.asList(
-        new JsonPolicyRequest.Attribute());
+        new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:schacHomeOrganization", "Schac home organization"),
+        new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:schacHomeOrganizationType","Schac home organization type"),
+        new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:eduPersonAffiliation","Edu person affiliation"),
+        new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:eduPersonScopedAffiliation","Edu person scoped affiliation"),
+        new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:eduPersonEntitlement","Edu person entitlement"),
+        new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:isMemberOf","Is-member-of"),
+        new JsonPolicyRequest.Attribute("urn:collab:group:surfteams.nl","SURFteams group name (fully qualified)")
+    );
   }
-
 
   @RequestMapping(method = {PUT, POST}, value = "/internal/policies")
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
