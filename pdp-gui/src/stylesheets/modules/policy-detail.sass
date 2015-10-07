@@ -10,10 +10,10 @@
     margin: 25px 0px 0px 0px
 
     &.success
-      border-left: 4px solid $blue
+      border-left: 6px solid $blue
 
     &.failure
-      border-left: 4px solid $medium-grey
+      border-left: 6px solid $medium-grey
 
     &.form-title
       font-size: large
@@ -29,6 +29,7 @@
 
     p.info
       font-weight: 700
+      margin-top: 5px
 
     .c-button.cancel
       float: right
@@ -38,8 +39,44 @@
 
     em
       font-size: 13px
+      color: $dark-grey
 
   .column-3
     display: inline-block
     width: 33%
     vertical-align: top
+    padding-right: 30px
+
+  .logical-rule
+    float: left
+    line-height: 30px
+    overflow: hidden
+    border-radius: $br
+
+    li
+      float: left
+      list-style: none
+      text-align: center
+
+    a
+      display: block
+      width: 60px
+      border: 1px solid $medium-grey
+      text-decoration: none
+      color: $dark-grey
+
+      &.AND
+        border-top-left-radius: 5px
+        border-bottom-left-radius: 5px
+
+      &.OR
+        border-top-right-radius: 5px
+        border-bottom-right-radius: 5px
+
+      &:hover,
+      &.selected
+        background: $blue
+        color: #fff
+        border-color: $blue
+      &.selected:hover
+        text-decoration: none

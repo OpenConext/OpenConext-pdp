@@ -15,7 +15,8 @@ App.Components.Select2Selector = React.createClass({
     rootNode.select2({
       width: '100%',
       placeholder: this.props.placeholder,
-      allowClear: allowClear
+      allowClear: allowClear,
+      forceBelow: true
     });
     var initialValue = this.props.defaultValue || (this.props.multiple ? [] : '');
     rootNode.val(initialValue).trigger("change");

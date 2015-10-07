@@ -101,7 +101,7 @@ App.Pages.PolicyDetail = React.createClass({
   renderDenyAdvice: function (policy) {
     var workflow = _.isEmpty(policy.denyAdvice) ? "failure" : "success";
     return (
-        <div className={"form-element "}>
+        <div className={"form-element "+workflow}>
           <p className="label before-em">Deny message</p>
           <em>info text</em>
           <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
@@ -122,7 +122,7 @@ App.Pages.PolicyDetail = React.createClass({
             <p className="label">Service Provider</p>
             <App.Components.Select2Selector
                 defaultValue={policy.serviceProviderId}
-                placeholder={"Select a Service Provider (required)"}
+                placeholder={"Select the Service Provider - required"}
                 select2selectorId={"serviceProvider"}
                 options={this.parseEntities(this.props.serviceProviders, policy.serviceProviderId)}
                 handleChange={this.handleChangeServiceProvider}/>
@@ -137,10 +137,11 @@ App.Pages.PolicyDetail = React.createClass({
     return (
         <div>
           <div className="form-element success">
-            <p className="label">Identity Provider(s)</p>
+            <p className="label">Identity Providers</p>
+
             <App.Components.Select2Selector
                 defaultValue={policy.identityProviderIds}
-                placeholder={"Select a Identity Provider (zero or more)"}
+                placeholder={"Select the Identity Providers - zero or more"}
                 select2selectorId={"identityProvider"}
                 options={this.parseEntities(this.props.identityProviders, policy.identityProviderIds)}
                 multiple={true}
@@ -157,8 +158,8 @@ App.Pages.PolicyDetail = React.createClass({
     var policyPermit = policy.denyRule ? "Deny" : "Permit";
     return (
         <div>
-          <div className="form-element success" onClick={this.toggleDenyRule}>
-            <div className="column-3">
+          <div className="form-element success">
+            <div className="column-3" onClick={this.toggleDenyRule}>
               <p className="label">Access</p>
 
               <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}>
@@ -180,6 +181,56 @@ App.Pages.PolicyDetail = React.createClass({
     );
   }
   ,
+
+  handleChooseRule: function(value) {
+    return function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      this.setState({allAttributesMustMatch: value === "AND"});
+    }.bind(this);
+  },
+
+  renderRule: function(value, selected) {
+    var className = value + " " + (selected ? "selected" : "");
+    return (
+        <li key={value}>
+          <a
+              href="#"
+              className={className}
+              onClick={this.handleChooseRule(value)}>
+            {value}
+          </a>
+        </li>
+    );
+  },
+
+  renderLogicalRule: function (policy){
+    var allAttributesMustMatch = policy.allAttributesMustMatch;
+    return (
+        <div>
+          <div className="form-element success">
+            <div className="column-3">
+              <p className="label">Rule</p>
+              <ul className="logical-rule">
+                {[
+                  this.renderRule("AND", allAttributesMustMatch),
+                  this.renderRule("OR", !allAttributesMustMatch)
+                ]}
+              </ul>
+            </div>
+            <div className="column-3">
+              <p className="info">AND</p>
+              <em>ldkfglsdfng lkdsfngl sn dfglk ndsf lkg nsdflkgn dsflkgn </em>
+            </div>
+            <div className="column-3">
+              <p className="info">OR</p>
+              <em>dfjb bskdfb kjdfg kjdsfg </em>
+            </div>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
 
   closeFlash: function () {
     this.setState({flash: undefined});
@@ -220,6 +271,7 @@ App.Pages.PolicyDetail = React.createClass({
             {this.renderDenyPermitRule(policy)}
             {this.renderServiceProvider(policy)}
             {this.renderIdentityProvider(policy)}
+            {this.renderLogicalRule(policy)}
             {this.renderDenyAdvice(policy)}
             {this.renderActions(policy)}
           </div>

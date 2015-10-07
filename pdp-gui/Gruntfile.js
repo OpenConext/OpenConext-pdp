@@ -11,13 +11,14 @@ module.exports = function(grunt) {
       'src/javascripts/lib/datatables.min.js',
       'src/javascripts/lib/jquery.cookie.js',
       'src/javascripts/lib/lodash.js',
-      'src/javascripts/lib/select2.js',
       'tmp/init.js',                    // initializes the namespaces
       'tmp/mixins/*.js',                // all mixins first
       'tmp/**/*.js',                    // compiled jsx files from tmp
       'src/javascripts/*/**/*',         // all files from subfolders
       '!src/javascripts/**/*.jsx',      // no jsx files
-      'src/javascripts/application.js', // end with the application file
+      'src/javascripts/application.js',// end with the application file
+      'src/javascripts/lib/select2.js',
+
     ]
   };
 

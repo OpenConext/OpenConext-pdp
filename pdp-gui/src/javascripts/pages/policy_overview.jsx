@@ -92,7 +92,7 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.description}</td>
             <td>{policy.serviceProviderName}</td>
             <td>{policy.identityProviderNames}</td>
-            <td>{policy.numberOfViolations}</td>
+            <td className='policy_violations'>{policy.numberOfViolations}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
                  data-tooltip="Edit">

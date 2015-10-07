@@ -4063,6 +4063,13 @@
             var enoughRoomAbove = viewport.top < (offset.top - dropdown.height);
             var enoughRoomBelow = viewport.bottom > (offset.bottom + dropdown.height);
 
+            var forceBelow = this.options.get('forceBelow');
+            forceBelow = typeof forceBelow !== 'undefined' ? forceBelow : false;
+            if (forceBelow) {
+              enoughRoomAbove = false;
+              enoughRoomBelow = true;
+            }
+
             var css = {
               left: offset.left,
               top: container.bottom
