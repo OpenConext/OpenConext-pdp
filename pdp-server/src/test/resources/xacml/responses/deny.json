@@ -1,0 +1,29 @@
+{
+  "Response" : [ {
+    "Status" : {
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok"
+      }
+    },
+    "AssociatedAdvice" : [ {
+      "AttributeAssignment" : [ {
+        "Category" : "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "AttributeId" : "DenyMessage",
+        "Value" : "UMCN students do not have access to the UMCN Loopbaanportaal ",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      } ],
+      "Id" : "urn:surfconext:xacml:advice:id:openconext.pdp.test.deny.policy.xml"
+    } ],
+    "PolicyIdentifier" : {
+      "PolicySetIdReference" : [ {
+        "Version" : "1.0",
+        "Id" : "3299200f-f5c9-4765-9c02-94054ee08cc2"
+      } ],
+      "PolicyIdReference" : [ {
+        "Version" : "1",
+        "Id" : "urn:surfconext:xacml:policy:id:openconext.pdp.test.deny.policy.xml"
+      } ]
+    },
+    "Decision" : "Deny"
+  } ]
+}

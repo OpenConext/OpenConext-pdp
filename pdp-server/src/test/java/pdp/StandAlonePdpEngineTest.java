@@ -58,7 +58,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
-  public void testMultiplaAndPolicy() throws Exception {
+  public void testMultipleAndPolicy() throws Exception {
     doDecideTest("test_request_multiple_and.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.and.Policy.xml");
   }
 

@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
@@ -127,6 +128,12 @@ public class PdpController {
   public PdpPolicyDefinition defaultPolicy() {
     PdpPolicyDefinition definition = new PdpPolicyDefinition();
     return definition;
+  }
+
+  @RequestMapping(method = GET, value = "internal/attributes")
+  public List<JsonPolicyRequest.Attribute> allowedAttributes() {
+    return Arrays.asList(
+        new JsonPolicyRequest.Attribute());
   }
 
 

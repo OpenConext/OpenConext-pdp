@@ -67,7 +67,7 @@
                             urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess
                         </AttributeValue>
                         <AttributeDesignator
-                                AttributeId="urn:mace:dir:attribute-def:group-name"
+                                AttributeId="urn:collab:group:surfteams.nl"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
                                 Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                                 MustBePresent="false"
