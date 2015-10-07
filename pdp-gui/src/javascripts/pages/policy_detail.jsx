@@ -194,12 +194,7 @@ App.Pages.PolicyDetail = React.createClass({
     var className = value + " " + (selected ? "selected" : "");
     return (
         <li key={value}>
-          <a
-              href="#"
-              className={className}
-              onClick={this.handleChooseRule(value)}>
-            {value}
-          </a>
+          <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
         </li>
     );
   },
