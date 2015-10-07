@@ -153,20 +153,36 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
 
-  handleAttributeValueChanged: function(attrName, value) {
-    return function(e) {
+  handleAttributeValueChanged: function (attrName, value) {
+    return function (e) {
       e.preventDefault();
       e.stopPropagation();
       //change attribute value
       console.log(e.target.value);
     }.bind(this);
-  } ,
+  },
 
-  renderAllowedAttributes: function(policy) {
-    var grouped = _.groupBy(policy.attributes, function(attr){return attr.name;});
+  handleNewAttribute: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    //change attribute value
+    console.log(e.target.value);
+  },
+
+  handleNewAttributeValue: function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    //change attribute value
+    console.log(e.target.value);
+  },
+
+  renderAllowedAttributes: function (policy) {
+    var grouped = _.groupBy(policy.attributes, function (attr) {
+      return attr.name;
+    });
     var attrNames = Object.keys(grouped);
     var allowedAttributes = this.props.allowedAttributes;
-    var handleAttributeValueChanged = this.handleAttributeValueChanged;
+    var self = this;
     return (
         <div className="form-element success">
           {
@@ -174,30 +190,42 @@ App.Pages.PolicyDetail = React.createClass({
               return (
                   <div>
                     <p className="label">Attribute</p>
-                    <select value={attrName}>
-                      {
-                        allowedAttributes.filter(function(allowedAttr){
-                          return grouped[attrName] !== allowedAttr.AttributeId
-                        }).map(function(allowedAttribute){
-                          return (<option value={allowedAttribute.AttributeId}>{allowedAttribute.Value}</option>);
-                        })
-                      }
-                    </select>
+
+                    <div className="attribute-container">
+                      <input type="text" name="attribute" className="form-input disabled" value={attrName}
+                             disabled="disabled"/>
+                      <a href="#" className="remove"><i className="fa fa-remove"></i></a>
+                    </div>
                     <div className="attribute-values">
                       <p className="label">Values(s)</p>
                       {
-                        grouped[attrName].map(function(attribute){
+                        grouped[attrName].map(function (attribute) {
                           return (
-                              <input type="text" name="value" className="form-input" value={attribute.value}
-                                     onChange={handleAttributeValueChanged(attrName, attribute.value)}/>
+                              <div className="value-container">
+                                <input type="text" name="value" className="form-input" value={attribute.value}
+                                       onChange={self.handleAttributeValueChanged(attrName, attribute.value)}/>
+                                <a href="#" className="remove"><i className="fa fa-remove"></i></a>
+                              </div>
                           )
                         })
                       }
+                      <input type="text" name="value" className="form-input" value=""
+                             placeholder="Add a new value..."
+                             onChange={self.handleNewAttributeValue}/>
                     </div>
                   </div>
               );
             })
           }
+          <p className="label">Attribute</p>
+          <select value="" onChange={self.handleNewAttribute}>
+            <option value="" disabled="disabled">Add new attribute....</option>
+            {
+              allowedAttributes.map(function (allowedAttribute) {
+                return (<option value={allowedAttribute.AttributeId}>{allowedAttribute.AttributeId}</option>);
+              })
+            }
+          </select>
         </div>);
 
   },
@@ -231,15 +259,15 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
 
-  handleChooseRule: function(value) {
-    return function(e) {
+  handleChooseRule: function (value) {
+    return function (e) {
       e.preventDefault();
       e.stopPropagation();
       this.setState({allAttributesMustMatch: value === "AND"});
     }.bind(this);
   },
 
-  renderRule: function(value, selected) {
+  renderRule: function (value, selected) {
     var className = value + " " + (selected ? "selected" : "");
     return (
         <li key={value}>
@@ -248,7 +276,7 @@ App.Pages.PolicyDetail = React.createClass({
     );
   },
 
-  renderLogicalRule: function (policy){
+  renderLogicalRule: function (policy) {
     var allAttributesMustMatch = policy.allAttributesMustMatch;
     return (
         <div>

@@ -96,3 +96,21 @@
 
     input
       margin-bottom: 10px
+
+  .attribute-container, .value-container
+    position: relative
+
+    a
+      position: absolute
+      right: 8px
+      top: 4px
+      font-size: 18px
+
+      &.remove
+        color: $remove-red
+
+      &.add
+        color: $blue
+      
+  input[type="text"]:disabled
+    background-color: #fbfbfb
