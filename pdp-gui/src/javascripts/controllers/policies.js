@@ -18,6 +18,7 @@ App.Controllers.Policies = {
         this.loadPolicy.bind(this),
         this.loadIdentityProviders.bind(this),
         this.loadServiceProviders.bind(this),
+        this.loadAllowedAttributes.bind(this),
         this.detail.bind(this)
     );
   },

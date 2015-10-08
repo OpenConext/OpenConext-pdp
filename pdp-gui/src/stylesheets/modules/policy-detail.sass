@@ -41,11 +41,20 @@
       font-size: 13px
       color: $dark-grey
 
+      &.note
+        display: block
+        margin-top: 20px
+
   .column-3
     display: inline-block
-    width: 33%
+    width: 35%
     vertical-align: top
-    padding-right: 30px
+
+    &.first
+      width: 30%
+
+    &.middle
+      padding-right: 30px
 
   .logical-rule
     float: left
@@ -114,3 +123,6 @@
       
   input[type="text"]:disabled
     background-color: #fbfbfb
+
+  a.plus i
+    margin-right: 10px

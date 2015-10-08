@@ -77,7 +77,7 @@ App.Pages.PolicyOverview = React.createClass({
     var flash = this.props.flash;
     if (flash && !this.state.hideFlash) {
       return (
-          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}>X</a></div>
+          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i className="fa fa-remove"></i></a></div>
       );
     }
   }
