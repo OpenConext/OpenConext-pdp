@@ -22,7 +22,7 @@ App.Components.PolicyAttributes = React.createClass({
     var attributes = this.state.attributes || [];
     var index = attributes.length + 1;
     attributes.push({name: attrName, value: "", index: index});
-    this.setState({attributes: attributes});
+    this.props.setAttributeState({attributes: attributes});
   },
 
   removeAttribute: function (name) {
@@ -30,7 +30,7 @@ App.Components.PolicyAttributes = React.createClass({
     attributes = this.state.attributes.filter(function (attribute) {
       return attribute.name !== name;
     });
-    this.setState({attributes: attributes});
+    this.props.setAttributeState({attributes: attributes});
   },
 
   preventProp: function preventProp(e) {
@@ -48,7 +48,7 @@ App.Components.PolicyAttributes = React.createClass({
         }
         return attr;
       });
-      this.setState({attributes: attributes});
+      this.props.setAttributeState({attributes: attributes});
     }.bind(this);
   },
 
@@ -59,7 +59,7 @@ App.Components.PolicyAttributes = React.createClass({
       var attributes = this.state.attributes.filter(function (attr) {
         return !(attr.name === attrName && attr.index === index);
       });
-      this.setState({attributes: attributes});
+      this.props.setAttributeState({attributes: attributes});
     }.bind(this);
   },
 
@@ -87,7 +87,7 @@ App.Components.PolicyAttributes = React.createClass({
   },
 
 
-  render: function (attrName, attribute) {
+  renderAttributeValue: function (attrName, attribute) {
     return (
         <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
           <input type="text" name="value" className="form-input"
@@ -102,7 +102,8 @@ App.Components.PolicyAttributes = React.createClass({
     )
   },
 
-  renderAttributes: function (policy) {
+  render: function () {
+    var policy = this.state;
     var grouped = _.groupBy(policy.attributes, function (attr) {
       return attr.name;
     });

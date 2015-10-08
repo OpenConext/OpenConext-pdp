@@ -1,5 +1,5 @@
 /** @jsx React.DOM */
-App.Pages.PolicyDetail = React.createClass({
+App.Pages.PolicyDetailOld = React.createClass({
 
   markAttributes: function (policy) {
     policy.attributes = policy.attributes.map(function (attr, index) {

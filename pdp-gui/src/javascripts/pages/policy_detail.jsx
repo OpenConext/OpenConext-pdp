@@ -199,18 +199,17 @@ App.Pages.PolicyDetail = React.createClass({
     );
   },
 
+  setAttributeState: function(newAttributeState) {
+    this.setState(newAttributeState);
+  },
 
   renderAttributes:function(policy) {
-    return (<App.Components.PolicyAttributes policy={this.props.policy}/>)
+    //we need state changes from the child component
+    return (<App.Components.PolicyAttributes
+        policy={this.state}
+        allowedAttributes={this.props.allowedAttributes}
+        setAttributeState={this.setAttributeState}/>);
   },
-  /*
-   <App.Components.Select2Selector
-   defaultValue={policy.serviceProviderId}
-   placeholder={"Select the Service Provider - required"}
-   select2selectorId={"serviceProvider"}
-   options={this.parseEntities(this.props.serviceProviders)}
-   handleChange={this.handleChangeServiceProvider}/>
-   */
 
   renderLogicalRule: function (policy) {
     var allAttributesMustMatch = policy.allAttributesMustMatch;
