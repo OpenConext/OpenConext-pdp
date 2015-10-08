@@ -11,6 +11,8 @@ module.exports = function(grunt) {
       'src/javascripts/lib/datatables.min.js',
       'src/javascripts/lib/jquery.cookie.js',
       'src/javascripts/lib/lodash.js',
+      'src/javascripts/lib/codemirror.js',
+      'src/javascripts/lib/javascript.js',
       'tmp/init.js',                    // initializes the namespaces
       'tmp/mixins/*.js',                // all mixins first
       'tmp/**/*.js',                    // compiled jsx files from tmp

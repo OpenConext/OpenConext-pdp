@@ -1,11 +1,30 @@
 .c-button
   background: $blue
   padding: 7px 15px
+  border: 1px solid $blue
   border-radius: $br
   color: #fff
   text-decoration: none
   display: inline-block
   text-align: center
+
+  &.large
+    width: 240px
+
+  &.full
+    width: 80%
+    margin: 20px
+    color: $blue
+    background-color: white
+
+    &:hover
+      background: #FDFDFD
+
+  &.submit
+    width: 180px
+
+  i
+    margin-right: 10px
 
   &:hover
     background: darken($blue,10)
@@ -19,4 +38,7 @@
     cursor: default
 
   &.cancel
-    background: $medium-grey
+    background: white
+    color: $medium-grey
+    border: 1px solid $medium-grey
+    margin-left: 15px

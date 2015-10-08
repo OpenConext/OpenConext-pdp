@@ -1,4 +1,4 @@
-.mod-policy-detail
+.mod-policy-detail, .mod-playground
 
   div.bottom
     margin-top: 25px
@@ -8,6 +8,12 @@
   .form-element
     padding: 5px 70px 10px 40px
     margin: 25px 0px 0px 0px
+
+    &.split
+      padding-right: 10px
+
+      &.no-pad-right
+        padding-right: 0px
 
     &.success
       border-left: 6px solid $blue
@@ -30,12 +36,6 @@
     p.info
       font-weight: 700
       margin-top: 5px
-
-    .c-button.cancel
-      float: right
-
-    .c-button.submit
-      width: 180px
 
     em
       font-size: 13px

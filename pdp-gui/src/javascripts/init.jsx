@@ -4,8 +4,8 @@ var App = {
   Components: {},
   Pages: {},
   Controllers: {},
-  Mixins: {},
   Utils: {},
+
 
   store: {}, // in memory key/value store, to save temporary settings
 

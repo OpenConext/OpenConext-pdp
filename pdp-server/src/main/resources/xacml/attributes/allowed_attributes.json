@@ -1,0 +1,30 @@
+[
+  {
+    "AttributeId": "urn:mace:terena.org:attribute-def:schacHomeOrganization",
+    "Value": "Schac home organization"
+  },
+  {
+    "AttributeId": "urn:mace:terena.org:attribute-def:schacHomeOrganizationType",
+    "Value": "Schac home organization type"
+  },
+  {
+    "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+    "Value": "Edu person affiliation"
+  },
+  {
+    "AttributeId": "urn:mace:dir:attribute-def:eduPersonScopedAffiliation",
+    "Value": "Edu person scoped affiliation"
+  },
+  {
+    "AttributeId": "urn:mace:dir:attribute-def:eduPersonEntitlement",
+    "Value": "Edu person entitlement"
+  },
+  {
+    "AttributeId": "urn:mace:dir:attribute-def:isMemberOf",
+    "Value": "Is-member-of"
+  },
+  {
+    "AttributeId": "urn:collab:group:surfteams.nl",
+    "Value": "SURFteams group name (fully qualified)"
+  }
+]

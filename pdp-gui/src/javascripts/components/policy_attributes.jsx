@@ -116,8 +116,9 @@ App.Components.PolicyAttributes = React.createClass({
       return _.isEmpty(attr.value);
     });
     var validClassName = (_.isEmpty(policy.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
+    var css = this.props.css || "";
     return (
-        <div className={"form-element "+validClassName}>
+        <div className={"form-element "+css+" "+validClassName}>
           {
             attrNames.map(function (attrName, index) {
               return (
