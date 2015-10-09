@@ -16,7 +16,6 @@ import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static pdp.xacml.PdpPolicyDefinitionParser.GROUP_URN;
@@ -34,31 +33,14 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
   @Override
   public void configure(String id, Properties properties) throws PIPException {
     IdentifierImpl identifierDataType = new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string");
+    IdentifierImpl attributeCategory = new IdentifierImpl("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject");
 
-    requiredAttribute = new StdPIPRequest(
-        // identifierCategory
-        new IdentifierImpl("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"),
-        // identifierAttribute
-        new IdentifierImpl(NAME_ID),
-        // identifierDataType
-        identifierDataType);
+    requiredAttribute = new StdPIPRequest(attributeCategory, new IdentifierImpl(NAME_ID), identifierDataType);
 
-
-    IdentifierImpl attributeCategory = new IdentifierImpl("urn:oasis:names:tc:xacml:3.0:attribute-category:resource");
     IdentifierImpl identifierAttribute = new IdentifierImpl(GROUP_URN);
+    providedAttribute = new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
 
-    providedAttribute = new StdPIPRequest(
-        // identifierCategory
-        attributeCategory,
-        // identifierAttribute
-        identifierAttribute,
-        // identifierDataType
-        identifierDataType);
-
-    Attribute attribute = new StdAttribute(attributeCategory,
-        identifierAttribute,
-        Collections.EMPTY_LIST, null, true);
-
+    Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.EMPTY_LIST, null, true);
     empty = new StdSinglePIPResponse(attribute);
   }
 
