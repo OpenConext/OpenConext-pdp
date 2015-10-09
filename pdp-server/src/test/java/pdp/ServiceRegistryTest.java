@@ -1,20 +1,17 @@
 package pdp;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.StringUtils;
 import pdp.domain.EntityMetaData;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
-import pdp.serviceregistry.UrlResourceServiceRegistry;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.PdpApplication.singletonOptionalCollector;
@@ -28,6 +25,8 @@ public class ServiceRegistryTest {
     List<EntityMetaData> sps = serviceRegistry.serviceProviders();
     assertEquals(950, sps.size());
     assertTrue(sps.stream().allMatch(entityMetaData -> StringUtils.hasText(entityMetaData.getEntityId())));
+    // we expect a sorted list
+    assertEquals(asList("3", "3", "A"), sps.subList(0, 3).stream().map(e -> e.getNameEn().substring(0, 1)).collect(toList()));
   }
 
   @Test

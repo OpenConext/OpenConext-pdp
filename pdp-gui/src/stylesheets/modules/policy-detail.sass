@@ -37,9 +37,15 @@
       font-weight: 700
       margin-top: 5px
 
+      &.checked
+        color: $medium-grey
+
     em
       font-size: 13px
       color: $dark-grey
+
+      &.not-selected
+        color: lighten($dark-grey, 20)
 
       &.note
         display: block

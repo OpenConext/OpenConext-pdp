@@ -132,7 +132,9 @@
   .cm-comment
     color: #a50
   .cm-string
-    color: $red
+    color: darken($green, 20)
+    &.cm-property
+      color: darken($blue, 30)
   .cm-string-2
     color: darken($red,10)
   .cm-meta, .cm-qualifier

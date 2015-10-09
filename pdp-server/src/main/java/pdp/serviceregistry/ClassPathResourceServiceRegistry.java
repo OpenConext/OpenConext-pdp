@@ -12,11 +12,12 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toSet;
 import static pdp.PdpApplication.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
-
+import static java.util.Comparator.*;
 public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
@@ -108,10 +109,18 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
                   getMetaDateEntry(entry, "nl", "description"),
                   getMetaDateEntry(entry, "nl", "name")
               )
-      ).collect(Collectors.toList());
+      ).sorted(sortEntityMetaData()).collect(Collectors.toList());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private Comparator<? super EntityMetaData> sortEntityMetaData() {
+    return (e1,e2) -> {
+      String n1 = e1.getNameEn() != null ? e1.getNameEn() : e1.getNameNl() ;
+      String n2 = e2.getNameEn() != null ? e2.getNameEn() : e2.getNameNl() ;
+      return n1 == null ? -1 : n2 == null ? -1 : n1.trim().compareTo(n2.trim());
+    };
   }
 
   private String getInstitutionId(Map<String, Object> entry) {

@@ -1,8 +1,7 @@
 /** @jsx React.DOM */
 App.Pages.Playground = React.createClass({
 
-
-  componentWillUpdate: function () {
+    componentWillUpdate: function () {
     var node = this.getDOMNode();
     this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
   },
@@ -82,7 +81,6 @@ App.Pages.Playground = React.createClass({
     var emptyAttributes = pdpRequest.attributes.filter(function (attr) {
       return _.isEmpty(attr.value);
     });
-    var validClassName = (_.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
     var inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
         || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
     return !inValid;
@@ -216,17 +214,25 @@ App.Pages.Playground = React.createClass({
                 <i className="fa fa-refresh"></i>Reload to apply changes made below</a>
             </div>
             <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
-                                       options={options}/>
+                                       options={options}  uniqueId="code_mirror_textarea_request"/>
           </div>
       )
     }
   },
 
   renderJsonResponse: function (responseJSON) {
+
     var selectedTab = (this.state.tab || "request");
     if (selectedTab === "response") {
+      var options = {
+        mode: {name: "javascript", json: true},
+        lineWrapping: true,
+        lineNumbers: true,
+        scrollbarStyle: null,
+        readOnly: true
+      }
       return (
-          <pre className="json" dangerouslySetInnerHTML={{__html: App.Utils.Json.prettyPrint(responseJSON)}}></pre>
+        <App.Components.CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}  uniqueId="code_mirror_textarea_response"/>
       )
     }
   },
@@ -263,26 +269,35 @@ App.Pages.Playground = React.createClass({
   renderAboutPage: function () {
     return (
         <div className="about form-element">
-          <h1>How to use the Policy Playground</h1>
+          <h1>How to use the Policy Playground?</h1>
 
-          <h2>Service Provider</h2>
+          <p>With the SURFconext Policy Administration Point (PAP) you can maintain XACML policies to configure
+            fine-grained access rules for your Institution and the connected Service Providers.</p>
+          <p>This playground can be used to test your policies. It depends on the environment of this application if
+          new created / updated polices are directly testable or that you will have to wait until the policy cache expires.</p>
 
-          <p>todo</p>
-
-          <h2>Identity Provider</h2>
-
-          <p>todo</p>
+          <h2>Service Provider (SP) and Idenity Provider (IdP)</h2>
+          <p>Select the SP you have defined in your policy. Although you may have created the policy with no IdP or more then one, it
+          is required to select one here. It's value will be ignored if you have chosen no IdP in your policy.</p>
 
           <h2>Attributes</h2>
 
-          <p>todo</p>
+          <p>The attributes you add and their values end up in the policy decision request that is issued to the Policy Definition Point (PDP).
+          In this way you can test the multiple outcomes of enforcing your policies</p>
 
-          <p>fully qualified team name and dummy Teams PIP</p>
+          <p>Note that is you use the attribute <em>urn:collab:group:surfteams.nl</em> and you want to test a match then
+            you have to fill in the fully qualified team name inclusing the surfteams prefix.</p>
 
           <h2>Results</h2>
 
-          <p>todo</p>
-
+          <p>There are four possible results:</p>
+            <ul>
+              <li>Permit - There was at least one applicable policy found and the Permit rule matched the attributes in the request</li>
+              <li>Deny - There was at least one applicable policy found and the attributes did not match</li>
+              <li>Not Applicable - No policy was found for the selected SP and IdP</li>
+              <li>Indeterminate - A required attribute by the Policy was not present. This can only happen with Deny rules.</li>
+            </ul>
+          <p>When the outcome was Permit of Not Applicable you would have been granted access.</p>
         </div>);
   },
 

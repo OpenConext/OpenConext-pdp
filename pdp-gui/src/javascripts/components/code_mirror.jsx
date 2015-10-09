@@ -3,12 +3,12 @@
 App.Components.CodeMirror = React.createClass({
 
   componentDidMount () {
-    var node = document.getElementById("code_mirror_textarea");
+    var node = document.getElementById(this.props.uniqueId);
     this.codeMirror = CodeMirror.fromTextArea(node, this.props.options);
-    this.codeMirror.on('change', this.codeMirrorValueChanged);
-    this.codeMirror.on('focus', this.focusChanged.bind(this, true));
-    this.codeMirror.on('blur', this.focusChanged.bind(this, false));
     this._currentCodemirrorValue = this.props.value;
+    if (!this.props.options.readOnly) {
+      this.codeMirror.on('change', this.codeMirrorValueChanged);
+    }
   },
 
   componentWillUnmount () {
@@ -23,19 +23,6 @@ App.Components.CodeMirror = React.createClass({
     }
   },
 
-  focus () {
-    if (this.codeMirror) {
-      this.codeMirror.focus();
-    }
-  },
-
-  focusChanged (focused) {
-    this.setState({
-      isFocused: focused
-    });
-    this.props.onFocusChange && this.props.onFocusChange(focused);
-  },
-
   codeMirrorValueChanged (doc, change) {
     var newValue = doc.getValue();
     this._currentCodemirrorValue = newValue;
@@ -45,8 +32,7 @@ App.Components.CodeMirror = React.createClass({
   render () {
     return (
         <div className="code-mirror">
-          <textarea id="code_mirror_textarea" name={this.props.path} defaultValue={this.props.value}
-                    autoComplete="off"/>
+          <textarea id={this.props.uniqueId} defaultValue={this.props.value} autoComplete="off"/>
         </div>
     );
   }

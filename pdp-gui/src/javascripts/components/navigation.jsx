@@ -19,13 +19,13 @@ App.Components.Navigation = React.createClass({
   },
 
   render: function () {
+  // {this.renderItem("/about", "about")}
     return (
       <div className="mod-navigation">
         <ul>
           {this.renderItem("/policies", "policies")}
           {this.renderItem("/violations", "violations")}
           {this.renderItem("/playground", "playground")}
-          {this.renderItem("/about", "about")}
           {this.renderItem("/new-policy", "new_policy", true)}
         </ul>
 
