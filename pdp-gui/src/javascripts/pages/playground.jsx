@@ -297,7 +297,7 @@ App.Pages.Playground = React.createClass({
               <li>Not Applicable - No policy was found for the selected SP and IdP</li>
               <li>Indeterminate - A required attribute by the Policy was not present. This can only happen with Deny rules.</li>
             </ul>
-          <p>When the outcome was Permit of Not Applicable you would have been granted access.</p>
+          <p>When the outcome was Permit or Not Applicable you would have been granted access.</p>
         </div>);
   },
 
