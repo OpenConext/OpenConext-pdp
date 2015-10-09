@@ -48,8 +48,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">lerarenopleiding</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="faculty"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -63,8 +62,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">employee
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -87,8 +85,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access
-                        Enquetetool.
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Enquetetool.
                     </AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>

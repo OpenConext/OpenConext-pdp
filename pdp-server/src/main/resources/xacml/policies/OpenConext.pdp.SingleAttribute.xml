@@ -46,8 +46,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:org:surf.nl
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:org:surf.nl</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:isMemberOf"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -70,9 +69,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not a member of the SURF
-                        organization
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not a member of the SURF organization</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

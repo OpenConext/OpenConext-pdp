@@ -33,7 +33,7 @@ App.Controllers.Playground = {
   playground: function (ctx) {
       App.render(App.Pages.Playground({
             key: "playground",
-            pdpRequest: {identityProviderIds:[],attributes:[]},
+            pdpRequest: {attributes:[]},
             identityProviders: ctx.identityProviders,
             serviceProviders: ctx.serviceProviders,
             allowedSamlAttributes: ctx.allowedSamlAttributes

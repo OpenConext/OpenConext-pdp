@@ -63,9 +63,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">
-                            urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:collab:group:surfteams.nl"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -88,11 +86,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access the
-                        SURFnet wiki. Please contact
-                        <a href="mailto:femke@surfnet.nl">Femke Morsch</a>
-                        for details
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access the SURFnet wiki. Please contact <a href="mailto:info@surfnet.nl">SURFnet</a> for details</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

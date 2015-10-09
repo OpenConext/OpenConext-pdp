@@ -46,8 +46,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">teacher
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">teacher</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:eduPersonEntitlement"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -59,8 +58,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">assistant
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">assistant</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:eduPersonEntitlement"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -83,11 +81,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Mentorix
-                        from Hogeschool Utrecht. Please
-                        <a href="mailto:mentorix@hu.nl">contact us</a>
-                        for details
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Mentorix from Hogeschool Utrecht. Please <a href="mailto:mentorix@hu.nl">contact us</a> for details </AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

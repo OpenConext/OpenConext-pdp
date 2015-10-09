@@ -1,26 +1,10 @@
-
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-    color:    #2b3f44;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-    color:    #2b3f44;
-    opacity:  1;
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color:    #2b3f44;
-    opacity:  1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-    color:    #2b3f44;
-}
-
-
 /* BASICS */
 
 .CodeMirror {
   /* Set height, width, borders, and global font properties here */
-  font-family: monospace;
+  font-family: 'Roboto Mono',monospace ;
   color: black;
+  font-weight: 300;
 }
 
 /* PADDING */

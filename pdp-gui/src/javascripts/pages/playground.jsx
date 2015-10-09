@@ -1,18 +1,6 @@
 /** @jsx React.DOM */
 App.Pages.Playground = React.createClass({
 
-  componentDidMount: function () {
-
-    var editor = CodeMirror.fromTextArea(document.getElementById("request_json"), {
-      matchBrackets: true,
-      autoCloseBrackets: true,
-      mode: {name: "javascript", json: true},
-      lineWrapping: true,
-      lineNumbers: true,
-      scrollbarStyle: null
-    });
-    
-  },
 
   componentWillUpdate: function () {
     var node = this.getDOMNode();
@@ -30,10 +18,6 @@ App.Pages.Playground = React.createClass({
     return this.props.pdpRequest;
   },
 
-  componentWillReceiveProps: function (nextProps) {
-    this.state = nextProps.pdpRequest;
-  },
-
   parseEntities: function (entities) {
     var options = entities.map(function (entity) {
       return {value: entity.entityId, display: entity.nameEn};
@@ -47,24 +31,50 @@ App.Pages.Playground = React.createClass({
 
 
   handleChangeIdentityProvider: function (newValue) {
-    this.setState({identityProviderIds: newValue});
+    this.setState({identityProviderId: newValue});
   },
 
   clearForm: function () {
     page("/playground");
   },
 
+  replayRequest: function() {
+    var decisionRequest = JSON.parse(this.state.decisionRequestJson);
+    App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
+      this.setState({
+        responseJSON: jqxhr.responseJSON,
+        tab: "response"
+      })
+    }.bind(this));
+  },
+
   submitForm: function () {
-    var self = this;
-    /*
-     * Create JSON policy request to render in the right and
-     * ask the controller to post this
-     * ask the controller to post a json-policy request and s
-     */
-    //App.Controllers.Policies.saveOrUpdatePolicy(this.state, function (jqxhr) {
-    //  jqxhr.isConsumed = true;
-    //  this.setState({flash: jqxhr.responseJSON.details.name});
-    //}.bind(this));
+    return function (e) {
+      var idp = this.state.identityProviderId;
+      var sp = this.state.serviceProviderId;
+      var decisionRequest = {
+        Request: {
+          ReturnPolicyIdList: true,
+          CombinedDecision: false,
+          AccessSubject: {Attribute: []},
+          Resource: {Attribute: [{AttributeId: "SPentityID", Value: sp}, {AttributeId: "IDPentityID", Value: idp}]}
+        }
+      };
+      var attributes = this.state.attributes.map(function (attr) {
+        return {AttributeId: attr.name, Value: attr.value};
+      });
+      decisionRequest.Request.AccessSubject.Attribute = attributes;
+
+      App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
+        console.log(jqxhr.responseJSON);
+        this.setState({
+          decisionRequest: decisionRequest,
+          decisionRequestJson: JSON.stringify(decisionRequest, null, 3),
+          responseJSON: jqxhr.responseJSON,
+          tab: "response"
+        })
+      }.bind(this));
+    }.bind(this);
   },
 
   isValidPdpRequest: function () {
@@ -73,7 +83,7 @@ App.Pages.Playground = React.createClass({
       return _.isEmpty(attr.value);
     });
     var validClassName = (_.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
-    var inValid = _.isEmpty(pdpRequest.serviceProviderId)
+    var inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
         || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
     return !inValid;
   },
@@ -98,17 +108,17 @@ App.Pages.Playground = React.createClass({
   ,
 
   renderIdentityProvider: function (pdpRequest) {
+    var workflow = _.isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
     return (
         <div>
-          <div className="form-element split success">
-            <p className="label">Identity Providers</p>
+          <div className={"form-element split " + workflow}>
+            <p className="label">Identity Provider</p>
 
             <App.Components.Select2Selector
-                defaultValue={pdpRequest.identityProviderIds}
-                placeholder={"Select the Identity Providers - zero or more"}
+                defaultValue={pdpRequest.identityProviderId}
+                placeholder={"Select the Identity Provider - required"}
                 select2selectorId={"identityProvider"}
                 options={this.parseEntities(this.props.identityProviders)}
-                multiple={true}
                 handleChange={this.handleChangeIdentityProvider}/>
           </div>
           <div className="bottom"></div>
@@ -129,29 +139,51 @@ App.Pages.Playground = React.createClass({
         css="split"/>);
   },
 
-  renderStatus: function () {
-    //if (this.state.response) {
-    var status = "check" //remove
+  determineStatus: function (decision) {
+    switch (decision) {
+      case "Permit":
+      {
+        return "check";
+      }
+      case "Indeterminate":
+      case "Deny":
+      {
+        return "remove";
+      }
+      case "NotApplicable":
+      {
+        return "question"
+      }
+      default:
+      {
+        throw "Unknown decision" + decision;
+      }
+    }
+  },
+
+  renderStatus: function (responseJSON) {
+    var response = responseJSON.Response[0];
+    var decision = response.Decision;
+    var statusCode = response.Status.StatusCode.Value;
+    var status = this.determineStatus(decision);
     return (
         <div className={"response-status " + status}>
           <i className={"fa fa-"+status + " " + status}></i>
           <section>
-            <p className="status">Deny</p>
+            <p className="status">{decision}</p>
 
-            <p className="details">Statuscode dfigusf kgsdf gsdfgsdfgbdfgh</p>
+            <p className="details">{"StatusCode" + "'" + statusCode + "'"}</p>
           </section>
         </div>
     );
-    //}
-  }
-  ,
+  },
 
   renderActions: function (pdpRequest) {
     var classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
     return (
         <div className="form-element split no-pad-right">
           <a className={classNameSubmit + " large c-button"} href="#"
-             onClick={this.submitForm}><i className="fa fa-refresh"></i>Check policy again</a>
+             onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>Check policies again</a>
           <a className="c-button cancel" href="#" onClick={this.clearForm}>Clear</a>
 
           <div className="adventurous">
@@ -162,45 +194,39 @@ App.Pages.Playground = React.createClass({
           </div>
         </div>
     );
-  }
-  ,
-
-  handleJsonRequestChange: function() {
-
   },
 
-  renderJsonRequest: function () {
+  updateJsonRequest: function (newJson) {
+    this.setState({decisionRequestJson: newJson});
+  },
+
+  renderJsonRequest: function (decisionRequest) {
     var selectedTab = (this.state.tab || "request");
     if (selectedTab === "request") {
-      var planets = [{name: 'Earth', order: 3, stats: {life: true, mass: 5.9736 * Math.pow(10, 24)}}, {
-        name: 'Saturn',
-        order: 6,
-        stats: {life: null, mass: 568.46 * Math.pow(10, 24)}
-      }];
-      //<textarea id="request_json" value={ JSON.stringify(planets, null, 3)}
-      //          onChange={this.handleJsonRequestChange}/>
-
+      var options = {
+        mode: {name: "javascript", json: true},
+        lineWrapping: true,
+        lineNumbers: true,
+        scrollbarStyle: null
+      }
       return (
           <div>
             <div className="align-center">
-              <a className="c-button full" href="#"
-                 onClick={this.submitForm}><i className="fa fa-refresh"></i>
-                Reload to apply changes made below</a>
+              <a className="c-button full" href="#" onClick={this.replayRequest}>
+                <i className="fa fa-refresh"></i>Reload to apply changes made below</a>
             </div>
-            <textarea id="request_json">
-              {JSON.stringify(planets, null, 3)}
-                      </textarea>
+            <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
+                                       options={options}/>
           </div>
       )
     }
   },
 
-  renderJsonResponse: function () {
+  renderJsonResponse: function (responseJSON) {
     var selectedTab = (this.state.tab || "request");
     if (selectedTab === "response") {
-      var account = {active: true, codes: [48348, 28923, 39080], city: "London"};
       return (
-          <pre className="json" dangerouslySetInnerHTML={{__html: App.Utils.Json.prettyPrint(account)}}></pre>
+          <pre className="json" dangerouslySetInnerHTML={{__html: App.Utils.Json.prettyPrint(responseJSON)}}></pre>
       )
     }
   },
@@ -223,17 +249,64 @@ App.Pages.Playground = React.createClass({
             <ul className="tabs">
               <li className={request} onClick={this.handleTabChange("request")}>
                 <i className="fa fa-file-o"></i>
-                <a href="#" >request.json</a>
+                <a href="#">request.json</a>
               </li>
-              <li className={response}onClick={this.handleTabChange("response")}>
+              <li className={response} onClick={this.handleTabChange("response")}>
                 <i className="fa fa-file-o"></i>
-                <a href="#" >response.json</a>
+                <a href="#">response.json</a>
               </li>
             </ul>
           </div>
         </div>
     );
   },
+  renderAboutPage: function () {
+    return (
+        <div className="about form-element">
+          <h1>How to use the Policy Playground</h1>
+
+          <h2>Service Provider</h2>
+
+          <p>todo</p>
+
+          <h2>Identity Provider</h2>
+
+          <p>todo</p>
+
+          <h2>Attributes</h2>
+
+          <p>todo</p>
+
+          <p>fully qualified team name and dummy Teams PIP</p>
+
+          <h2>Results</h2>
+
+          <p>todo</p>
+
+        </div>);
+  },
+
+  renderRequestResponsePanel: function () {
+    var decisionRequest = this.state.decisionRequest;
+    var responseJSON = this.state.responseJSON;
+    if (decisionRequest && responseJSON) {
+      return (
+          <div className="l-split-right form-element-container box">
+            {this.renderStatus(responseJSON)}
+            {this.renderTabs()}
+            {this.renderJsonRequest()}
+            {this.renderJsonResponse(responseJSON)}
+          </div>
+      );
+    } else {
+      return (
+          <div className="l-split-right form-element-container box">
+            {this.renderAboutPage()}
+          </div>
+      );
+    }
+  },
+
 
   render: function () {
     var pdpRequest = this.state;
@@ -247,12 +320,7 @@ App.Pages.Playground = React.createClass({
             {this.renderAttributes(pdpRequest)}
             {this.renderActions(pdpRequest)}
           </div>
-          <div className="l-split-right form-element-container box">
-            {this.renderStatus()}
-            {this.renderTabs()}
-            {this.renderJsonRequest()}
-            {this.renderJsonResponse()}
-          </div>
+          {this.renderRequestResponsePanel()}
         </div>
     )
   }

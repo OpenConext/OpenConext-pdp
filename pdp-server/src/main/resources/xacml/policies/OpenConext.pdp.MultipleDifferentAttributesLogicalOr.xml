@@ -95,9 +95,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access
-                        Enquetetool.
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Enquetetool.</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

@@ -35,9 +35,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">
-                            urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:collab:group:surfteams.nl"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -60,9 +58,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not part of managementvo. Please
-                        contact us if you think this is incorrect.
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not part of managementvo. Please contact us if you think this is incorrect.</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

@@ -70,7 +70,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     LOG.info("Combining root policies with " + algorithm);
 
     PolicySet root = new PolicySet();
-    root.setIdentifier(new IdentifierImpl("urn:openconext:pdp:root::policyset"));
+    root.setIdentifier(new IdentifierImpl("urn:openconext:pdp:root:policyset"));
     root.setVersion(StdVersion.newInstance("1.0"));
     root.setTarget(new Target());
     root.setPolicyCombiningAlgorithm(algorithm);

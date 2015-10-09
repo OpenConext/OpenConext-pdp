@@ -48,8 +48,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">student
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">student</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -66,9 +65,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">UMCN students do not have access to the
-                        UMCN Loopbaanportaal
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">UMCN students do not have access to the UMCN Loopbaanportaal</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

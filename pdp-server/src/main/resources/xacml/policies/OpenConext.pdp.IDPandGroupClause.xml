@@ -50,8 +50,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">surfnet.nl
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">surfnet.nl</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -66,8 +65,7 @@
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <!-- See pdp.teams.VootClientConfig#mockVootClient -->
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:avans.nl:HRemployees
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">urn:collab:group:avans.nl:HRemployees</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:collab:group:surfteams.nl"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -81,8 +79,7 @@
                 <AllOf>
                     <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                         <AttributeValue
-                                DataType="http://www.w3.org/2001/XMLSchema#string">employee
-                        </AttributeValue>
+                                DataType="http://www.w3.org/2001/XMLSchema#string">employee</AttributeValue>
                         <AttributeDesignator
                                 AttributeId="urn:mace:terena.org:attribute-def:eduPersonAffiliation"
                                 DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -105,11 +102,7 @@
                 <AttributeAssignmentExpression AttributeId="DenyMessage"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Avans
-                        Youforce. Please contact
-                        <a href="mailto:hrm@avans.nl">Avans HRM</a>
-                        for details
-                    </AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Avans Youforce. Please contact <a href="mailto:hrm@avans.nl">Avans HRM</a> for details</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
