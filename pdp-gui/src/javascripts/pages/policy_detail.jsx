@@ -151,7 +151,7 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderDenyPermitRule: function (policy) {
     var classNameSelected = policy.denyRule ? "checked" : "";
-    var classNamePermit = policy.denyRule ? "not-selected" : "";
+    var classNamePermit = !policy.denyRule ? "not-selected" : "";
     var classNameDeny = !policy.denyRule ? "not-selected" : "";
     var policyPermit = policy.denyRule ? "Deny" : "Permit";
     return (
@@ -167,13 +167,15 @@ App.Pages.PolicyDetail = React.createClass({
             </div>
             <div className="column-3 middle">
               <p className={"info " + classNamePermit}>Permit</p>
-              <em className={classNamePermit}>Permit polices enforce that a only a successful match of the attributes defined will result in a
+              <em className={classNamePermit}>Permit polices enforce that a only a successful match of the attributes
+                defined will result in a
                 Permit. No match will result in a Deny.
               </em>
             </div>
             <div className="column-3">
               <p className={"info "+classNameDeny}>Deny</p>
-              <em className={classNameDeny}>Deny polices are less common to use. If the attributes in the policy match those of the person trying
+              <em className={classNameDeny}>Deny polices are less common to use. If the attributes in the policy match
+                those of the person trying
                 to login then this will result in a Deny. No match will result in a Permit.
               </em>
             </div>
@@ -201,11 +203,11 @@ App.Pages.PolicyDetail = React.createClass({
     );
   },
 
-  setAttributeState: function(newAttributeState) {
+  setAttributeState: function (newAttributeState) {
     this.setState(newAttributeState);
   },
 
-  renderAttributes:function(policy) {
+  renderAttributes: function (policy) {
     //we need state changes from the child component
     return (<App.Components.PolicyAttributes
         policy={this.state}
@@ -215,8 +217,8 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderLogicalRule: function (policy) {
     var allAttributesMustMatch = policy.allAttributesMustMatch;
-    var classNameAnd = policy.allAttributesMustMatch ? "not-selected" : "";
-    var classNameOr = !policy.allAttributesMustMatch ? "not-selected" : "";
+    var classNameAnd = !policy.allAttributesMustMatch ? "not-selected" : "";
+    var classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
 
     return (
         <div>
@@ -231,13 +233,15 @@ App.Pages.PolicyDetail = React.createClass({
               </ul>
             </div>
             <div className="column-3 middle">
-              <p className="info">AND</p>
-              <em className={classNameAnd}>Policies with a logical AND rule enforce that all attributes defined must match those of the person
+              <p className={"info "+classNameAnd}>AND</p>
+              <em className={classNameAnd}>Policies with a logical AND rule enforce that all attributes defined must
+                match those of the person
                 trying to login.</em>
             </div>
             <div className="column-3">
-              <p className="info">OR</p>
-              <em className={classNameOr}>Polices defined with a logical OR only require one of the attributes to match the attributes of the
+              <p className={"info "+classNameOr}>OR</p>
+              <em className={classNameOr}>Polices defined with a logical OR only require one of the attributes to match
+                the attributes of the
                 person requesting access.</em>
             </div>
             <em className="note"><sup>*</sup> Note that attribute values with the same attribute name always be
