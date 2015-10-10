@@ -27,7 +27,7 @@ public class PolicyTemplateEngine {
     if (name == null) {
       return null;
     }
-    return "urn:surfconext:xacml:policy:id:" + name.replace(" ", "_").toLowerCase();
+    return "urn:surfconext:xacml:policy:id:" + name.replaceAll("[^\\w]+", "_").toLowerCase();
   }
 
 }

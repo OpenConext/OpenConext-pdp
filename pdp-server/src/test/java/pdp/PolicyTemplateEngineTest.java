@@ -48,6 +48,13 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
     assertEquality();
   }
 
+  @Test
+  public void testGetPolicyId() {
+    String name = "A very invalid $^%#@* ''policy NAME\"1";
+    String policyId = PolicyTemplateEngine.getPolicyId(name);
+    assertEquals("urn:surfconext:xacml:policy:id:a_very_invalid_policy_name_1", policyId);
+  }
+
   private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
     PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getId(), definition.getName(), policyXml);

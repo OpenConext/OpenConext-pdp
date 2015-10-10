@@ -102,7 +102,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     Optional<IdReference> policy = result.getPolicyIdentifiers().stream().collect(PdpApplication.singletonOptionalCollector());
     assertTrue(policy.isPresent());
     //the violated policy
-    assertEquals("urn:surfconext:xacml:policy:id:openconext.pdp.test.conflicting.policies.2.policy.xml", policy.get().getId().stringValue());
+    assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), policy.get().getId().stringValue());
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
