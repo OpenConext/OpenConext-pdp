@@ -3,7 +3,6 @@ package pdp;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import org.springframework.util.Assert;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
@@ -24,11 +23,11 @@ public class PolicyTemplateEngine {
     }
   }
 
-  public static String getNameId(String name) {
+  public static String getPolicyId(String name) {
     if (name == null) {
       return null;
     }
-    return name.replace(" ", "_").toLowerCase();
+    return "urn:surfconext:xacml:policy:id:" + name.replace(" ", "_").toLowerCase();
   }
 
 }

@@ -276,7 +276,7 @@ App.Pages.Playground = React.createClass({
           <p>This playground can be used to test your policies. It depends on the environment of this application if
           new created / updated polices are directly testable or that you will have to wait until the policy cache expires.</p>
 
-          <h2>Service Provider (SP) and Idenity Provider (IdP)</h2>
+          <h2>Service Provider (SP) and Identity Provider (IdP)</h2>
           <p>Select the SP you have defined in your policy. Although you may have created the policy with no IdP or more then one, it
           is required to select one here. It's value will be ignored if you have chosen no IdP in your policy.</p>
 
@@ -285,19 +285,19 @@ App.Pages.Playground = React.createClass({
           <p>The attributes you add and their values end up in the policy decision request that is issued to the Policy Definition Point (PDP).
           In this way you can test the multiple outcomes of enforcing your policies</p>
 
-          <p>Note that is you use the attribute <em>urn:collab:group:surfteams.nl</em> and you want to test a match then
+          <p>Note that if you use the attribute <em>urn:collab:group:surfteams.nl</em> and you want to test a match then
             you have to fill in the fully qualified team name inclusing the surfteams prefix.</p>
 
           <h2>Results</h2>
 
           <p>There are four possible results:</p>
             <ul>
-              <li>Permit - There was at least one applicable policy found and the Permit rule matched the attributes in the request</li>
-              <li>Deny - There was at least one applicable policy found and the attributes did not match</li>
-              <li>Not Applicable - No policy was found for the selected SP and IdP</li>
-              <li>Indeterminate - A required attribute by the Policy was not present. This can only happen with Deny rules.</li>
+              <li><span>Permit</span> - There was at least one applicable policy found and the Permit rule matched the attributes in the request</li>
+              <li><span>Deny</span> - There was at least one applicable policy found and the attributes did not match</li>
+              <li><span>Not Applicable</span> - No policy was found for the selected SP and IdP</li>
+              <li><span>Indeterminate</span> - A required attribute by the Policy was not present. This can only happen with Deny rules.</li>
             </ul>
-          <p>When the outcome was Permit or Not Applicable you would have been granted access.</p>
+          <p>When the outcome is Permit or Not Applicable you would have been granted access.</p>
         </div>);
   },
 

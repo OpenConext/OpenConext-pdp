@@ -123,7 +123,7 @@ public class PdpApplicationTest {
           definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
       postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
 
-      assertViolations(definition.getNameId());
+      assertViolations(definition.getPolicyId());
     } catch (Exception e) {
       //we are called from lambda so we do fake error handling here
       throw new RuntimeException(e);

@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.StreamSupport.stream;
-import static pdp.PolicyTemplateEngine.getNameId;
+import static pdp.PolicyTemplateEngine.getPolicyId;
 
 public class OpenConextEvaluationContextFactory extends StdEvaluationContextFactory {
 
@@ -80,11 +80,11 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private PolicyDef convertToPolicyDef(PdpPolicy pdpPolicy) {
     Policy policyDef = PdpPolicyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml());
-    policyDef.setIdentifier(new IdentifierImpl(getNameId(pdpPolicy.getName())));
+    policyDef.setIdentifier(new IdentifierImpl(getPolicyId(pdpPolicy.getName())));
     policyDef.getRules().forEachRemaining(rule -> {
           if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {
             rule.getAdviceExpressions().forEachRemaining(adviceExpression ->
-                    adviceExpression.setAdviceId(new IdentifierImpl(getNameId(pdpPolicy.getName())))
+                    adviceExpression.setAdviceId(new IdentifierImpl(getPolicyId(pdpPolicy.getName())))
             );
           }
         }

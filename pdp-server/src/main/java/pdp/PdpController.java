@@ -132,7 +132,7 @@ public class PdpController {
 
     Map<String, Long> countPerPolicyIdMap = pdpPolicyViolationRepository.findCountPerPolicyId().stream().collect(toMap((objects) -> (String) objects[0], (objects) -> (Long) objects[1]));
 
-    policies.forEach(policy -> policy.setNumberOfViolations(countPerPolicyIdMap.getOrDefault(policy.getNameId(), 0L).intValue()));
+    policies.forEach(policy -> policy.setNumberOfViolations(countPerPolicyIdMap.getOrDefault(policy.getPolicyId(), 0L).intValue()));
     return policies;
   }
 

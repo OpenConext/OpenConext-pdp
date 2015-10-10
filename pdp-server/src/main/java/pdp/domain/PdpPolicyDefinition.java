@@ -118,8 +118,8 @@ public class PdpPolicyDefinition {
     this.allAttributesMustMatch = allAttributesMustMatch;
   }
 
-  public String getNameId() {
-    return PolicyTemplateEngine.getNameId(name);
+  public String getPolicyId() {
+    return PolicyTemplateEngine.getPolicyId(name);
   }
 
   public String getServiceProviderName() {

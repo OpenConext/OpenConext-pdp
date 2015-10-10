@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 
@@ -62,6 +63,7 @@ public class DevelopmentPrePolicyLoader {
   private PdpPolicy createPdpPolicy(File file) {
     try {
       String xml = IOUtils.toString(new FileInputStream(file));
+      xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\""+PolicyTemplateEngine.getPolicyId(file.getName())+"\"");
       return new PdpPolicy(xml, file.getName());
     } catch (IOException e) {
       throw new RuntimeException(e);

@@ -151,7 +151,7 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderDenyPermitRule: function (policy) {
     var classNameSelected = policy.denyRule ? "checked" : "";
-    var classNamePermit = !policy.denyRule ? "not-selected" : "";
+    var classNamePermit = policy.denyRule ? "not-selected" : "";
     var classNameDeny = !policy.denyRule ? "not-selected" : "";
     var policyPermit = policy.denyRule ? "Deny" : "Permit";
     return (

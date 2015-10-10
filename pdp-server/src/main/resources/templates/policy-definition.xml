@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
-        PolicyId="urn:surfconext:xacml:policy:id:{{nameId}}"
+        PolicyId="{{policyId}}"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
     <Description>{{description}}</Description>
