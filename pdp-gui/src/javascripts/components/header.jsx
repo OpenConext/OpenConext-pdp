@@ -8,21 +8,27 @@ App.Components.Header = React.createClass({
   },
 
   render: function () {
+    //renderMeta was removed because this is not implemented yet
     return (
         <div className="mod-header">
           <h1 className="title"><a href="/">{I18n.t("header.title")}</a></h1>
 
-          <div className="meta">
-            <div className="name">
-              {this.renderProfileLink()}
-              {this.renderDropDown()}
-            </div>
-            <App.Components.LanguageSelector />
-            <ul className="links">
-              <li dangerouslySetInnerHTML={{__html: I18n.t("header.links.help_html") }}></li>
-              {this.renderExitLogout()}
-            </ul>
+        </div>
+    );
+  },
+
+  renderMeta: function() {
+    return (
+        <div className="meta">
+          <div className="name">
+            {this.renderProfileLink()}
+            {this.renderDropDown()}
           </div>
+          <App.Components.LanguageSelector />
+          <ul className="links">
+            <li dangerouslySetInnerHTML={{__html: I18n.t("header.links.help_html") }}></li>
+            {this.renderExitLogout()}
+          </ul>
         </div>
     );
   },
