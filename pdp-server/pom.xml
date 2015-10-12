@@ -64,17 +64,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.openaz</groupId>
-            <artifactId>openaz-xacml-rest</artifactId>
-            <version>${openaz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openaz</groupId>
             <artifactId>openaz-xacml-pdp</artifactId>
-            <version>${openaz.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.openaz</groupId>
-            <artifactId>openaz-pep</artifactId>
             <version>${openaz.version}</version>
         </dependency>
         <dependency>
