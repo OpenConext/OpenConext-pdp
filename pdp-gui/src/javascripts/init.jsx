@@ -44,7 +44,7 @@ var App = {
 
   render: function (page) {
     if (this.mainComponent) {
-      //stupid hack - TODO find out why when the page remains the same some updates do not go well
+      //stupid hack to ensure non-controlled components are updated. the performance penalty is to neglect
       this.mainComponent.setProps({
         page: App.Pages.Empty()
       });

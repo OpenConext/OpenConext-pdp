@@ -81,7 +81,7 @@ App.Pages.PolicyViolations = React.createClass({
   },
 
   renderStatus: function (response, policyName) {
-    var decision = response[0].Decision;
+    var decision = response.Response[0].Decision;
     var status = App.Controllers.PolicyViolations.determineStatus(decision);
     return (
         <div className={"response-status " + status}>
@@ -91,6 +91,32 @@ App.Pages.PolicyViolations = React.createClass({
 
             <p className="details">{"Policy name: " + "'" + policyName + "'"}</p>
           </section>
+        </div>
+    );
+  },
+
+  renderAboutPage: function () {
+    return (
+        <div className="about form-element">
+          <h1>What are policy violations?</h1>
+
+          <p>Every time a negative decision is sent back from the Policy Decision Point (PDP) to the Policy Enforcement
+            Point (PEP) this will
+            result in a forbidden access to the designated Service Provider.</p>
+
+          <h2>Negative decisions</h2>
+
+          <p>Every time negative decisions occur - e.g. policy violations from the PDP - they are stored. When you want
+            to look at the details of a policy violation click the view icon.</p>
+
+          <p>For every policy violation the following is stored:</p>
+          <ul>
+            <li>The original JSON request from the PEP</li>
+            <li>The JSON response from the PDP</li>
+            <li>A reference to the policy responsible for the decision</li>
+            <li>The decision - e.g. Deny or Indeterminate - from the PDP</li>
+          </ul>
+
         </div>
     );
   },
@@ -108,6 +134,8 @@ App.Pages.PolicyViolations = React.createClass({
             {this.renderResponseDetails(response)}
           </div>
       );
+    } else {
+      return this.renderAboutPage();
     }
   },
 
@@ -188,11 +216,11 @@ App.Pages.PolicyViolations = React.createClass({
           <tr key={violation.id} className={selected}>
             <td>{idpName}<br/>{spName}</td>
             <td>{decision}</td>
-            <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes()}</td>
+            <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes() ) : d.getMinutes())}</td>
             <td className="violation_controls">
               <a href="#" onClick={this.handleShowViolationDetail(violation)}
                  data-tooltip="Detail">
-                <i className="fa fa-edit"></i>
+                <i className="fa fa-eye"></i>
               </a>
             </td>
           </tr>)

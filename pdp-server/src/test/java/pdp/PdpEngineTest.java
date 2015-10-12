@@ -48,11 +48,10 @@ import static pdp.xacml.PdpPolicyDefinitionParser.*;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.properties", "spring.profiles.active=dev"})
-public class PdpApplicationTest {
+public class PdpEngineTest {
 
   @Autowired
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
-  private PdpPolicyRepository pdpPolicyRepository;
   private static ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${local.server.port}")
@@ -68,12 +67,7 @@ public class PdpApplicationTest {
     headers.add("Content-Type", "application/json");
   }
 
-  @Test
-  public void addAndDeletePolicy() {
-    //TODO
-  }
-
-  @Test
+ @Test
   public void test_all_policies() throws Exception {
     JsonPolicyRequest policyRequest = objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
     List<PdpPolicy> policies = developmentPrePolicyLoader.getPolicies();

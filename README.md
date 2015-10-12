@@ -70,7 +70,7 @@ When you browse to the [application homepage](http://localhost:8001/) you will b
 
 ## Testing
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpApplicationTest](pdp-server/src/test/java/pdp/PdpApplicationTest.java)
+There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpEngineTest](pdp-server/src/test/java/pdp/PdpEngineTest.java)
 
 If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
 
@@ -135,8 +135,8 @@ For details, see the [Spring Boot manual](http://docs.spring.io/spring-boot/docs
 
 ### OpenAZ dependency
 
-The OpenConext-pdp project heavily uses the PD framework https://github.com/apache/incubator-openaz. The repo is cloned in 
-https://github.com/oharsta/incubator-openaz-openconext and changes - e.g. distributionManagement and minor optimizations - are
-pushed to openconext/develop branch in https://github.com/oharsta/incubator-openaz-openconext.
+The OpenConext-pdp project heavily uses the PD framework https://github.com/apache/incubator-openaz. This repo is cloned in 
+https://github.com/OpenConext/incubator-openaz-openconext and changes - e.g. distribution management, some bug fixes and minor optimizations - are
+pushed to openconext/develop branch in https://github.com/OpenConext/incubator-openaz-openconext.
 
 To pull in changes from upstream run `./git-fetch-upstream.sh`

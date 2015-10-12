@@ -7,9 +7,8 @@ import org.apache.openaz.xacml.api.pip.PIPException;
 import org.apache.openaz.xacml.api.pip.PIPFinder;
 import org.apache.openaz.xacml.api.pip.PIPRequest;
 import org.apache.openaz.xacml.api.pip.PIPResponse;
-import org.apache.openaz.xacml.std.IdentifierImpl;
-import org.apache.openaz.xacml.std.StdAttribute;
-import org.apache.openaz.xacml.std.StdAttributeValue;
+import org.apache.openaz.xacml.std.*;
+import org.apache.openaz.xacml.std.pip.StdMutablePIPResponse;
 import org.apache.openaz.xacml.std.pip.StdPIPRequest;
 import org.apache.openaz.xacml.std.pip.StdSinglePIPResponse;
 import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
@@ -29,6 +28,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
   private PIPRequest providedAttribute;
 
   private PIPResponse empty;
+  private PIPResponse missingNameId;
 
   @Override
   public void configure(String id, Properties properties) throws PIPException {
@@ -42,6 +42,8 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
 
     Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.EMPTY_LIST, null, true);
     empty = new StdSinglePIPResponse(attribute);
+    missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
+
   }
 
   @Override
@@ -73,12 +75,12 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(requiredAttribute, this);
     Optional<Attribute> nameAttributeOptional = matchingAttributes.getAttributes().stream().findFirst();
     if (!nameAttributeOptional.isPresent()) {
-      return empty;
+      return missingNameId;
     }
     Attribute nameAttribute = nameAttributeOptional.get();
     Collection<AttributeValue<?>> values = nameAttribute.getValues();
     if (CollectionUtils.isEmpty(values)) {
-      return empty;
+      return missingNameId;
     }
     String userUrn = (String) values.stream().findFirst().get().getValue();
     List<String> groups = vootClient.groups(userUrn);

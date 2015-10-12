@@ -161,19 +161,6 @@ public class PdpApplication {
     }
   }
 
-  @Configuration
-  public static class RestMvcConfiguration extends RepositoryRestMvcConfiguration {
-
-    @Override
-    public RepositoryRestConfiguration config() {
-      RepositoryRestConfiguration config = super.config();
-      config.setDefaultMediaType(MediaType.APPLICATION_JSON);
-      config.setReturnBodyOnCreate(true);
-      config.exposeIdsFor(PdpPolicyViolation.class);
-      return config;
-    }
-  }
-
   public static <T> Collector<T, List<T>, Optional<T>> singletonOptionalCollector() {
     return Collector.of(ArrayList::new, List::add, (left, right) -> {
           left.addAll(right);
