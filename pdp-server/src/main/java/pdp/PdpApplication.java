@@ -61,6 +61,7 @@ public class PdpApplication {
   @Autowired
   public PDPEngineHolder pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+      @Value("${policy.base.dir}") final String policyBaseDir,
       final Environment environment,
       final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
   ) throws IOException, FactoryException {
@@ -70,8 +71,8 @@ public class PdpApplication {
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-    if (environment.acceptsProfiles("dev")) {
-      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository);
+    if (environment.acceptsProfiles("dev", "test")) {
+      new DevelopmentPrePolicyLoader(resourceLoader, policyBaseDir).loadPolicies(pdpPolicyRepository);
     }
 
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
@@ -79,8 +80,8 @@ public class PdpApplication {
 
   @Bean
   @Profile("!production")
-  public ServiceRegistry classPathResourceServiceRegistry() {
-    return new ClassPathResourceServiceRegistry();
+  public ServiceRegistry classPathResourceServiceRegistry(@Value("${spring.profiles.active}") String activeEnvironment) {
+    return new ClassPathResourceServiceRegistry(activeEnvironment);
   }
 
   @Bean

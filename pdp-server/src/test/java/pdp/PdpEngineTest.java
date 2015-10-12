@@ -14,6 +14,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.http.HttpEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
@@ -59,7 +60,7 @@ public class PdpEngineTest {
   private MultiValueMap<String, String> headers;
   private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
   private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private DevelopmentPrePolicyLoader developmentPrePolicyLoader = new DevelopmentPrePolicyLoader();
+  private DevelopmentPrePolicyLoader developmentPrePolicyLoader = new DevelopmentPrePolicyLoader(new DefaultResourceLoader(),"classpath:/xacml/policies");
 
   @Before
   public void before() throws IOException {

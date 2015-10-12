@@ -1,0 +1,16 @@
+[{
+  "entityid": "http://mock-idp",
+  "state": "prodaccepted",
+  "type": "saml20-idp",
+  "coin": {
+    "institution_id": "SURFNET"
+  },
+  "description": {
+    "en": "Mujina Mock IDP",
+    "nl": "Mujina Mock IDP"
+  },
+  "name": {
+    "en": "Mujina Mock IDP",
+    "nl": "Mujina Mock IDP"
+  }
+}]

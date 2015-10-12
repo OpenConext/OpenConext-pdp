@@ -12,20 +12,22 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
-import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static pdp.PdpApplication.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
-import static java.util.Comparator.*;
+
 public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private final static List<String> allowedLanguages = Arrays.asList("en", "nl");
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
+  private final String environment;
 
-  public ClassPathResourceServiceRegistry() {
+  public ClassPathResourceServiceRegistry(String environment) {
+    this.environment = environment;
     initializeMetadata();
   }
 
@@ -33,19 +35,29 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     try {
       lock.writeLock().lock();
       entityMetaData = new HashMap<>();
-      entityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
-      entityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
+      entityMetaData.put(IDP_ENTITY_ID, getIdpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
+      entityMetaData.put(SP_ENTITY_ID, getSpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
     } finally {
       lock.writeLock().unlock();
     }
   }
 
-  protected Resource getIdpResource() {
-    return new ClassPathResource("service-registry/saml20-idp-remote.json");
+  protected List<Resource> getIdpResources() {
+    ClassPathResource defaultIdps = new ClassPathResource("service-registry/saml20-idp-remote.json");
+    ClassPathResource environmentIdps = new ClassPathResource("service-registry/saml20-idp-remote." + environment + ".json");
+    if (environmentIdps.exists()) {
+      return Arrays.asList(defaultIdps, environmentIdps);
+    }
+    return Arrays.asList(defaultIdps);
   }
 
-  protected Resource getSpResource() {
-    return new ClassPathResource("service-registry/saml20-sp-remote.json");
+  protected List<Resource> getSpResources() {
+    ClassPathResource defaultSps = new ClassPathResource("service-registry/saml20-sp-remote.json");
+    ClassPathResource environmentSps = new ClassPathResource("service-registry/saml20-sp-remote." + environment + ".json");
+    if (environmentSps.exists()) {
+      return Arrays.asList(defaultSps, environmentSps);
+    }
+    return Arrays.asList(defaultSps);
   }
 
   @Override
@@ -116,9 +128,9 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   private Comparator<? super EntityMetaData> sortEntityMetaData() {
-    return (e1,e2) -> {
-      String n1 = e1.getNameEn() != null ? e1.getNameEn() : e1.getNameNl() ;
-      String n2 = e2.getNameEn() != null ? e2.getNameEn() : e2.getNameNl() ;
+    return (e1, e2) -> {
+      String n1 = e1.getNameEn() != null ? e1.getNameEn() : e1.getNameNl();
+      String n2 = e2.getNameEn() != null ? e2.getNameEn() : e2.getNameNl();
       return n1 == null ? -1 : n2 == null ? -1 : n1.trim().compareTo(n2.trim());
     };
   }

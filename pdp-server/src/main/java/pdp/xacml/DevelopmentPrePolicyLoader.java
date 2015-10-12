@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
@@ -26,7 +27,11 @@ public class DevelopmentPrePolicyLoader {
 
   private static Logger LOG = LoggerFactory.getLogger(DevelopmentPrePolicyLoader.class);
 
-  private final Resource resource = new ClassPathResource("/xacml/policies");
+  private Resource resource;
+
+  public DevelopmentPrePolicyLoader(ResourceLoader resourceLoader, String policyBaseDir) {
+    this.resource = resourceLoader.getResource(policyBaseDir);
+  }
 
   public List<PdpPolicy> getPolicies() {
     List<File> policyFiles;

@@ -18,12 +18,12 @@ import static pdp.PdpApplication.singletonOptionalCollector;
 
 public class ServiceRegistryTest {
 
-  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry();//new UrlResourceServiceRegistry(1,1);
+  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry("test");//new UrlResourceServiceRegistry(1,1);
 
   @Test
   public void testServiceProviders() throws Exception {
     List<EntityMetaData> sps = serviceRegistry.serviceProviders();
-    assertEquals(950, sps.size());
+    assertEquals(951, sps.size());
     assertTrue(sps.stream().allMatch(entityMetaData -> StringUtils.hasText(entityMetaData.getEntityId())));
     // we expect a sorted list
     assertEquals(asList("3", "3", "A"), sps.subList(0, 3).stream().map(e -> e.getNameEn().substring(0, 1)).collect(toList()));
@@ -32,7 +32,7 @@ public class ServiceRegistryTest {
   @Test
   public void testIdentityProviders() throws Exception {
     List<EntityMetaData> idps = serviceRegistry.identityProviders();
-    assertEquals(295, idps.size());
+    assertEquals(296, idps.size());
     assertTrue(idps.stream().allMatch(entityMetaData -> StringUtils.hasText(entityMetaData.getEntityId())));
   }
 
@@ -64,12 +64,18 @@ public class ServiceRegistryTest {
   @Test
   public void testServiceProvidersByInstitutionId() {
     Set<EntityMetaData> surfnetSps = serviceRegistry.serviceProvidersByInstitutionId("SURFNET");
-    assertEquals(60, surfnetSps.size());
+    assertEquals(61, surfnetSps.size());
   }
 
   @Test
   public void testServiceProvidersByInstitutionIdEmpty() {
     Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId("NOOP");
     assertEquals(0, sps.size());
+  }
+
+  @Test
+  public void testNonExistingEnvironmentSps() {
+    ServiceRegistry env = new ClassPathResourceServiceRegistry("dev");
+    assertEquals(295, env.identityProviders().size());
   }
 }

@@ -1,0 +1,16 @@
+[{
+  "entityid": "http://mock-sp",
+  "state": "prodaccepted",
+  "type": "saml20-sp",
+  "coin": {
+    "institution_id": "SURFNET"
+  },
+  "description": {
+    "en": "Mujina Mock SP",
+    "nl": "Mujina Mock SP"
+  },
+  "name": {
+    "en": "Mujina Mock SP",
+    "nl": "Mujina Mock SP"
+  }
+}]

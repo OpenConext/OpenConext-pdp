@@ -1,6 +1,7 @@
 package pdp.xacml;
 
 import org.junit.Test;
+import org.springframework.core.io.DefaultResourceLoader;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 public class DevelopmentPrePolicyLoaderTest {
 
-  private DevelopmentPrePolicyLoader policyLoader = new DevelopmentPrePolicyLoader();
+  private DevelopmentPrePolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new DefaultResourceLoader(),"classpath:/xacml/policies");
 
   private Pattern policyIdPattern = Pattern.compile("PolicyId=\"(.*?)\"");
 

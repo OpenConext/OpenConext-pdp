@@ -89,7 +89,7 @@ App.Pages.PolicyOverview = React.createClass({
   ,
   renderViolationsLink: function (policy) {
     if (policy.numberOfViolations === 0) {
-      return (<span>policy.numberOfViolations</span>);
+      return (<span>0</span>);
     } else {
       return (<a href={page.uri("/violations/:policyId",{policyId:encodeURIComponent(policy.policyId)})}
           onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
