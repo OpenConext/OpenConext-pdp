@@ -34,7 +34,10 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -136,6 +139,16 @@ public class PdpController {
     return policies;
   }
 
+  @RequestMapping(method = GET, value = "/internal/violations")
+  public Iterable<PdpPolicyViolation> violations() {
+    return pdpPolicyViolationRepository.findAll();
+  }
+
+  @RequestMapping(method = GET, value = "/internal/violations/{policyId}")
+  public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable String policyId) {
+    return pdpPolicyViolationRepository.findByPolicyId(policyId);
+  }
+
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
     PdpPolicy policy = findOneAndOnly(id);
@@ -179,7 +192,7 @@ public class PdpController {
     }
     try {
       PdpPolicy saved = pdpPolicyRepository.save(policy);
-      LOG.info("{} PdpPolicy {}",policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
+      LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
       return saved;
     } catch (DataIntegrityViolationException e) {
       if (e.getMessage().contains("pdp_policy_name_unique")) {
@@ -225,7 +238,8 @@ public class PdpController {
         result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).collect(toList());
     if (!CollectionUtils.isEmpty(deniesOrIndeterminates)) {
       String policyId = getPolicyId(deniesOrIndeterminates);
-      pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyId, payload, response));
+      String policyName = pdpPolicyRepository.findFirstByPolicyId(policyId).stream().findFirst().map(PdpPolicy::getName).orElse(NO_POLICY_ID);
+      pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyId, policyName, payload, response));
     }
   }
 

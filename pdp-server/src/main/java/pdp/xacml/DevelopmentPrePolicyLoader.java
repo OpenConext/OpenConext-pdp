@@ -39,31 +39,19 @@ public class DevelopmentPrePolicyLoader {
     return policyFiles.stream().map(file -> this.createPdpPolicy(file)).collect(toList());
   }
 
-  public void loadPolicies(PdpPolicyRepository pdpPolicyRepository, boolean clearDatabase) {
-    if (clearDatabase) {
-      pdpPolicyRepository.deleteAll();
-    }
+  public void loadPolicies(PdpPolicyRepository pdpPolicyRepository) {
+    pdpPolicyRepository.deleteAll();
     List<PdpPolicy> policies = getPolicies();
     policies.forEach(policy -> {
-      if (!clearDatabase) {
-        this.deletePolicyIfExists(policy, pdpPolicyRepository);
-      }
       pdpPolicyRepository.save(policy);
       LOG.info("Loaded {} policy from {}", policy.getName(), resource.getFilename());
     });
   }
 
-  private void deletePolicyIfExists(PdpPolicy policy, PdpPolicyRepository pdpPolicyRepository) {
-    List<PdpPolicy> byName = pdpPolicyRepository.findByName(policy.getName());
-    if (!byName.isEmpty()) {
-      pdpPolicyRepository.delete(byName);
-    }
-  }
-
   private PdpPolicy createPdpPolicy(File file) {
     try {
       String xml = IOUtils.toString(new FileInputStream(file));
-      xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\""+PolicyTemplateEngine.getPolicyId(file.getName())+"\"");
+      xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\"" + PolicyTemplateEngine.getPolicyId(file.getName()) + "\"");
       return new PdpPolicy(xml, file.getName());
     } catch (IOException e) {
       throw new RuntimeException(e);

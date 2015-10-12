@@ -137,40 +137,18 @@ App.Pages.Playground = React.createClass({
         css="split"/>);
   },
 
-  determineStatus: function (decision) {
-    switch (decision) {
-      case "Permit":
-      {
-        return "check";
-      }
-      case "Indeterminate":
-      case "Deny":
-      {
-        return "remove";
-      }
-      case "NotApplicable":
-      {
-        return "question"
-      }
-      default:
-      {
-        throw "Unknown decision" + decision;
-      }
-    }
-  },
-
   renderStatus: function (responseJSON) {
     var response = responseJSON.Response[0];
     var decision = response.Decision;
     var statusCode = response.Status.StatusCode.Value;
-    var status = this.determineStatus(decision);
+    var status = App.Controllers.PolicyViolations.determineStatus(decision);
     return (
         <div className={"response-status " + status}>
           <i className={"fa fa-"+status + " " + status}></i>
           <section>
             <p className="status">{decision}</p>
 
-            <p className="details">{"StatusCode" + "'" + statusCode + "'"}</p>
+            <p className="details">{"StatusCode: " + "'" + statusCode + "'"}</p>
           </section>
         </div>
     );
@@ -245,7 +223,7 @@ App.Pages.Playground = React.createClass({
     }.bind(this);
   },
 
-  renderTabs: function (pdpRequest) {
+  renderTabs: function () {
     var selectedTab = (this.state.tab || "request");
     var request = (selectedTab == "request" ? "selected" : "");
     var response = (selectedTab == "response" ? "selected" : "");

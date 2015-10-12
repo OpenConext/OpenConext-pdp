@@ -28,6 +28,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
@@ -70,7 +71,7 @@ public class PdpApplication {
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
     if (environment.acceptsProfiles("dev")) {
-      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository, true);
+      new DevelopmentPrePolicyLoader().loadPolicies(pdpPolicyRepository);
     }
 
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
@@ -168,6 +169,7 @@ public class PdpApplication {
       RepositoryRestConfiguration config = super.config();
       config.setDefaultMediaType(MediaType.APPLICATION_JSON);
       config.setReturnBodyOnCreate(true);
+      config.exposeIdsFor(PdpPolicyViolation.class);
       return config;
     }
   }

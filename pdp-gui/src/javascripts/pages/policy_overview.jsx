@@ -10,10 +10,6 @@ App.Pages.PolicyOverview = React.createClass({
     $('#policies_table').DataTable().destroy();
   },
 
-  redrawDataTable: function () {
-    $('#policies_table').DataTable().destroy();
-  },
-
   initDataTable: function () {
     $('#policies_table').DataTable({
       paging: false,
@@ -36,7 +32,7 @@ App.Pages.PolicyOverview = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    if ( ! $.fn.DataTable.isDataTable( '#policies_table' ) ) {
+    if (!$.fn.DataTable.isDataTable('#policies_table')) {
       this.initDataTable();
     }
 
@@ -69,6 +65,14 @@ App.Pages.PolicyOverview = React.createClass({
     }
   },
 
+  handleShowViolations: function (policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      page("/violations/:policyId", {policyId: encodeURIComponent(policy.policyId)});
+    }
+  },
+
   closeFlash: function () {
     this.setState({hideFlash: true});
   },
@@ -77,14 +81,22 @@ App.Pages.PolicyOverview = React.createClass({
     var flash = this.props.flash;
     if (flash && !this.state.hideFlash) {
       return (
-          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i className="fa fa-remove"></i></a></div>
+          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i
+              className="fa fa-remove"></i></a></div>
       );
     }
   }
   ,
+  renderViolationsLink: function (policy) {
+    if (policy.numberOfViolations === 0) {
+      return (<span>policy.numberOfViolations</span>);
+    } else {
+      return (<a href={page.uri("/violations/:policyId",{policyId:encodeURIComponent(policy.policyId)})}
+          onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
+    }
+  },
 
   render: function () {
-    var self = this;
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
           <tr key={policy.id}>
@@ -92,18 +104,18 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.description}</td>
             <td>{policy.serviceProviderName}</td>
             <td>{policy.identityProviderNames}</td>
-            <td className='policy_violations'>{policy.numberOfViolations}</td>
+            <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
             <td className="policy_controls">
-              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={self.handleShowPolicyDetail(policy)}
+              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
                  data-tooltip="Edit">
                 <i className="fa fa-edit"></i>
               </a>
-              <a href="#" data-tooltip="Delete" onClick={self.handleDeletePolicyDetail(policy)}><i
+              <a href="#" data-tooltip="Delete" onClick={this.handleDeletePolicyDetail(policy)}><i
                   className="fa fa-remove"></i></a></td>
           </tr>)
-    });
+    }.bind(this));
 
-    var html = (
+    return (
         <div className="mod-policy-overview">
           {this.renderFlash()}
           <div className='table-responsive'>
@@ -125,7 +137,6 @@ App.Pages.PolicyOverview = React.createClass({
           </div>
         </div>
     );
-    return html;
   }
 })
 ;

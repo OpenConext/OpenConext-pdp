@@ -1,9 +1,10 @@
 package pdp.domain;
 
-import org.springframework.util.StringUtils;
-
-import javax.persistence.*;
-import java.sql.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import java.sql.Timestamp;
 
 @Entity(name = "pdp_policy_violations")
 public class PdpPolicyViolation {
@@ -15,19 +16,23 @@ public class PdpPolicyViolation {
   private String policyId;
 
   @Column(nullable = false)
+  private String policyName;
+
+  @Column(nullable = false)
   private String jsonRequest;
 
   @Column(nullable = false)
   private String response;
 
   @Column()
-  private Date created;
+  private Timestamp created;
 
   public PdpPolicyViolation() {
   }
 
-  public PdpPolicyViolation(String policyId, String jsonRequest, String response) {
+  public PdpPolicyViolation(String policyId, String policyName, String jsonRequest, String response) {
     this.policyId = policyId;
+    this.policyName = policyName;
     this.jsonRequest = jsonRequest;
     this.response = response;
   }
@@ -48,6 +53,14 @@ public class PdpPolicyViolation {
     this.policyId = policyId;
   }
 
+  public String getPolicyName() {
+    return policyName;
+  }
+
+  public void setPolicyName(String policyName) {
+    this.policyName = policyName;
+  }
+
   public String getJsonRequest() {
     return jsonRequest;
   }
@@ -56,11 +69,11 @@ public class PdpPolicyViolation {
     this.jsonRequest = jsonRequest;
   }
 
-  public Date getCreated() {
+  public Timestamp getCreated() {
     return created;
   }
 
-  public void setCreated(Date created) {
+  public void setCreated(Timestamp created) {
     this.created = created;
   }
 
@@ -72,10 +85,4 @@ public class PdpPolicyViolation {
     this.response = response;
   }
 
-  @Transient
-  public boolean isValid() {
-    return StringUtils.hasText(policyId)
-        && StringUtils.hasText(jsonRequest)
-        && StringUtils.hasText(response);
-  }
 }

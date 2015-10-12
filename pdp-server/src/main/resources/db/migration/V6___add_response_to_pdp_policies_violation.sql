@@ -1,1 +1,0 @@
-ALTER TABLE pdp_policy_violations ADD response TEXT NOT NULL;

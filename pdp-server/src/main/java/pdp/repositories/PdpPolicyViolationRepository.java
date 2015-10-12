@@ -13,8 +13,6 @@ public interface PdpPolicyViolationRepository extends CrudRepository<PdpPolicyVi
 
   List<PdpPolicyViolation> findByPolicyId(@Param("policyId") String policyId);
 
-  Long countByPolicyId(@Param("policyId") String policyId);
-
   @Query("select p.policyId, count(p.id) from pdp.domain.PdpPolicyViolation p group by p.policyId")
   List<Object[]> findCountPerPolicyId();
 

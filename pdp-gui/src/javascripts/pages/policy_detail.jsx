@@ -22,7 +22,12 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   toggleDenyRule: function (e) {
-    this.setState({denyRule: !this.state.denyRule});
+    var partialState = {denyRule: !this.state.denyRule};
+    if (!this.state.denyRule) {
+      partialState.allAttributesMustMatch = true;
+    }
+    this.setState(partialState);
+
   },
 
   parseEntities: function (entities) {
@@ -157,10 +162,10 @@ App.Pages.PolicyDetail = React.createClass({
     return (
         <div>
           <div className="form-element success">
-            <div className="column-3 first" onClick={this.toggleDenyRule}>
+            <div className="column-3 first">
               <p className="label">Access</p>
 
-              <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}>
+              <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
                 <div className="inner"></div>
                 <p>{policyPermit}</p>
               </div>
@@ -196,11 +201,19 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderRule: function (value, selected) {
     var className = value + " " + (selected ? "selected" : "");
-    return (
-        <li key={value}>
-          <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
-        </li>
-    );
+    if (this.state.denyRule) {
+      return (
+          <li key={value}>
+            <span className={className}>{value}</span>
+          </li>
+      );
+    } else {
+      return (
+          <li key={value}>
+            <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
+          </li>
+      );
+    }
   },
 
   setAttributeState: function (newAttributeState) {
@@ -245,11 +258,18 @@ App.Pages.PolicyDetail = React.createClass({
                 person requesting access.</em>
             </div>
             <em className="note"><sup>*</sup> Note that attribute values with the same attribute name always be
-              evaluated with the logical OR meaning only one matching value is required for this attribute.</em>
+              evaluated with the logical OR.</em>
+            {this.renderDenyRuleNote()}
           </div>
           <div className="bottom"></div>
         </div>
     );
+  },
+
+  renderDenyRuleNote: function() {
+    if (this.state.denyRule) {
+      return (<em><sup>*</sup> Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.</em>);
+    }
   },
 
   closeFlash: function () {

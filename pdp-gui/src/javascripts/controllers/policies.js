@@ -61,7 +61,7 @@ App.Controllers.Policies = {
   },
 
   overview: function (ctx) {
-    App.render(App.Pages.PolicyOverview({key: "policies", tada: "aa", policies: ctx.policies, flash: App.getFlash()}));
+    App.render(App.Pages.PolicyOverview({key: "policies", policies: ctx.policies, flash: App.getFlash()}));
   },
 
   detail: function (ctx) {

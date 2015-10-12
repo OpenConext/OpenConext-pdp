@@ -73,7 +73,7 @@
       list-style: none
       text-align: center
 
-    a
+    a, span
       display: block
       width: 60px
       border: 1px solid $medium-grey
@@ -88,13 +88,19 @@
         border-top-right-radius: 5px
         border-bottom-right-radius: 5px
 
-      &:hover,
-      &.selected
-        background: $blue
-        color: #fff
-        border-color: $blue
       &.selected:hover
         text-decoration: none
+
+    a:hover, a.selected
+      background: $blue
+      color: #fff
+      border-color: $blue
+
+    span.selected
+      background: $medium-grey
+      color: #fff
+      border-color: $medium-grey
+
 
   select
     font-size: inherit

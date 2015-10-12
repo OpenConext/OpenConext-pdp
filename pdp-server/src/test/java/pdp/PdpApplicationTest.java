@@ -19,6 +19,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.StringUtils;
 import pdp.domain.*;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -146,7 +147,13 @@ public class PdpApplicationTest {
     //test the repo
     List<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findByPolicyId(policyId).stream().collect(toList());
     assertFalse(policyId, CollectionUtils.isEmpty(violations));
-    violations.forEach(violation -> assertTrue(violation.isValid()));
+    violations.forEach(violation -> assertTrue(isValid(violation)));
+  }
+
+  private boolean isValid(PdpPolicyViolation violation) {
+    return StringUtils.hasText(violation.getPolicyId())
+        && StringUtils.hasText(violation.getJsonRequest())
+        && StringUtils.hasText(violation.getResponse());
   }
 
 }

@@ -1,5 +1,7 @@
 package pdp.domain;
 
+import pdp.PolicyTemplateEngine;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +15,9 @@ public class PdpPolicy {
   private Long id;
 
   @Column(nullable = false)
+  private String policyId;
+
+  @Column(nullable = false)
   private String policyXml;
 
   @Column(nullable = false)
@@ -24,6 +29,7 @@ public class PdpPolicy {
   public PdpPolicy(String policyXml, String name) {
     this.policyXml = policyXml;
     this.name = name;
+    this.policyId = PolicyTemplateEngine.getPolicyId(name);
   }
 
   public Long getId() {
@@ -32,6 +38,14 @@ public class PdpPolicy {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getPolicyId() {
+    return policyId;
+  }
+
+  public void setPolicyId(String policyId) {
+    this.policyId = policyId;
   }
 
   public String getPolicyXml() {
