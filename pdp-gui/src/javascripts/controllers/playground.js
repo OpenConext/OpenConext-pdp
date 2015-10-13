@@ -5,8 +5,16 @@ App.Controllers.Playground = {
         this.loadIdentityProviders.bind(this),
         this.loadServiceProviders.bind(this),
         this.loadSamlAllowedAttributes.bind(this),
+        this.loadPolicies.bind(this),
         this.playground.bind(this)
     );
+  },
+
+  loadPolicies: function (ctx, next) {
+    $.get(App.apiUrl("/internal/policies"), function (data) {
+      ctx.policies = data;
+      next();
+    });
   },
 
   loadServiceProviders: function (ctx, next) {
@@ -36,7 +44,8 @@ App.Controllers.Playground = {
             pdpRequest: {attributes:[]},
             identityProviders: ctx.identityProviders,
             serviceProviders: ctx.serviceProviders,
-            allowedSamlAttributes: ctx.allowedSamlAttributes
+            allowedSamlAttributes: ctx.allowedSamlAttributes,
+            policies: ctx.policies
           }
       ));
   },

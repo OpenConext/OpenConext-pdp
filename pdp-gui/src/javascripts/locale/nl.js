@@ -55,6 +55,12 @@ I18n.translations.nl = {
     search: "Zoek authenticatie regels..."
   },
 
+  playground: {
+    policy:"Authenticatie regel",
+    policy_info:"Optioneel, de geselecteerde regel wordt alleen gebruikt voor het zetten van de default voor de diesnt, instelling en attributen",
+    policy_search:"Selecteer een regel"
+  },
+
   contact: {
     email: "Service support e-mail"
   },

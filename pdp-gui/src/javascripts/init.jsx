@@ -10,7 +10,7 @@ var App = {
   store: {}, // in memory key/value store, to save temporary settings
 
   initialize: function () {
-    var parameterByName = this.getParameterByName("lang");
+    var parameterByName = App.Utils.QueryParameter.getParameterByName("lang");
     I18n.locale = parameterByName ? parameterByName : "en";
     $(document).ajaxError(this.ajaxError.bind(this));
     $(document).ajaxStart(this.showSpinner.bind(this));
@@ -98,13 +98,6 @@ var App = {
         this.render(App.Pages.ServerError());
         console.error("Ajax request failed");
     }
-  },
-
-  getParameterByName: function (name) {
-    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
-    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-        results = regex.exec(location.search);
-    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   },
 
   setFlash: function(message){

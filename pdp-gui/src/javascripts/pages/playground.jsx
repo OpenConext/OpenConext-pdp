@@ -24,6 +24,33 @@ App.Pages.Playground = React.createClass({
     return options;
   },
 
+  handleChangePolicy: function (newValue) {
+    if (newValue) {
+      var policy = this.props.policies.filter(function (policy) {
+        return policy.id === parseInt(newValue);
+      })[0];
+
+      var identityProviderId = _.isEmpty(policy.identityProviderIds) ? this.props.identityProviders[0].entityId : policy.identityProviderIds[0];
+      this.setState({
+        //serviceProviderId: policy.serviceProviderId,
+        //identityProviderId: identityProviderId,
+        attributes: policy.attributes
+      });
+      //Unfortunately we have to set the visual representation manually as the integration with select2 is done one-way
+      var serviceProviderNode = $('[data-select2selector-id="serviceProvider"]');
+      serviceProviderNode.val(policy.serviceProviderId).trigger("change");
+      var identityProviderNode = $('[data-select2selector-id="identityProvider"]');
+      identityProviderNode.val(identityProviderId).trigger("change");
+    }
+  },
+
+  parsePolicies: function (policies) {
+    var options = policies.map(function (policy) {
+      return {value: policy.id, display: policy.name};
+    });
+    return options;
+  },
+
   handleChangeServiceProvider: function (newValue) {
     this.setState({serviceProviderId: newValue});
   },
@@ -84,6 +111,24 @@ App.Pages.Playground = React.createClass({
     var inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
         || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
     return !inValid;
+  },
+
+  renderPolicies: function () {
+    return (
+        <div>
+          <div className="form-element split success">
+            <p className="label before-em">{I18n.t("playground.policy")}</p>
+            <em className="label">{I18n.t("playground.policy_info")}</em>
+            <App.Components.Select2Selector
+                defaultValue=""
+                placeholder={I18n.t("playground.policy_search")}
+                select2selectorId={"policy"}
+                options={this.parsePolicies(this.props.policies)}
+                handleChange={this.handleChangePolicy}/>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
   },
 
   renderServiceProvider: function (pdpRequest) {
@@ -319,6 +364,7 @@ App.Pages.Playground = React.createClass({
           <div className="l-split-left form-element-container box">
 
             <p className="form-element playground-title">POLICY PLAYGROUND</p>
+            {this.renderPolicies()}
             {this.renderServiceProvider(pdpRequest)}
             {this.renderIdentityProvider(pdpRequest)}
             {this.renderAttributes(pdpRequest)}

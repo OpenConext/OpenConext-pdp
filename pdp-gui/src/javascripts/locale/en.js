@@ -55,6 +55,12 @@ I18n.translations.en = {
     search: "Search policies..."
   },
 
+  playground: {
+    policy:"Policy",
+    policy_info:"Optional - the selected policy is only used to set defaults for the Service Provider, Identity Provider and the attributes",
+    policy_search:"Select the Policy"
+  },
+
   contact: {
     email: "Service support email"
   },

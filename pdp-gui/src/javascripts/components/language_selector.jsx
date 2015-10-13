@@ -31,7 +31,12 @@ App.Components.LanguageSelector = React.createClass({
       e.preventDefault();
       e.stopPropagation();
       I18n.locale = locale;
-      window.location.href = window.location.href + "/?lang=" + locale;
+      //var search = App.Utils.QueryParameter.removeQueryParameter("lang");
+      //search = App.Utils.QueryParameter.addQueryParameter("lang", locale);
+      var loc = window.location.href;
+      var index = loc.indexOf("?");
+      loc = loc.substring(0, index === -1 ? loc.length : index) + "?lang=" + locale;
+      window.location.href = loc;
     }.bind(this);
   }
 });
