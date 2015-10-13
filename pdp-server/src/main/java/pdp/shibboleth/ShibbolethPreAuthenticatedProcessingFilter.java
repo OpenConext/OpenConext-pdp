@@ -39,7 +39,6 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     Collection<GrantedAuthority> authorities = StringUtils.hasText(isMemberOf) ? Arrays.asList(new SimpleGrantedAuthority("PAP_CLIENT")) : Collections.EMPTY_LIST;
 
     //By contract we always get at least one Idp, but in case there are two - http://mock-idp;http://mock-idp - we need the first
-    //it can happen that the Authenticating Authority looks like this: http://mock-idp;http://mock-idp
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
 
