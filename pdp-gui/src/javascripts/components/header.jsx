@@ -12,12 +12,12 @@ App.Components.Header = React.createClass({
     return (
         <div className="mod-header">
           <h1 className="title"><a href="/">{I18n.t("header.title")}</a></h1>
-
+          {this.renderMeta()}
         </div>
     );
   },
 
-  renderMeta: function() {
+  renderMeta: function () {
     return (
         <div className="meta">
           <div className="name">
@@ -38,7 +38,7 @@ App.Components.Header = React.createClass({
         <span>
           {I18n.t("header.welcome")}&nbsp;
           <a href="#" onClick={this.handleToggle}>
-            {App.currentUser.displayName}
+            {App.currentUser.principal.username}
             {this.renderDropDownIndicator()}
           </a>
         </span>
@@ -54,33 +54,25 @@ App.Components.Header = React.createClass({
   },
 
   renderDropDown: function () {
-    if (!App.currentUser.superUser && this.state.dropDownActive) {
+    if (this.state.dropDownActive) {
       return (
-          <ul>
-            <h2>{I18n.t("header.you")}</h2>
-            <ul>
-              <li><a href="/profile" onClick={this.handleClose}>{I18n.t("header.profile")}</a></li>
-            </ul>
-            <App.Components.IDPSelector />
-          </ul>
+          <div>
+            <App.Components.UserProfile />
+          </div>
       );
     }
   },
 
   renderExitLogout: function () {
-    if (App.currentUser.superUser && App.currentUser.switchedToIdp) {
-      return (
-          <li><a href="/exit">{I18n.t("header.links.exit")}</a></li>
-      );
-    } else {
-      return (
-          <li><a href="/logout">{I18n.t("header.links.logout")}</a></li>
-      );
-    }
+    return (
+        <li><a href="#" onClick={this.stop}>{I18n.t("header.links.logout")}</a></li>
+    );
   },
 
-  handleClose: function () {
-    this.setState({dropDownActive: false});
+  stop: function() {
+    var node = document.getElementById("app");
+    React.unmountComponentAtNode(node);
+    React.renderComponent(App.Pages.Logout(), node);
   },
 
   handleToggle: function (e) {

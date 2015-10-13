@@ -21,7 +21,7 @@ I18n.translations.en = {
 
   header: {
     title: "Policy Administration Point",
-    welcome: "Welcome,",
+    welcome: "Welcome ",
     links: {
       help_html: "<a href=\"https://wiki.surfnet.nl/display/conextsupport/Dashboard+van+SURFconext+%28EN%29\" target=\"_blank\">Help</a>",
       logout: "Logout",
@@ -29,7 +29,8 @@ I18n.translations.en = {
     },
     you: "You",
     profile: "Profile",
-    switch_idp: "Switch IDP"
+    idps: "Your Identity Provider(s)",
+    sps: "Your Services"
   },
 
   navigation: {

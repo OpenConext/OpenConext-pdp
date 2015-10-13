@@ -57,24 +57,13 @@ var App = {
 
   },
 
-  stop: function () {
-    var node = document.getElementById("app");
-    React.unmountComponentAtNode(node);
-    React.renderComponent(App.Pages.Logout(), node);
-  },
-
   apiUrl: function (value, params) {
     return page.uri(BASE_URL + value, params);
   },
 
-  renderYesNo: function (value) {
-    var word = value ? "yes" : "no";
-    return <td className={word}>{I18n.t("boolean." + word)}</td>;
-  },
-
   fetchUserData: function (callback) {
     var self = this;
-    $.get(App.apiUrl("/internal/users/me" + window.location.search), function (data) {
+    $.get(App.apiUrl("/internal/users/me"), function (data) {
       if (!data) {
         self.render(App.Pages.NotFound());
       } else {

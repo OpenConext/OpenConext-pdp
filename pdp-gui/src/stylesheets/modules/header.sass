@@ -72,7 +72,7 @@
     .fa-caret-up
       padding-left: 5px
 
-    > ul
+    ul.user-profile
       @extend %box, %z2
       position: absolute
       z-index: 100
@@ -81,22 +81,12 @@
       min-width: 200px
       top: 60px
 
-      &.show
-        display: block
-
-    li li,
-    h2
+    li, h2
       border-bottom: 1px solid $border
 
     ul ul
       margin-bottom: 20px
 
-    .select-idp
-      li
-        padding-left: 15px
-        position: relative
-
-        .fa-caret-right
-          position: absolute
-          left: 0
-          top: 8px
+    li.user-profile-entity
+      padding-left: 15px
+      position: relative
