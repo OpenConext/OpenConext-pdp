@@ -3,7 +3,7 @@
   "state": "prodaccepted",
   "type": "saml20-idp",
   "coin": {
-    "institution_id": "SURFNET"
+    "institution_id": "MUJINA"
   },
   "description": {
     "en": "Mujina Mock IDP",
