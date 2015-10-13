@@ -88,6 +88,10 @@ it easily into the desired - yet very complex - XML format.
 Using the internal XACML Policy class hierarchy for communication back and forth with the client was not an option because
 of the cyclic dependencies in the hierarchy (and not desirable because of the complexity it would have caused).
 
+### Architecture
+
+See [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/pdp-gui/src/images/authz_poc.001.png)
+
 ### Policy limitations
 
 The policies that can be created are limited in functionality:
