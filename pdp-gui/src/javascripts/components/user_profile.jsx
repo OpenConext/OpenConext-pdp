@@ -5,9 +5,23 @@ App.Components.UserProfile = React.createClass({
   render: function () {
     return (
         <ul className="user-profile">
+          {this.renderRole()}
           {this.renderIdps()}
           {this.renderSps()}
         </ul>
+    );
+  },
+
+  renderRole: function () {
+    return (
+        <li>
+          <h2>{I18n.t("header.role")}</h2>
+          <ul>
+            <li className="user-profile-entity">
+              {I18n.t("profile." + App.currentUser.principal.authorities[0].authority)}
+            </li>
+          </ul>
+        </li>
     );
   },
 

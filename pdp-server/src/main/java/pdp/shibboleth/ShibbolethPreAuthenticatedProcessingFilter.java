@@ -1,5 +1,7 @@
 package pdp.shibboleth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +23,8 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
   public static final String IS_MEMBER_OF = "is-member-of";
   public static final String SHIB_AUTHENTICATING_AUTHORITY = "Shib-Authenticating-Authority";
 
+  private static final Logger LOG = LoggerFactory.getLogger(ShibbolethPreAuthenticatedProcessingFilter.class);
+
   private final ServiceRegistry serviceRegsitry;
 
   public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry) {
@@ -36,7 +40,19 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     String isMemberOf = request.getHeader(IS_MEMBER_OF);
     String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
 
-    Collection<GrantedAuthority> authorities = StringUtils.hasText(isMemberOf) ? Arrays.asList(new SimpleGrantedAuthority("PAP_CLIENT")) : Collections.EMPTY_LIST;
+    if (isHeaderValueInvalid(uid, UID_HEADER_NAME)) {
+      return null;
+    }
+    if (isHeaderValueInvalid(displayName, DISPLAY_NAME_HEADER_NAME)) {
+      return null;
+    }
+    if (isHeaderValueInvalid(authenticatingAuthority, SHIB_AUTHENTICATING_AUTHORITY)) {
+      return null;
+    }
+
+    String role = StringUtils.hasText(isMemberOf) ? "PAP_ADMIN" : "PAP_CLIENT";
+
+    Collection<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(role));
 
     //By contract we always get at least one Idp, but in case there are two - http://mock-idp;http://mock-idp - we need the first
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
@@ -45,12 +61,19 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     String institutionId = idpEntities.stream().findAny().get().getInstitutionId();
     Set<EntityMetaData> spEntities = serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
 
-    return StringUtils.hasText(uid) && StringUtils.hasText(displayName) ?
-        new ShibbolethUser(uid, displayName, idpEntities, spEntities, authorities) : null;
+    return new ShibbolethUser(uid, displayName, idpEntities, spEntities, authorities);
   }
 
   @Override
   protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
     return "N/A";
+  }
+
+  private boolean isHeaderValueInvalid(String header, String name) {
+    if (StringUtils.isEmpty(header)) {
+      LOG.warn("Missing {} header. Not possible to login", name);
+      return true;
+    }
+    return false;
   }
 }

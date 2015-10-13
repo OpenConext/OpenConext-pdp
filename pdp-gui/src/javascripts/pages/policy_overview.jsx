@@ -15,7 +15,7 @@ App.Pages.PolicyOverview = React.createClass({
       paging: false,
       language: {
         search: "_INPUT_",
-        searchPlaceholder: "Search policies..."
+        searchPlaceholder: I18n.t("policies.search")
       },
       columnDefs: [{
         targets: [5],

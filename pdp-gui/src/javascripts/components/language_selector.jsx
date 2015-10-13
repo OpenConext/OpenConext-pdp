@@ -3,35 +3,35 @@
 App.Components.LanguageSelector = React.createClass({
   render: function () {
     return (
-      <ul className="language">
-        {[
-          this.renderLocaleChooser("en"),
-          this.renderLocaleChooser("nl")
-        ]}
-      </ul>
+        <ul className="language">
+          {[
+            this.renderLocaleChooser("en"),
+            this.renderLocaleChooser("nl")
+          ]}
+        </ul>
     );
   },
 
-  renderLocaleChooser: function(locale) {
+  renderLocaleChooser: function (locale) {
     return (
-      <li key={locale}>
-        <a
-          href="#"
-          className={I18n.currentLocale() == locale ? "selected" : ""}
-          title={I18n.t("select_locale", {locale: locale})}
-          onClick={this.handleChooseLocale(locale)}>
-          {I18n.t("code", {locale: locale})}
-        </a>
-      </li>
+        <li key={locale}>
+          <a
+              href="#"
+              className={I18n.currentLocale() == locale ? "selected" : ""}
+              title={I18n.t("select_locale", {locale: locale})}
+              onClick={this.handleChooseLocale(locale)}>
+            {I18n.t("code", {locale: locale})}
+          </a>
+        </li>
     );
   },
 
-  handleChooseLocale: function(locale) {
-    return function(e) {
+  handleChooseLocale: function (locale) {
+    return function (e) {
       e.preventDefault();
       e.stopPropagation();
       I18n.locale = locale;
-      window.location.href = "/?lang="+locale;
+      window.location.href = window.location.href + "/?lang=" + locale;
     }.bind(this);
   }
 });

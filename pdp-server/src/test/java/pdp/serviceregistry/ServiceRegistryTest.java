@@ -1,4 +1,4 @@
-package pdp;
+package pdp.serviceregistry;
 
 import org.junit.Test;
 import org.springframework.util.StringUtils;
