@@ -64,7 +64,7 @@ public class ServiceRegistryTest {
   @Test
   public void testServiceProvidersByInstitutionId() {
     Set<EntityMetaData> surfnetSps = serviceRegistry.serviceProvidersByInstitutionId("SURFNET");
-    assertEquals(61, surfnetSps.size());
+    assertEquals(60, surfnetSps.size());
   }
 
   @Test
