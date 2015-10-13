@@ -1,6 +1,6 @@
 App.Utils.QueryParameter = {
 
-  //shameless copy & paste of https://gist.githubusercontent.com/pduey/2764606/raw/e8b9d6099f1e4161f7dd9f81d71c2c7a1fecbd5b/querystring.js
+  //shameless refactor of https://gist.githubusercontent.com/pduey/2764606/raw/e8b9d6099f1e4161f7dd9f81d71c2c7a1fecbd5b/querystring.js
 
   searchToHash: function () {
     var h = {};
@@ -33,6 +33,13 @@ App.Utils.QueryParameter = {
     return search;
   },
 
+  replaceQueryParameter: function(name, value) {
+    var newSearchHash = this.searchToHash();
+    delete newSearchHash[name];
+    newSearchHash[decodeURIComponent(name)] = [decodeURIComponent(value)];
+    return this.hashToSearch(newSearchHash);
+  },
+
   addQueryParameter: function (name, value) {
     var newSearchHash = this.searchToHash();
     if (!(decodeURIComponent(name) in newSearchHash)) {
@@ -44,7 +51,7 @@ App.Utils.QueryParameter = {
 
   removeQueryParameter: function (name, value) {
     var newSearchHash = this.searchToHash();
-    if (newSearchHash[name] && newSearchHash[name].indexOf(value) >= 0) {
+    if (newSearchHash[name] && newSearchHash[name].indexOf(value) > -1) {
       newSearchHash[name].splice(newSearchHash[name].indexOf(value), 1);
       if (newSearchHash[name].length == 0) {
         delete newSearchHash[name];
