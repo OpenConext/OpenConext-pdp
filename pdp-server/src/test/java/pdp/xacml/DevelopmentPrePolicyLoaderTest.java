@@ -1,19 +1,23 @@
 package pdp.xacml;
 
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
+import pdp.repositories.PdpPolicyRepository;
 
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class DevelopmentPrePolicyLoaderTest {
 
-  private DevelopmentPrePolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new DefaultResourceLoader(),"classpath:/xacml/policies");
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
 
   private Pattern policyIdPattern = Pattern.compile("PolicyId=\"(.*?)\"");
 

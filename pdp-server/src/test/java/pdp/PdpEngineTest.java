@@ -26,6 +26,7 @@ import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
+import pdp.xacml.PolicyLoader;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +39,7 @@ import static java.util.stream.Collectors.toList;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
@@ -60,7 +62,7 @@ public class PdpEngineTest {
   private MultiValueMap<String, String> headers;
   private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
   private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private DevelopmentPrePolicyLoader developmentPrePolicyLoader = new DevelopmentPrePolicyLoader(new DefaultResourceLoader(),"classpath:/xacml/policies");
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
 
   @Before
   public void before() throws IOException {
@@ -71,7 +73,7 @@ public class PdpEngineTest {
  @Test
   public void test_all_policies() throws Exception {
     JsonPolicyRequest policyRequest = objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
-    List<PdpPolicy> policies = developmentPrePolicyLoader.getPolicies();
+    List<PdpPolicy> policies = policyLoader.getPolicies();
 
     policies.forEach(policy -> doTestPolicy(policyRequest, policy));
   }

@@ -26,6 +26,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
 import pdp.serviceregistry.UrlResourceServiceRegistry;
@@ -33,8 +34,7 @@ import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import pdp.shibboleth.ShibbolethUserDetailService;
 import pdp.shibboleth.mock.MockShibbolethFilter;
 import pdp.teams.VootClient;
-import pdp.xacml.DevelopmentPrePolicyLoader;
-import pdp.xacml.PDPEngineHolder;
+import pdp.xacml.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +59,9 @@ public class PdpApplication {
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
       @Value("${policy.base.dir}") final String policyBaseDir,
       final Environment environment,
-      final PdpPolicyRepository pdpPolicyRepository, final VootClient vootClient
+      final PdpPolicyRepository pdpPolicyRepository,
+      final VootClient vootClient,
+      final PolicyLoader policyLoader
   ) throws IOException, FactoryException {
     Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
     String absolutePath = resource.getFile().getAbsolutePath();
@@ -67,11 +69,29 @@ public class PdpApplication {
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-    if (environment.acceptsProfiles("dev")) {
-      new DevelopmentPrePolicyLoader(resourceLoader, policyBaseDir).loadPolicies(pdpPolicyRepository);
-    }
+    policyLoader.loadPolicies();
 
     return new PDPEngineHolder(pdpPolicyRepository, vootClient);
+  }
+
+  @Bean
+  @Profile({"dev"})
+  @Autowired
+  public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") final String policyBaseDir, final PdpPolicyRepository pdpPolicyRepository) {
+    return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository);
+  }
+
+  @Bean
+  @Profile({"performance"})
+  @Autowired
+  public PolicyLoader performancePrePolicyLoader(ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository) {
+    return new PerformancePrePolicyLoader(serviceRegistry, pdpPolicyRepository);
+  }
+
+  @Bean
+  @Profile({"test", "acc", "production"})
+  public PolicyLoader noopPolicyLoader() {
+    return new NoopPrePolicyLoader();
   }
 
   @Bean
@@ -85,6 +105,12 @@ public class PdpApplication {
   public ServiceRegistry urlResourceServiceRegistry(@Value("${initial.delay.metadata.refresh.minutes}") int initialDelay,
                                                     @Value("${period.metadata.refresh.minutes}") int period) {
     return new UrlResourceServiceRegistry(initialDelay, period);
+  }
+
+  @Bean
+  public PolicyViolationRetentionPeriodCleaner policyViolationRetentionPeriodCleaner(@Value("${policy.violation.retention.period.days}") int retentionPeriodDays,
+                                                                                     PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository);
   }
 
   @Configuration

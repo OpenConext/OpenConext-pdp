@@ -1,22 +1,26 @@
 package pdp.domain;
 
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import pdp.AbstractXacmlTest;
 import pdp.PolicyTemplateEngine;
+import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
+import pdp.xacml.PolicyLoader;
 
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class PdpPolicyDefintionTest extends AbstractXacmlTest {
 
   private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private DevelopmentPrePolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new DefaultResourceLoader(),"classpath:/xacml/policies");
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
 
 
   @Test
