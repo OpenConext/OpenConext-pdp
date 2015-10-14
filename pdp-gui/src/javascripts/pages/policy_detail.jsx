@@ -67,7 +67,7 @@ App.Pages.PolicyDetail = React.createClass({
     });
     var validClassName = (_.isEmpty(policy.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
     var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
-        || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice);
+        || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;
   },
 
@@ -81,6 +81,10 @@ App.Pages.PolicyDetail = React.createClass({
 
   handleOnDenyAdvice: function (e) {
     this.setState({denyAdvice: e.target.value});
+  },
+
+  handleOnDenyAdviceNl: function (e) {
+    this.setState({denyAdviceNl: e.target.value});
   },
 
   renderNameDescription: function (policy) {
@@ -109,7 +113,9 @@ App.Pages.PolicyDetail = React.createClass({
           <em>This is the message displayed to the user if access is denied based on this policy.</em>
           <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
                  onChange={this.handleOnDenyAdvice}/>
-
+          <p className="label">Deny message in Dutch</p>
+          <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
+                 onChange={this.handleOnDenyAdviceNl}/>
           <div className="bottom"></div>
         </div>
     );

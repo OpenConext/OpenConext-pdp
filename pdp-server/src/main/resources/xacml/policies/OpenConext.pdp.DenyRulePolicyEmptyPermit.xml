@@ -62,10 +62,15 @@
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
                               AppliesTo="Deny">
-                <AttributeAssignmentExpression AttributeId="DenyMessage"
+                <AttributeAssignmentExpression AttributeId="DenyMessage:en"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">UMCN students do not have access to the UMCN Loopbaanportaal</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="DenyMessage:nl"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">UMCN studenten hebben geen toegang tot de UMCN Loopbaanportaal</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

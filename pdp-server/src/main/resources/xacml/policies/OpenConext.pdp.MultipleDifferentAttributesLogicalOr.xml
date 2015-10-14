@@ -92,10 +92,15 @@
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
                               AppliesTo="Deny">
-                <AttributeAssignmentExpression AttributeId="DenyMessage"
+                <AttributeAssignmentExpression AttributeId="DenyMessage:en"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Enquetetool.</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="DenyMessage:nl"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">Je bent niet geautoriseerd voor de Enquetetool.</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

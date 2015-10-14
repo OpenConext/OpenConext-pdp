@@ -4,16 +4,10 @@ package pdp.repositories;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
-import pdp.PdpApplication;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicyViolation;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
@@ -26,9 +20,12 @@ public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
 
   @Before
   public void before() throws Exception {
+    Timestamp oneMonthAgo = new Timestamp(System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30));
     IntStream.of(1, 2, 2, 3, 3, 3).forEach(i -> {
       String policyId = PolicyTemplateEngine.getPolicyId(POLICY_ID + i);
-      pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyId, POLICY_ID + i, "{}", "response"));
+      PdpPolicyViolation violation = new PdpPolicyViolation(policyId, POLICY_ID + i, "{}", "response");
+      violation.setCreated(oneMonthAgo);
+      pdpPolicyViolationRepository.save(violation);
     });
   }
 
@@ -45,6 +42,12 @@ public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
   public void testFindByPolicyId() {
     List<PdpPolicyViolation> byPolicyId = pdpPolicyViolationRepository.findByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
     assertEquals(3, byPolicyId.size());
+  }
+
+  @Test
+  public void retentionPeriod() {
+    int deleted = pdpPolicyViolationRepository.deleteOlderThenRetentionDays(25);
+    assertEquals(6, deleted);
   }
 
 }

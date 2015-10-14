@@ -55,10 +55,15 @@
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
                               AppliesTo="Deny">
-                <AttributeAssignmentExpression AttributeId="DenyMessage"
+                <AttributeAssignmentExpression AttributeId="DenyMessage:en"
                                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">You are not part of managementvo. Please contact us if you think this is incorrect.</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="DenyMessage:nl"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">Je bent geen lid van de groep managementvo.</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

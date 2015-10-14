@@ -80,9 +80,13 @@
         <AdviceExpressions>
             <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
             AppliesTo="Deny">
-                <AttributeAssignmentExpression AttributeId="DenyMessage" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                <AttributeAssignmentExpression AttributeId="DenyMessage:en" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                         DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Avans Youforce. Please contact <a href="mailto:hrm@avans.nl">Avans HRM</a> for details</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="DenyMessage:nl" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Avans Youforce. Please contact <a href="mailto:hrm@avans.nl">Avans HRM</a> for details</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

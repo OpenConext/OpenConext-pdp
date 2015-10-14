@@ -32,15 +32,11 @@ App.Pages.Playground = React.createClass({
 
       var identityProviderId = _.isEmpty(policy.identityProviderIds) ? this.props.identityProviders[0].entityId : policy.identityProviderIds[0];
       this.setState({
-        //serviceProviderId: policy.serviceProviderId,
-        //identityProviderId: identityProviderId,
         attributes: policy.attributes
       });
       //Unfortunately we have to set the visual representation manually as the integration with select2 is done one-way
-      var serviceProviderNode = $('[data-select2selector-id="serviceProvider"]');
-      serviceProviderNode.val(policy.serviceProviderId).trigger("change");
-      var identityProviderNode = $('[data-select2selector-id="identityProvider"]');
-      identityProviderNode.val(identityProviderId).trigger("change");
+      $('[data-select2selector-id="serviceProvider"]').val(policy.serviceProviderId).trigger("change");
+      $('[data-select2selector-id="identityProvider"]').val(identityProviderId).trigger("change");
     }
   },
 

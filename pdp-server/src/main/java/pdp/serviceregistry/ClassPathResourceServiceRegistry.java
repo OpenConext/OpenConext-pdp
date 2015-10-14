@@ -43,21 +43,20 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected List<Resource> getIdpResources() {
-    ClassPathResource defaultIdps = new ClassPathResource("service-registry/saml20-idp-remote.json");
-    ClassPathResource environmentIdps = new ClassPathResource("service-registry/saml20-idp-remote." + environment + ".json");
+    return doGetResources("service-registry/saml20-idp-remote.json", "service-registry/saml20-idp-remote." + environment + ".json");
+  }
+
+  protected List<Resource> getSpResources() {
+    return doGetResources("service-registry/saml20-sp-remote.json", "service-registry/saml20-sp-remote." + environment + ".json");
+  }
+
+  private List<Resource> doGetResources(String defaultPath, String environmentPath) {
+    ClassPathResource defaultIdps = new ClassPathResource(defaultPath);
+    ClassPathResource environmentIdps = new ClassPathResource(environmentPath);
     if (environmentIdps.exists()) {
       return Arrays.asList(defaultIdps, environmentIdps);
     }
     return Arrays.asList(defaultIdps);
-  }
-
-  protected List<Resource> getSpResources() {
-    ClassPathResource defaultSps = new ClassPathResource("service-registry/saml20-sp-remote.json");
-    ClassPathResource environmentSps = new ClassPathResource("service-registry/saml20-sp-remote." + environment + ".json");
-    if (environmentSps.exists()) {
-      return Arrays.asList(defaultSps, environmentSps);
-    }
-    return Arrays.asList(defaultSps);
   }
 
   @Override

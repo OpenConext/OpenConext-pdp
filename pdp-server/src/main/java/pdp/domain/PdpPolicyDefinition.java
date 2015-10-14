@@ -43,6 +43,10 @@ public class PdpPolicyDefinition {
 
   private int numberOfViolations;
 
+  @NotNull
+  @Size(min = 1)
+  private String denyAdviceNl;
+
   public PdpPolicyDefinition() {
   }
 
@@ -146,6 +150,14 @@ public class PdpPolicyDefinition {
     this.numberOfViolations = numberOfViolations;
   }
 
+  public void setDenyAdviceNl(String denyAdviceNl) {
+    this.denyAdviceNl = denyAdviceNl;
+  }
+
+  public String getDenyAdviceNl() {
+    return denyAdviceNl;
+  }
+
   @JsonIgnore
   public List anyIdentityProviders() {
     return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.EMPTY_LIST : Arrays.asList("will-iterate-once");
@@ -169,7 +181,8 @@ public class PdpPolicyDefinition {
         Objects.equals(serviceProviderId, that.serviceProviderId) &&
         Objects.equals(identityProviderIds, that.identityProviderIds) &&
         Objects.equals(attributes, that.attributes) &&
-        Objects.equals(denyAdvice, that.denyAdvice) ;
+        Objects.equals(denyAdvice, that.denyAdvice) &&
+        Objects.equals(denyAdviceNl, that.denyAdviceNl)  ;
   }
 
   @Override
@@ -186,9 +199,11 @@ public class PdpPolicyDefinition {
         ", identityProviderIds=" + identityProviderIds +"\n" +
         ", attributes=" + attributes +"\n" +
         ", denyAdvice='" + denyAdvice + '\'' +"\n" +
+        ", denyAdviceNl='" + denyAdviceNl + '\'' +"\n" +
         ", denyRule=" + denyRule +"\n" +
         ", allAttributesMustMatch=" + allAttributesMustMatch +"\n" +
         '}';
   }
+
 
 }

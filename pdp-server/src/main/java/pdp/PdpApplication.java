@@ -13,9 +13,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
-import org.springframework.data.rest.webmvc.config.RepositoryRestMvcConfiguration;
-import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,7 +25,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
@@ -71,7 +67,7 @@ public class PdpApplication {
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-    if (environment.acceptsProfiles("dev", "test")) {
+    if (environment.acceptsProfiles("dev")) {
       new DevelopmentPrePolicyLoader(resourceLoader, policyBaseDir).loadPolicies(pdpPolicyRepository);
     }
 

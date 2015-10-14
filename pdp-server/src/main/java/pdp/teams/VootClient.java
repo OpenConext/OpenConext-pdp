@@ -23,7 +23,7 @@ public class VootClient {
   }
 
   public List<String> groups(String userUrn) {
-    List<Map<String, Object>> groups = vootService.getForObject(vootServiceUrl + "/internal/groups/{userUrn}", List.class, userUrn);
+    List<Map<String, Object>> groups = (List<Map<String, Object>>) vootService.getForObject(vootServiceUrl + "/internal/groups/{userUrn}", List.class, userUrn);
     LOG.debug("Retrieved groups: {}", groups);
     return groups.stream().map(entry -> (String) entry.get("id")).collect(toList());
   }

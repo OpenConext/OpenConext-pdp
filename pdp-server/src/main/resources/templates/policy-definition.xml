@@ -60,10 +60,16 @@
             <AdviceExpression AdviceId="urn:surfconext:xacml:advice:id:{{nameId}}"
                               AppliesTo="Deny">
                 <AttributeAssignmentExpression
-                        AttributeId="DenyMessage"
+                        AttributeId="DenyMessage:en"
                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdvice}}</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression
+                        AttributeId="DenyMessage:nl"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdviceNl}}</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
@@ -83,10 +89,16 @@
             <AdviceExpression AdviceId="urn:surfconext:xacml:advice:id:{{nameId}}"
                               AppliesTo="Deny">
                 <AttributeAssignmentExpression
-                        AttributeId="DenyMessage"
+                        AttributeId="DenyMessage:en"
                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdvice}}</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression
+                        AttributeId="DenyMessage:nl"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdviceNl}}</AttributeValue>
                 </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>

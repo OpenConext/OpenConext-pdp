@@ -23,6 +23,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
     definition.setName("Name Instelling");
     definition.setDescription("The long description");
     definition.setDenyAdvice("Sorry, no access");
+    definition.setDenyAdviceNl("Sorry, geen toegang");
     definition.setAttributes(Arrays.asList(
         new PdpAttribute("attr1", "value1"),
         new PdpAttribute("attr1", "value1a"),

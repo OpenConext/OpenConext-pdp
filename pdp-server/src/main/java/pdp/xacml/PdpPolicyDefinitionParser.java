@@ -1,15 +1,12 @@
 package pdp.xacml;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.pdp.policy.*;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -22,6 +19,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
+import static pdp.PdpApplication.singletonOptionalCollector;
 
 /*
  * Thread-safe
@@ -150,11 +148,21 @@ public class PdpPolicyDefinitionParser {
     AdviceExpression adviceExpression = adviceExpressions.get(0);
 
     List<AttributeAssignmentExpression> attributeAssignmentExpressions = iteratorToList(adviceExpression.getAttributeAssignmentExpressions());
-    if (CollectionUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() > 1) {
-      throw new PdpParseException("Expected 1 and only one attributeAssignmentExpressions in the Deny rule " + policyXml);
+    if (CollectionUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() != 2) {
+      throw new PdpParseException("Expected 2 and only two attributeAssignmentExpressions in the Deny rule " + policyXml);
     }
-    String denyAttributeValue = (String) ((AttributeValueExpression) attributeAssignmentExpressions.get(0).getExpression()).getAttributeValue().getValue();
-    definition.setDenyAdvice(denyAttributeValue);
+    String denyMesssageEN = extractDenyMessage(policyXml, attributeAssignmentExpressions, "en");
+    String denyMesssageNL = extractDenyMessage(policyXml, attributeAssignmentExpressions, "nl");
+    definition.setDenyAdvice(denyMesssageEN);
+    definition.setDenyAdviceNl(denyMesssageNL);
+  }
+
+  private String extractDenyMessage(String policyXml, List<AttributeAssignmentExpression> attributeAssignmentExpressions, String language) {
+    Optional<String> denyMessage = attributeAssignmentExpressions.stream().filter(ase -> ase.getAttributeId().getUri().toString().equals("DenyMessage:" + language)).map(ase -> (String) (((AttributeValueExpression) ase.getExpression()).getAttributeValue().getValue())).collect(singletonOptionalCollector());
+    if (!denyMessage.isPresent()) {
+      throw new PdpParseException("Expected 1 and only one AttributeAssignmentExpression in the Deny rule with AttributeId " + "DenyMessage:" + language + "  " + policyXml);
+    }
+    return denyMessage.get();
   }
 
   public static final Policy parsePolicy(String policyXml) {
