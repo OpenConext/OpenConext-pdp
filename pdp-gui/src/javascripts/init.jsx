@@ -2,6 +2,7 @@
 
 var App = {
   Components: {},
+  Help: {},
   Pages: {},
   Controllers: {},
   Utils: {},

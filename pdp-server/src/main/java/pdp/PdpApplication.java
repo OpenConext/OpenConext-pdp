@@ -63,7 +63,6 @@ public class PdpApplication {
   @Autowired
   public PDPEngineHolder pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
-      @Value("${policy.base.dir}") final String policyBaseDir,
       final Environment environment,
       final PdpPolicyRepository pdpPolicyRepository,
       final VootClient vootClient,
@@ -88,26 +87,26 @@ public class PdpApplication {
   }
 
   @Bean
-  @Profile({"performance"})
+  @Profile({"perf"})
   @Autowired
   public PolicyLoader performancePrePolicyLoader(ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository) {
     return new PerformancePrePolicyLoader(serviceRegistry, pdpPolicyRepository);
   }
 
   @Bean
-  @Profile({"test", "acc", "production"})
+  @Profile({"test", "acc", "prod"})
   public PolicyLoader noopPolicyLoader() {
     return new NoopPrePolicyLoader();
   }
 
   @Bean
-  @Profile("!production")
+  @Profile("!prod")
   public ServiceRegistry classPathResourceServiceRegistry(@Value("${spring.profiles.active}") String activeEnvironment) {
     return new ClassPathResourceServiceRegistry(activeEnvironment);
   }
 
   @Bean
-  @Profile("production")
+  @Profile("prod")
   public ServiceRegistry urlResourceServiceRegistry(@Value("${initial.delay.metadata.refresh.minutes}") int initialDelay,
                                                     @Value("${period.metadata.refresh.minutes}") int period) {
     return new UrlResourceServiceRegistry(initialDelay, period);

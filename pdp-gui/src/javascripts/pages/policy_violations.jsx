@@ -15,7 +15,7 @@ App.Pages.PolicyViolations = React.createClass({
       paging: false,
       language: {
         search: "_INPUT_",
-        searchPlaceholder: "Search violations..."
+        searchPlaceholder: I18n.t("violations.search")
       },
       columnDefs: [{
         targets: [3],
@@ -32,6 +32,8 @@ App.Pages.PolicyViolations = React.createClass({
     if (!$.fn.DataTable.isDataTable('#violations_table')) {
       this.initDataTable();
     }
+    window.scrollTo(0, 0);
+
   },
 
   componentDidMount: function () {
@@ -57,7 +59,7 @@ App.Pages.PolicyViolations = React.createClass({
     });
     if (!_.isEmpty(entities)) {
       var entity = entities[0];
-      name = _.isEmpty(entity.nameEn) ? entity.nameNl : entity.nameEn;
+      return I18n.entityName(entity);
     }
     return name;
   },
@@ -89,36 +91,14 @@ App.Pages.PolicyViolations = React.createClass({
           <section>
             <p className="status">{decision}</p>
 
-            <p className="details">{"Policy name: " + "'" + policyName + "'"}</p>
+            <p className="details">{I18n.t("violations.policyName") + "'" + policyName + "'"}</p>
           </section>
         </div>
     );
   },
 
   renderAboutPage: function () {
-    return (
-        <div className="about form-element">
-          <h1>What are policy violations?</h1>
-
-          <p>Every time a negative decision is sent back from the Policy Decision Point (PDP) to the Policy Enforcement
-            Point (PEP) this will
-            result in a forbidden access to the designated Service Provider.</p>
-
-          <h2>Negative decisions</h2>
-
-          <p>Every time negative decisions occur - e.g. policy violations from the PDP - they are stored. When you want
-            to look at the details of a policy violation click the view icon.</p>
-
-          <p>For every policy violation the following is stored:</p>
-          <ul>
-            <li>The original JSON request from the PEP</li>
-            <li>The JSON response from the PDP</li>
-            <li>A reference to the policy responsible for the decision</li>
-            <li>The decision - e.g. Deny or Indeterminate - from the PDP</li>
-          </ul>
-
-        </div>
-    );
+    return I18n.locale === "en" ? <App.Help.PolicyViotaltionsHelpEn/> : <App.Help.PolicyViotaltionsHelpNl/>;
   },
 
   renderViolationsDetail: function () {
@@ -229,9 +209,9 @@ App.Pages.PolicyViolations = React.createClass({
         <table className='table table-bordered box' id='violations_table'>
           <thead>
           <tr className='success'>
-            <th className='violation_providers'>Identity and Service Provider</th>
-            <th className='violation_decision'>Decision</th>
-            <th className='violation_policy_created'>Created</th>
+            <th className='violation_providers'>{I18n.t("violations.table.sp_idp")}</th>
+            <th className='violation_decision'>{I18n.t("violations.table.decision")}</th>
+            <th className='violation_policy_created'>{I18n.t("violations.table.created")}</th>
             <th className='violation_controls'></th>
           </tr>
           </thead>

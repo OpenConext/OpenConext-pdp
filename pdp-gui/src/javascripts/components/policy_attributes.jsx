@@ -93,7 +93,7 @@ App.Components.PolicyAttributes = React.createClass({
           <input type="text" name="value" className="form-input"
                  key={attrName + "-" + attribute.index}
                  value={attribute.value}
-                 placeholder="Attribute value..."
+                 placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
                  onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
           <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
             <i className="fa fa-remove"></i>
@@ -123,7 +123,7 @@ App.Components.PolicyAttributes = React.createClass({
             attrNames.map(function (attrName, index) {
               return (
                   <div key={attrName}>
-                    <p className="label">Attribute</p>
+                    <p className="label">{I18n.t("policy_attributes.attribute")}</p>
 
                     <div className="attribute-container">
                       <input type="text" name="attribute" className="form-input disabled" value={attrName}
@@ -133,7 +133,7 @@ App.Components.PolicyAttributes = React.createClass({
                       </a>
                     </div>
                     <div className="attribute-values">
-                      <p className="label">Values(s)</p>
+                      <p className="label">{I18n.t("policy_attributes.values")}</p>
                       {
                         grouped[attrName].map(function (attribute) {
                           return self.renderAttributeValue(attrName, attribute);
@@ -141,16 +141,16 @@ App.Components.PolicyAttributes = React.createClass({
                       }
                       <a href="#" onClick={self.handleNewAttributeValue(attrName)} className="plus">
                         <i className="fa fa-plus"></i>
-                        Add a new value...
+                        {I18n.t("policy_attributes.new_value")}
                       </a>
                     </div>
                   </div>
               );
             })
           }
-          <p className="label">Attribute</p>
+          <p className="label">{I18n.t("policy_attributes.attribute")}</p>
           <select value="" onChange={self.handleNewAttribute}>
-            <option value="" disabled="disabled">Add new attribute....</option>
+            <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
             {
               allowedAttributes.map(function (allowedAttribute) {
                 return (<option value={allowedAttribute.AttributeId}
@@ -160,7 +160,7 @@ App.Components.PolicyAttributes = React.createClass({
           </select>
         </div>);
 
-  },
+  }
 
 
 });

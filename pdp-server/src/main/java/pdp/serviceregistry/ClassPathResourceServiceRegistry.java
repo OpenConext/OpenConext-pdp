@@ -143,18 +143,18 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     return null;
   }
 
-  private String getMetaDateEntry(Map<String, Object> entry, String lang, String description1) {
+  private String getMetaDateEntry(Map<String, Object> entry, String lang, String attributeName) {
     lang = allowedLanguages.contains(lang.toLowerCase()) ? lang : "en";
-    String description = null;
-    Map<String, String> descriptions = (Map<String, String>) entry.get(description1);
-    if (descriptions != null) {
-      description = descriptions.get(lang.toLowerCase());
-      if (description == null) {
+    String attr = null;
+    Map<String, String> attributes = (Map<String, String>) entry.get(attributeName);
+    if (attributes != null) {
+      attr = attributes.get(lang.toLowerCase());
+      if (attr == null) {
         // try the other language
-        description = descriptions.get(lang.equalsIgnoreCase("nl") ? "en" : "nl");
+        attr = attributes.get(lang.equalsIgnoreCase("nl") ? "en" : "nl");
       }
     }
-    return description;
+    return attr;
   }
 
 }

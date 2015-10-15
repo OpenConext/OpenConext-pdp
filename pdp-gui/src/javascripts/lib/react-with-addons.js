@@ -16428,7 +16428,7 @@ var KeyboardEventInterface = {
 
     // The actual meaning of the value depends on the users' keyboard layout
     // which cannot be detected. Assuming that it is a US keyboard layout
-    // provides a surprisingly accurate mapping for US and European users.
+    // provides a surprisingly accurate mapping for US and Europea users.
     // Due to this, it is left to the user to implement at this time.
     if (event.type === 'keydown' || event.type === 'keyup') {
       return event.keyCode;

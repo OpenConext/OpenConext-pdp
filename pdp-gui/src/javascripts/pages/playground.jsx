@@ -19,7 +19,7 @@ App.Pages.Playground = React.createClass({
 
   parseEntities: function (entities) {
     var options = entities.map(function (entity) {
-      return {value: entity.entityId, display: entity.nameEn};
+      return {value: entity.entityId, display: I18n.entityName(entity)};
     });
     return options;
   },
@@ -132,10 +132,10 @@ App.Pages.Playground = React.createClass({
     return (
         <div>
           <div className={"form-element split " + workflow}>
-            <p className="label">Service Provider</p>
+            <p className="label">{I18n.t("policies.serviceProviderId")}</p>
             <App.Components.Select2Selector
                 defaultValue={pdpRequest.serviceProviderId}
-                placeholder={"Select the Service Provider - required"}
+                placeholder={I18n.t("policy_detail.sp_placeholder")}
                 select2selectorId={"serviceProvider"}
                 options={this.parseEntities(this.props.serviceProviders)}
                 handleChange={this.handleChangeServiceProvider}/>
@@ -151,11 +151,11 @@ App.Pages.Playground = React.createClass({
     return (
         <div>
           <div className={"form-element split " + workflow}>
-            <p className="label">Identity Provider</p>
+            <p className="label">{pdpRequest.identityProviderIds}</p>
 
             <App.Components.Select2Selector
                 defaultValue={pdpRequest.identityProviderId}
-                placeholder={"Select the Identity Provider - required"}
+                placeholder={I18n.t("playground.idp_placeholder")}
                 select2selectorId={"identityProvider"}
                 options={this.parseEntities(this.props.identityProviders)}
                 handleChange={this.handleChangeIdentityProvider}/>
@@ -189,10 +189,23 @@ App.Pages.Playground = React.createClass({
           <section>
             <p className="status">{decision}</p>
 
-            <p className="details">{"StatusCode: " + "'" + statusCode + "'"}</p>
+            <p className="details">{"Status code: " + "'" + statusCode + "'"}</p>
           </section>
         </div>
     );
+  },
+
+  renderAdventurous: function() {
+    var decisionRequest = this.state.decisionRequest;
+    var responseJSON = this.state.responseJSON;
+    if (decisionRequest && responseJSON) {
+      <div className="adventurous">
+        <i className="fa fa-location-arrow"></i>
+
+        <p>{I18n.t("playground.adventurous_title")}</p>
+        <em>{I18n.t("playground.adventurous_text")}</em>
+      </div>
+    }
   },
 
   renderActions: function (pdpRequest) {
@@ -200,15 +213,9 @@ App.Pages.Playground = React.createClass({
     return (
         <div className="form-element split no-pad-right">
           <a className={classNameSubmit + " large c-button"} href="#"
-             onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>Check policies again</a>
-          <a className="c-button cancel" href="#" onClick={this.clearForm}>Clear</a>
-
-          <div className="adventurous">
-            <i className="fa fa-location-arrow"></i>
-
-            <p>Feeling adventurous?</p>
-            <em>You can directly edit the raw source on the right.</em>
-          </div>
+             onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>{I18n.t("playground.check_policies")}</a>
+          <a className="c-button cancel" href="#" onClick={this.clearForm}>{I18n.t("playground.clear_policies")}</a>
+          {this.renderAdventurous()}
         </div>
     );
   },
@@ -230,7 +237,7 @@ App.Pages.Playground = React.createClass({
           <div>
             <div className="align-center">
               <a className="c-button full" href="#" onClick={this.replayRequest}>
-                <i className="fa fa-refresh"></i>Reload to apply changes made below</a>
+                <i className="fa fa-refresh"></i>{I18n.t("playground.reload_policy")}</a>
             </div>
             <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
                                        options={options} uniqueId="code_mirror_textarea_request"/>
@@ -286,50 +293,6 @@ App.Pages.Playground = React.createClass({
         </div>
     );
   },
-  renderAboutPage: function () {
-    return (
-        <div className="about form-element">
-          <h1>How to use the Policy Playground?</h1>
-
-          <p>With the SURFconext Policy Administration Point (PAP) you can maintain <a
-              href="https://en.wikipedia.org/wiki/XACML"
-              target="_blank">XACML</a> policies to configure fine-grained access rules for your Institution and the
-            connected Service Providers.</p>
-
-          <p>This playground can be used to test your policies. Newly created / updated or deleted polices are directly
-            testable.</p>
-
-          <h2>Service Provider (SP) and Identity Provider (IdP)</h2>
-
-          <p>Select the SP you have defined in your policy. Although you may have created the policy with no IdP or more
-            then one, it
-            is required to select one here. It's value will be ignored if you have chosen no IdP in your policy.</p>
-
-          <h2>Attributes</h2>
-
-          <p>The attributes you add and their values end up in the policy decision request that is issued to the Policy
-            Definition Point (PDP).
-            In this way you can test the multiple outcomes of enforcing your policies</p>
-
-          <p>Note that if you use the attribute <em>urn:collab:group:surfteams.nl</em> and you want to test a match then
-            you have to fill in the fully qualified team name inclusing the surfteams prefix.</p>
-
-          <h2>Results</h2>
-
-          <p>There are four possible results:</p>
-          <ul>
-            <li><span>Permit</span> - There was at least one applicable policy found and the Permit rule matched the
-              attributes in the request
-            </li>
-            <li><span>Deny</span> - There was at least one applicable policy found and the attributes did not match</li>
-            <li><span>Not Applicable</span> - No policy was found for the selected SP and IdP</li>
-            <li><span>Indeterminate</span> - A required attribute by the Policy was not present. This can only happen
-              with Deny rules.
-            </li>
-          </ul>
-          <p>When the outcome is Permit or Not Applicable you would have been granted access.</p>
-        </div>);
-  },
 
   renderRequestResponsePanel: function () {
     var decisionRequest = this.state.decisionRequest;
@@ -344,11 +307,7 @@ App.Pages.Playground = React.createClass({
           </div>
       );
     } else {
-      return (
-          <div className="l-split-right form-element-container box">
-            {this.renderAboutPage()}
-          </div>
-      );
+      return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
     }
   },
 
@@ -359,7 +318,7 @@ App.Pages.Playground = React.createClass({
         <div className="l-center mod-playground">
           <div className="l-split-left form-element-container box">
 
-            <p className="form-element playground-title">POLICY PLAYGROUND</p>
+            <p className="form-element title">POLICY PLAYGROUND</p>
             {this.renderPolicies()}
             {this.renderServiceProvider(pdpRequest)}
             {this.renderIdentityProvider(pdpRequest)}

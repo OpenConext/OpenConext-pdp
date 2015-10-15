@@ -32,7 +32,7 @@ App.Pages.PolicyDetail = React.createClass({
 
   parseEntities: function (entities) {
     var options = entities.map(function (entity) {
-      return {value: entity.entityId, display: entity.nameEn};
+      return {value: entity.entityId, display: I18n.entityName(entity)};
     });
     return options;
   },
@@ -47,7 +47,7 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   cancelForm: function () {
-    if (confirm("Are your sure you want to leave this page?")) {
+    if (confirm(I18n.t("policy_detail.confirmation"))) {
       page("/policies");
     }
   },
@@ -92,11 +92,11 @@ App.Pages.PolicyDetail = React.createClass({
     return (
         <div>
           <div className={"form-element "+workflow}>
-            <p className="label">Name</p>
+            <p className="label">{I18n.t("policy_detail.name")}</p>
             <input type="text" name="name" className="form-input" value={policy.name}
                    onChange={this.handleOnChangeName}/>
 
-            <p className="label">Description</p>
+            <p className="label">{I18n.t("policy_detail.description")}</p>
           <textarea cols="5" name="description" className="form-input" value={policy.description}
                     onChange={this.handleOnChangeDescription}/>
           </div>
@@ -109,13 +109,15 @@ App.Pages.PolicyDetail = React.createClass({
     var workflow = _.isEmpty(policy.denyAdvice) ? "failure" : "success";
     return (
         <div className={"form-element "+workflow}>
-          <p className="label before-em">Deny message</p>
-          <em>This is the message displayed to the user if access is denied based on this policy.</em>
+          <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
+          <em>{I18n.t("policy_detail.deny_message_info")}</em>
           <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
                  onChange={this.handleOnDenyAdvice}/>
-          <p className="label">Deny message in Dutch</p>
+
+          <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
           <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
                  onChange={this.handleOnDenyAdviceNl}/>
+
           <div className="bottom"></div>
         </div>
     );
@@ -127,10 +129,10 @@ App.Pages.PolicyDetail = React.createClass({
     return (
         <div>
           <div className={"form-element " + workflow}>
-            <p className="label">Service Provider</p>
+            <p className="label">{I18n.t("policies.serviceProviderId")}</p>
             <App.Components.Select2Selector
                 defaultValue={policy.serviceProviderId}
-                placeholder={"Select the Service Provider - required"}
+                placeholder={I18n.t("policy_detail.sp_placeholder")}
                 select2selectorId={"serviceProvider"}
                 options={this.parseEntities(this.props.serviceProviders)}
                 handleChange={this.handleChangeServiceProvider}/>
@@ -145,11 +147,11 @@ App.Pages.PolicyDetail = React.createClass({
     return (
         <div>
           <div className="form-element success">
-            <p className="label">Identity Providers</p>
+            <p className="label">{I18n.t("policies.identityProviderIds")}</p>
 
             <App.Components.Select2Selector
                 defaultValue={policy.identityProviderIds}
-                placeholder={"Select the Identity Providers - zero or more"}
+                placeholder={I18n.t("policy_detail.idps_placeholder")}
                 select2selectorId={"identityProvider"}
                 options={this.parseEntities(this.props.identityProviders)}
                 multiple={true}
@@ -164,12 +166,12 @@ App.Pages.PolicyDetail = React.createClass({
     var classNameSelected = policy.denyRule ? "checked" : "";
     var classNamePermit = policy.denyRule ? "not-selected" : "";
     var classNameDeny = !policy.denyRule ? "not-selected" : "";
-    var policyPermit = policy.denyRule ? "Deny" : "Permit";
+    var policyPermit = policy.denyRule ? I18n.t("policy_detail.deny") : I18n.t("policy_detail.permit");
     return (
         <div>
           <div className="form-element success">
             <div className="column-3 first">
-              <p className="label">Access</p>
+              <p className="label">{I18n.t("policy_detail.access")}</p>
 
               <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
                 <div className="inner"></div>
@@ -177,18 +179,12 @@ App.Pages.PolicyDetail = React.createClass({
               </div>
             </div>
             <div className="column-3 middle">
-              <p className={"info " + classNamePermit}>Permit</p>
-              <em className={classNamePermit}>Permit polices enforce that a only a successful match of the attributes
-                defined will result in a
-                Permit. No match will result in a Deny.
-              </em>
+              <p className={"info " + classNamePermit}>{I18n.t("policy_detail.permit")}</p>
+              <em className={classNamePermit}>{I18n.t("policy_detail.permit_info")}</em>
             </div>
             <div className="column-3">
-              <p className={"info "+classNameDeny}>Deny</p>
-              <em className={classNameDeny}>Deny polices are less common to use. If the attributes in the policy match
-                those of the person trying
-                to login then this will result in a Deny. No match will result in a Permit.
-              </em>
+              <p className={"info "+classNameDeny}>{I18n.t("policy_detail.deny")}</p>
+              <em className={classNameDeny}>{I18n.t("policy_detail.deny_info")}</em>
             </div>
           </div>
           <div className="bottom"></div>
@@ -243,28 +239,23 @@ App.Pages.PolicyDetail = React.createClass({
         <div>
           <div className="form-element success">
             <div className="column-3 first">
-              <p className="label">Rule</p>
+              <p className="label">{I18n.t("policy_detail.rule")}</p>
               <ul className="logical-rule">
                 {[
-                  this.renderRule("AND", allAttributesMustMatch),
-                  this.renderRule("OR", !allAttributesMustMatch)
+                  this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
+                  this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
                 ]}
               </ul>
             </div>
             <div className="column-3 middle">
-              <p className={"info "+classNameAnd}>AND</p>
-              <em className={classNameAnd}>Policies with a logical AND rule enforce that all attributes defined must
-                match those of the person
-                trying to login.</em>
+              <p className={"info "+classNameAnd}>{I18n.t("policy_detail.rule_and")}</p>
+              <em className={classNameAnd}>{I18n.t("policy_detail.rule_and_info")}</em>
             </div>
             <div className="column-3">
-              <p className={"info "+classNameOr}>OR</p>
-              <em className={classNameOr}>Polices defined with a logical OR only require one of the attributes to match
-                the attributes of the
-                person requesting access.</em>
+              <p className={"info "+classNameOr}>{I18n.t("policy_detail.rule_or")}</p>
+              <em className={classNameOr}>{I18n.t("policy_detail.rule_or_info")}</em>
             </div>
-            <em className="note"><sup>*</sup> Note that attribute values with the same attribute name always be
-              evaluated with the logical OR.</em>
+            <em className="note"><sup>*</sup>{I18n.t("policy_detail.rule_info_add")} </em>
             {this.renderDenyRuleNote()}
           </div>
           <div className="bottom"></div>
@@ -272,9 +263,9 @@ App.Pages.PolicyDetail = React.createClass({
     );
   },
 
-  renderDenyRuleNote: function() {
+  renderDenyRuleNote: function () {
     if (this.state.denyRule) {
-      return (<em><sup>*</sup> Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.</em>);
+      return (<em><sup>*</sup> {I18n.t("policy_detail.rule_info_add_2")}</em>);
     }
   },
 
@@ -298,8 +289,9 @@ App.Pages.PolicyDetail = React.createClass({
     var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
     return (
         <div className="form-element">
-          <a className={classNameSubmit + " submit c-button"} href="#" onClick={this.submitForm}>Submit</a>
-          <a className="c-button cancel" href="#" onClick={this.cancelForm}>Cancel</a>
+          <a className={classNameSubmit + " submit c-button"} href="#"
+             onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
+          <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
         </div>
     );
   }
@@ -307,12 +299,11 @@ App.Pages.PolicyDetail = React.createClass({
 
   render: function () {
     var policy = this.state;
-    var title = policy.id ? "Update policy" : "Create new policy";
+    var title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
     return (
         <div className="l-center mod-policy-detail">
           {this.renderFlash()}
-          <div className="l-middle form-element-container box">
-
+          <div className="l-split-left form-element-container box">
             <p className="form-element form-title">{title}</p>
             {this.renderNameDescription(policy)}
             {this.renderDenyPermitRule(policy)}
@@ -323,9 +314,17 @@ App.Pages.PolicyDetail = React.createClass({
             {this.renderDenyAdvice(policy)}
             {this.renderActions(policy)}
           </div>
+          <div className="l-split-right form-element-container box">
+            {this.renderAboutPage()}
+          </div>
         </div>
     )
+  },
+
+  renderAboutPage: function () {
+    return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
   }
+
 
 });
 

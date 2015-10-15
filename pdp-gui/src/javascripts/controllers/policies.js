@@ -78,13 +78,13 @@ App.Controllers.Policies = {
   saveOrUpdatePolicy: function (policy, failureCallback) {
     var type = policy.id ? "PUT" : "POST";
     var json = JSON.stringify(policy);
-    var action = policy.id ? "updated" : "created";
+    var action = policy.id ? I18n.t("policies.flash_updated") : I18n.t("policies.flash_created");
     var jqxhr = $.ajax({
       url: App.apiUrl("/internal/policies"),
       type: type,
       data: json
     }).done(function () {
-      App.setFlash("Policy '" + policy.name + "' was successfully " + action);
+      App.setFlash(I18n.t("policies.flash", {policyName: policy.name, action:action}));
       page("/policies");
     }).fail(function () {
       failureCallback(jqxhr);
@@ -96,7 +96,7 @@ App.Controllers.Policies = {
       url: App.apiUrl("/internal/policies/:id", {id: policy.id}),
       type: 'DELETE'
     }).done(function () {
-      App.setFlash("Policy '" + policy.name + "' was successfully deleted");
+      App.setFlash(I18n.t("policies.flash", {policyName: policy.name, action: I18n.t("policies.flash_deleted")}));
       page("/policies");
     });
   }

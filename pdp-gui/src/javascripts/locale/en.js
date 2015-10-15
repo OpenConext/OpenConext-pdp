@@ -4,6 +4,21 @@
 // ie "Hello {{name}}" Do not add any spaces around the variable name.
 // Provide the values as: I18n.t("key", {name: "John Doe"})
 
+I18n.entityName = function (entity) {
+  var name = entity["name" + (I18n.locale === "en" ? "En" : "Nl")];
+  if (_.isEmpty(name)) {
+    name = entity["name" + (I18n.locale === "en" ? "Nl" : "En")];
+  }
+  return name;
+};
+I18n.entityDescription = function (entity) {
+  var description = entity["description" + (I18n.locale === "en" ? "En" : "Nl")];
+  if (_.isEmpty(description)) {
+    description = entity["description" + (I18n.locale === "en" ? "Nl" : "En")];
+  }
+  return description;
+
+};
 
 I18n.translations.en = {
   code: "EN",
@@ -34,12 +49,12 @@ I18n.translations.en = {
 
   profile: {
     PAP_CLIENT: "Institution admin",
-    PAP_ADMIN: "SURFnet admin",
+    PAP_ADMIN: "SURFnet admin"
   },
 
   navigation: {
     policies: "Policies",
-    violations: "Violations",
+    violations: "Unauthorized logins",
     playground: "Playground",
     about: "About",
     my_idp: "My institute",
@@ -50,17 +65,72 @@ I18n.translations.en = {
     name: "Name",
     description: "Description",
     serviceProviderId: "Service",
-    identityProviderIds: "Institution",
-    violations: "Bad logins",
-    search: "Search policies..."
+    identityProviderIds: "Institution(s)",
+    violations: "Unauthorized logins",
+    search: "Search policies...",
+    flash: "Policy '{{policyName}}' was successfully {{action}}",
+    flash_updated: "updated",
+    flash_created: "created",
+    flash_deleted: "deleted"
+  },
+
+  policy_detail: {
+    update_policy: "Update policy" ,
+    create_policy: "Create new policy",
+    confirmation: "Are your sure you want to leave this page?",
+    name: "Name",
+    description: "Description",
+    access: "Access",
+    permit: "Permit",
+    permit_info: "Permit polices enforce that a only a successful match of the attributes defined will result in a Permit. No match will result in a Deny.",
+    deny: "Deny",
+    deny_info: "Deny polices are less common to use. If the attributes in the policy match those of the person trying to login then this will result in a Deny. No match will result in a Permit.",
+    deny_message: "Deny message",
+    deny_message_info: "This is the message displayed to the user if access is denied based on this policy.",
+    deny_message_nl: "Deny message in Dutch",
+    sp_placeholder: "Select the Service Provider - required",
+    idps_placeholder: "Select the Identity Providers - zero or more",
+    rule: "Rule",
+    rule_and: "AND",
+    rule_and_info: "Policies with a logical AND rule enforce that all attributes defined must match those of the person trying to login.",
+    rule_or: "OR",
+    rule_or_info: "Polices defined with a logical OR only require one of the attributes to match the attributes of the person requesting access.",
+    rule_info_add: " Note that attribute values with the same attribute name always be evaluated with the logical OR.",
+    rule_info_add_2: "Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.",
+    submit: "Submit",
+    cancel: "Cancel"
+  },
+
+  violations: {
+    search: "Search unauthorized logins...",
+    policyName: "Policy name: ",
+    table: {
+      sp_idp: "Institution and Service",
+      decision: "Decision",
+      created: "Date"
+    }
   },
 
   playground: {
-    policy:"Policy",
-    policy_info:"Optional - the selected policy is only used to set defaults for the Service Provider, Identity Provider and the attributes",
-    policy_search:"Select the Policy"
+    policy: "Policy",
+    policy_info: "Optional - the selected policy is only used to set defaults for the Service Provider, Identity Provider and the attributes",
+    policy_search: "Select the Policy",
+    idp_placeholder: "Select the institution - required",
+    adventurous_title: "Feeling adventurous?",
+    adventurous_text: "You can directly edit the raw source on the right.",
+    check_policies: "Check policies again",
+    clear_policies: "Clear",
+    reload_policy: "Reload to apply changes made below"
+
   },
 
+  policy_attributes: {
+    attribute_value_placeholder:"Attribute value...",
+    attribute: "Attribute",
+    values: "Values(s)",
+    new_value: "Add a new value...",
+    new_attribute: "Add new attribute...."
+  },
   contact: {
     email: "Service support email"
   },
@@ -86,4 +156,4 @@ I18n.translations.en = {
     contact_html: "<a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>"
   }
 
- };
+};

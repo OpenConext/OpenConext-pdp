@@ -15,7 +15,7 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry {
 
   public UrlResourceServiceRegistry(int initialDelay, int period) {
-    super("production");
+    super("prod");
     newScheduledThreadPool(1).scheduleAtFixedRate(() ->
         this.initializeMetadata(), initialDelay, period, TimeUnit.MINUTES);
   }

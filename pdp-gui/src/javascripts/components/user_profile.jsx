@@ -52,7 +52,7 @@ App.Components.UserProfile = React.createClass({
   renderItem: function (entity) {
     return (
         <li key={entity.entityId} className="user-profile-entity">
-          <span>{entity.nameEn}</span>
+          <span>{I18n.entityName(entity)}</span>
         </li>
     );
   }
