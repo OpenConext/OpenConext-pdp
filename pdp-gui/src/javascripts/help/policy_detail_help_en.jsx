@@ -3,7 +3,7 @@
 App.Help.PolicyDetailHelpEn = React.createClass({
   render: function () {
     return (
-        <div className="about form-element">
+        <div className="form-element about">
           <h1>How to create Policies?</h1>
 
           <p>Access policies define when a user is allowed to login to a Service based on the user attributes provided

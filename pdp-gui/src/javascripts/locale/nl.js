@@ -85,7 +85,6 @@ I18n.translations.nl = {
       created: "Datum"
 
     }
-
   },
 
   playground: {
@@ -95,7 +94,7 @@ I18n.translations.nl = {
     idp_placeholder: "Selecteer de instelling - verplicht",
     adventurous_title: "Code hacken?",
     adventurous_text: "Je kan direct de code veranderen in het rechter response scherm.",
-    check_policies: "Check autorisatie regels opnieuw",
+    check_policies: "Nieuw autorisatie verzoek",
     clear_policies: "Clear",
     reload_policy: "Voer een nieuwe check uit met onderstaande wijzigingen"
   },

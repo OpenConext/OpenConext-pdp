@@ -3,7 +3,7 @@
 App.Help.PolicyViotaltionsHelpEn = React.createClass({
   render: function () {
     return (
-        <div className="about form-element">
+        <div className="form-element about">
           <h1>What are unauthorized logins?</h1>
 
           <p>Every time a negative decision is sent back from the Policy Decision Point (PDP) to the Policy

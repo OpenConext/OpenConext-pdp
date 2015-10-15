@@ -3,7 +3,7 @@
 App.Help.PolicyViotaltionsHelpNl = React.createClass({
   render: function () {
     return (
-        <div className="about form-element">
+        <div className="form-element about">
           <h1>Wat zijn ongeautoriseerde logins?</h1>
 
           <p>Elke keer als er een negatief besluit vanuit de Policy Decision Point (PDP) naar het Policy Enforcement

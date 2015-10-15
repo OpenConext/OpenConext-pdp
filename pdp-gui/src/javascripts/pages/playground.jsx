@@ -195,7 +195,7 @@ App.Pages.Playground = React.createClass({
     );
   },
 
-  renderAdventurous: function() {
+  renderAdventurous: function () {
     var decisionRequest = this.state.decisionRequest;
     var responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
@@ -307,10 +307,15 @@ App.Pages.Playground = React.createClass({
           </div>
       );
     } else {
-      return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
+      return (<div className="l-split-right form-element-container box">
+        {this.renderAboutPage()}
+      </div>)
     }
   },
 
+  renderAboutPage: function () {
+    return I18n.locale === "en" ? <App.Help.PolicyPlaygroundHelpEn/> : <App.Help.PolicyPlaygroundHelpNl/>;
+  },
 
   render: function () {
     var pdpRequest = this.state;

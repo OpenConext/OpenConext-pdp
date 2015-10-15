@@ -3,7 +3,7 @@
 App.Help.PolicyDetailHelpNl = React.createClass({
   render: function () {
     return (
-        <div className="about form-element">
+        <div className="form-element about">
           <h1>Hoe maak je autorisatie regels?</h1>
 
           <p>Autorisatie regels definiëren of een gebruiker toegang heeft tot een bepaalde dienst. De keuze wordt
