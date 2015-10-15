@@ -3,6 +3,7 @@ package pdp.xacml;
 import org.springframework.core.io.ByteArrayResource;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.EntityMetaData;
+import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
@@ -29,22 +30,30 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
   @Override
   public List<PdpPolicy> getPolicies() {
     // for every ServiceProvider create a policy
-    String uuid = UUID.randomUUID().toString();
-    return serviceRegistry.serviceProviders().stream().map(sp -> pdpPolicyDefinition(sp, uuid))
-        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), "Performance_Policy_" + uuid))
+    return serviceRegistry.serviceProviders().stream().map(sp -> pdpPolicyDefinition(sp, UUID.randomUUID().toString()))
+        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName()))
         .collect(toList());
   }
 
   private PdpPolicyDefinition pdpPolicyDefinition(EntityMetaData sp, String uuid) {
-    //TODO random values
     PdpPolicyDefinition definition = new PdpPolicyDefinition();
+    definition.setName("Performance_Policy_" + uuid);
+    definition.setDescription("Performance Policy " + uuid);
+    definition.setServiceProviderId(sp.getEntityId());
+    definition.setServiceProviderName(sp.getNameEn());
     definition.setAllAttributesMustMatch(true);
     definition.setDenyAdvice("Not authorized");
     definition.setDenyAdviceNl("Niet geautoriseerd");
-    definition.setDenyRule(true);
-    definition.setDescription("Performance Policy "+ uuid);
-    String entityId = serviceRegistry.identityProviders().get(random.nextInt(serviceRegistry.identityProviders().size())).getEntityId();
-    definition.setIdentityProviderIds(Arrays.asList(entityId));
+    definition.setDenyRule(false);
+    definition.setDescription("Performance Policy " + uuid);
+    EntityMetaData idp = serviceRegistry.identityProviders().get(random.nextInt(serviceRegistry.identityProviders().size()));
+    definition.setIdentityProviderIds(Arrays.asList(idp.getEntityId()));
+    definition.setIdentityProviderNames(Arrays.asList(idp.getNameEn()));
+    List<PdpAttribute> attributes = Arrays.asList(
+        new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "teacher"),
+        new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "staff"),
+        new PdpAttribute("urn:mace:dir:attribute-def:eduPersonEntitlement", "urn:mace:example.org:demoservice:demo-admin"));
+    definition.setAttributes(attributes);
     return definition;
   }
 

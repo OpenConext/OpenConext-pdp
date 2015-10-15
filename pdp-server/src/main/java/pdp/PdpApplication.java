@@ -150,7 +150,7 @@ public class PdpApplication {
     private ServiceRegistry serviceRegistry;
 
     @Bean
-    @Profile("dev")
+    @Profile({"dev","perf"})
     public FilterRegistrationBean mockShibbolethFilter() {
       FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
       filterRegistrationBean.setFilter(new MockShibbolethFilter());

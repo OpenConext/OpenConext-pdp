@@ -71,7 +71,10 @@ I18n.translations.en = {
     flash: "Policy '{{policyName}}' was successfully {{action}}",
     flash_updated: "updated",
     flash_created: "created",
-    flash_deleted: "deleted"
+    flash_deleted: "deleted",
+    confirmation: "Are your sure you want to remove policy {{policyName}}?",
+    edit: "Edit",
+    delete: "Delete"
   },
 
   policy_detail: {

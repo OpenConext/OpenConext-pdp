@@ -46,7 +46,10 @@ I18n.translations.nl = {
     flash: "Autorisatie regel '{{policyName}}' is succesvol {{action}}",
     flash_updated: "bijgewerkt",
     flash_created: "aangemaakt",
-    flash_deleted: "verwijderd"
+    flash_deleted: "verwijderd",
+    confirmation: "Weet je zeker dat je autorisatie regel {{policyName}} wilt verwijderen?",
+    edit: "Bewerk",
+    delete: "Verwijder"
   },
 
   policy_detail: {

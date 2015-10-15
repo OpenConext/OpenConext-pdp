@@ -100,6 +100,10 @@ var App = {
     }
   },
 
+  determineLanguage: function() {
+
+  },
+
   ajaxError: function (event, xhr) {
     if (xhr.isConsumed) {
       return;

@@ -35,7 +35,6 @@ App.Pages.PolicyOverview = React.createClass({
     if (!$.fn.DataTable.isDataTable('#policies_table')) {
       this.initDataTable();
     }
-
   },
 
   componentDidMount: function () {
@@ -50,12 +49,11 @@ App.Pages.PolicyOverview = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (confirm("Are your sure you want to remove policy '" + policy.name + "'?")) {
+      if (confirm(I18n.t("polices.confirmation",{policyName: policy.name}))) {
         App.Controllers.Policies.deletePolicy(policy);
       }
     }
-  }
-  ,
+  },
 
   handleShowPolicyDetail: function (policy) {
     return function (e) {
@@ -107,10 +105,10 @@ App.Pages.PolicyOverview = React.createClass({
             <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
-                 data-tooltip="Edit">
+                 data-tooltip={I18n.t("policies.edit")}>
                 <i className="fa fa-edit"></i>
               </a>
-              <a href="#" data-tooltip="Delete" onClick={this.handleDeletePolicyDetail(policy)}><i
+              <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}><i
                   className="fa fa-remove"></i></a></td>
           </tr>)
     }.bind(this));
