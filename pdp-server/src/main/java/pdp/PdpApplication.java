@@ -25,6 +25,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
@@ -36,6 +40,8 @@ import pdp.shibboleth.mock.MockShibbolethFilter;
 import pdp.teams.VootClient;
 import pdp.xacml.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +117,24 @@ public class PdpApplication {
   public PolicyViolationRetentionPeriodCleaner policyViolationRetentionPeriodCleaner(@Value("${policy.violation.retention.period.days}") int retentionPeriodDays,
                                                                                      PdpPolicyViolationRepository pdpPolicyViolationRepository) {
     return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository);
+  }
+
+  @Configuration
+  public static class WebMvcConfig extends WebMvcConfigurerAdapter {
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+      super.addInterceptors(registry);
+      registry.addInterceptor(new HandlerInterceptorAdapter() {
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+            throws Exception {
+          // add this header as an indication to the JS-client that this is a regular, non-session-expired response.
+          response.addHeader("X-SESSION-ALIVE", "true");
+          return true;
+        }
+      });
+    }
   }
 
   @Configuration

@@ -15,6 +15,7 @@ var App = {
     $(document).ajaxError(this.ajaxError.bind(this));
     $(document).ajaxStart(this.showSpinner.bind(this));
     $(document).ajaxStop(this.hideSpinner.bind(this));
+    $(document).ajaxComplete(this.checkSessionExpired.bind(this));
 
     $(document).ajaxSend(function (event, jqxhr, settings) {
       jqxhr.setRequestHeader("Content-Type", "application/json");
@@ -86,6 +87,14 @@ var App = {
     }
   },
 
+  checkSessionExpired: function (event, xhr) {
+    //do not handle anything other then 200 and 302 as the others are handled by ajaxError
+    if (xhr.getResponseHeader("X-SESSION-ALIVE") !== "true" && (xhr.status === 0 || xhr.status === 200 || xhr.status === 302)) {
+      var newLoc = window.location.protocol + "//" + window.location.host + "/policies";
+      window.location.href = newLoc;
+    }
+  },
+
   ajaxError: function (event, xhr) {
     if (xhr.isConsumed) {
       return;
@@ -100,11 +109,11 @@ var App = {
     }
   },
 
-  setFlash: function(message){
+  setFlash: function (message) {
     this.store.flash = message;
   },
 
-  getFlash: function(){
+  getFlash: function () {
     var message = this.store.flash;
     this.store.flash = undefined;
     return message;
