@@ -30,6 +30,7 @@ App.Components.LanguageSelector = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
+      Cookies.set("lang", locale, {expires: 356, secure: document.location.protocol.endsWith("https")});
       I18n.locale = locale;
       var newSearch = App.Utils.QueryParameter.replaceQueryParameter("lang", locale);
       window.location.search = newSearch;

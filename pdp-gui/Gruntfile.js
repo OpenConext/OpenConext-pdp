@@ -9,7 +9,7 @@ module.exports = function (grunt) {
       'src/javascripts/lib/d3.js',
       'src/javascripts/lib/rickshaw.js',
       'src/javascripts/lib/datatables.min.js',
-      'src/javascripts/lib/jquery.cookie.js',
+      'src/javascripts/lib/js-cookie.js',
       'src/javascripts/lib/lodash.js',
       'src/javascripts/lib/codemirror.js',
       'src/javascripts/lib/javascript.js',

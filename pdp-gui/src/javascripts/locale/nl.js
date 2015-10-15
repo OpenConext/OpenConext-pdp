@@ -83,7 +83,6 @@ I18n.translations.nl = {
       sp_idp: "Instelling en Dienst",
       decision: "Besluit",
       created: "Datum"
-
     }
   },
 

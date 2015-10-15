@@ -12,7 +12,11 @@ var App = {
 
   initialize: function () {
     var parameterByName = App.Utils.QueryParameter.getParameterByName("lang");
+    if (_.isEmpty(parameterByName)) {
+      parameterByName = Cookies.get("lang");
+    }
     I18n.locale = parameterByName ? parameterByName : "en";
+
     $(document).ajaxError(this.ajaxError.bind(this));
     $(document).ajaxStart(this.showSpinner.bind(this));
     $(document).ajaxStop(this.hideSpinner.bind(this));
