@@ -61,7 +61,7 @@ public class PdpEngineTest {
   private MultiValueMap<String, String> headers;
   private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
   private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
   @Before
   public void before() throws IOException {

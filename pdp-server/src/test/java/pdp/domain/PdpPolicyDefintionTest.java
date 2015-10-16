@@ -6,6 +6,7 @@ import pdp.AbstractXacmlTest;
 import pdp.PolicyTemplateEngine;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.policies.DevelopmentPrePolicyLoader;
+import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.policies.PolicyLoader;
 
@@ -19,7 +20,7 @@ public class PdpPolicyDefintionTest extends AbstractXacmlTest {
 
   private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
 
   @Test

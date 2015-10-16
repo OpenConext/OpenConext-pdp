@@ -85,15 +85,15 @@ public class PdpApplication {
   @Bean
   @Profile({"dev"})
   @Autowired
-  public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") final String policyBaseDir, final PdpPolicyRepository pdpPolicyRepository) {
-    return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository);
+  public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") final String policyBaseDir, final PdpPolicyRepository pdpPolicyRepository, final PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
   }
 
   @Bean
   @Profile({"perf"})
   @Autowired
-  public PolicyLoader performancePrePolicyLoader(ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository) {
-    return new PerformancePrePolicyLoader(serviceRegistry, pdpPolicyRepository);
+  public PolicyLoader performancePrePolicyLoader(ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository, final PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    return new PerformancePrePolicyLoader(serviceRegistry, pdpPolicyRepository, pdpPolicyViolationRepository);
   }
 
   @Bean

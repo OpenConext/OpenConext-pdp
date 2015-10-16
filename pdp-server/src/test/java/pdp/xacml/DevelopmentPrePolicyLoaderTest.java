@@ -7,6 +7,7 @@ import pdp.domain.PdpPolicy;
 import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.repositories.PdpPolicyViolationRepository;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.mock;
 
 public class DevelopmentPrePolicyLoaderTest {
 
-  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class));
+  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
   private Pattern policyIdPattern = Pattern.compile("PolicyId=\"(.*?)\"");
 

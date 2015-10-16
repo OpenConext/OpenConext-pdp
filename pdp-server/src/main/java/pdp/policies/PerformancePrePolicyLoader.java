@@ -7,6 +7,7 @@ import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
 
 import java.util.Arrays;
@@ -22,8 +23,8 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
   private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
   private Random random = new Random();
 
-  public PerformancePrePolicyLoader(ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository) {
-    super(new ByteArrayResource("noop".getBytes()), pdpPolicyRepository);
+  public PerformancePrePolicyLoader(ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    super(new ByteArrayResource("noop".getBytes()), pdpPolicyRepository, pdpPolicyViolationRepository);
     this.serviceRegistry = serviceRegistry;
   }
 

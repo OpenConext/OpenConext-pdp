@@ -8,6 +8,7 @@ import org.springframework.util.Assert;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.repositories.PdpPolicyViolationRepository;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,9 +29,11 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
 
   private final Resource baseDirResource;
   private final PdpPolicyRepository pdpPolicyRepository;
+  private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
-  public DevelopmentPrePolicyLoader(Resource baseDirResource, PdpPolicyRepository pdpPolicyRepository) {
+  public DevelopmentPrePolicyLoader(Resource baseDirResource, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
     this.pdpPolicyRepository = pdpPolicyRepository;
+    this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
     this.baseDirResource = baseDirResource;
     Assert.isTrue(this.baseDirResource.exists());
   }
@@ -49,6 +52,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
 
   @Override
   public void loadPolicies() {
+    pdpPolicyViolationRepository.deleteAll();
     pdpPolicyRepository.deleteAll();
     List<PdpPolicy> policies = getPolicies();
     policies.forEach(policy -> {
