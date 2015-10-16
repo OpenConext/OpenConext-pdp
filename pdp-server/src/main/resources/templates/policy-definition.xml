@@ -17,7 +17,7 @@
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                            MustBePresent="false"
+                            MustBePresent="true"
                             />
                 </Match>
             </AllOf>
@@ -33,7 +33,7 @@
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
                             Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                            MustBePresent="false"
+                            MustBePresent="true"
                             />
                 </Match>
             </AllOf>

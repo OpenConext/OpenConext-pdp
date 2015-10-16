@@ -61,16 +61,20 @@ App.Pages.Playground = React.createClass({
   },
 
   replayRequest: function () {
-    var decisionRequest = JSON.parse(this.state.decisionRequestJson);
-    App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
+    App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
+        function (jqxhr) {
           this.setState({
             responseJSON: jqxhr.responseJSON,
             tab: "response"
-          })
+          });
         }.bind(this),
-        function (jgxhr) {
+        function (jqxhr) {
           jqxhr.isConsumed = true;
-          console.log(jgxhr.responseJSON.details);
+          this.setState({
+            //why not JSON
+            responseJSON: jqxhr.responseJSON,
+            tab: "response"
+          });
         }.bind(this));
   },
 
@@ -90,8 +94,8 @@ App.Pages.Playground = React.createClass({
         return {AttributeId: attr.name, Value: attr.value};
       });
       decisionRequest.Request.AccessSubject.Attribute = attributes;
-
-      App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
+      var json = JSON.stringify(decisionRequest);
+      App.Controllers.Playground.postPdpRequest(json, function (jqxhr) {
         this.setState({
           decisionRequest: decisionRequest,
           decisionRequestJson: JSON.stringify(decisionRequest, null, 3),
@@ -185,10 +189,17 @@ App.Pages.Playground = React.createClass({
   },
 
   renderStatus: function (responseJSON) {
-    var response = responseJSON.Response[0];
-    var decision = response.Decision;
-    var statusCode = response.Status.StatusCode.Value;
-    var status = App.Controllers.PolicyViolations.determineStatus(decision);
+    var decision, statusCode, status;
+    if (responseJSON.Response) {
+       var response = responseJSON.Response[0];
+       decision = response.Decision;
+       statusCode = response.Status.StatusCode.Value;
+       status = App.Controllers.PolicyViolations.determineStatus(decision);
+    } else {
+      decision = "Error";
+      statusCode = "Unexpected error occured";
+      status = "remove";
+    }
     return (
         <div className={"response-status " + status}>
           <i className={"fa fa-"+status + " " + status}></i>

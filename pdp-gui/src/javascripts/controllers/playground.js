@@ -50,8 +50,7 @@ App.Controllers.Playground = {
       ));
   },
 
-  postPdpRequest: function (pdpRequest, callBack, failureCallback) {
-    var json = JSON.stringify(pdpRequest);
+  postPdpRequest: function (json, callBack, failureCallback) {
     var jqxhr = $.ajax({
       url: App.apiUrl("/internal/decide/policy"),
       type: "POST",

@@ -103,10 +103,6 @@ public class PdpController {
 
     Request request = JSONRequest.load(payload);
 
-    if (!request.getReturnPolicyIdList()) {
-      request = createReturnPolicyIdListRequest(request);
-    }
-
     Response pdpResponse;
     try {
       pdpEngineLock.readLock().lock();
@@ -119,13 +115,6 @@ public class PdpController {
 
     reportPolicyViolation(pdpResponse, response, payload);
     return response;
-  }
-
-  private Request createReturnPolicyIdListRequest(Request originalRequest) {
-    StdMutableRequest request = new StdMutableRequest();
-    originalRequest.getRequestAttributes().stream().forEach(request::add);
-    request.setReturnPolicyIdList(true);
-    return new StdRequest(originalRequest);
   }
 
   @RequestMapping(method = GET, value = "/internal/policies")
