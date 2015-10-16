@@ -1,8 +1,6 @@
-package pdp.xacml;
+package pdp.policies;
 
-import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
-import pdp.repositories.PdpPolicyRepository;
 
 import java.util.Collections;
 import java.util.List;

@@ -2,13 +2,12 @@ package pdp.domain;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.DefaultResourceLoader;
 import pdp.AbstractXacmlTest;
 import pdp.PolicyTemplateEngine;
 import pdp.repositories.PdpPolicyRepository;
-import pdp.xacml.DevelopmentPrePolicyLoader;
+import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
-import pdp.xacml.PolicyLoader;
+import pdp.policies.PolicyLoader;
 
 import java.util.List;
 

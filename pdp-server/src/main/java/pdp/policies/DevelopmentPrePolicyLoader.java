@@ -1,10 +1,9 @@
-package pdp.xacml;
+package pdp.policies;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;

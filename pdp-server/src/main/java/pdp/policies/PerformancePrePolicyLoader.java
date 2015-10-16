@@ -1,4 +1,4 @@
-package pdp.xacml;
+package pdp.policies;
 
 import org.springframework.core.io.ByteArrayResource;
 import pdp.PolicyTemplateEngine;
@@ -40,15 +40,11 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
     definition.setName("Performance_Policy_" + uuid);
     definition.setDescription("Performance Policy " + uuid);
     definition.setServiceProviderId(sp.getEntityId());
-    definition.setServiceProviderName(sp.getNameEn());
-    definition.setAllAttributesMustMatch(true);
     definition.setDenyAdvice("Not authorized");
     definition.setDenyAdviceNl("Niet geautoriseerd");
-    definition.setDenyRule(false);
     definition.setDescription("Performance Policy " + uuid);
     EntityMetaData idp = serviceRegistry.identityProviders().get(random.nextInt(serviceRegistry.identityProviders().size()));
     definition.setIdentityProviderIds(Arrays.asList(idp.getEntityId()));
-    definition.setIdentityProviderNames(Arrays.asList(idp.getNameEn()));
     List<PdpAttribute> attributes = Arrays.asList(
         new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "teacher"),
         new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "staff"),

@@ -63,11 +63,15 @@ App.Pages.Playground = React.createClass({
   replayRequest: function () {
     var decisionRequest = JSON.parse(this.state.decisionRequestJson);
     App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
-      this.setState({
-        responseJSON: jqxhr.responseJSON,
-        tab: "response"
-      })
-    }.bind(this));
+          this.setState({
+            responseJSON: jqxhr.responseJSON,
+            tab: "response"
+          })
+        }.bind(this),
+        function (jgxhr) {
+          jqxhr.isConsumed = true;
+          console.log(jgxhr.responseJSON.details);
+        }.bind(this));
   },
 
   submitForm: function () {
@@ -88,13 +92,15 @@ App.Pages.Playground = React.createClass({
       decisionRequest.Request.AccessSubject.Attribute = attributes;
 
       App.Controllers.Playground.postPdpRequest(decisionRequest, function (jqxhr) {
-        console.log(jqxhr.responseJSON);
         this.setState({
           decisionRequest: decisionRequest,
           decisionRequestJson: JSON.stringify(decisionRequest, null, 3),
           responseJSON: jqxhr.responseJSON,
           tab: "response"
         })
+      }.bind(this), function (jgxhr) {
+        jqxhr.isConsumed = true;
+        console.log(jgxhr.responseJSON.details);
       }.bind(this));
     }.bind(this);
   },

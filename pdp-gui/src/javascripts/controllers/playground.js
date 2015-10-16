@@ -50,7 +50,7 @@ App.Controllers.Playground = {
       ));
   },
 
-  postPdpRequest: function (pdpRequest, callBack) {
+  postPdpRequest: function (pdpRequest, callBack, failureCallback) {
     var json = JSON.stringify(pdpRequest);
     var jqxhr = $.ajax({
       url: App.apiUrl("/internal/decide/policy"),
@@ -58,6 +58,8 @@ App.Controllers.Playground = {
       data: json
     }).done(function () {
       callBack(jqxhr);
+    }).fail(function () {
+      failureCallback(jqxhr);
     });
   }
 

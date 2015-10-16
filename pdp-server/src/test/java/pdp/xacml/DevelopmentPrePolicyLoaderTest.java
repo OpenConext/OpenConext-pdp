@@ -1,11 +1,11 @@
 package pdp.xacml;
 
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.DefaultResourceLoader;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
+import pdp.policies.DevelopmentPrePolicyLoader;
+import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 
 import java.util.List;

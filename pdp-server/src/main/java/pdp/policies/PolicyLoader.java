@@ -1,4 +1,4 @@
-package pdp.xacml;
+package pdp.policies;
 
 import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
