@@ -66,13 +66,13 @@ To run locally:
 
 `grunt server`
 
-When you browse to the [application homepage](http://localhost:8001/) you will be prompted for a login. Anything - for now - is accepted.
+Browse to the [application homepage](http://localhost:8001/).
 
 ## Testing
 
-There are integration tests for PdpApplication that tests the various decisions against a running Spring app. See [PdpEngineTest](pdp-server/src/test/java/pdp/PdpEngineTest.java)
+There are (slow) integration tests for PdpApplication where various decisions are tested against a full-blown running Spring app. See [PdpEngineTest](pdp-server/src/test/java/pdp/PdpEngineTest.java)
 
-If you want to test individual Policies with specific Request / Response JSON then use the (very fast) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
+If you want to test individual Policies with specific Request / Response JSON then use the (much faster) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
 
 ## Miscellaneous
 
