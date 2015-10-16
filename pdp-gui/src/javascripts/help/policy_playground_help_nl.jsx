@@ -52,13 +52,13 @@ App.Help.PolicyPlaygroundHelpNl = React.createClass({
               attributen
             </li>
             <li><span>'Not Applicable'</span> - Niet één autorisatie regel was van toepassing op basis van de
-              geselecteerd dienst en instelling
+              geselecteerde dienst en instelling
             </li>
             <li><span>'Indeterminate'</span> - Een verplicht attribuut voor de autorisatie regel is niet meegestuurd.
               Dit kan alleen gebeuren bij 'Deny' regels.
             </li>
           </ul>
-          <p>Als het resultaat dan wel 'Permit' of 'Not Applicable' dan zou de gebuiker zijn geautoriseerd voor het
+          <p>Als het resultaat dan wel 'Permit' of 'Not Applicable' is, dan zou de gebruiker zijn geautoriseerd voor het
             gebruik van de dienst.</p>
         </div>
     );
