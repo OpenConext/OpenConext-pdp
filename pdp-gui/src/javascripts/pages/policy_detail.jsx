@@ -197,7 +197,8 @@ App.Pages.PolicyDetail = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
-      this.setState({allAttributesMustMatch: value === "AND"});
+      var allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
+      this.setState({allAttributesMustMatch: allAttributesMustMatch});
     }.bind(this);
   },
 

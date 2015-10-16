@@ -14,11 +14,11 @@ App.Help.PolicyDetailHelpNl = React.createClass({
 
           <p>Wij raden aan om voor een 'Permit' regel te kiezen in plaats van een 'Deny'.</p>
 
-          <p>Het algoritme was gebruikt wordt om te bepalen of iemand toegang heeft tot een dienst op basis van een autorisatie regel is 'first-applicable'.
+          <p>Het algoritme wat gebruikt wordt om te bepalen of iemand toegang heeft tot een dienst op basis van een autorisatie regel is 'first-applicable'.
             Dit betekent dat de eerste match van een regel het resultaat  - 'Deny' of 'Permit' - bepaald.
           </p>
 
-          <p>Voor meer informatie over de implicaties van een 'Deny' regel kan
+          <p>Meer informatie over de implicaties van een 'Deny' regel kan
             <a target="_blank" href="http://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html#_Toc325047268"> hier </a> worden gevonden.
           </p>
 
@@ -37,8 +37,14 @@ App.Help.PolicyDetailHelpNl = React.createClass({
 
           <h2>Attributen</h2>
 
-          <p>De attributen en de respectievelijke waardes bepalen of een gebruiker succesvol wordt geautoriseerd voor de dienst.</p>
+          <p>De attributen en de respectievelijke waardes bepalen of een gebruiker succesvol wordt geautoriseerd voor de dienst. De attributen
+          worden gematched tegen de attributen van de gebruiker.</p>
 
+          <h2>Group naam autorisatie</h2>
+
+          <p>Let op als je het attribuut <em>urn:collab:group:surfteams.nl</em> kiest. De waarde(s) van dit attribuut
+            moeten de geldige en volledige ID zijn van een groep. Neem contact op met de verantwoordelijke
+            product manager als je twijfelt over de juiste waarde.</p>
         </div>
     );
   }

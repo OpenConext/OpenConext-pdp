@@ -63,18 +63,11 @@ App.Pages.Playground = React.createClass({
   replayRequest: function () {
     App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
         function (jqxhr) {
-          this.setState({
-            responseJSON: jqxhr.responseJSON,
-            tab: "response"
-          });
+          this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
         }.bind(this),
         function (jqxhr) {
           jqxhr.isConsumed = true;
-          this.setState({
-            //why not JSON
-            responseJSON: jqxhr.responseJSON,
-            tab: "response"
-          });
+          this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
         }.bind(this));
   },
 
@@ -191,10 +184,10 @@ App.Pages.Playground = React.createClass({
   renderStatus: function (responseJSON) {
     var decision, statusCode, status;
     if (responseJSON.Response) {
-       var response = responseJSON.Response[0];
-       decision = response.Decision;
-       statusCode = response.Status.StatusCode.Value;
-       status = App.Controllers.PolicyViolations.determineStatus(decision);
+      var response = responseJSON.Response[0];
+      decision = response.Decision;
+      statusCode = response.Status.StatusCode.Value;
+      status = App.Controllers.PolicyViolations.determineStatus(decision);
     } else {
       decision = "Error";
       statusCode = "Unexpected error occured";

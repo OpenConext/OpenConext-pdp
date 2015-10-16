@@ -45,8 +45,10 @@ App.Help.PolicyDetailHelpEn = React.createClass({
 
           <p>The attributes and their values actually define if a user is granted access to the service or not.</p>
 
-          <p>Special care must be taken when you choose a group-name as a required attribute. The value must be
-            the fully qualified group name where the user is a member of. Please consult the responsible
+          <h2>Group name authorization</h2>
+
+          <p>Special care must be taken when you choose <em>urn:collab:group:surfteams.nl</em> as a required attribute.
+            The value must be the fully qualified group name where the user is a member of. Please consult the responsible
             technical product manager how to retrieve the fully qualified name of a certain group / team.</p>
 
         </div>

@@ -11,11 +11,7 @@ var App = {
   store: {}, // in memory key/value store, to save temporary settings
 
   initialize: function () {
-    var parameterByName = App.Utils.QueryParameter.getParameterByName("lang");
-    if (_.isEmpty(parameterByName)) {
-      parameterByName = Cookies.get("lang");
-    }
-    I18n.locale = parameterByName ? parameterByName : "en";
+    this.determineLanguage();
 
     $(document).ajaxError(this.ajaxError.bind(this));
     $(document).ajaxStart(this.showSpinner.bind(this));
@@ -101,7 +97,11 @@ var App = {
   },
 
   determineLanguage: function() {
-
+    var parameterByName = App.Utils.QueryParameter.getParameterByName("lang");
+    if (_.isEmpty(parameterByName)) {
+      parameterByName = Cookies.get("lang");
+    }
+    I18n.locale = parameterByName ? parameterByName : "en";
   },
 
   ajaxError: function (event, xhr) {
