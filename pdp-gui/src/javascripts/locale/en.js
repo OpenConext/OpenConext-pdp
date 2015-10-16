@@ -77,6 +77,17 @@ I18n.translations.en = {
     delete: "Delete"
   },
 
+  datatable: {
+    lengthMenu: "Showing _MENU_ entries",
+    zeroRecords: "No data present",
+    infoEmpty: "",
+    info: "Showing _START_ to _END_ of _TOTAL_ entries",
+    paginate_first: "First",
+    paginate_previous: "Previous",
+    paginate_next: "Next",
+    paginate_last: "Last"
+  },
+
   policy_detail: {
     update_policy: "Update policy" ,
     create_policy: "Create new policy",

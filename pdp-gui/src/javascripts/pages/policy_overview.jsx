@@ -12,10 +12,20 @@ App.Pages.PolicyOverview = React.createClass({
 
   initDataTable: function () {
     $('#policies_table').DataTable({
-      paging: false,
+      paging: true,
       language: {
         search: "_INPUT_",
-        searchPlaceholder: I18n.t("policies.search")
+        searchPlaceholder: I18n.t("policies.search"),
+        lengthMenu: I18n.t("datatable.lengthMenu"),
+        zeroRecords: I18n.t("datatable.zeroRecords"),
+        infoEmpty: I18n.t("datatable.infoEmpty"),
+        info: I18n.t("datatable.info"),
+        paginate: {
+          first: I18n.t("datatable.paginate_first"),
+          previous: I18n.t("datatable.paginate_previous"),
+          next: I18n.t("datatable.paginate_next"),
+          last: I18n.t("datatable.paginate_last")
+        }
       },
       columnDefs: [{
         targets: [5],
@@ -49,7 +59,7 @@ App.Pages.PolicyOverview = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
-      if (confirm(I18n.t("policies.confirmation",{policyName: policy.name}))) {
+      if (confirm(I18n.t("policies.confirmation", {policyName: policy.name}))) {
         App.Controllers.Policies.deletePolicy(policy);
       }
     }
@@ -90,7 +100,7 @@ App.Pages.PolicyOverview = React.createClass({
       return (<span>0</span>);
     } else {
       return (<a href={page.uri("/violations/:policyId",{policyId:encodeURIComponent(policy.policyId)})}
-          onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
+                 onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
     }
   },
 

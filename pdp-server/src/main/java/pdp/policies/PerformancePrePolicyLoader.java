@@ -21,17 +21,21 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
 
   private final ServiceRegistry serviceRegistry;
   private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
+  private final int count;
   private Random random = new Random();
 
-  public PerformancePrePolicyLoader(ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+  public PerformancePrePolicyLoader(int count, ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
     super(new ByteArrayResource("noop".getBytes()), pdpPolicyRepository, pdpPolicyViolationRepository);
+    this.count = count;
     this.serviceRegistry = serviceRegistry;
   }
 
   @Override
   public List<PdpPolicy> getPolicies() {
     // for every ServiceProvider create a policy
-    return serviceRegistry.serviceProviders().stream().map(sp -> pdpPolicyDefinition(sp, UUID.randomUUID().toString()))
+    List<EntityMetaData> sps = serviceRegistry.serviceProviders();
+    int nbr = (this.count == 0 ? sps.size() : this.count);
+    return sps.subList(0, nbr).stream(). map(sp -> pdpPolicyDefinition(sp, UUID.randomUUID().toString()))
         .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName()))
         .collect(toList());
   }

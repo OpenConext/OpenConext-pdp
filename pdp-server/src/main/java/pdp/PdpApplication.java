@@ -92,8 +92,8 @@ public class PdpApplication {
   @Bean
   @Profile({"perf"})
   @Autowired
-  public PolicyLoader performancePrePolicyLoader(ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository, final PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    return new PerformancePrePolicyLoader(serviceRegistry, pdpPolicyRepository, pdpPolicyViolationRepository);
+  public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, ServiceRegistry serviceRegistry, final PdpPolicyRepository pdpPolicyRepository, final PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    return new PerformancePrePolicyLoader(count, serviceRegistry, pdpPolicyRepository, pdpPolicyViolationRepository);
   }
 
   @Bean

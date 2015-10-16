@@ -49,7 +49,18 @@ I18n.translations.nl = {
     flash_deleted: "verwijderd",
     confirmation: "Weet je zeker dat je autorisatie regel {{policyName}} wilt verwijderen?",
     edit: "Bewerk",
-    delete: "Verwijder"
+    delete: "Verwijder",
+  },
+
+  datatable: {
+    lengthMenu: "Toon _MENU_ rijen",
+    zeroRecords: "Er is geen data aanwezig",
+    infoEmpty: "",
+    info: "_START_ tot _END_ van _TOTAL_ rijen",
+    paginate_first: "Eerste",
+    paginate_previous: "Vorige",
+    paginate_next: "Volgende",
+    paginate_last: "Laatste"
   },
 
   policy_detail: {

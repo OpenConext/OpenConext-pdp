@@ -12,10 +12,20 @@ App.Pages.PolicyViolations = React.createClass({
 
   initDataTable: function () {
     $('#violations_table').DataTable({
-      paging: false,
+      paging: true,
       language: {
         search: "_INPUT_",
-        searchPlaceholder: I18n.t("violations.search")
+        searchPlaceholder: I18n.t("violations.search"),
+        lengthMenu: I18n.t("datatable.lengthMenu"),
+        zeroRecords: I18n.t("datatable.zeroRecords"),
+        infoEmpty: I18n.t("datatable.infoEmpty"),
+        info: I18n.t("datatable.info"),
+        paginate: {
+          first: I18n.t("datatable.paginate_first"),
+          previous: I18n.t("datatable.paginate_previous"),
+          next: I18n.t("datatable.paginate_next"),
+          last: I18n.t("datatable.paginate_last")
+        }
       },
       columnDefs: [{
         targets: [3],
