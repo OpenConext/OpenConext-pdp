@@ -19,9 +19,6 @@
         </encoder>
     </appender>
 
-    <logger name="pdp" level="DEBUG"/>
-    <logger name="org.apache.openaz" level="DEBUG"/>
-
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>

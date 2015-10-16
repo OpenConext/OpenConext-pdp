@@ -78,4 +78,5 @@ public class ServiceRegistryTest {
     ServiceRegistry env = new ClassPathResourceServiceRegistry("dev");
     assertEquals(295, env.identityProviders().size());
   }
+
 }

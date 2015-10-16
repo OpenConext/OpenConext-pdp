@@ -39,5 +39,6 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
     Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyId("nope").stream().findFirst();
     assertFalse(policy.isPresent());
   }
+
 }
 
