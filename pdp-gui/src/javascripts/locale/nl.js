@@ -95,7 +95,7 @@ I18n.translations.nl = {
     policy_search: "Selecteer een regel",
     idp_placeholder: "Selecteer de instelling - verplicht",
     adventurous_title: "Code hacken?",
-    adventurous_text: "Je kan direct de code veranderen in het rechter response scherm.",
+    adventurous_text: "Je kan direct de code veranderen in het rechter JSON request scherm.",
     check_policies: "Nieuw autorisatie verzoek",
     clear_policies: "Clear",
     reload_policy: "Voer een nieuwe check uit met onderstaande wijzigingen"

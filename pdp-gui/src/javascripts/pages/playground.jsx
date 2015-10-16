@@ -209,12 +209,12 @@ App.Pages.Playground = React.createClass({
     var decisionRequest = this.state.decisionRequest;
     var responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
-      <div className="adventurous">
+      return (<div className="adventurous">
         <i className="fa fa-location-arrow"></i>
 
         <p>{I18n.t("playground.adventurous_title")}</p>
         <em>{I18n.t("playground.adventurous_text")}</em>
-      </div>
+      </div>);
     }
   },
 
