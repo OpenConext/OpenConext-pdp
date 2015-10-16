@@ -43,7 +43,12 @@ App.Pages.PolicyViolations = React.createClass({
       this.initDataTable();
     }
     window.scrollTo(0, 0);
-
+    // not the react way, but we don't control datatables as we should
+    if (this.props.violations.length === 0) {
+      $("#violations_table_paginate").hide();
+    } else {
+      $("#violations_table_paginate").show();
+    }
   },
 
   componentDidMount: function () {

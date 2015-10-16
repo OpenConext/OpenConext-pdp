@@ -45,6 +45,12 @@ App.Pages.PolicyOverview = React.createClass({
     if (!$.fn.DataTable.isDataTable('#policies_table')) {
       this.initDataTable();
     }
+    // not the react way, but we don't control datatables as we should
+    if (this.props.policies.length === 0) {
+      $("#policies_table_paginate").hide();
+    } else {
+      $("#policies_table_paginate").show();
+    }
   },
 
   componentDidMount: function () {
