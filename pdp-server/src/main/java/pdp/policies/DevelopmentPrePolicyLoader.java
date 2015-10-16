@@ -18,7 +18,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /*
- * Loads all policies in /xacml/polices into the database for testing purposes.
+ * Loads all policies in /xacml/policies into the database for testing purposes.
  *
  * This is done in 'dev' modus of the PdpApplication
  */

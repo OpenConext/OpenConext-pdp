@@ -51,11 +51,11 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
   }
 
   private PolicyFinder loadPolicyFinder() {
-    Collection<PolicySetChild> polices =
+    Collection<PolicySetChild> policies =
         stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> (PolicySetChild) convertToPolicyDef(policy)).collect(toCollection(ArrayList::new));
-    LOG.info("(Re)-loaded {} policies from the database", polices.size());
+    LOG.info("(Re)-loaded {} policies from the database", policies.size());
     try {
-      return new StdPolicyFinder(combinePolicies(polices), null);
+      return new StdPolicyFinder(combinePolicies(policies), null);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

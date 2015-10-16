@@ -104,7 +104,7 @@ The policies that can be created are limited in functionality:
 * All attributes with the same name are treated with the logical OR operator
 * All attributes with a different name are exclusively treated with the logical OR or AND operator depending on the type of policy
 * Rule targets if not empty only can contain the attributes of the category `urn:oasis:names:tc:xacml:1.0:subject-category:access-subject`
-* The combining set of polices has the policy combining algorithm `urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides`
+* The combining set of policies has the policy combining algorithm `urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides`
 
 ### Local database content
 

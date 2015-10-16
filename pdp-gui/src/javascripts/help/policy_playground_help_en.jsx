@@ -12,10 +12,10 @@ App.Help.PolicyPlaygroundHelpEn = React.createClass({
               target="_blank">XACML</a> policies to configure fine-grained access rules for your Institution and the
             connected Service Providers.</p>
 
-          <p>This playground can be used to test your policies. Newly created / updated or deleted polices are directly
+          <p>This playground can be used to test your policies. Newly created / updated or deleted policies are directly
             testable.</p>
 
-          <p>By selecting one of the polices you can to test against this policy without selecting the correct input
+          <p>By selecting one of the policies you can to test against this policy without selecting the correct input
             parameters.</p>
 
           <h2>Service Provider (SP) and Identity Provider (IdP)</h2>
