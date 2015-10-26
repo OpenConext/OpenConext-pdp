@@ -106,7 +106,7 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
   renderDenyAdvice: function (policy) {
-    var workflow = _.isEmpty(policy.denyAdvice) ? "failure" : "success";
+    var workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
     return (
         <div className={"form-element "+workflow}>
           <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
