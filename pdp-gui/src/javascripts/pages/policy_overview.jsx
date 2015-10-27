@@ -110,6 +110,12 @@ App.Pages.PolicyOverview = React.createClass({
     }
   },
 
+  renderIdpNames: function(identityProviderNames) {
+    return identityProviderNames.map(function(name){
+      return (<p>{name}</p>)
+    });
+  },
+
   render: function () {
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
@@ -117,7 +123,7 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.name}</td>
             <td>{policy.description}</td>
             <td>{policy.serviceProviderName}</td>
-            <td>{policy.identityProviderNames}</td>
+            <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
             <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}

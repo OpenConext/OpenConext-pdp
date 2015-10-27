@@ -154,7 +154,7 @@ App.Pages.Playground = React.createClass({
     return (
         <div>
           <div className={"form-element split " + workflow}>
-            <p className="label">{pdpRequest.identityProviderIds}</p>
+            <p className="label">{I18n.t("policies.identityProviderId")}</p>
 
             <App.Components.Select2Selector
                 defaultValue={pdpRequest.identityProviderId}

@@ -17,9 +17,13 @@ App.Pages.PolicyDetail = React.createClass({
     return this.props.policy;
   },
 
-  componentWillReceiveProps: function (nextProps) {
-    this.state = nextProps.policy;
-  },
+  //componentWillReceiveProps: function (nextProps) {
+  //  var flash = this.state.flash;
+  //  this.state = nextProps.policy;
+  //  if (flash) {
+  //    this.state.flash = flash;
+  //  }
+  //},
 
   toggleDenyRule: function (e) {
     var partialState = {denyRule: !this.state.denyRule};
@@ -278,7 +282,7 @@ App.Pages.PolicyDetail = React.createClass({
   renderFlash: function () {
     if (this.state.flash) {
       return (
-          <div className="flash"><p className="error">{this.state.flash}</p><a href="#" onClick={this.closeFlash}><i
+          <div className="flash full"><p className="error">{this.state.flash}</p><a href="#" onClick={this.closeFlash}><i
               className="fa fa-remove"></i></a>
           </div>
       );

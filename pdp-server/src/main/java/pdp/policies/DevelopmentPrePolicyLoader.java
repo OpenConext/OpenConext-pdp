@@ -63,6 +63,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
 
   private PdpPolicy createPdpPolicy(String xml, String name) {
     xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\"" + PolicyTemplateEngine.getPolicyId(name) + "\"");
+    name = name.replace(".", " ");
     return new PdpPolicy(xml, name);
   }
 
