@@ -17,14 +17,6 @@ App.Pages.PolicyDetail = React.createClass({
     return this.props.policy;
   },
 
-  //componentWillReceiveProps: function (nextProps) {
-  //  var flash = this.state.flash;
-  //  this.state = nextProps.policy;
-  //  if (flash) {
-  //    this.state.flash = flash;
-  //  }
-  //},
-
   toggleDenyRule: function (e) {
     var partialState = {denyRule: !this.state.denyRule};
     if (!this.state.denyRule) {
