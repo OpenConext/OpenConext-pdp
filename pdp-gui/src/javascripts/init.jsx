@@ -20,11 +20,11 @@ var App = {
 
     $(document).ajaxSend(function (event, jqxhr, settings) {
       jqxhr.setRequestHeader("Content-Type", "application/json");
+      jqxhr.setRequestHeader("X-CSRF-TOKEN", this.crsfToken);
     }.bind(this));
 
     this.fetchUserData(function (user) {
       this.currentUser = user;
-
       for (controller in App.Controllers) {
         App.Controllers[controller].initialize();
       }
@@ -94,6 +94,11 @@ var App = {
       var newLoc = window.location.protocol + "//" + window.location.host + "/policies";
       window.location.href = newLoc;
     }
+    var csrfToken = xhr.getResponseHeader("X-CSRF-TOKEN");
+    if (!_.isEmpty(csrfToken)) {
+      this.crsfToken = csrfToken;
+    }
+
   },
 
   determineLanguage: function() {

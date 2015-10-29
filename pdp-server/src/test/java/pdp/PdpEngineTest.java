@@ -71,10 +71,18 @@ public class PdpEngineTest {
 
  @Test
   public void test_all_policies() throws Exception {
-    JsonPolicyRequest policyRequest = objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
+   JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
     policies.forEach(policy -> doTestPolicy(policyRequest, policy));
+  }
+
+  @Test
+  public void testCrsfConfiguration() throws Exception {
+    HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(getJsonPolicyRequest()), headers);
+    Map jsonResponse = restTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, Map.class);
+    assertEquals(403, jsonResponse.get("status"));
+    assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
   }
 
   private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) {
@@ -150,6 +158,10 @@ public class PdpEngineTest {
     return StringUtils.hasText(violation.getPolicyId())
         && StringUtils.hasText(violation.getJsonRequest())
         && StringUtils.hasText(violation.getResponse());
+  }
+
+  private JsonPolicyRequest getJsonPolicyRequest() throws IOException {
+    return objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
   }
 
 }

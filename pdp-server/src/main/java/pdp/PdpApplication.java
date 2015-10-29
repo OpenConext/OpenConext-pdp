@@ -20,11 +20,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -50,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 @SpringBootApplication()
@@ -152,6 +154,8 @@ public class PdpApplication {
     @Autowired
     private ServiceRegistry serviceRegistry;
 
+    private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS)$");
+
     @Bean
     @Profile({"dev","perf"})
     public FilterRegistrationBean mockShibbolethFilter() {
@@ -172,7 +176,9 @@ public class PdpApplication {
     protected void configure(HttpSecurity http) throws Exception {
       http
           .csrf()
-          .disable()
+          .requireCsrfProtectionMatcher(csrfProtectionMatcher())
+          .and()
+          .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
           .addFilterBefore(
               new BasicAuthenticationFilter(getBasicAuthenticationManager()), AbstractPreAuthenticatedProcessingFilter.class
           )
@@ -186,10 +192,11 @@ public class PdpApplication {
           )
           .authorizeRequests()
           .antMatchers("/internal/**")
-          .authenticated()
-          .and()
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+          .authenticated();
+    }
+
+    private RequestMatcher csrfProtectionMatcher() {
+      return request -> request.getServletPath().startsWith("/internal") && !allowedMethods.matcher(request.getMethod().toUpperCase()).matches();
     }
 
     private AuthenticationManager getBasicAuthenticationManager() {
