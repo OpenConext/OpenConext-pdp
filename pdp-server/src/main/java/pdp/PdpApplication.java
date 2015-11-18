@@ -154,8 +154,6 @@ public class PdpApplication {
     @Autowired
     private ServiceRegistry serviceRegistry;
 
-    private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS)$");
-
     @Bean
     @Profile({"dev","perf"})
     public FilterRegistrationBean mockShibbolethFilter() {
@@ -176,7 +174,7 @@ public class PdpApplication {
     protected void configure(HttpSecurity http) throws Exception {
       http
           .csrf()
-          .requireCsrfProtectionMatcher(csrfProtectionMatcher())
+          .requireCsrfProtectionMatcher(new CsrfProtectionMatcher())
           .and()
           .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
           .addFilterBefore(
@@ -193,10 +191,6 @@ public class PdpApplication {
           .authorizeRequests()
           .antMatchers("/internal/**")
           .authenticated();
-    }
-
-    private RequestMatcher csrfProtectionMatcher() {
-      return request -> request.getServletPath().startsWith("/internal") && !allowedMethods.matcher(request.getMethod().toUpperCase()).matches();
     }
 
     private AuthenticationManager getBasicAuthenticationManager() {

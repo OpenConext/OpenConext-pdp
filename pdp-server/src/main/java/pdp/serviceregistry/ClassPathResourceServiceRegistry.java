@@ -1,6 +1,8 @@
 package pdp.serviceregistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
@@ -20,6 +22,8 @@ import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
+  private final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
+
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private final static List<String> allowedLanguages = Arrays.asList("en", "nl");
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
@@ -37,6 +41,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       entityMetaData = new HashMap<>();
       entityMetaData.put(IDP_ENTITY_ID, getIdpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
       entityMetaData.put(SP_ENTITY_ID, getSpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
+      LOG.debug("Initialized SR Rsources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
     } finally {
       lock.writeLock().unlock();
     }
@@ -112,14 +117,14 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     try {
       List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
       return list.stream().map(entry ->
-              new EntityMetaData(
-                  (String) entry.get("entityid"),
-                  getInstitutionId(entry),
-                  getMetaDateEntry(entry, "en", "description"),
-                  getMetaDateEntry(entry, "en", "name"),
-                  getMetaDateEntry(entry, "nl", "description"),
-                  getMetaDateEntry(entry, "nl", "name")
-              )
+          new EntityMetaData(
+              (String) entry.get("entityid"),
+              getInstitutionId(entry),
+              getMetaDateEntry(entry, "en", "description"),
+              getMetaDateEntry(entry, "en", "name"),
+              getMetaDateEntry(entry, "nl", "description"),
+              getMetaDateEntry(entry, "nl", "name")
+          )
       ).sorted(sortEntityMetaData()).collect(Collectors.toList());
     } catch (IOException e) {
       throw new RuntimeException(e);

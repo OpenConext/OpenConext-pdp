@@ -12,6 +12,8 @@ import org.apache.openaz.xacml.std.pip.StdMutablePIPResponse;
 import org.apache.openaz.xacml.std.pip.StdPIPRequest;
 import org.apache.openaz.xacml.std.pip.StdSinglePIPResponse;
 import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -21,6 +23,8 @@ import static pdp.xacml.PdpPolicyDefinitionParser.GROUP_URN;
 import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
 
 public class TeamsPIP implements ConfigurableEngine, VootClientAware {
+
+  private final static Logger LOG = LoggerFactory.getLogger(TeamsPIP.class);
 
   private VootClient vootClient;
 
@@ -90,6 +94,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     Identifier groupNameDataTypeId = providedAttribute.getDataTypeId();
     List<AttributeValue<?>> stdAttributeValues = groups.stream().map(group -> new StdAttributeValue<>(groupNameDataTypeId, group)).collect(toList());
     Attribute responseAttr = new StdAttribute(providedAttribute.getCategory(), providedAttribute.getAttributeId(), stdAttributeValues, null, true);
+    LOG.debug("Returning groups from PIP: {}", groups);
     return new StdSinglePIPResponse(responseAttr);
   }
 

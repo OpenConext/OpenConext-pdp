@@ -60,7 +60,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
     String institutionId = idpEntities.stream().findAny().get().getInstitutionId();
     Set<EntityMetaData> spEntities = serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
-
+    LOG.debug("Creating ShibbolethUser {}",uid);
     return new ShibbolethUser(uid, displayName, idpEntities, spEntities, authorities);
   }
 
