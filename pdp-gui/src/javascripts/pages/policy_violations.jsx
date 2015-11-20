@@ -11,6 +11,8 @@ App.Pages.PolicyViolations = React.createClass({
   },
 
   initDataTable: function () {
+    //3-11-2015 15:57
+    $.fn.dataTable.moment("dd-MM-YYYY hh:mm");
     $('#violations_table').DataTable({
       paging: true,
       language: {
