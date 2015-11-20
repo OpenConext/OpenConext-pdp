@@ -120,7 +120,7 @@ The pdp-server needs to access the metadata of Identity and Service providers fr
 * https://tools.surfconext.nl/export/saml20-idp-remote.json
 * https://tools.surfconext.nl/export/saml20-sp-remote.json
 
-In any modus the content is read from the file system:
+In any other modus the content is read from the file system:
 
 * [saml20-idp-remote.json](pdp-server/src/main/resources/service-registry/saml20-idp-remote.json)
 * [saml20-sp-remote.json](pdp-server/src/main/resources/service-registry/saml20-sp-remote.json)
