@@ -87,7 +87,7 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
       return missingNameId;
     }
     String userUrn = (String) values.stream().findFirst().get().getValue();
-    List<String> groups = vootClient.groups(userUrn);
+    List<String> groups = getVootClient().groups(userUrn);
     if (CollectionUtils.isEmpty(groups)) {
       return empty;
     }
@@ -98,7 +98,15 @@ public class TeamsPIP implements ConfigurableEngine, VootClientAware {
     return new StdSinglePIPResponse(responseAttr);
   }
 
+  public VootClient getVootClient() {
+    return vootClient;
+  }
+
   public void setVootClient(VootClient vootClient) {
     this.vootClient = vootClient;
+  }
+
+  public PIPRequest getProvidedAttribute() {
+    return providedAttribute;
   }
 }

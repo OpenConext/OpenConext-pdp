@@ -89,6 +89,11 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
+  public void testTeamsPolicy() throws Exception {
+    doDecideTest("test_request_teams_policy.json", Decision.PERMIT, "OpenConext.pdp.test.teams.Policy.xml");
+  }
+
+  @Test
   public void testPermitPolicyWithMultipleIdp() throws Exception {
     doDecideTest("test_request_multiple_or.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.or.Policy.xml");
   }
