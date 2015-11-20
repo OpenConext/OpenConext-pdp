@@ -23,7 +23,7 @@ public class ServiceRegistryTest {
   @Test
   public void testServiceProviders() throws Exception {
     List<EntityMetaData> sps = serviceRegistry.serviceProviders();
-    assertEquals(951, sps.size());
+    assertEquals(953, sps.size());
     assertTrue(sps.stream().allMatch(entityMetaData -> StringUtils.hasText(entityMetaData.getEntityId())));
     // we expect a sorted list
     assertEquals(asList("3", "3", "A"), sps.subList(0, 3).stream().map(e -> e.getNameEn().substring(0, 1)).collect(toList()));

@@ -1,16 +1,44 @@
-[{
-  "entityid": "http://mock-sp",
-  "state": "prodaccepted",
-  "type": "saml20-sp",
-  "coin": {
-    "institution_id": "MUJINA"
+[
+  {
+    "entityid": "http://mock-sp",
+    "state": "prodaccepted",
+    "type": "saml20-sp",
+    "coin": {
+      "institution_id": "MUJINA"
+    },
+    "description": {
+      "en": "Mujina Mock SP",
+      "nl": "Mujina Mock SP"
+    },
+    "name": {
+      "en": "Mujina Mock SP",
+      "nl": "Mujina Mock SP"
+    }
   },
-  "description": {
-    "en": "Mujina Mock SP",
-    "nl": "Mujina Mock SP"
+  {
+    "entityid": "https://oidc.test.surfconext.nl",
+    "state": "prodaccepted",
+    "type": "saml20-sp",
+    "description": {
+      "en": "OpenConext OIDC Test",
+      "nl": "OpenConext OIDC Test"
+    },
+    "name": {
+      "en": "OpenConext OIDC Test",
+      "nl": "OpenConext OIDC Test"
+    }
   },
-  "name": {
-    "en": "Mujina Mock SP",
-    "nl": "Mujina Mock SP"
+  {
+    "entityid": "https://oidc.localhost.surfconext.nl",
+    "state": "prodaccepted",
+    "type": "saml20-sp",
+    "description": {
+      "en": "OIDC localhost",
+      "nl": "OIDC localhost"
+    },
+    "name": {
+      "en": "OIDC localhost",
+      "nl": "OIDC localhost"
+    }
   }
-}]
+]
