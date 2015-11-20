@@ -10,7 +10,6 @@ module.exports = function (grunt) {
       'src/javascripts/lib/rickshaw.js',
       'src/javascripts/lib/moment-2.10.6.js',
       'src/javascripts/lib/datatables.min.js',
-      'src/javascripts/lib/datetime-moment.js',
       'src/javascripts/lib/js-cookie.js',
       'src/javascripts/lib/lodash.js',
       'src/javascripts/lib/codemirror.js',
