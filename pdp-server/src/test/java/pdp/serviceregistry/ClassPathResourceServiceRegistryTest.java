@@ -16,9 +16,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.PdpApplication.singletonOptionalCollector;
 
-public class ServiceRegistryTest {
+public class ClassPathResourceServiceRegistryTest {
 
-  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry("test");//new UrlResourceServiceRegistry(1,1);
+  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry("test");
 
   @Test
   public void testServiceProviders() throws Exception {

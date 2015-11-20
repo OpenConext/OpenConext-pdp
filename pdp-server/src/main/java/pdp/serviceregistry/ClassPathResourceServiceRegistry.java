@@ -22,7 +22,7 @@ import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
-  private final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
+  protected final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private final static List<String> allowedLanguages = Arrays.asList("en", "nl");
@@ -31,8 +31,15 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   private final String environment;
 
   public ClassPathResourceServiceRegistry(String environment) {
+    this(environment, true);
+  }
+
+  protected ClassPathResourceServiceRegistry(String environment, boolean initialize) {
     this.environment = environment;
-    initializeMetadata();
+    //this provides subclasses a hook to set properties before initializing metadata
+    if (initialize) {
+      initializeMetadata();
+    }
   }
 
   protected void initializeMetadata() {

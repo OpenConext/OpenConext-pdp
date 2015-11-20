@@ -14,25 +14,43 @@ import static java.util.concurrent.Executors.newScheduledThreadPool;
 
 public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry {
 
-  public UrlResourceServiceRegistry(int initialDelay, int period) {
-    super("prod");
+  private final String idpRemotePath;
+  private final String spRemotePath;
+  private final String userName;
+  private final String password;
+
+  public UrlResourceServiceRegistry(
+      String idpRemotePath,
+      String spRemotePath,
+      String userName,
+      String password,
+      int initialDelay,
+      int period) {
+    super("prod", false);
+    this.idpRemotePath = idpRemotePath;
+    this.spRemotePath = spRemotePath;
+    this.userName = userName;
+    this.password = password;
     newScheduledThreadPool(1).scheduleAtFixedRate(() ->
         this.initializeMetadata(), initialDelay, period, TimeUnit.MINUTES);
+    this.initializeMetadata();
   }
 
   @Override
   protected List<Resource> getIdpResources() {
-    return Arrays.asList(getResource("https://tools.surfconext.nl/export/saml20-idp-remote.json"));
+    LOG.debug("Fetching IDP metadata entries from {}",idpRemotePath);
+    return Arrays.asList(getResource(idpRemotePath));
   }
 
   @Override
   protected List<Resource> getSpResources() {
-    return Arrays.asList(getResource("https://tools.surfconext.nl/export/saml20-sp-remote.json"));
+    LOG.debug("Fetching SP metadata entries from {}",spRemotePath);
+    return Arrays.asList(getResource(spRemotePath));
   }
 
   private Resource getResource(String path) {
     try {
-      return new UrlResource(path);
+      return new AuthorizationURLResource(path, userName, password);
     } catch (MalformedURLException e) {
       throw new RuntimeException(e);
     }
