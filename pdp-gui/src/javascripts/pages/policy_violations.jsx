@@ -11,8 +11,12 @@ App.Pages.PolicyViolations = React.createClass({
   },
 
   initDataTable: function () {
-    //3-11-2015 15:57
-    $.fn.dataTable.moment("dd-MM-YYYY hh:mm");
+    $.fn.dataTable.ext.order['locale-date'] = function (settings, col) {
+      return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        //use the milliseconds to sort
+        return moment(td.textContent, "DD-MM-YYYY hh:mm").valueOf();
+      });
+    };
     $('#violations_table').DataTable({
       paging: true,
       language: {
@@ -29,10 +33,11 @@ App.Pages.PolicyViolations = React.createClass({
           last: I18n.t("datatable.paginate_last")
         }
       },
-      columnDefs: [{
-        targets: [3],
-        orderable: false
-      }]
+      columnDefs: [
+        {targets: [2], orderDataType: "locale-date"},
+        {targets: [3], orderable: false}
+      ],
+      order: [[2, "desc"]]
     });
   },
 
