@@ -205,6 +205,8 @@ public class PdpController {
     PdpPolicy policy = findOneAndOnly(id);
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     pdpPolicyRepository.delete(policy);
+    int deleted = pdpPolicyViolationRepository.deleteByPolicyId(policy.getPolicyId());
+    LOG.info("Deleted {} policy violations for PdpPolicy {}", deleted, policy.getName());
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {

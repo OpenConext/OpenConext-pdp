@@ -45,6 +45,12 @@ public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
   }
 
   @Test
+  public void testDeleteByPolicyId() {
+    pdpPolicyViolationRepository.deleteByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
+    List<PdpPolicyViolation> byPolicyId = pdpPolicyViolationRepository.findByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
+    assertEquals(0, byPolicyId.size());
+  }
+  @Test
   public void retentionPeriod() {
     int deleted = pdpPolicyViolationRepository.deleteOlderThenRetentionDays(25);
     assertEquals(6, deleted);

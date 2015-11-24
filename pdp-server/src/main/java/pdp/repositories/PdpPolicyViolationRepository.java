@@ -23,5 +23,9 @@ public interface PdpPolicyViolationRepository extends CrudRepository<PdpPolicyVi
   @Query(value = "DELETE FROM pdp_policy_violations WHERE created < (NOW() - INTERVAL :retentionDays DAY)", nativeQuery = true)
   int deleteOlderThenRetentionDays(@Param("retentionDays") int retentionDays);
 
+  @Transactional
+  @Modifying
+  @Query(value = "DELETE FROM pdp_policy_violations WHERE policy_id = :policyId", nativeQuery = true)
+  int deleteByPolicyId(@Param("policyId") String policyId);
 
 }
