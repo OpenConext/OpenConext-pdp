@@ -156,6 +156,9 @@ public class PdpApplication {
     @Value("${policy.enforcement.point.user.password}")
     private String policyEnforcementPointPassword;
 
+    @Value("${policy.idp.access.enforcement}")
+    private boolean policyIdpAccessEnforcement;
+
     @Autowired
     private ServiceRegistry serviceRegistry;
 
@@ -190,7 +193,7 @@ public class PdpApplication {
           .authenticated()
           .and()
           .addFilterAfter(
-              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
+              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry, policyIdpAccessEnforcement),
               BasicAuthenticationFilter.class
           )
           .authorizeRequests()

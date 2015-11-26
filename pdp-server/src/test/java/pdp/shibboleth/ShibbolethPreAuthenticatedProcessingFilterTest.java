@@ -9,7 +9,7 @@ import static pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter.*;
 
 public class ShibbolethPreAuthenticatedProcessingFilterTest {
 
-  private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceServiceRegistry("test"));
+  private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceServiceRegistry("test"), false);
 
   @Test
   public void testGetPreAuthenticatedPrincipal() throws Exception {
@@ -26,7 +26,7 @@ public class ShibbolethPreAuthenticatedProcessingFilterTest {
     assertEquals(2, principal.getSpEntities().size());
     assertEquals(1, principal.getAuthorities().size());
     assertEquals("PAP_ADMIN", principal.getAuthorities().stream().findAny().get().getAuthority());
-    assertEquals("John Doe", principal.getUsername());
-    assertEquals("urn:collab:person:example.com:admin", principal.getUid());
+    assertEquals("John Doe", principal.getDisplayName());
+    assertEquals("urn:collab:person:example.com:admin", principal.getUsername());
   }
 }

@@ -12,7 +12,6 @@ import pdp.serviceregistry.ServiceRegistry;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 
 import static java.util.stream.Collectors.toList;
@@ -36,12 +35,12 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
     List<EntityMetaData> idps = serviceRegistry.identityProviders();
     EntityMetaData idp = idps.get(idps.size() - 1);
     int nbr = (this.count == 0 ? sps.size() : this.count);
-    return sps.subList(0, nbr).stream(). map(sp -> pdpPolicyDefinition(sp, idp, UUID.randomUUID().toString()))
-        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName()))
+    return sps.subList(0, nbr).stream().map(sp -> pdpPolicyDefinition(sp, idp, UUID.randomUUID().toString()))
+        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName(), userIdentifier, authenticatingAuthority))
         .collect(toList());
   }
 
-  private PdpPolicyDefinition pdpPolicyDefinition(EntityMetaData sp,EntityMetaData idp, String uuid) {
+  private PdpPolicyDefinition pdpPolicyDefinition(EntityMetaData sp, EntityMetaData idp, String uuid) {
     PdpPolicyDefinition definition = new PdpPolicyDefinition();
     definition.setName("Performance_Policy_" + uuid);
     definition.setDescription("Performance Policy " + uuid);

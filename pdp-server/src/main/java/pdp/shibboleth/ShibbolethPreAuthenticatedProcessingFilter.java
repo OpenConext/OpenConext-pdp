@@ -13,7 +13,6 @@ import pdp.serviceregistry.ServiceRegistry;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
@@ -26,11 +25,13 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
   private static final Logger LOG = LoggerFactory.getLogger(ShibbolethPreAuthenticatedProcessingFilter.class);
 
   private final ServiceRegistry serviceRegsitry;
+  private final boolean policyIdpAccessEnforcement;
 
-  public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry) {
+  public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry, boolean policyIdpAccessEnforcement) {
     super();
     setAuthenticationManager(authenticationManager);
     this.serviceRegsitry = serviceRegistry;
+    this.policyIdpAccessEnforcement = policyIdpAccessEnforcement;
   }
 
   @Override
@@ -58,10 +59,12 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
 
-    String institutionId = idpEntities.stream().findAny().get().getInstitutionId();
+    //By contract we have at least one Idp - otherwise an Exception is already raised
+    String institutionId = idpEntities.iterator().next().getInstitutionId();
     Set<EntityMetaData> spEntities = serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
+
     LOG.debug("Creating ShibbolethUser {}",uid);
-    return new ShibbolethUser(uid, displayName, idpEntities, spEntities, authorities);
+    return new ShibbolethUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, authorities, policyIdpAccessEnforcement);
   }
 
   @Override

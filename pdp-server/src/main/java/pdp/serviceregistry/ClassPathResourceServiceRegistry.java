@@ -99,11 +99,12 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       if (!metaDataOptional.isPresent()) {
         throw new IllegalArgumentException(authenticatingAuthority + " is not a valid or known IdentityProvider entityId");
       }
-      String institutionId = metaDataOptional.get().getInstitutionId();
+      EntityMetaData idp = metaDataOptional.get();
+      String institutionId = idp.getInstitutionId();
       if (StringUtils.hasText(institutionId)) {
         return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
       } else {
-        return new HashSet(Arrays.asList(metaDataOptional.get()));
+        return new HashSet(Arrays.asList(idp));
       }
     } finally {
       lock.readLock().unlock();
@@ -112,6 +113,9 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   @Override
   public Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId) {
+    if (StringUtils.isEmpty(institutionId)) {
+      return Collections.EMPTY_SET;
+    }
     try {
       lock.readLock().lock();
       return serviceProviders().stream().filter(sp -> institutionId.equals(sp.getInstitutionId())).collect(toSet());

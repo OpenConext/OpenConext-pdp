@@ -17,3 +17,4 @@ logs/
 target/
 
 *.log
+pdp-gui/json

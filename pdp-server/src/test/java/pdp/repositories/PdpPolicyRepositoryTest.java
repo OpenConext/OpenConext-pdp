@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pdp.PdpApplication;
 import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
+import pdp.policies.PolicyLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,12 +21,14 @@ import java.util.Optional;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
+import static pdp.policies.PolicyLoader.authenticatingAuthority;
+import static pdp.policies.PolicyLoader.userIdentifier;
 
 public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
 
   @Before
   public void before() throws Exception {
-    pdpPolicyRepository.save(new PdpPolicy("xml", NAME_ID + 1));
+    pdpPolicyRepository.save(new PdpPolicy("xml", NAME_ID + 1, userIdentifier , authenticatingAuthority));
   }
 
   @Test

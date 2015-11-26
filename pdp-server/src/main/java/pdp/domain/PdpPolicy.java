@@ -23,12 +23,20 @@ public class PdpPolicy {
   @Column(nullable = false)
   private String name;
 
+  @Column(nullable = true)
+  private String authenticatingAuthority;
+
+  @Column(nullable = true)
+  private String userIdentifier;
+
   public PdpPolicy() {
   }
 
-  public PdpPolicy(String policyXml, String name) {
+  public PdpPolicy(String policyXml, String name, String userIdentifier, String authenticatingAuthority) {
     this.policyXml = policyXml;
     this.name = name;
+    this.userIdentifier = userIdentifier;
+    this.authenticatingAuthority = authenticatingAuthority;
     this.policyId = PolicyTemplateEngine.getPolicyId(name);
   }
 
@@ -62,5 +70,21 @@ public class PdpPolicy {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public String getAuthenticatingAuthority() {
+    return authenticatingAuthority;
+  }
+
+  public void setAuthenticatingAuthority(String authenticatingAuthority) {
+    this.authenticatingAuthority = authenticatingAuthority;
+  }
+
+  public String getUserIdentifier() {
+    return userIdentifier;
+  }
+
+  public void setUserIdentifier(String userIdentifier) {
+    this.userIdentifier = userIdentifier;
   }
 }

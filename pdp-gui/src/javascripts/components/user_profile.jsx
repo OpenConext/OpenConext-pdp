@@ -18,7 +18,7 @@ App.Components.UserProfile = React.createClass({
           <h2>{I18n.t("header.role")}</h2>
           <ul>
             <li className="user-profile-entity">
-              {I18n.t("profile." + App.currentUser.principal.authorities[0].authority)}
+              {I18n.t("profile." + App.currentUser.authorities[0].authority)}
             </li>
           </ul>
         </li>
@@ -30,19 +30,19 @@ App.Components.UserProfile = React.createClass({
         <li>
           <h2>{I18n.t("header.idps")}</h2>
           <ul>
-            {App.currentUser.principal.idpEntities.map(this.renderItem)}
+            {App.currentUser.idpEntities.map(this.renderItem)}
           </ul>
         </li>
     );
   },
 
   renderSps: function () {
-    if (!_.isEmpty(App.currentUser.principal.spEntities)) {
+    if (!_.isEmpty(App.currentUser.spEntities)) {
       return (
           <li>
             <h2>{I18n.t("header.sps")}</h2>
             <ul>
-              {App.currentUser.principal.spEntities.map(this.renderItem)}
+              {App.currentUser.spEntities.map(this.renderItem)}
             </ul>
           </li>
       );

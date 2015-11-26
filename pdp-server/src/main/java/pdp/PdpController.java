@@ -7,8 +7,6 @@ import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.std.StdMutableRequest;
-import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +25,9 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
+import pdp.security.PolicyIdpAccessEnforcer;
 import pdp.serviceregistry.ServiceRegistry;
+import pdp.shibboleth.ShibbolethUser;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
@@ -66,6 +65,7 @@ public class PdpController {
   private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
   private final ServiceRegistry serviceRegistry;
+  private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
 
   // Can't be final as we need to swap this to reload policies in production
   private PDPEngine pdpEngine;
@@ -73,6 +73,7 @@ public class PdpController {
   @Autowired
   public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
                        @Value("${period.policies.refresh.minutes}") int period,
+                       @Value("${policy.idp.access.enforcement}") boolean policyIdpAccessEnforcement,
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PdpPolicyRepository pdpPolicyRepository,
                        PDPEngineHolder pdpEngineHolder,
@@ -80,6 +81,7 @@ public class PdpController {
     this.pdpEngineHolder = pdpEngineHolder;
     this.pdpEngine = pdpEngineHolder.newPdpEngine();
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
+    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(policyIdpAccessEnforcement);
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
@@ -146,8 +148,7 @@ public class PdpController {
 
   @RequestMapping(method = GET, value = "internal/default-policy")
   public PdpPolicyDefinition defaultPolicy() {
-    PdpPolicyDefinition definition = new PdpPolicyDefinition();
-    return definition;
+    return new PdpPolicyDefinition();
   }
 
   @RequestMapping(method = GET, value = "internal/attributes")
@@ -177,9 +178,15 @@ public class PdpController {
       policy.setName(pdpPolicyDefinition.getName());
       policy.setPolicyXml(policyXml);
     } else {
-      policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName());
+      policy = new PdpPolicy(
+          policyXml,
+          pdpPolicyDefinition.getName(),
+          policyIdpAccessEnforcer.username(),
+          policyIdpAccessEnforcer.authenticatingAuthority());
     }
     try {
+      //this will throw an Exception if it is not allowed
+      this.policyIdpAccessEnforcer.actionAllowed(policy, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
       PdpPolicy saved = pdpPolicyRepository.save(policy);
       LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
       return saved;
@@ -203,6 +210,12 @@ public class PdpController {
   @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
   public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
     PdpPolicy policy = findOneAndOnly(id);
+
+    //we need the sp entityId and (if any) idp entityIds and this is the easiest way to do this
+    PdpPolicyDefinition pdpPolicyDefinition = pdpPolicyDefinitionParser.parse(policy);
+    //this will throw an Exception if it is not allowed
+    this.policyIdpAccessEnforcer.actionAllowed(policy, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
+
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     pdpPolicyRepository.delete(policy);
     int deleted = pdpPolicyViolationRepository.deleteByPolicyId(policy.getPolicyId());
@@ -218,9 +231,8 @@ public class PdpController {
   }
 
   @RequestMapping(method = GET, value = "internal/users/me")
-  public Object user() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return authentication;
+  public ShibbolethUser user() {
+    return (ShibbolethUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   private void reportPolicyViolation(Response pdpResponse, String response, String payload) {

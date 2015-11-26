@@ -22,6 +22,7 @@ public class VootClient {
     this.vootServiceUrl = vootServiceUrl;
   }
 
+  @SuppressWarnings("ignoreChecked")
   public List<String> groups(String userUrn) {
     List<Map<String, Object>> groups = (List<Map<String, Object>>) vootService.getForObject(vootServiceUrl + "/internal/groups/{userUrn}", List.class, userUrn);
     LOG.debug("Retrieved groups: {}", groups);

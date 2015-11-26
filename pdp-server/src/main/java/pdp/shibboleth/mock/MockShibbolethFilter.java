@@ -23,9 +23,7 @@ public class MockShibbolethFilter extends GenericFilterBean {
   private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
 
   public MockShibbolethFilter() {
-    LOG.info("====================================");
     LOG.info("MockShibbolethFilter initializing...");
-    LOG.info("====================================");
   }
 
   private static class SetHeader extends HttpServletRequestWrapper {

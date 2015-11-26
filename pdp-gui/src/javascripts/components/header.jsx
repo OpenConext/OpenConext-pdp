@@ -38,7 +38,7 @@ App.Components.Header = React.createClass({
         <span>
           {I18n.t("header.welcome")}&nbsp;
           <a href="#" onClick={this.handleToggle}>
-            {App.currentUser.principal.username}
+            {App.currentUser.displayName}
             {this.renderDropDownIndicator()}
           </a>
         </span>
