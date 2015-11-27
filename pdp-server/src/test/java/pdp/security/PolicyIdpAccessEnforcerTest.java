@@ -87,8 +87,9 @@ public class PolicyIdpAccessEnforcerTest {
 
   @Test
   public void testActionNotAllowedDifferentAuthenticatingAuthorityButOwnerDifferentIdp() throws Exception {
-    this.pdpPolicy.setAuthenticatingAuthority("http://different-idp");
-    setupSecurityContext(false, entityMetadata(identityProviderIds[0]), entityMetadata("http://different-idp"));
+    this.pdpPolicy.setAuthenticatingAuthority(notOwnedIdp);
+    //we now do own notOwnedIdp
+    setupSecurityContext(false, entityMetadata(identityProviderIds[0]), entityMetadata(notOwnedIdp));
     this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], singletonList(identityProviderIds[0]));
   }
 
