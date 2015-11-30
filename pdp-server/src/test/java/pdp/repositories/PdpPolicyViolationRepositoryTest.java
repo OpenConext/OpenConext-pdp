@@ -1,29 +1,30 @@
 package pdp.repositories;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
-import pdp.PolicyTemplateEngine;
+import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyViolation;
 
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
-import java.util.stream.LongStream;
 
-import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
 
 public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
 
+  private PdpPolicy pdpPolicy;
+
   @Before
   public void before() throws Exception {
+    pdpPolicy = pdpPolicyRepository.save(pdpPolicy(NAME_ID + 1));
     Timestamp oneMonthAgo = new Timestamp(System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30));
     IntStream.of(1, 2, 2, 3, 3, 3).forEach(i -> {
-      String policyId = PolicyTemplateEngine.getPolicyId(POLICY_ID + i);
-      PdpPolicyViolation violation = new PdpPolicyViolation(policyId, POLICY_ID + i, "{}", "response");
+      PdpPolicyViolation violation = new PdpPolicyViolation(pdpPolicy, "{}", "response", true);
+      pdpPolicy.addPdpPolicyViolation(violation);
       violation.setCreated(oneMonthAgo);
       pdpPolicyViolationRepository.save(violation);
     });
@@ -32,24 +33,19 @@ public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
   @Test
   public void testFindCountPerPolicyId() throws JsonProcessingException {
     List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
-    Map<String, List<Object[]>> grouped = countPerPolicyId.stream().filter(res -> String.class.cast(res[0]).startsWith(PolicyTemplateEngine.getPolicyId(POLICY_ID))).collect(groupingBy(o -> (String) o[0]));
-    assertEquals(3, grouped.size());
+    Map<Number, Number> countPerPolicyIdMap = countPerPolicyId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
 
-    LongStream.of(1, 2, 3).forEach(i -> assertEquals(i, grouped.get(PolicyTemplateEngine.getPolicyId(POLICY_ID + i)).get(0)[1]));
-  }
-
-  @Test
-  public void testFindByPolicyId() {
-    List<PdpPolicyViolation> byPolicyId = pdpPolicyViolationRepository.findByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
-    assertEquals(3, byPolicyId.size());
+    assertEquals(countPerPolicyIdMap.get(pdpPolicy.getId()), 6L);
   }
 
   @Test
   public void testDeleteByPolicyId() {
-    pdpPolicyViolationRepository.deleteByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
-    List<PdpPolicyViolation> byPolicyId = pdpPolicyViolationRepository.findByPolicyId(PolicyTemplateEngine.getPolicyId(POLICY_ID + 3));
-    assertEquals(0, byPolicyId.size());
+    long before = pdpPolicyViolationRepository.count();
+    pdpPolicyRepository.delete(pdpPolicy);
+    long after = pdpPolicyViolationRepository.count();
+    assertEquals(before - 6, after);
   }
+
   @Test
   public void retentionPeriod() {
     int deleted = pdpPolicyViolationRepository.deleteOlderThenRetentionDays(25);

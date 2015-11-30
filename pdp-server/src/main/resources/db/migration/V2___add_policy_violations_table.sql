@@ -1,7 +1,6 @@
 CREATE TABLE pdp_policy_violations (
   id           MEDIUMINT    NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  policy_id    VARCHAR(255) NOT NULL,
-  policy_name  VARCHAR(255) NOT NULL,
+  policy_id    MEDIUMINT    NOT NULL,
   json_request TEXT         NOT NULL,
   response     TEXT         NOT NULL,
   created      TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP

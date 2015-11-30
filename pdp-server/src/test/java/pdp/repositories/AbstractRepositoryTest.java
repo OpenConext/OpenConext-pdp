@@ -16,6 +16,8 @@ import pdp.domain.PdpPolicy;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static pdp.policies.PolicyLoader.authenticatingAuthority;
+import static pdp.policies.PolicyLoader.userIdentifier;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
@@ -31,5 +33,10 @@ public class AbstractRepositoryTest {
 
   @Autowired
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
+
+  protected PdpPolicy pdpPolicy(String name) {
+    return new PdpPolicy("xml", name, userIdentifier, authenticatingAuthority);
+  }
+
 
 }

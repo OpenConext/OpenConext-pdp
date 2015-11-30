@@ -17,6 +17,11 @@ App.Pages.PolicyViolations = React.createClass({
         return moment(td.textContent, "DD-MM-YYYY hh:mm").valueOf();
       });
     };
+    $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+      return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).prop('checked') ? '1' : '0';
+      });
+    };
     $('#violations_table').DataTable({
       paging: true,
       language: {
@@ -34,10 +39,11 @@ App.Pages.PolicyViolations = React.createClass({
         }
       },
       columnDefs: [
-        {targets: [2], orderDataType: "locale-date"},
-        {targets: [3], orderable: false}
+        {targets: [3], orderDataType: "locale-date"},
+        {targets: [2], orderDataType: "dom-checkbox"},
+        {targets: [4], orderable: false}
       ],
-      order: [[2, "desc"]]
+      order: [[3, "desc"]]
     });
   },
 
@@ -208,7 +214,6 @@ App.Pages.PolicyViolations = React.createClass({
       var idpName = this.getEntityName(idp, "identityProviders");
       var sp = this.parseEntityId(request.Resource.Attribute, "SPentityID");
       var spName = this.getEntityName(sp, "serviceProviders");
-      var nameId = this.parseEntityId(request.AccessSubject.Attribute, "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified");
 
       var response = JSON.parse(violation.response).Response[0];
       var decision = response.Decision;
@@ -218,6 +223,8 @@ App.Pages.PolicyViolations = React.createClass({
           <tr key={violation.id} className={selected}>
             <td>{idpName}<br/>{spName}</td>
             <td>{decision}</td>
+            <td className='violation_is_playground'><input type="checkbox" defaultChecked={violation.playground}
+                                                           disabled="true"/></td>
             <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes() ) : d.getMinutes())}</td>
             <td className="violation_controls">
               <a href="#" onClick={this.handleShowViolationDetail(violation)}
@@ -233,6 +240,7 @@ App.Pages.PolicyViolations = React.createClass({
           <tr className='success'>
             <th className='violation_providers'>{I18n.t("violations.table.sp_idp")}</th>
             <th className='violation_decision'>{I18n.t("violations.table.decision")}</th>
+            <th className='violation_is_playground'>{I18n.t("violations.table.is_playground")}</th>
             <th className='violation_policy_created'>{I18n.t("violations.table.created")}</th>
             <th className='violation_controls'></th>
           </tr>

@@ -1,11 +1,13 @@
 package pdp.domain;
 
+import org.hibernate.annotations.Formula;
 import pdp.PolicyTemplateEngine;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.hibernate.annotations.CascadeType.*;
 
 @Entity(name = "pdp_policies")
 public class PdpPolicy {
@@ -28,6 +30,13 @@ public class PdpPolicy {
 
   @Column(nullable = true)
   private String userIdentifier;
+
+  @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  @JoinColumn(name = "latest_revision", referencedColumnName = "id")
+  private Set<PdpPolicy> revisions = new HashSet<>();
+
+  @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "policy")
+  private Set<PdpPolicyViolation> violations = new HashSet<>();
 
   public PdpPolicy() {
   }
@@ -86,5 +95,33 @@ public class PdpPolicy {
 
   public void setUserIdentifier(String userIdentifier) {
     this.userIdentifier = userIdentifier;
+  }
+
+  public Set<PdpPolicy> getRevisions() {
+    return revisions;
+  }
+
+  public void setRevisions(Set<PdpPolicy> revisions) {
+    this.revisions = revisions;
+  }
+
+  public void addRevision(PdpPolicy revision) {
+    this.revisions.add(revision);
+  }
+
+  public Set<PdpPolicyViolation> getViolations() {
+    return violations;
+  }
+
+  public void setViolations(Set<PdpPolicyViolation> violations) {
+    this.violations = violations;
+  }
+
+  public void addPdpPolicyViolation(PdpPolicyViolation violation) {
+    this.violations.add(violation);
+  }
+
+  public PdpPolicy clone() {
+    return new PdpPolicy(policyXml, name, userIdentifier, authenticatingAuthority);
   }
 }

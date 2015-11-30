@@ -8,7 +8,7 @@ App.Controllers.PolicyViolations = {
         this.violations.bind(this)
     );
 
-    page("/violations/:policyId",
+    page("/violations/:id",
         this.loadViolations.bind(this),
         this.loadIdentityProviders.bind(this),
         this.loadServiceProviders.bind(this),
@@ -31,8 +31,8 @@ App.Controllers.PolicyViolations = {
   },
 
   loadViolations: function (ctx, next) {
-    var url = ctx.params.policyId ?
-        App.apiUrl("/internal/violations/:policyId", {policyId: encodeURIComponent(ctx.params.policyId)}) : App.apiUrl("/internal/violations");
+    var url = ctx.params.id ?
+        App.apiUrl("/internal/violations/:id", {id: ctx.params.id}) : App.apiUrl("/internal/violations");
     $.get(url, function (data) {
       ctx.violations = data;
       next();

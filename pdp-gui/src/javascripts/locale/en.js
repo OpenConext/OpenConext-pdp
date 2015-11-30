@@ -68,6 +68,7 @@ I18n.translations.en = {
     identityProviderId: "Institution",
     identityProviderIds: "Institution(s)",
     violations: "Unauthorized logins",
+    revisions: "Revisions",
     search: "Search policies...",
     flash: "Policy '{{policyName}}' was successfully {{action}}",
     flash_updated: "updated",
@@ -122,7 +123,8 @@ I18n.translations.en = {
     table: {
       sp_idp: "Institution and Service",
       decision: "Decision",
-      created: "Date"
+      created: "Date",
+      is_playground: "Playground"
     }
   },
 

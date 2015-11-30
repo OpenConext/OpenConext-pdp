@@ -43,6 +43,7 @@ I18n.translations.nl = {
     identityProviderIds: "Instelling(en)",
     identityProviderId: "Instelling",
     violations: "Overtredingen",
+    revisions: "Revisies",
     search: "Zoek autorisatie regels...",
     flash: "Autorisatie regel '{{policyName}}' is succesvol {{action}}",
     flash_updated: "bijgewerkt",
@@ -97,7 +98,8 @@ I18n.translations.nl = {
     table: {
       sp_idp: "Instelling en Dienst",
       decision: "Besluit",
-      created: "Datum"
+      created: "Datum",
+      is_playground: "Playground"
     }
   },
 

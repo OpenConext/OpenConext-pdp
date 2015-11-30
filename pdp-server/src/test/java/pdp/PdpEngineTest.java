@@ -21,11 +21,11 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import pdp.domain.*;
+import pdp.policies.DevelopmentPrePolicyLoader;
+import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.xacml.PdpPolicyDefinitionParser;
-import pdp.policies.PolicyLoader;
 
 import java.io.IOException;
 import java.util.List;
@@ -33,10 +33,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static junit.framework.TestCase.assertFalse;
+import static java.util.stream.StreamSupport.stream;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
@@ -54,6 +57,7 @@ public class PdpEngineTest {
 
   @Autowired
   private PdpPolicyViolationRepository pdpPolicyViolationRepository;
+
   private static ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${local.server.port}")
@@ -69,9 +73,9 @@ public class PdpEngineTest {
     headers.add("Content-Type", "application/json");
   }
 
- @Test
+  @Test
   public void test_all_policies() throws Exception {
-   JsonPolicyRequest policyRequest = getJsonPolicyRequest();
+    JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
     policies.forEach(policy -> doTestPolicy(policyRequest, policy));
@@ -119,8 +123,6 @@ public class PdpEngineTest {
 
     try {
       //We can't use Transactional rollback as the Application runs in a different process.
-     // pdpPolicyViolationRepository.deleteAll();
-
       postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
       postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
       postDecide(policy, denyIndeterminatePolicyRequest,
@@ -128,7 +130,7 @@ public class PdpEngineTest {
           definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
       postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
 
-      assertViolations(definition.getPolicyId());
+      assertViolations(policy.getPolicyId());
     } catch (Exception e) {
       //we are called from lambda so we do fake error handling here
       throw new RuntimeException(e);
@@ -148,14 +150,13 @@ public class PdpEngineTest {
   }
 
   private void assertViolations(String policyId) throws Exception {
-    //test the repo
-    List<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findByPolicyId(policyId).stream().collect(toList());
-    assertFalse(policyId, CollectionUtils.isEmpty(violations));
+    List<PdpPolicyViolation> violations = stream(pdpPolicyViolationRepository.findAll().spliterator(), false).filter(violation -> violation.getPolicy().getPolicyId().equals(policyId)).collect(toList());
+    assertFalse(CollectionUtils.isEmpty(violations));
     violations.forEach(violation -> assertTrue(isValid(violation)));
   }
 
   private boolean isValid(PdpPolicyViolation violation) {
-    return StringUtils.hasText(violation.getPolicyId())
+    return violation.getPolicy() != null
         && StringUtils.hasText(violation.getJsonRequest())
         && StringUtils.hasText(violation.getResponse());
   }

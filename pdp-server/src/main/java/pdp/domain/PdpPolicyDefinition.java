@@ -10,6 +10,8 @@ import javax.validation.constraints.Size;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.groupingBy;
+
 public class PdpPolicyDefinition {
 
   private Long id;
@@ -43,9 +45,13 @@ public class PdpPolicyDefinition {
 
   private int numberOfViolations;
 
+  private int numberOfRevisions;
+
   @NotNull
   @Size(min = 1)
   private String denyAdviceNl;
+
+  private List<PdpPolicyDefinition> revisions = new ArrayList<>();
 
   public PdpPolicyDefinition() {
   }
@@ -158,6 +164,23 @@ public class PdpPolicyDefinition {
     return denyAdviceNl;
   }
 
+  public int getNumberOfRevisions() {
+    return numberOfRevisions;
+  }
+
+  public void setNumberOfRevisions(int numberOfRevisions) {
+    this.numberOfRevisions = numberOfRevisions;
+  }
+
+  public List<PdpPolicyDefinition> getRevisions() {
+    return revisions;
+  }
+
+  public void setRevisions(List<PdpPolicyDefinition> revisions) {
+    this.revisions = revisions;
+  }
+
+  //used in the mustache templates
   @JsonIgnore
   public List anyIdentityProviders() {
     return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.EMPTY_LIST : Arrays.asList("will-iterate-once");
@@ -165,8 +188,7 @@ public class PdpPolicyDefinition {
 
   @JsonIgnore
   public Set<Map.Entry<String, List<PdpAttribute>>> allAttributesGrouped() {
-    Set<Map.Entry<String, List<PdpAttribute>>> entries = this.attributes.stream().collect(Collectors.groupingBy(PdpAttribute::getName)).entrySet();
-    return entries;
+    return this.attributes.stream().collect(groupingBy(PdpAttribute::getName)).entrySet();
   }
 
   @Override

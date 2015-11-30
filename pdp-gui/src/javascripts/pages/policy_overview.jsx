@@ -28,7 +28,7 @@ App.Pages.PolicyOverview = React.createClass({
         }
       },
       columnDefs: [{
-        targets: [5],
+        targets: [6],
         orderable: false
       }]
     });
@@ -83,9 +83,18 @@ App.Pages.PolicyOverview = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
-      page("/violations/:policyId", {policyId: encodeURIComponent(policy.policyId)});
+      page("/violations/:id", {id: policy.id});
     }
   },
+
+  handleShowRevisions: function (policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      page("/revisions/:policyId", {policyId: encodeURIComponent(policy.policyId)});
+    }
+  },
+
 
   closeFlash: function () {
     this.setState({hideFlash: true});
@@ -105,13 +114,22 @@ App.Pages.PolicyOverview = React.createClass({
     if (policy.numberOfViolations === 0) {
       return (<span>0</span>);
     } else {
-      return (<a href={page.uri("/violations/:policyId",{policyId:encodeURIComponent(policy.policyId)})}
+      return (<a href={page.uri("/violations/:id",{id: policy.id})}
                  onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
     }
   },
 
-  renderIdpNames: function(identityProviderNames) {
-    return identityProviderNames.map(function(name){
+  renderRevisionsLink: function (policy) {
+    if (policy.numberOfRevisions === 0) {
+      return (<span>0</span>);
+    } else {
+      return (<a href={page.uri("/revisions/:id",{id:policy.id})}
+                 onClick={this.handleShowRevisions(policy)}>{policy.numberOfRevisions}</a>);
+    }
+  },
+
+  renderIdpNames: function (identityProviderNames) {
+    return identityProviderNames.map(function (name) {
       return (<p>{name}</p>)
     });
   },
@@ -125,6 +143,7 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.serviceProviderName}</td>
             <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
             <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
+            <td className='policy_violations'>{this.renderRevisionsLink(policy)}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
                  data-tooltip={I18n.t("policies.edit")}>
@@ -147,6 +166,7 @@ App.Pages.PolicyOverview = React.createClass({
                 <th className='policy_sp_col'>{I18n.t('policies.serviceProviderId')}</th>
                 <th className='policy_idps_col'>{I18n.t('policies.identityProviderIds')}</th>
                 <th className='policy_violations'>{I18n.t('policies.violations')}</th>
+                <th className='policy_violations'>{I18n.t('policies.revisions')}</th>
                 <th className='policy_controls'></th>
               </tr>
               </thead>

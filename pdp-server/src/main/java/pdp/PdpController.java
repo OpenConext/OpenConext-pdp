@@ -33,10 +33,7 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -49,7 +46,6 @@ import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static pdp.PdpApplication.singletonOptionalCollector;
-import static pdp.repositories.PdpPolicyViolationRepository.NO_POLICY_ID;
 
 @RestController
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
@@ -90,16 +86,16 @@ public class PdpController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
   public String decide(@RequestBody String payload) throws Exception {
-    return doDecide(payload);
+    return doDecide(payload, false);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/internal/decide/policy")
   public String decideInternal(@RequestBody String payload) throws Exception {
     this.refreshPolicies();
-    return doDecide(payload);
+    return doDecide(payload, true);
   }
 
-  private String doDecide(String payload) throws Exception {
+  private String doDecide(String payload, boolean isPlayground) throws Exception {
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
 
@@ -115,18 +111,25 @@ public class PdpController {
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
     LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
 
-    reportPolicyViolation(pdpResponse, response, payload);
+    reportPolicyViolation(pdpResponse, response, payload, isPlayground);
     return response;
   }
 
   @RequestMapping(method = GET, value = "/internal/policies")
   public List<PdpPolicyDefinition> policyDefinitions() {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false).map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
+    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false)
+        .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
 
-    Map<String, Long> countPerPolicyIdMap = pdpPolicyViolationRepository.findCountPerPolicyId().stream().collect(toMap((objects) -> (String) objects[0], (objects) -> (Long) objects[1]));
+    //can't use Formula - https://issues.jboss.org/browse/JBPAPP-6571
+    List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
+    Map<Long, Long> countPerPolicyIdMap = countPerPolicyId.stream().collect(toMap((obj) -> (Long) obj[0], (obj) -> (Long) obj[1]));
+    policies.forEach(policy -> policy.setNumberOfViolations(countPerPolicyIdMap.getOrDefault(policy.getId(), 0L).intValue()));
 
-    policies.forEach(policy -> policy.setNumberOfViolations(countPerPolicyIdMap.getOrDefault(policy.getPolicyId(), 0L).intValue()));
+    List<Object[]> revisionCountPerId = pdpPolicyRepository.findRevisionCountPerId();
+    Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
+    policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
+
     return policies;
   }
 
@@ -135,15 +138,25 @@ public class PdpController {
     return pdpPolicyViolationRepository.findAll();
   }
 
-  @RequestMapping(method = GET, value = "/internal/violations/{policyId}")
-  public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable String policyId) {
-    return pdpPolicyViolationRepository.findByPolicyId(policyId);
+  @RequestMapping(method = GET, value = "/internal/violations/{id}")
+  public Collection<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
+    PdpPolicy policy = findPolicyById(id);
+    return policy.getViolations();
+  }
+
+  @RequestMapping(method = GET, value = "/internal/revisions/{id}")
+  public Collection<PdpPolicy> revisionsByPolicyId(@PathVariable Long id) {
+    PdpPolicy policy = findPolicyById(id);
+    return policy.getRevisions();
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-    PdpPolicy policy = findOneAndOnly(id);
-    return addEntityMetaData(pdpPolicyDefinitionParser.parse(policy));
+    PdpPolicy policy = findPolicyById(id);
+    //trigger load - we don't care about the second query being issued
+    policy.getRevisions().size();
+    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
+    return addEntityMetaData(policyDefinition);
   }
 
   @RequestMapping(method = GET, value = "internal/default-policy")
@@ -174,9 +187,15 @@ public class PdpController {
     PdpPolicyDefinitionParser.parsePolicy(policyXml);
     PdpPolicy policy;
     if (pdpPolicyDefinition.getId() != null) {
-      policy = findOneAndOnly(pdpPolicyDefinition.getId());
+      policy = findPolicyById(pdpPolicyDefinition.getId());
+      PdpPolicy revision = policy.clone();
+      revision.setName(revision.getName() + " r" + policy.getRevisions().size());
+      policy.addRevision(revision);
       policy.setName(pdpPolicyDefinition.getName());
+      policy.setPolicyId(PolicyTemplateEngine.getPolicyId(pdpPolicyDefinition.getName()));
       policy.setPolicyXml(policyXml);
+      policy.setAuthenticatingAuthority(policyIdpAccessEnforcer.authenticatingAuthority());
+      policy.setUserIdentifier(policyIdpAccessEnforcer.username());
     } else {
       policy = new PdpPolicy(
           policyXml,
@@ -199,7 +218,7 @@ public class PdpController {
     }
   }
 
-  private PdpPolicy findOneAndOnly(Long id) {
+  private PdpPolicy findPolicyById(Long id) {
     PdpPolicy policy = pdpPolicyRepository.findOne(id);
     if (policy == null) {
       throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
@@ -209,7 +228,7 @@ public class PdpController {
 
   @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
   public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
-    PdpPolicy policy = findOneAndOnly(id);
+    PdpPolicy policy = findPolicyById(id);
 
     //we need the sp entityId and (if any) idp entityIds and this is the easiest way to do this
     PdpPolicyDefinition pdpPolicyDefinition = pdpPolicyDefinitionParser.parse(policy);
@@ -218,8 +237,6 @@ public class PdpController {
 
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     pdpPolicyRepository.delete(policy);
-    int deleted = pdpPolicyViolationRepository.deleteByPolicyId(policy.getPolicyId());
-    LOG.info("Deleted {} policy violations for PdpPolicy {}", deleted, policy.getName());
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
@@ -235,25 +252,29 @@ public class PdpController {
     return (ShibbolethUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  private void reportPolicyViolation(Response pdpResponse, String response, String payload) {
+  private void reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
     Collection<Result> results = pdpResponse.getResults();
     List<Result> deniesOrIndeterminates = results.stream().filter(result ->
         result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).collect(toList());
     if (!CollectionUtils.isEmpty(deniesOrIndeterminates)) {
-      String policyId = getPolicyId(deniesOrIndeterminates);
-      String policyName = pdpPolicyRepository.findFirstByPolicyId(policyId).stream().findFirst().map(PdpPolicy::getName).orElse(NO_POLICY_ID);
-      pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyId, policyName, payload, response));
+      Optional<IdReference> idReferenceOptional = getPolicyId(deniesOrIndeterminates);
+      if (idReferenceOptional.isPresent()) {
+        String policyId = idReferenceOptional.get().getId().stringValue();
+        Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyId(policyId).stream().findFirst();
+        if (policyOptional.isPresent()) {
+          pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyOptional.get(), payload, response, isPlayground));
+        }
+      }
     }
   }
 
-  private String getPolicyId(List<Result> deniesOrIndeterminates) {
+  private Optional<IdReference> getPolicyId(List<Result> deniesOrIndeterminates) {
     Result result = deniesOrIndeterminates.get(0);
     Collection<IdReference> policyIdentifiers = result.getPolicyIdentifiers();
     Collection<IdReference> policySetIdentifiers = result.getPolicySetIdentifiers();
-    Optional<IdReference> idReference = !CollectionUtils.isEmpty(policyIdentifiers) ?
+    return !CollectionUtils.isEmpty(policyIdentifiers) ?
         policyIdentifiers.stream().collect(singletonOptionalCollector()) :
         policySetIdentifiers.stream().collect(singletonOptionalCollector());
-    return idReference.isPresent() ? idReference.get().getId().stringValue() : NO_POLICY_ID;
   }
 
   private void refreshPolicies() {

@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static pdp.PolicyTemplateEngine.getPolicyId;
 
 /*
  * Loads all policies in /xacml/policies into the database for testing purposes.
@@ -53,7 +54,9 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
   @Override
   public void loadPolicies() {
     pdpPolicyViolationRepository.deleteAll();
-    pdpPolicyRepository.deleteAll();
+    //https://jira.spring.io/browse/DATAJPA-137
+    Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
+    pdpPolicyRepository.delete(all);
     List<PdpPolicy> policies = getPolicies();
     policies.forEach(policy -> {
       pdpPolicyRepository.save(policy);
@@ -61,9 +64,13 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
     });
   }
 
-  private PdpPolicy createPdpPolicy(String xml, String name) {
-    xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\"" + PolicyTemplateEngine.getPolicyId(name) + "\"");
-    name = name.replace(".", " ");
+  public String fileNameToPolicyName(String fileName) {
+    return fileName.replaceAll("(\\.|xml)", "").replaceAll("([A-Z])", " $1").toLowerCase();
+  }
+
+  private PdpPolicy createPdpPolicy(String xml, String fileName) {
+    String name = fileNameToPolicyName(fileName);
+    xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\"" + getPolicyId(name) + "\"");
     return new PdpPolicy(xml, name, userIdentifier, authenticatingAuthority);
   }
 

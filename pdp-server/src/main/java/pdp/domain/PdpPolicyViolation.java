@@ -1,9 +1,8 @@
 package pdp.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 @Entity(name = "pdp_policy_violations")
@@ -12,11 +11,11 @@ public class PdpPolicyViolation {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false)
-  private String policyId;
-
-  @Column(nullable = false)
-  private String policyName;
+  @ManyToOne
+  @JoinColumn(name="policy_id", nullable=false)
+  //to prevent cycles
+  @JsonIgnore
+  private PdpPolicy policy;
 
   @Column(nullable = false)
   private String jsonRequest;
@@ -24,17 +23,20 @@ public class PdpPolicyViolation {
   @Column(nullable = false)
   private String response;
 
-  @Column()
+  @Column
   private Timestamp created;
+
+  @Column
+  private boolean isPlayground;
 
   public PdpPolicyViolation() {
   }
 
-  public PdpPolicyViolation(String policyId, String policyName, String jsonRequest, String response) {
-    this.policyId = policyId;
-    this.policyName = policyName;
+  public PdpPolicyViolation(PdpPolicy policy, String jsonRequest, String response, boolean isPlayground) {
+    this.policy = policy;
     this.jsonRequest = jsonRequest;
     this.response = response;
+    this.isPlayground = isPlayground;
   }
 
   public Long getId() {
@@ -43,22 +45,6 @@ public class PdpPolicyViolation {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getPolicyId() {
-    return policyId;
-  }
-
-  public void setPolicyId(String policyId) {
-    this.policyId = policyId;
-  }
-
-  public String getPolicyName() {
-    return policyName;
-  }
-
-  public void setPolicyName(String policyName) {
-    this.policyName = policyName;
   }
 
   public String getJsonRequest() {
@@ -85,4 +71,20 @@ public class PdpPolicyViolation {
     this.response = response;
   }
 
+  @JsonIgnore
+  public PdpPolicy getPolicy() {
+    return policy;
+  }
+
+  public void setPolicy(PdpPolicy policy) {
+    this.policy = policy;
+  }
+
+  public boolean isPlayground() {
+    return isPlayground;
+  }
+
+  public void setPlayground(boolean playground) {
+    isPlayground = playground;
+  }
 }
