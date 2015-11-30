@@ -33,7 +33,10 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -145,18 +148,16 @@ public class PdpController {
   }
 
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
-  public Collection<PdpPolicy> revisionsByPolicyId(@PathVariable Long id) {
+  public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id);
-    return policy.getRevisions();
+    List<PdpPolicyDefinition> revisions = policy.getRevisions().stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
+    revisions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)));
+    return revisions;
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-    PdpPolicy policy = findPolicyById(id);
-    //trigger load - we don't care about the second query being issued
-    policy.getRevisions().size();
-    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
-    return addEntityMetaData(policyDefinition);
+    return addEntityMetaData(pdpPolicyDefinitionParser.parse(findPolicyById(id)));
   }
 
   @RequestMapping(method = GET, value = "internal/default-policy")
@@ -201,7 +202,8 @@ public class PdpController {
           policyXml,
           pdpPolicyDefinition.getName(),
           policyIdpAccessEnforcer.username(),
-          policyIdpAccessEnforcer.authenticatingAuthority());
+          policyIdpAccessEnforcer.authenticatingAuthority(),
+          policyIdpAccessEnforcer.userDisplayName());
     }
     try {
       //this will throw an Exception if it is not allowed

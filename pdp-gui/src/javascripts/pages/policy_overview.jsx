@@ -91,7 +91,7 @@ App.Pages.PolicyOverview = React.createClass({
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
-      page("/revisions/:policyId", {policyId: encodeURIComponent(policy.policyId)});
+      page("/revisions/:id", {id: policy.id});
     }
   },
 

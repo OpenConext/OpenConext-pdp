@@ -15,6 +15,7 @@ import pdp.domain.PdpPolicyDefinition;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -54,7 +55,7 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
     boolean parsePolicyXml = Boolean.parseBoolean(System.getProperty(PARSE_POLICY_XML));
     ClassPathResource resource = new ClassPathResource("xacml/test-policies/" + policyFile);
     if (parsePolicyXml) {
-      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(1L, policyFile, IOUtils.toString(resource.getInputStream()));
+      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(1L, policyFile, IOUtils.toString(resource.getInputStream()), new Date(), "system");
       String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
       return IOUtils.toInputStream(policyXml);
     } else {

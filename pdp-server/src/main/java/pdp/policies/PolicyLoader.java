@@ -10,6 +10,7 @@ public interface PolicyLoader {
 
   String authenticatingAuthority = "htpp://mock-idp";
   String userIdentifier = "system";
+  String userDisplayName = "system";
 
   List<PdpPolicy> getPolicies();
 

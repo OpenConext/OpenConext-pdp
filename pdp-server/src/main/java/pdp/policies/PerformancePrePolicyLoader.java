@@ -36,7 +36,7 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
     EntityMetaData idp = idps.get(idps.size() - 1);
     int nbr = (this.count == 0 ? sps.size() : this.count);
     return sps.subList(0, nbr).stream().map(sp -> pdpPolicyDefinition(sp, idp, UUID.randomUUID().toString()))
-        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName(), userIdentifier, authenticatingAuthority))
+        .map(def -> new PdpPolicy(templateEngine.createPolicyXml(def), def.getName(), userIdentifier, authenticatingAuthority, userDisplayName))
         .collect(toList());
   }
 

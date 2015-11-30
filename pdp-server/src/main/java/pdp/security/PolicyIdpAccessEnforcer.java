@@ -98,4 +98,8 @@ public class PolicyIdpAccessEnforcer {
   public String authenticatingAuthority() {
     return getShibbolethUser().getAuthenticatingAuthority();
   }
+
+  public String userDisplayName() {
+    return getShibbolethUser().getDisplayName();
+  }
 }

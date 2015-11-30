@@ -91,7 +91,7 @@ I18n.translations.en = {
   },
 
   policy_detail: {
-    update_policy: "Update policy" ,
+    update_policy: "Update policy",
     create_policy: "Create new policy",
     confirmation: "Are your sure you want to leave this page?",
     name: "Name",
@@ -140,9 +140,11 @@ I18n.translations.en = {
     reload_policy: "Reload to apply changes made below"
 
   },
-
+  revisions: {
+    title: "Revisions"
+  },
   policy_attributes: {
-    attribute_value_placeholder:"Attribute value...",
+    attribute_value_placeholder: "Attribute value...",
     attribute: "Attribute",
     values: "Values(s)",
     new_value: "Add a new value...",

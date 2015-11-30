@@ -7,6 +7,7 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.Arrays;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,7 +59,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
   private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
-    PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getId(), definition.getName(), policyXml);
+    PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getId(), definition.getName(), policyXml, new Date(), "system");
     assertEquals(fromPolicyXml, definition);
   }
 }

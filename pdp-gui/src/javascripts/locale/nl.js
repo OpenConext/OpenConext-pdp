@@ -66,7 +66,7 @@ I18n.translations.nl = {
   },
 
   policy_detail: {
-    update_policy: "Bijwerken autorisatie regel" ,
+    update_policy: "Bijwerken autorisatie regel",
     create_policy: "Nieuwe autorisatie regel",
     confirmation: "Weet je zeker dat je deze pagina wilt sluiten?",
     name: "Naam",
@@ -113,6 +113,10 @@ I18n.translations.nl = {
     check_policies: "Nieuw autorisatie verzoek",
     clear_policies: "Clear",
     reload_policy: "Voer een nieuwe check uit met onderstaande wijzigingen"
+  },
+
+  revisions: {
+    title: "Revisies"
   },
 
   policy_attributes: {

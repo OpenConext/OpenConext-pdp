@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static pdp.policies.PolicyLoader.authenticatingAuthority;
+import static pdp.policies.PolicyLoader.userDisplayName;
 import static pdp.policies.PolicyLoader.userIdentifier;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -26,7 +27,6 @@ import static pdp.policies.PolicyLoader.userIdentifier;
 public class AbstractRepositoryTest {
 
   protected static final String NAME_ID = "name_id_";
-  protected static final String POLICY_ID = "policy_id_";
 
   @Autowired
   protected PdpPolicyRepository pdpPolicyRepository;
@@ -35,7 +35,7 @@ public class AbstractRepositoryTest {
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
   protected PdpPolicy pdpPolicy(String name) {
-    return new PdpPolicy("xml", name, userIdentifier, authenticatingAuthority);
+    return new PdpPolicy("xml", name, userIdentifier, authenticatingAuthority, userDisplayName);
   }
 
 

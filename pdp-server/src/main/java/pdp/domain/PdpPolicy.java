@@ -4,6 +4,7 @@ import org.hibernate.annotations.Formula;
 import pdp.PolicyTemplateEngine;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,20 +17,23 @@ public class PdpPolicy {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false)
+  @Column
   private String policyId;
 
-  @Column(nullable = false)
+  @Column
   private String policyXml;
 
-  @Column(nullable = false)
+  @Column
   private String name;
 
-  @Column(nullable = true)
+  @Column
   private String authenticatingAuthority;
 
-  @Column(nullable = true)
+  @Column
   private String userIdentifier;
+
+  @Column
+  private String userDisplayName;
 
   @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinColumn(name = "latest_revision", referencedColumnName = "id")
@@ -38,13 +42,17 @@ public class PdpPolicy {
   @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "policy")
   private Set<PdpPolicyViolation> violations = new HashSet<>();
 
+  @Column(nullable = false, name = "ts")
+  private Date created;
+
   public PdpPolicy() {
   }
 
-  public PdpPolicy(String policyXml, String name, String userIdentifier, String authenticatingAuthority) {
+  public PdpPolicy(String policyXml, String name, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
     this.policyXml = policyXml;
     this.name = name;
     this.userIdentifier = userIdentifier;
+    this.userDisplayName = userDisplayName;
     this.authenticatingAuthority = authenticatingAuthority;
     this.policyId = PolicyTemplateEngine.getPolicyId(name);
   }
@@ -97,6 +105,14 @@ public class PdpPolicy {
     this.userIdentifier = userIdentifier;
   }
 
+  public String getUserDisplayName() {
+    return userDisplayName;
+  }
+
+  public void setUserDisplayName(String userDisplayName) {
+    this.userDisplayName = userDisplayName;
+  }
+
   public Set<PdpPolicy> getRevisions() {
     return revisions;
   }
@@ -121,7 +137,15 @@ public class PdpPolicy {
     this.violations.add(violation);
   }
 
+  public Date getCreated() {
+    return created;
+  }
+
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+
   public PdpPolicy clone() {
-    return new PdpPolicy(policyXml, name, userIdentifier, authenticatingAuthority);
+    return new PdpPolicy(policyXml, name, userIdentifier, authenticatingAuthority, userDisplayName);
   }
 }

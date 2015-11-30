@@ -28,6 +28,7 @@ public class PolicyIdpAccessEnforcerTest {
 
   private String pdpPolicyName = "pdpPolicyName";
   private String uid = "uid";
+  private String displayName = "John Doe";
   private String authenticatingAuthority = "http://mock-idp";
   private String[] identityProviderIds = {"http://mock-idp", "http://mock-idp2"};
   private String[] serviceProviderIds = {"http://mock-sp", "http://mock-sp2"};
@@ -37,7 +38,7 @@ public class PolicyIdpAccessEnforcerTest {
   @Before
   public void before() {
     this.subject = new PolicyIdpAccessEnforcer(true);
-    this.pdpPolicy = new PdpPolicy("N/A", pdpPolicyName, uid, authenticatingAuthority);
+    this.pdpPolicy = new PdpPolicy("N/A", pdpPolicyName, uid, authenticatingAuthority, displayName);
     //individual tests can overwrite this behaviour
     setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
   }
@@ -48,7 +49,7 @@ public class PolicyIdpAccessEnforcerTest {
         new ShibbolethUser(
             uid,
             authenticatingAuthority,
-            "N/A",
+            displayName,
             idpEntities,
             spEntities,
             EMPTY_LIST,
@@ -113,6 +114,11 @@ public class PolicyIdpAccessEnforcerTest {
   @Test
   public void testUserIdentifier() throws Exception {
     assertEquals(uid, subject.username());
+  }
+
+  @Test
+  public void testUserDisplayName() throws Exception {
+    assertEquals(displayName, subject.userDisplayName());
   }
 
   private Set<EntityMetaData> entityMetadata(String... entityIds) {

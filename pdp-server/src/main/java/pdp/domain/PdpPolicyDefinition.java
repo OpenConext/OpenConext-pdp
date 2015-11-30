@@ -43,6 +43,10 @@ public class PdpPolicyDefinition {
 
   private boolean allAttributesMustMatch;
 
+  private Date created;
+
+  private String userDisplayName;
+
   private int numberOfViolations;
 
   private int numberOfRevisions;
@@ -50,8 +54,6 @@ public class PdpPolicyDefinition {
   @NotNull
   @Size(min = 1)
   private String denyAdviceNl;
-
-  private List<PdpPolicyDefinition> revisions = new ArrayList<>();
 
   public PdpPolicyDefinition() {
   }
@@ -172,12 +174,20 @@ public class PdpPolicyDefinition {
     this.numberOfRevisions = numberOfRevisions;
   }
 
-  public List<PdpPolicyDefinition> getRevisions() {
-    return revisions;
+  public Date getCreated() {
+    return created;
   }
 
-  public void setRevisions(List<PdpPolicyDefinition> revisions) {
-    this.revisions = revisions;
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+
+  public String getUserDisplayName() {
+    return userDisplayName;
+  }
+
+  public void setUserDisplayName(String userDisplayName) {
+    this.userDisplayName = userDisplayName;
   }
 
   //used in the mustache templates
