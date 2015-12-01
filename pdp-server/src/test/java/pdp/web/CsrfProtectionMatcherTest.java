@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 public class CsrfProtectionMatcherTest {
 
   private String baseUrl = "https://pdp.surfconext.nl/";
+
   private CsrfProtectionMatcher subject = new CsrfProtectionMatcher();
 
   @Test

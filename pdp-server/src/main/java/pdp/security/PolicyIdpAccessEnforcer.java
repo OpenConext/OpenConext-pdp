@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
+import static org.springframework.util.Assert.hasText;
 
 public class PolicyIdpAccessEnforcer {
 
@@ -37,7 +38,7 @@ public class PolicyIdpAccessEnforcer {
       return;
     }
 
-    Assert.hasText(serviceProviderId);
+    hasText(serviceProviderId);
 
     ShibbolethUser shibbolethUser = getShibbolethUser();
 
