@@ -8,3 +8,5 @@ CREATE TABLE pdp_policy_violations (
   ENGINE = InnoDB
   DEFAULT CHARSET = latin1
   COLLATE = latin1_general_cs;
+
+ALTER TABLE pdp_policy_violations ADD INDEX pdp_policy_violations_policy_id (policy_id);

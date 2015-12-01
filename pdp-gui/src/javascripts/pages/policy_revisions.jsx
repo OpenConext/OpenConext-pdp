@@ -54,16 +54,20 @@ App.Pages.PolicyRevisions = React.createClass({
   },
 
   renderRevisions: function() {
+    this.props.revisions.sort(function(rev1, rev2){
+      return rev2.created - rev1.created;
+    });
     var renderRevision = this.renderRevision;
     return this.props.revisions.map(function (revision, index) {
-      return renderRevision(revision);
+      return renderRevision(revision, index);
     });
   },
 
-  renderRevision: function (revision) {
+  renderRevision: function (revision, index) {
+    var className = index === 0 ? "success" : "failure";
     return (
         <div>
-          <div className="form-element split success">
+          <div className={"form-element split " + className}>
             <p className="label before-em">{revision.name}</p>
             <em className="label">{revision.userDisplayName + " - " + new Date(revision.created)}</em>
             <i className="large fa fa-arrow-right"></i>

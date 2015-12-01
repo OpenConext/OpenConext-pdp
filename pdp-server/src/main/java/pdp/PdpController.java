@@ -33,10 +33,7 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -150,7 +147,11 @@ public class PdpController {
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id);
-    List<PdpPolicyDefinition> revisions = policy.getRevisions().stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
+    PdpPolicy parent = policy.getParentPolicy();
+    List<PdpPolicyDefinition> revisions = parent != null ?
+        parent.getRevisions().stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList()) :
+        Collections.EMPTY_LIST;
+
     revisions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)));
     return revisions;
   }
@@ -187,16 +188,12 @@ public class PdpController {
     //if this works then we know the input was correct
     PdpPolicyDefinitionParser.parsePolicy(policyXml);
     PdpPolicy policy;
+
     if (pdpPolicyDefinition.getId() != null) {
-      policy = findPolicyById(pdpPolicyDefinition.getId());
-      PdpPolicy revision = policy.clone();
-      revision.setName(revision.getName() + " r" + policy.getRevisions().size());
-      policy.addRevision(revision);
-      policy.setName(pdpPolicyDefinition.getName());
-      policy.setPolicyId(PolicyTemplateEngine.getPolicyId(pdpPolicyDefinition.getName()));
-      policy.setPolicyXml(policyXml);
-      policy.setAuthenticatingAuthority(policyIdpAccessEnforcer.authenticatingAuthority());
-      policy.setUserIdentifier(policyIdpAccessEnforcer.username());
+      PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
+      policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
+      PdpPolicy.revision(pdpPolicyDefinition, policy, policyXml, policyIdpAccessEnforcer.username(), policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName());
+
     } else {
       policy = new PdpPolicy(
           policyXml,

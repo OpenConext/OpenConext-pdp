@@ -54,9 +54,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
   @Override
   public void loadPolicies() {
     pdpPolicyViolationRepository.deleteAll();
-    //https://jira.spring.io/browse/DATAJPA-137
-    Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    pdpPolicyRepository.delete(all);
+    pdpPolicyRepository.deleteAll();
     List<PdpPolicy> policies = getPolicies();
     policies.forEach(policy -> {
       pdpPolicyRepository.save(policy);

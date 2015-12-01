@@ -1,1 +1,1 @@
-ALTER TABLE `pdp_policies` ADD UNIQUE INDEX `pdp_policy_name_unique` (`name`);
+ALTER TABLE pdp_policies ADD UNIQUE INDEX pdp_policy_name_unique (name);

@@ -1,14 +1,12 @@
 package pdp.domain;
 
-import org.hibernate.annotations.Formula;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import pdp.PolicyTemplateEngine;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
-import static org.hibernate.annotations.CascadeType.*;
 
 @Entity(name = "pdp_policies")
 public class PdpPolicy {
@@ -35,8 +33,19 @@ public class PdpPolicy {
   @Column
   private String userDisplayName;
 
-  @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  @JoinColumn(name = "latest_revision", referencedColumnName = "id")
+  @Column
+  private int revisionNbr;
+
+  @Column
+  private boolean latestRevision;
+
+  @ManyToOne
+  @JoinColumn(name = "revision_parent_id", nullable = true)
+  //to prevent cycles
+  @JsonIgnore
+  private PdpPolicy parentPolicy;
+
+  @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "parentPolicy")
   private Set<PdpPolicy> revisions = new HashSet<>();
 
   @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "policy")
@@ -122,6 +131,7 @@ public class PdpPolicy {
   }
 
   public void addRevision(PdpPolicy revision) {
+    revision.setParentPolicy(this);
     this.revisions.add(revision);
   }
 
@@ -145,7 +155,40 @@ public class PdpPolicy {
     this.created = created;
   }
 
-  public PdpPolicy clone() {
-    return new PdpPolicy(policyXml, name, userIdentifier, authenticatingAuthority, userDisplayName);
+  public int getRevisionNbr() {
+    return revisionNbr;
+  }
+
+  public void setRevisionNbr(int revisionNbr) {
+    this.revisionNbr = revisionNbr;
+  }
+
+  public boolean isLatestRevision() {
+    return latestRevision;
+  }
+
+  public void setLatestRevision(boolean latestRevision) {
+    this.latestRevision = latestRevision;
+  }
+
+  public PdpPolicy getParentPolicy() {
+    return parentPolicy;
+  }
+
+  public void setParentPolicy(PdpPolicy parentPolicy) {
+    this.parentPolicy = parentPolicy;
+  }
+
+  public static PdpPolicy revision(PdpPolicyDefinition pdpPolicyDefinition, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
+    parent.getRevisions().forEach(p -> p.setLatestRevision(false));
+    parent.setLatestRevision(false);
+
+    PdpPolicy clone = new PdpPolicy(newPolicyXml, pdpPolicyDefinition.getName(), userIdentifier, authenticatingAuthority, userDisplayName);
+    clone.setLatestRevision(true);
+    clone.setRevisionNbr(parent.getRevisions().size() + 1);
+
+    parent.addRevision(clone);
+
+    return clone;
   }
 }
