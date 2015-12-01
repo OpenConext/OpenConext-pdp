@@ -1,4 +1,4 @@
-package pdp;
+package pdp.web;
 
 import org.springframework.security.web.util.matcher.RequestMatcher;
 

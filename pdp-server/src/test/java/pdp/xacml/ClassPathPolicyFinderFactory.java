@@ -3,13 +3,10 @@ package pdp.xacml;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.pdp.policy.PolicyDef;
-import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.std.StdPolicyFinderFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.Assert;
-import pdp.PolicyTemplateEngine;
+import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
@@ -55,7 +52,8 @@ public class ClassPathPolicyFinderFactory extends StdPolicyFinderFactory {
     boolean parsePolicyXml = Boolean.parseBoolean(System.getProperty(PARSE_POLICY_XML));
     ClassPathResource resource = new ClassPathResource("xacml/test-policies/" + policyFile);
     if (parsePolicyXml) {
-      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(1L, policyFile, IOUtils.toString(resource.getInputStream()), new Date(), "system");
+      PdpPolicy policy = new PdpPolicy(IOUtils.toString(resource.getInputStream()), policyFile, true, "system", "http://mock-ipd", "system-user");
+      PdpPolicyDefinition policyDefinition = policyDefinitionParser.parse(policy);
       String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
       return IOUtils.toInputStream(policyXml);
     } else {

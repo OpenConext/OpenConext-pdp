@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
-import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -17,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static pdp.PolicyTemplateEngine.getPolicyId;
+import static pdp.xacml.PolicyTemplateEngine.getPolicyId;
 
 /*
  * Loads all policies in /xacml/policies into the database for testing purposes.

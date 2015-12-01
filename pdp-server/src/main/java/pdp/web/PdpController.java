@@ -1,4 +1,4 @@
-package pdp;
+package pdp.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -19,6 +19,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import pdp.PdpPolicyException;
+import pdp.PolicyNotFoundException;
 import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -30,6 +32,7 @@ import pdp.serviceregistry.ServiceRegistry;
 import pdp.shibboleth.ShibbolethUser;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
+import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,12 +151,11 @@ public class PdpController {
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id);
     PdpPolicy parent = policy.getParentPolicy();
-    List<PdpPolicyDefinition> revisions = parent != null ?
-        parent.getRevisions().stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList()) :
-        Collections.EMPTY_LIST;
+    Set<PdpPolicy> revisions = parent != null ? parent.getRevisions() : policy.getRevisions();
+    List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
 
-    revisions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)));
-    return revisions;
+    definitions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)));
+    return definitions;
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
@@ -193,7 +195,6 @@ public class PdpController {
       PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
       PdpPolicy.revision(pdpPolicyDefinition, policy, policyXml, policyIdpAccessEnforcer.username(), policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName());
-
     } else {
       policy = new PdpPolicy(
           policyXml,
@@ -210,7 +211,7 @@ public class PdpController {
       LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
       return saved;
     } catch (DataIntegrityViolationException e) {
-      if (e.getMessage().contains("pdp_policy_name_unique")) {
+      if (e.getMessage().contains("pdp_policy_name_revision_unique")) {
         throw new PdpPolicyException("name", "Policy name must be unique. " + pdpPolicyDefinition.getName() + " is already taken");
       } else {
         throw e;
@@ -260,7 +261,7 @@ public class PdpController {
       Optional<IdReference> idReferenceOptional = getPolicyId(deniesOrIndeterminates);
       if (idReferenceOptional.isPresent()) {
         String policyId = idReferenceOptional.get().getId().stringValue();
-        Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyId(policyId).stream().findFirst();
+        Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).stream().findFirst();
         if (policyOptional.isPresent()) {
           pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyOptional.get(), payload, response, isPlayground));
         }

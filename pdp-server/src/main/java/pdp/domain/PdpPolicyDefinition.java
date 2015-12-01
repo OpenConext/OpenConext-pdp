@@ -2,13 +2,12 @@ package pdp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.util.CollectionUtils;
-import pdp.PolicyTemplateEngine;
+import pdp.xacml.PolicyTemplateEngine;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -54,6 +53,8 @@ public class PdpPolicyDefinition {
   @NotNull
   @Size(min = 1)
   private String denyAdviceNl;
+
+  private int revisionNbr;
 
   public PdpPolicyDefinition() {
   }
@@ -190,6 +191,14 @@ public class PdpPolicyDefinition {
     this.userDisplayName = userDisplayName;
   }
 
+  public void setRevisionNbr(int revisionNbr) {
+    this.revisionNbr = revisionNbr;
+  }
+
+  public int getRevisionNbr() {
+    return revisionNbr;
+  }
+
   //used in the mustache templates
   @JsonIgnore
   public List anyIdentityProviders() {
@@ -236,6 +245,7 @@ public class PdpPolicyDefinition {
         ", allAttributesMustMatch=" + allAttributesMustMatch +"\n" +
         '}';
   }
+
 
 
 }

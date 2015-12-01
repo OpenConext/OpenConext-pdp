@@ -1,7 +1,7 @@
 package pdp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import pdp.PolicyTemplateEngine;
+import pdp.xacml.PolicyTemplateEngine;
 
 import javax.persistence.*;
 import java.util.Date;

@@ -35,13 +35,13 @@ public class VootClientConfig {
   private String vootServiceUrl;
 
   @Bean
-  @Profile({"test","acc","prod"})
+  @Profile({"test", "acc", "prod"})
   public VootClient vootClient() {
     return new VootClient(vootRestTemplate(), vootServiceUrl);
   }
 
   @Bean
-  @Profile({"dev","perf"})
+  @Profile({"dev", "perf", "no-csrf"})
   public VootClient mockVootClient() {
     return new VootClient(vootRestTemplate(), vootServiceUrl) {
       @Override

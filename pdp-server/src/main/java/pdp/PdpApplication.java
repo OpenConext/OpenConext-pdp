@@ -25,7 +25,6 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfFilter;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -42,7 +41,9 @@ import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import pdp.shibboleth.ShibbolethUserDetailService;
 import pdp.shibboleth.mock.MockShibbolethFilter;
 import pdp.teams.VootClient;
-import pdp.xacml.*;
+import pdp.web.CsrfProtectionMatcher;
+import pdp.web.CsrfTokenResponseHeaderBindingFilter;
+import pdp.xacml.PDPEngineHolder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -51,7 +52,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 @SpringBootApplication()
@@ -85,7 +85,7 @@ public class PdpApplication {
   }
 
   @Bean
-  @Profile({"dev"})
+  @Profile({"dev", "no-csrf"})
   @Autowired
   public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") final String policyBaseDir, final PdpPolicyRepository pdpPolicyRepository, final PdpPolicyViolationRepository pdpPolicyViolationRepository) {
     return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
@@ -162,8 +162,11 @@ public class PdpApplication {
     @Autowired
     private ServiceRegistry serviceRegistry;
 
+    @Autowired
+    private Environment environment;
+
     @Bean
-    @Profile({"dev","perf"})
+    @Profile({"dev", "perf", "no-csrf"})
     public FilterRegistrationBean mockShibbolethFilter() {
       FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
       filterRegistrationBean.setFilter(new MockShibbolethFilter());
@@ -199,6 +202,10 @@ public class PdpApplication {
           .authorizeRequests()
           .antMatchers("/internal/**")
           .authenticated();
+
+      if (environment.acceptsProfiles("no-csrf")) {
+        http.csrf().disable();
+      }
     }
 
     private AuthenticationManager getBasicAuthenticationManager() {
@@ -223,13 +230,20 @@ public class PdpApplication {
     return Collector.of(ArrayList::new, List::add, (left, right) -> {
           left.addAll(right);
           return left;
-        }, list -> {
-          if (list.isEmpty()) {
-            return Optional.empty();
-          }
-          return Optional.of(list.get(0));
-        }
+        }, list -> list.isEmpty() ? Optional.empty() : Optional.of(list.get(0))
     );
   }
 
+  public static <T> Collector<T, List<T>, T> singletonCollector() {
+    return Collector.of(ArrayList::new, List::add, (left, right) -> {
+          left.addAll(right);
+          return left;
+        }, list -> {
+          if (list.isEmpty()) {
+            throw new RuntimeException("Expected at least one element in the List");
+          }
+          return list.get(0);
+    }
+    );
+  }
 }

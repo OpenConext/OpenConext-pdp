@@ -23,7 +23,7 @@ import java.util.Collection;
 
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.StreamSupport.stream;
-import static pdp.PolicyTemplateEngine.getPolicyId;
+import static pdp.xacml.PolicyTemplateEngine.getPolicyId;
 
 public class OpenConextEvaluationContextFactory extends StdEvaluationContextFactory {
 

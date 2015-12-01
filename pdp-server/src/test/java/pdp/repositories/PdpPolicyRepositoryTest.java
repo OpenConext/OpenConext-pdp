@@ -13,7 +13,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static pdp.PolicyTemplateEngine.getPolicyId;
+import static pdp.xacml.PolicyTemplateEngine.getPolicyId;
 
 public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
 
@@ -24,13 +24,16 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
 
   @Test
   public void testFindByName() throws JsonProcessingException {
-    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyId(getPolicyId(NAME_ID + 1)).stream().findFirst();
+    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1),true).stream().findFirst();
     assertEquals(NAME_ID + 1, policy.get().getName());
+
+    Optional<PdpPolicy> notLatestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), false).stream().findFirst();
+    assertFalse(notLatestRevision.isPresent());
   }
 
   @Test
   public void testFindByNameNotFound() throws JsonProcessingException {
-    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyId("nope").stream().findFirst();
+    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision("nope", true).stream().findFirst();
     assertFalse(policy.isPresent());
   }
 

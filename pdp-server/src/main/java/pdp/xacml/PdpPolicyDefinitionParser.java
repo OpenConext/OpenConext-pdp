@@ -35,19 +35,17 @@ public class PdpPolicyDefinitionParser {
   public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
 
   public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
-    return parse(pdpPolicy.getId(), pdpPolicy.getName(), pdpPolicy.getPolicyXml(), pdpPolicy.getCreated(), pdpPolicy.getUserDisplayName());
-  }
-
-  public PdpPolicyDefinition parse(Long id, String policyName, String policyXml, Date created, String userDisplayName) {
     PdpPolicyDefinition definition = new PdpPolicyDefinition();
+    String policyXml = pdpPolicy.getPolicyXml();
 
     Policy policy = parsePolicy(policyXml);
 
-    definition.setId(id);
-    definition.setName(policyName);
+    definition.setId(pdpPolicy.getId());
+    definition.setName(pdpPolicy.getName());
     definition.setDescription(policy.getDescription());
-    definition.setCreated(created);
-    definition.setUserDisplayName(userDisplayName);
+    definition.setCreated(pdpPolicy.getCreated());
+    definition.setUserDisplayName(pdpPolicy.getUserDisplayName());
+    definition.setRevisionNbr(pdpPolicy.getRevisionNbr());
 
     parseTargets(policyXml, definition, policy);
 

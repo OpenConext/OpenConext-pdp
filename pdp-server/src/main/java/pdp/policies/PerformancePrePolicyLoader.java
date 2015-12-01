@@ -1,7 +1,7 @@
 package pdp.policies;
 
 import org.springframework.core.io.ByteArrayResource;
-import pdp.PolicyTemplateEngine;
+import pdp.xacml.PolicyTemplateEngine;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;

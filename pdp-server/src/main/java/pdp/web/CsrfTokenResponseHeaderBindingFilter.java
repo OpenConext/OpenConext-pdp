@@ -1,4 +1,4 @@
-package pdp;
+package pdp.web;
 
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.filter.OncePerRequestFilter;

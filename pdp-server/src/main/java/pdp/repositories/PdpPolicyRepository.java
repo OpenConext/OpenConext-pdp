@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import org.springframework.data.jpa.repository.Query;
 public interface PdpPolicyRepository extends CrudRepository<PdpPolicy, Long> {
 
-  List<PdpPolicy> findFirstByPolicyId(@Param("policyId") String policyId);
+  List<PdpPolicy> findFirstByPolicyIdAndLatestRevision(String policyId, boolean latestRevision);
 
   @Override
   @Query(value = "SELECT * FROM pdp_policies p WHERE p.latest_revision = 1", nativeQuery = true)

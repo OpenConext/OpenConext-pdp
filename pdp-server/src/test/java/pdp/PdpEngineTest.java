@@ -1,47 +1,24 @@
 package pdp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.std.json.JSONResponse;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
-import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import pdp.domain.*;
-import pdp.policies.DevelopmentPrePolicyLoader;
-import pdp.policies.PolicyLoader;
-import pdp.repositories.PdpPolicyRepository;
-import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.xacml.PdpPolicyDefinitionParser;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.junit.Assert.*;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
@@ -50,31 +27,10 @@ import static pdp.xacml.PdpPolicyDefinitionParser.*;
  * <p/>
  * If you want to test policies quickly then see StandAlonePdpEngineTest
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.properties", "spring.profiles.active=dev"})
-public class PdpEngineTest {
-
-  @Autowired
-  private PdpPolicyViolationRepository pdpPolicyViolationRepository;
-
-  private static ObjectMapper objectMapper = new ObjectMapper();
-
-  @Value("${local.server.port}")
-  private int port;
-  private MultiValueMap<String, String> headers;
-  private TestRestTemplate restTemplate = new TestRestTemplate("pdp-admin", "secret");
-  private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
-
-  @Before
-  public void before() throws IOException {
-    headers = new LinkedMultiValueMap<>();
-    headers.add("Content-Type", "application/json");
-  }
+public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
   @Test
-  public void test_all_policies() throws Exception {
+  public void testAllPolicies() throws Exception {
     JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
@@ -84,7 +40,7 @@ public class PdpEngineTest {
   @Test
   public void testCrsfConfiguration() throws Exception {
     HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(getJsonPolicyRequest()), headers);
-    Map jsonResponse = restTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, Map.class);
+    Map jsonResponse = testRestTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, Map.class);
     assertEquals(403, jsonResponse.get("status"));
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
   }
@@ -141,7 +97,7 @@ public class PdpEngineTest {
     final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
     String jsonRequest = objectMapper.writeValueAsString(policyRequest);
     HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
-    String jsonResponse = restTemplate.postForObject(url, request, String.class);
+    String jsonResponse = testRestTemplate.postForObject(url, request, String.class);
     Response response = JSONResponse.load(jsonResponse);
     assertEquals(policy.getName(), 1, response.getResults().size());
     Result result = response.getResults().iterator().next();
@@ -159,10 +115,6 @@ public class PdpEngineTest {
     return violation.getPolicy() != null
         && StringUtils.hasText(violation.getJsonRequest())
         && StringUtils.hasText(violation.getResponse());
-  }
-
-  private JsonPolicyRequest getJsonPolicyRequest() throws IOException {
-    return objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
   }
 
 }

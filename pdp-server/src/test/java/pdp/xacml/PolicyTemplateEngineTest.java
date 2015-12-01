@@ -1,13 +1,13 @@
-package pdp;
+package pdp.xacml;
 
 import org.junit.Before;
 import org.junit.Test;
+import pdp.AbstractXacmlTest;
 import pdp.domain.PdpAttribute;
+import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
-import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.Arrays;
-import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 
@@ -59,7 +59,9 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
   private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
-    PdpPolicyDefinition fromPolicyXml = parser.parse(definition.getId(), definition.getName(), policyXml, new Date(), "system");
+    PdpPolicy policy = new PdpPolicy(policyXml, definition.getName(), true, "system", "http://mock-ipd", "John Doe");
+
+    PdpPolicyDefinition fromPolicyXml = parser.parse(policy);
     assertEquals(fromPolicyXml, definition);
   }
 }

@@ -3,8 +3,6 @@ package pdp.serviceregistry;
 import org.junit.Test;
 import org.springframework.util.StringUtils;
 import pdp.domain.EntityMetaData;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
-import pdp.serviceregistry.ServiceRegistry;
 
 import java.util.List;
 import java.util.Optional;

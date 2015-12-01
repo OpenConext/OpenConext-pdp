@@ -1,6 +1,5 @@
 package pdp;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
@@ -16,7 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import pdp.xacml.ClassPathPolicyFinderFactory;
+import pdp.web.PdpController;
+import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
 import java.util.Arrays;

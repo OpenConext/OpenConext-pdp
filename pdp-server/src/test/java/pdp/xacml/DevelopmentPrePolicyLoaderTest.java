@@ -2,7 +2,6 @@ package pdp.xacml;
 
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import pdp.PolicyTemplateEngine;
 import pdp.domain.PdpPolicy;
 import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.policies.PolicyLoader;
