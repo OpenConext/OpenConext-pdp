@@ -198,6 +198,7 @@ public class PdpController {
       policy = new PdpPolicy(
           policyXml,
           pdpPolicyDefinition.getName(),
+          true,
           policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(),
           policyIdpAccessEnforcer.userDisplayName());

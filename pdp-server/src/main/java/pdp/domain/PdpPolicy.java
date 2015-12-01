@@ -57,9 +57,10 @@ public class PdpPolicy {
   public PdpPolicy() {
   }
 
-  public PdpPolicy(String policyXml, String name, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
+  public PdpPolicy(String policyXml, String name, boolean latestRevision, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
     this.policyXml = policyXml;
     this.name = name;
+    this.latestRevision = latestRevision;
     this.userIdentifier = userIdentifier;
     this.userDisplayName = userDisplayName;
     this.authenticatingAuthority = authenticatingAuthority;
@@ -183,8 +184,7 @@ public class PdpPolicy {
     parent.getRevisions().forEach(p -> p.setLatestRevision(false));
     parent.setLatestRevision(false);
 
-    PdpPolicy clone = new PdpPolicy(newPolicyXml, pdpPolicyDefinition.getName(), userIdentifier, authenticatingAuthority, userDisplayName);
-    clone.setLatestRevision(true);
+    PdpPolicy clone = new PdpPolicy(newPolicyXml, pdpPolicyDefinition.getName(),true, userIdentifier, authenticatingAuthority, userDisplayName);
     clone.setRevisionNbr(parent.getRevisions().size() + 1);
 
     parent.addRevision(clone);
