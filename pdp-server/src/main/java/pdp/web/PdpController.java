@@ -154,7 +154,7 @@ public class PdpController {
     Set<PdpPolicy> revisions = parent != null ? parent.getRevisions() : policy.getRevisions();
     List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
 
-    definitions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)));
+    definitions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(parent != null ? parent : policy)));
     return definitions;
   }
 
@@ -195,7 +195,7 @@ public class PdpController {
       PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
       PdpPolicy.revision(
-          pdpPolicyDefinition,
+          pdpPolicyDefinition.getName(),
           policy,
           policyXml,
           policyIdpAccessEnforcer.username(),

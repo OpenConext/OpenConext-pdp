@@ -17,7 +17,7 @@ public interface PdpPolicyRepository extends CrudRepository<PdpPolicy, Long> {
   @Query(value = "SELECT * FROM pdp_policies p WHERE p.latest_revision = 1", nativeQuery = true)
   Iterable<PdpPolicy> findAll();
 
-  @Query(value = "SELECT p.id, (SELECT COUNT(*) FROM pdp_policies p2 WHERE p2.revision_parent_id = p.id) AS revision_count FROM pdp_policies p WHERE p.revision_parent_id IS NULL", nativeQuery = true)
+  @Query(value = "SELECT p.id, (SELECT COUNT(*) FROM pdp_policies p2 WHERE p2.revision_parent_id = p.revision_parent_id) AS revision_count FROM pdp_policies p WHERE latest_revision = 1", nativeQuery = true)
   List<Object[]> findRevisionCountPerId();
 
   @Override

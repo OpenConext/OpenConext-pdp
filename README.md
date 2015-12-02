@@ -68,6 +68,12 @@ To run locally:
 
 Browse to the [application homepage](http://localhost:8001/).
 
+### foreman
+
+For ruby users you can start everything at once with:
+
+`foreman start`
+
 ## Testing
 
 There are (slow) integration tests for PdpApplication where various decisions are tested against a full-blown running Spring app. See [PdpEngineTest](pdp-server/src/test/java/pdp/PdpEngineTest.java)

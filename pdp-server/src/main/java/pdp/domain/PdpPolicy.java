@@ -180,11 +180,11 @@ public class PdpPolicy {
     this.parentPolicy = parentPolicy;
   }
 
-  public static PdpPolicy revision(PdpPolicyDefinition pdpPolicyDefinition, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
+  public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
     parent.getRevisions().forEach(p -> p.setLatestRevision(false));
     parent.setLatestRevision(false);
 
-    PdpPolicy clone = new PdpPolicy(newPolicyXml, pdpPolicyDefinition.getName(),true, userIdentifier, authenticatingAuthority, userDisplayName);
+    PdpPolicy clone = new PdpPolicy(newPolicyXml, newName, true, userIdentifier, authenticatingAuthority, userDisplayName);
     clone.setRevisionNbr(parent.getRevisions().size() + 1);
 
     parent.addRevision(clone);

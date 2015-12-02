@@ -70,7 +70,7 @@ App.Pages.PolicyRevisions = React.createClass({
           <div className={"form-element split " + className}>
             <p className="label before-em">{revision.name}</p>
             <em className="label">{revision.userDisplayName + " - " + new Date(revision.created)}</em>
-            <i className="large fa fa-arrow-right"></i>
+            <i className="revision fa fa-arrow-right"></i>
           </div>
           <div className="bottom"></div>
         </div>

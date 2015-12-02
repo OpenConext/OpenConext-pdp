@@ -24,7 +24,7 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
 
   @Test
   public void testFindByName() throws JsonProcessingException {
-    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1),true).stream().findFirst();
+    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), true).stream().findFirst();
     assertEquals(NAME_ID + 1, policy.get().getName());
 
     Optional<PdpPolicy> notLatestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), false).stream().findFirst();
@@ -40,13 +40,16 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
   @Test
   public void testFindRevisionCountPerId() throws Exception {
     PdpPolicy policy = pdpPolicy(NAME_ID + 2);
-    policy.addRevision(pdpPolicy(NAME_ID + 3));
-    PdpPolicy saved = pdpPolicyRepository.save(policy);
+    PdpPolicy.revision(NAME_ID + 3, policy, "xml", "system", "http://mock-idp", "John Doe");
+    PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", "http://mock-idp", "John Doe");
+    pdpPolicyRepository.save(policy);
+
+    PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 4), true).get(0);
 
     List<Object[]> revisionCountPerId = pdpPolicyRepository.findRevisionCountPerId();
     Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
 
-    assertEquals("1", revisionCountPerIdMap.get(saved.getId().intValue()).toString());
+    assertEquals("2", revisionCountPerIdMap.get(latestRevision.getId().intValue()).toString());
   }
 
 }
