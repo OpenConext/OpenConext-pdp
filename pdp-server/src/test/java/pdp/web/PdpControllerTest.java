@@ -1,29 +1,28 @@
 package pdp.web;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
+import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.xacml.PdpPolicyDefinitionParser;
+import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Map;
 
-import static junit.framework.TestCase.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.properties", "spring.profiles.active=no-csrf"})
 public class PdpControllerTest extends AbstractPdpIntegrationTest {
@@ -43,7 +42,9 @@ public class PdpControllerTest extends AbstractPdpIntegrationTest {
   public void testPolicyDefinitions() throws Exception {
     String json = get("internal/policies");
     List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
-    assertEquals(9, definitions.size());
+    // depends on the ordering of the tests - does not really matter
+    assertTrue(definitions.size() >= 9);
+    definitions.forEach(def -> assertNotNull(def.getCreated()));
   }
 
   @Test
@@ -62,15 +63,13 @@ public class PdpControllerTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testRevisionsByPolicyId() throws Exception {
+  public void testRevisionsByPolicyIdWithExistingPolicy() throws Exception {
     //we use the API to set up the revisions
     PdpPolicy policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).get(0);
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
     String initialDenyAdvice = policyDefinition.getDenyAdvice();
 
     policyDefinition.setDenyAdvice("advice_changed");
-    //this will ensure one revision is made
-    policyDefinition.setId(policy.getId());
 
     post("internal/policies", policyDefinition);
 
@@ -90,45 +89,107 @@ public class PdpControllerTest extends AbstractPdpIntegrationTest {
 
   }
 
+  @Test
+  public void testRevisionsByPolicyIdWithNewPolicy() throws Exception {
+    PdpPolicy policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).get(0);
+    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
+
+    //this will ensure a new policy is created
+    policyDefinition.setId(null);
+    policyDefinition.setName("some name");
+
+    post("internal/policies", policyDefinition);
+
+    PdpPolicy saved = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(
+        PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get(0);
+    String json = get("internal/revisions/" + saved.getId());
+    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
+
+    assertEquals(1, definitions.size());
+    assertEquals(policyDefinition.getName(), definitions.get(0).getName());
+  }
+
 
   @Test
   public void testDefaultPolicy() throws Exception {
-
+    String json = get("internal/default-policy");
+    PdpPolicyDefinition definition = objectMapper.readValue(json, PdpPolicyDefinition.class);
+    assertFalse(definition.isAllAttributesMustMatch());
+    assertFalse(definition.isDenyRule());
   }
 
   @Test
   public void testAllowedAttributes() throws Exception {
-
+    List<JsonPolicyRequest.Attribute> allowedAttributes = objectMapper.readValue(get("internal/attributes"), constructCollectionType(JsonPolicyRequest.Attribute.class));
+    assertEquals(7, allowedAttributes.size());
+    assertAttributes(allowedAttributes);
   }
 
   @Test
   public void testAllowedSamlAttributes() throws Exception {
-
-  }
-
-  @Test
-  public void testCreatePdpPolicy() throws Exception {
-
+    List<JsonPolicyRequest.Attribute> samlAttributes = objectMapper.readValue(get("internal/saml-attributes"), constructCollectionType(JsonPolicyRequest.Attribute.class));
+    assertEquals(8, samlAttributes.size());
+    JsonPolicyRequest.Attribute nameId = samlAttributes.get(0);
+    assertEquals("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified", nameId.attributeId);
+    assertNotNull(nameId.value);
+    assertAttributes(samlAttributes);
   }
 
   @Test
   public void testDeletePdpPolicy() throws Exception {
+    //verify that violations are also deleted - so we create one
+    setUpViolation(policyId);
+    PdpPolicy policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).get(0);
+    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
+    //verify that revisions are also deleted - so we create one
+    post("internal/policies", policyDefinition);
 
+    PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).get(0);
+    int statusCode = restTemplate.exchange("http://localhost:" + port + "/pdp/api/internal/policies/" + latestRevision.getId(), HttpMethod.DELETE, new HttpEntity<>(headers), String.class).getStatusCode().value();
+    assertEquals(200, statusCode);
+
+    String json = get("internal/violations");
+    assertViolations(json, 0);
+
+    assertPolicyIsDeleted(policy);
+    assertPolicyIsDeleted(latestRevision);
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testUser() throws Exception {
-
+    Map<String, Object> shibbolethUser = objectMapper.readValue(get("internal/users/me"), Map.class);
+    assertEquals("urn:collab:person:example.com:admin", shibbolethUser.get("username"));
+    assertEquals("John Doe", shibbolethUser.get("displayName"));
+    assertEquals("http://adfs2prod.aventus.nl/adfs/services/trust", shibbolethUser.get("authenticatingAuthority"));
+    assertEquals(4, ArrayList.class.cast(shibbolethUser.get("idpEntities")).size());
+    assertEquals(2, ArrayList.class.cast(shibbolethUser.get("spEntities")).size());
   }
 
   private PdpPolicyDefinition findByRevisionNbr(List<PdpPolicyDefinition> definitions, int revisionNbr) {
     return definitions.stream().filter(def -> def.getRevisionNbr() == revisionNbr).collect(PdpApplication.singletonCollector());
   }
 
+  private void assertPolicyIsDeleted(PdpPolicy policy) {
+    try {
+      get("/internal/policies/" + policy.getId());
+      fail("Policy should not exists");
+    } catch (HttpClientErrorException e) {
+      assertEquals(404, e.getStatusCode().value());
+    }
+  }
+
   private void assertViolations(String json, int expectedSize) throws IOException {
     List<PdpPolicyViolation> violations = objectMapper.readValue(json, constructCollectionType(PdpPolicyViolation.class));
     assertEquals(expectedSize, violations.size());
     violations.forEach(v -> assertTrue(v.getCreated().before(new Date())));
+  }
+
+  private void assertAttributes(List<JsonPolicyRequest.Attribute> allowedAttributes) {
+    allowedAttributes.forEach(attr -> {
+      assertTrue(attr.attributeId.startsWith("urn"));
+      assertNotNull(attr.value);
+    });
   }
 
   private String get(String path) {

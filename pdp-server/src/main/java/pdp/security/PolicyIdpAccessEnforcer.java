@@ -12,6 +12,7 @@ import java.util.Set;
 
 import static java.util.stream.Collectors.toSet;
 import static org.springframework.util.Assert.hasText;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class PolicyIdpAccessEnforcer {
 
@@ -48,7 +49,7 @@ public class PolicyIdpAccessEnforcer {
     Set<String> idpsOfUserEntityIds = getEntityIds(shibbolethUser.getIdpEntities());
     Set<String> spsOfUserEntityIds = getEntityIds(shibbolethUser.getSpEntities());
 
-    if (CollectionUtils.isEmpty(identityProviderIds)) {
+    if (isEmpty(identityProviderIds)) {
       //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
       if (!spsOfUserEntityIds.contains(serviceProviderId)) {
         throw new PolicyIdpAccessMismatchServiceProviderException(String.format(

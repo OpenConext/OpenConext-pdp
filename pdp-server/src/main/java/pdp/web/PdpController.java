@@ -194,7 +194,13 @@ public class PdpController {
     if (pdpPolicyDefinition.getId() != null) {
       PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
-      PdpPolicy.revision(pdpPolicyDefinition, policy, policyXml, policyIdpAccessEnforcer.username(), policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName());
+      PdpPolicy.revision(
+          pdpPolicyDefinition,
+          policy,
+          policyXml,
+          policyIdpAccessEnforcer.username(),
+          policyIdpAccessEnforcer.authenticatingAuthority(),
+          policyIdpAccessEnforcer.userDisplayName());
     } else {
       policy = new PdpPolicy(
           policyXml,
@@ -237,6 +243,8 @@ public class PdpController {
     this.policyIdpAccessEnforcer.actionAllowed(policy, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
 
     LOG.info("Deleting PdpPolicy {}", policy.getName());
+    policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
+    //policy.getRevisions();
     pdpPolicyRepository.delete(policy);
   }
 
