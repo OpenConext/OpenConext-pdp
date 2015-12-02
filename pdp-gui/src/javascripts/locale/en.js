@@ -114,7 +114,8 @@ I18n.translations.en = {
     rule_info_add: " Note that attribute values with the same attribute name always be evaluated with the logical OR.",
     rule_info_add_2: "Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.",
     submit: "Submit",
-    cancel: "Cancel"
+    cancel: "Cancel",
+    sub_title: "Created by {{displayName}} on {{created}}"
   },
 
   violations: {
@@ -141,7 +142,14 @@ I18n.translations.en = {
 
   },
   revisions: {
-    title: "Revisions"
+    title: "Revisions",
+    revision: "Revision number",
+    attributes: "Attributes",
+    permit: "Permit rule",
+    deny: "Deny rule",
+    logical_or: "Logical OR rule",
+    logical_and: "Logical AND rule",
+    changes_info_html: "Showing the changes between <span class=\"curr\">revision number {{currRevisionNbr}}</span> and <span class=\"prev\"> revision number {{prevRevisionNbr}}</span> made by {{userDisplayName}} on {{createdDate}}."
   },
   policy_attributes: {
     attribute_value_placeholder: "Attribute value...",

@@ -89,7 +89,8 @@ I18n.translations.nl = {
     rule_info_add: " Attribuut waardes van hetzelfde attribuut zullen altijd worden geevalueerd met de logische OF.",
     rule_info_add_2: "Een 'Deny' autorisatie regel wordt altijd geevalueerd met de logische EN voor attribuut waarden van verschillende attributen.",
     submit: "Verstuur",
-    cancel: "Annuleer"
+    cancel: "Annuleer",
+    sub_title: "Aangemaakt door {{displayName}} op {{created}}"
   },
 
   violations: {
@@ -116,7 +117,14 @@ I18n.translations.nl = {
   },
 
   revisions: {
-    title: "Revisies"
+    title: "Revisies",
+    revision: "Revisie nummer",
+    attributes: "Attributen",
+    permit: "Permit regel",
+    deny: "Deny regel",
+    logical_or: "Logische OF regel",
+    logical_and: "Logische EN regel",
+    changes_info_html: "Veranderingen tussen <span class=\"curr\">revisie nummer {{currRevisionNbr}}</span> en <span class=\"prev\"> revisie nummer {{prevRevisionNbr}}</span> gemaakt door  {{userDisplayName}} op {{createdDate}}."
   },
 
   policy_attributes: {

@@ -294,14 +294,25 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
 
+  createdDate: function(policy) {
+    var created = moment(policy.created);
+    created.locale(I18n.locale);
+    return created.format('LL');
+  },
+
   render: function () {
     var policy = this.state;
     var title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
+    //var classTitle = policy.id
+    var created = moment(policy.created);
+    created.locale(I18n.locale);
+    var date = created.format('LLLL');
+    var subtitle = policy.id ? I18n.t("policy_detail.sub_title", {displayName: policy.userDisplayName, created: this.createdDate(policy)}) : "";
     return (
         <div className="l-center mod-policy-detail">
           {this.renderFlash()}
           <div className="l-split-left form-element-container box">
-            <p className="form-element form-title">{title}</p>
+            <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em></p>
             {this.renderNameDescription(policy)}
             {this.renderDenyPermitRule(policy)}
             {this.renderServiceProvider(policy)}

@@ -7,7 +7,7 @@ App.Help.PolicyRevisionsHelpEn = React.createClass({
           <h1>What are policy revisions?</h1>
 
           <p>Every time a policy gets updated a copy of the previous state is stored as a revision of the
-            new parent policy. By comparing revisions of a policy with each other and with the most current
+            new  policy. By comparing revisions of a policy with each other and with the most current
             policy we are able to display an audit log of all changes made to a policy.</p>
 
           <h2>Retention</h2>
