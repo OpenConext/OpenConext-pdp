@@ -6,63 +6,112 @@ App.Pages.PolicyRevisions = React.createClass({
     return {data: []}
   },
 
-  renderDiff: function (prev, curr) {
-    var prevDenyRule = prev.denyRule ? I18n.t("revisions.deny") : I18n.t("revisions.permit");
-    var currDenyRule = curr.denyRule ? I18n.t("revisions.deny") : I18n.t("revisions.permit");
+  renderAttributesDiff: function (prev, curr) {
+    var attrPrev = prev.attributes;
+    var attrCurr = curr.attributes;
 
-    var prevAttrRule = prev.allAttributesMustMatch ? I18n.t("revisions.logical_and") : I18n.t("revisions.logical_or");
-    var currAttrRule = curr.allAttributesMustMatch ? I18n.t("revisions.logical_and") : I18n.t("revisions.logical_or");
+    var filterChanges = function (attributes1, attributes2, statusValue, checkForDifference) {
+      return attributes1.filter(function (attr1) {
+        return attributes2.filter(function (attr2) {
+          var different = checkForDifference ? attr1.name !== attr2.name && attr1.value !== attr2.value :
+          attr1.name === attr2.name && attr1.value === attr2.value;
+          if (different) {
+            attr1.status = statusValue;
+          }
+          return different;
+        });
+      });
+    };
+
+    var changedOrDeleted = filterChanges(attrPrev, attrCurr, "prev", true);
+    var added = filterChanges(attrCurr, changedOrDeleted, "curr", true);
+    var unchanged = filterChanges(attrCurr, attrPrev, "no-change", false);
+    var attributes = changedOrDeleted.concat(added).concat(unchanged);
+
+    attributes.forEach(function (attribute, index) {
+      attribute.index = index;
+    });
+
+    var grouped = _.groupBy(attributes, function (attr) {
+      return attr.name;
+    });
+
+    var attrNames = Object.keys(grouped);
+
+    return (
+        <div>
+          <div
+              className={"diff-element " + (_.isEmpty(changedOrDeleted) && _.isEmpty(added) ? "no-change" : "changed")}>
+            <p className="label">{I18n.t("revisions.attributes")}</p>
+            {
+                attrNames.map(function (attrName, index) {
+                    return (
+                    <div key={attrName}>
+                      <div className="attribute-container">
+                        <span className={"diff no-change"}>{attrName}</span>
+                      </div>
+                      <div className="attribute-values-container">
+                        <p className="label">{I18n.t("policy_attributes.values")}</p>
+                        {
+                            grouped[attrName].map(function (attribute) {
+                                return (
+                                <div className="value-container" key={"div-" + attrName + "-" + attribute.index + attribute.value}>
+                                  <span className={"diff "+attribute.status}>{attribute.value}</span>
+                                </div>
+                                    );
+                                })
+                            }
+                      </div>
+                    </div>);
+                    })
+                }
+          </div>
+          <div className="diff-element-seperator"></div>
+        </div>);
+  },
+
+  renderDiff: function (prev, curr) {
+    var properties = [
+      "name",
+      "description",
+      "denyRule",
+      "serviceProviderName",
+      "identityProviderNames",
+      "allAttributesMustMatch",
+      "attributes",
+      "denyAdvice",
+      "denyAdviceNl"
+    ];
+    I18n.t("revisions.deny");
+
+    if (!prev) {
+      prev = { attributes: []};
+    }
+
+    var renderPropertyDiff = function (prev, curr, name) {
+      if (name === "attributes") {
+        return this.renderAttributesDiff(prev, curr);
+      } else {
+        return (<div>
+          <div className={"diff-element " + this.classNamePropertyDiff(prev[name], curr[name])}>
+            <p className="label">{I18n.t("revisions."+name)}</p>
+            {this.renderPropertyDiff(prev[name], curr[name])}
+          </div>
+          <div className="diff-element-seperator"></div>
+        </div>)
+      }
+    }.bind(this);
 
     return (
         <section>
           {this.renderTopDiff(prev,curr)}
           <div className="form-element about">
             <div className="diff-panel">
-              <div className={"diff-element " + this.classNamePropertyDiff(prev.name, curr.name)}>
-                <p className="label">{I18n.t("policy_detail.name")}</p>
-                {this.renderPropertyDiff(prev.name, curr.name)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prev.description, curr.description)}>
-                <p className="label">{I18n.t("policy_detail.description")}</p>
-                {this.renderPropertyDiff(prev.description, curr.description)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prevDenyRule, currDenyRule)}>
-                <p className="label">{I18n.t("policy_detail.access")}</p>
-                {this.renderPropertyDiff(prevDenyRule, currDenyRule)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div
-                  className={"diff-element " + this.classNamePropertyDiff(prev.serviceProviderName, curr.serviceProviderName)}>
-                <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-                {this.renderPropertyDiff(prev.serviceProviderName, curr.serviceProviderName)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div
-                  className={"diff-element " + this.classNamePropertyDiff(prev.identityProviderNames.join(", "), curr.identityProviderNames.join(", "))}>
-                <p className="label">{I18n.t("policies.identityProviderIds")}</p>
-                {this.renderPropertyDiff(prev.identityProviderNames.join(", "), curr.identityProviderNames.join(", "))}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prevAttrRule, currAttrRule)}>
-                <p className="label">{I18n.t("policy_detail.rule")}</p>
-                {this.renderPropertyDiff(prevAttrRule, currAttrRule)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prev.attributes, curr.attributes)}>
-                <p className="label">{I18n.t("revisions.attributes")}</p>
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prev.denyAdvice, curr.denyAdvice)}>
-                <p className="label">{I18n.t("policy_detail.deny_message")}</p>
-                {this.renderPropertyDiff(prev.denyAdvice, curr.denyAdvice)}
-              </div>
-              <div className="diff-element-seperator"></div>
-              <div className={"diff-element " + this.classNamePropertyDiff(prev.denyAdviceNl, curr.denyAdviceNl)}>
-                <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
-                {this.renderPropertyDiff(prev.denyAdviceNl, curr.denyAdviceNl)}
-              </div>
+              {
+                  properties.map(function(prop){
+                      return renderPropertyDiff(prev, curr, prop);
+                      })
+                  }
             </div>
           </div>
         </section>
@@ -70,27 +119,50 @@ App.Pages.PolicyRevisions = React.createClass({
   },
 
   renderTopDiff: function (prev, curr) {
+    if (prev.revisionNbr !== undefined && prev.revisionNbr !== curr.revisionNbr) {
+      return (
+          <div className="top-diff"
+               dangerouslySetInnerHTML={{__html: I18n.t("revisions.changes_info_html",
+         {
+          userDisplayName: curr.userDisplayName ,
+          createdDate: this.createdDate(curr),
+          currRevisionNbr: curr.revisionNbr,
+          prevRevisionNbr: prev.revisionNbr
+          }) }}>
+          </div>
+      );
+    }
     return (
-    <div className="top-diff"
-         dangerouslySetInnerHTML={{__html: I18n.t("revisions.changes_info_html", {userDisplayName: curr.userDisplayName , createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr,prevRevisionNbr: prev.revisionNbr}) }}></div>
-
-
+        <div className="top-diff"
+             dangerouslySetInnerHTML={{__html: I18n.t("revisions.changes_first_html",
+         {
+          userDisplayName: curr.userDisplayName ,
+          createdDate: this.createdDate(curr),
+          currRevisionNbr: curr.revisionNbr
+          }) }}>
+        </div>
     );
   },
 
   renderPropertyDiff: function (prev, curr) {
-    if (prev !== curr) {
-      return (<div>
-        <span className="diff curr">{curr}</span>
-        <span className="diff prev">{prev}</span>
-      </div>)
+    var previous = _.isArray(prev) ? prev.join(", ") : prev;
+    var current = _.isArray(curr) ? curr.join(", ") : curr;
+    if (previous === current) {
+      return (<span className="diff no-change">{current.toString()}</span>)
+    } else if(_.isEmpty(previous)) {
+      return <span className="diff curr">{current.toString()}</span>
     } else {
-      return (<span className="diff no-change">{curr}</span>)
+      return (<div>
+        <span className="diff prev">{previous.toString()}</span>
+        <span className="diff curr">{current.toString()}</span>
+      </div>)
     }
   },
 
   classNamePropertyDiff: function (prev, curr) {
-    return prev !== curr ? "changed" : "no-change";
+    var previous = _.isArray(prev) ? prev.join(", ") : prev;
+    var current = _.isArray(curr) ? curr.join(", ") : curr;
+    return previous !== current ? "changed" : "no-change";
   },
 
   handleCompare: function (revision) {
@@ -130,10 +202,10 @@ App.Pages.PolicyRevisions = React.createClass({
     this.props.revisions.sort(function (rev1, rev2) {
       return rev2.created - rev1.created;
     });
-    var renderRevision = this.renderRevision;
+    //var renderRevision = this.renderRevision;
     return this.props.revisions.map(function (revision, index) {
-      return renderRevision(revision, index);
-    });
+      return this.renderRevision(revision, index);
+    }.bind(this));
   },
 
   createdDate: function (revision) {

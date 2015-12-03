@@ -119,12 +119,17 @@ I18n.translations.nl = {
   revisions: {
     title: "Revisies",
     revision: "Revisie nummer",
+    name: "Naam",
+    description: "Omschrijving",
+    denyRule: "Toegang Permit regel?",
+    serviceProviderName: "Dienst",
+    identityProviderNames: "Instelling(en)",
+    allAttributesMustMatch: "Logische OF regel?",
     attributes: "Attributen",
-    permit: "Permit regel",
-    deny: "Deny regel",
-    logical_or: "Logische OF regel",
-    logical_and: "Logische EN regel",
-    changes_info_html: "Veranderingen tussen <span class=\"curr\">revisie nummer {{currRevisionNbr}}</span> en <span class=\"prev\"> revisie nummer {{prevRevisionNbr}}</span> gemaakt door  {{userDisplayName}} op {{createdDate}}."
+    denyAdvice: "Ongeautoriseerd melding in het Engels",
+    denyAdviceNl: "Ongeautoriseerd melding",
+    changes_info_html: "Veranderingen tussen <span class=\"prev\"> revisie nummer {{prevRevisionNbr}}</span> en <span class=\"curr\">revisie nummer {{currRevisionNbr}}</span> gemaakt door  {{userDisplayName}} op {{createdDate}}.",
+    changes_first_html: "Dit is de <span class=\"curr\">eerste revisie {{currRevisionNbr}}</span> aangemaakt door {{userDisplayName}} op {{createdDate}}."
   },
 
   policy_attributes: {

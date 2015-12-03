@@ -144,12 +144,17 @@ I18n.translations.en = {
   revisions: {
     title: "Revisions",
     revision: "Revision number",
+    name: "Name",
+    description: "Description",
+    denyRule: "Access Permit rule?",
+    serviceProviderName: "Service",
+    identityProviderNames: "Institution(s)",
+    allAttributesMustMatch: "Logical OR rule?",
     attributes: "Attributes",
-    permit: "Permit rule",
-    deny: "Deny rule",
-    logical_or: "Logical OR rule",
-    logical_and: "Logical AND rule",
-    changes_info_html: "Showing the changes between <span class=\"curr\">revision number {{currRevisionNbr}}</span> and <span class=\"prev\"> revision number {{prevRevisionNbr}}</span> made by {{userDisplayName}} on {{createdDate}}."
+    denyAdvice: "Deny message",
+    denyAdviceNl: "Deny message in Dutch",
+    changes_info_html: "Showing the changes between <span class=\"prev\"> revision number {{prevRevisionNbr}}</span> and <span class=\"curr\">revision number {{currRevisionNbr}}</span> made by {{userDisplayName}} on {{createdDate}}.",
+    changes_first_html: "This is the first <span class=\"curr\">initial revision {{currRevisionNbr}}</span> created by {{userDisplayName}} on {{createdDate}}."
   },
   policy_attributes: {
     attribute_value_placeholder: "Attribute value...",

@@ -15,11 +15,10 @@
         background: darken(white, 5)
 
   .top-diff
-
     border-top-left-radius: 5px
     border-top-right-radius: 5px
     padding: 30px 70px 10px 40px
-    background-color: #EFEFEE
+    border-bottom: 1px solid #EFEFEE
 
     span.curr
       color: $green
@@ -49,14 +48,10 @@
     border-bottom: 1px solid $light-grey
 
   .diff-element
-    padding: 0px 0px 0px 40px
-    margin: 0px 0px 0px 0px
-
-    &.no-change
-      border-left: 2px solid $green
 
     &.changed
-      border-left: 2px solid $red
+      padding-left: 20px
+      border-left: 1px solid $green
 
     &.form-title
       font-size: large
@@ -77,3 +72,5 @@
       &.not-selected
         color: $medium-grey
 
+  .attribute-values-container
+    margin: 10px 20px
