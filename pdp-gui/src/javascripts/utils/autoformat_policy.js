@@ -44,7 +44,7 @@ App.Utils.AutoFormat = {
 
     var attributes = this.attributes(attrs, policy.allAttributesMustMatch);
     //we can't use JS templates as the backtick breaks the uglification. Will be resolved when we upgrade the build tooling
-    var description = "A user" + idps + "is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
+    var description = "A user " + idps + "is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
 
     return description;
   }
