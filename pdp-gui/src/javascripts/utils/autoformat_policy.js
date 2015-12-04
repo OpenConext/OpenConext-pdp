@@ -1,7 +1,7 @@
 App.Utils.AutoFormat = {
 
-  addQuotes: function(str) {
-    return (_.isEmpty(str)) ? str : "'" + str +"'";
+  addQuotes: function (str) {
+    return (_.isEmpty(str)) ? str : "'" + str + "'";
   },
 
   attributes: function (attributes, allAttributesMustMatch) {
@@ -21,7 +21,7 @@ App.Utils.AutoFormat = {
         return this.addQuotes(attribute.value);
       }.bind(this)).join(" or ");
       var logical = index === (length - 1) ? "" : allAttributesMustMatch ? " and " : " or ";
-      var result = `he/ she has the value ${values} for attribute '${attributeName}'${logical}`;
+      var result = "he/ she has the value " + values + " for attribute '" + attributeName + "'" + logical;
       return result;
     }.bind(this));
     return lines.join("");
@@ -43,8 +43,8 @@ App.Utils.AutoFormat = {
     var only = policy.denyRule ? "not" : "only";
 
     var attributes = this.attributes(attrs, policy.allAttributesMustMatch);
-
-    var description = `A user${idps} is ${only} allowed to access ${sp} when${teamMembership}${and} ${attributes}`;
+    //we can't use JS templates as the backtick breaks the uglification. Will be resolved when we upgrade the build tooling
+    var description = "A user" + idps + "is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
 
     return description;
   }
