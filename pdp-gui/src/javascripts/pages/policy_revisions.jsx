@@ -17,6 +17,7 @@ App.Pages.PolicyRevisions = React.createClass({
 
     var attrResult = _.transform(attrCurrGrouped, function (result, attributes, attrName) {
       if (attrPrevGrouped.hasOwnProperty(attrName)) {
+        //find out the diff in values
         var prevValues = _.pluck(attrPrevGrouped[attrName], 'value');
         var currValues = _.pluck(attributes, 'value');
 
@@ -31,8 +32,12 @@ App.Pages.PolicyRevisions = React.createClass({
         }).map(function(unchangedValue){
           return {value: unchangedValue, status: "no-change"};
         });
+        var newValues = deleted.concat(added).concat(unchanged);
+        var anyValuesChanged = newValues.filter(function(val){
+              return val.status == "prev" || val.status === "curr"
+            }).length > 0;
 
-        result[attrName] = {values: deleted.concat(added).concat(unchanged), status: "no-change"};
+        result[attrName] = {values: newValues, status: "no-change", anyValuesChanged: anyValuesChanged};
       } else {
         // these are the added attributes that are in curr and not in prev
         result[attrName] = {values: attributes.map(function(attribute){
@@ -69,7 +74,8 @@ App.Pages.PolicyRevisions = React.createClass({
                       <div className="attribute-container">
                         <span className={"diff "+attrResult[attributeName].status}>{attributeName}</span>
                       </div>
-                      <div className="attribute-values-container">
+                      <div className={"attribute-values-container " + (attrResult[attributeName].status === "no-change"
+                                          && attrResult[attributeName].anyValuesChanged ? "diff-element changed" : "")}>
                         <p className="label">{I18n.t("policy_attributes.values")}</p>
                         {
                             attrResult[attributeName].values.map(function (value) {
@@ -221,11 +227,12 @@ App.Pages.PolicyRevisions = React.createClass({
 
   renderRevision: function (revision, index) {
     var className = index === 0 ? "success" : "failure";
+    var linkClassName = this.state.curr && this.state.curr.revisionNbr === revision.revisionNbr ? "selected" : "";
     return (
         <div key={index}>
           <div className={"form-element split sub-container " + className}>
             {this.renderRevisionMetadata(revision)}
-            <a className="c-button white compare" href="#" onClick={this.handleCompare(revision)}>&lt; &gt;</a>
+            <a className={"c-button white compare "+linkClassName} href="#" onClick={this.handleCompare(revision)}>&lt; &gt;</a>
           </div>
           <div className="bottom"></div>
         </div>
