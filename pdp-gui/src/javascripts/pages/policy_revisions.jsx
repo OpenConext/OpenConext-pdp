@@ -7,56 +7,76 @@ App.Pages.PolicyRevisions = React.createClass({
   },
 
   renderAttributesDiff: function (prev, curr) {
-    var attrPrev = prev.attributes;
-    var attrCurr = curr.attributes;
-
-    var filterChanges = function (attributes1, attributes2, statusValue, checkForDifference) {
-      return attributes1.filter(function (attr1) {
-        return attributes2.filter(function (attr2) {
-          var different = checkForDifference ? attr1.name !== attr2.name && attr1.value !== attr2.value :
-          attr1.name === attr2.name && attr1.value === attr2.value;
-          if (different) {
-            attr1.status = statusValue;
-          }
-          return different;
-        });
-      });
-    };
-
-    var changedOrDeleted = filterChanges(attrPrev, attrCurr, "prev", true);
-    var added = filterChanges(attrCurr, changedOrDeleted, "curr", true);
-    var unchanged = filterChanges(attrCurr, attrPrev, "no-change", false);
-    var attributes = changedOrDeleted.concat(added).concat(unchanged);
-
-    attributes.forEach(function (attribute, index) {
-      attribute.index = index;
-    });
-
-    var grouped = _.groupBy(attributes, function (attr) {
+    var attrPrevGrouped = _.groupBy(prev.attributes, function (attr) {
       return attr.name;
     });
 
-    var attrNames = Object.keys(grouped);
+    var attrCurrGrouped = _.groupBy(curr.attributes, function (attr) {
+      return attr.name;
+    });
 
+    var attrResult = _.transform(attrCurrGrouped, function (result, attributes, attrName) {
+      if (attrPrevGrouped.hasOwnProperty(attrName)) {
+        var prevValues = _.pluck(attrPrevGrouped[attrName], 'value');
+        var currValues = _.pluck(attributes, 'value');
+
+        var deleted = _.difference(prevValues, currValues).map(function(deletedValue){
+          return {value: deletedValue, status: "prev"};
+        });
+        var added = _.difference(currValues, prevValues).map(function(addedValue){
+          return {value: addedValue, status: "curr"};
+        });
+        var unchanged = currValues.filter(function(value){
+          return prevValues.indexOf(value) !== -1;
+        }).map(function(unchangedValue){
+          return {value: unchangedValue, status: "no-change"};
+        });
+
+        result[attrName] = {values: deleted.concat(added).concat(unchanged), status: "no-change"};
+      } else {
+        // these are the added attributes that are in curr and not in prev
+        result[attrName] = {values: attributes.map(function(attribute){
+          return {value: attribute.value, status: "curr"};
+        }), status: "curr"}
+      }
+
+    });
+    var prevNames = Object.keys(attrPrevGrouped);
+
+    // add the deleted attributes that are in prev and not in curr
+    prevNames.forEach(function (name) {
+      if (!attrResult.hasOwnProperty(name)) {
+        attrResult[name] = {values: attrPrevGrouped[name].map(function(attribute){
+          return {value: attribute.value, status: "prev"};
+        }), status: "prev"}
+      }
+    });
+    var attributesUnchanged = _.values(attrResult).filter(function(attribuut){
+      return (attribuut.status === "prev" || attribuut.status === "curr") && attribuut.values.filter(function(value){
+            return value.value === "prev" || value.value === "curr";
+          }).length === 0;
+    }).length === 0 ;
+    var attributeNames = Object.keys(attrResult);
     return (
         <div>
           <div
-              className={"diff-element " + (_.isEmpty(changedOrDeleted) && _.isEmpty(added) ? "no-change" : "changed")}>
+              className={"diff-element " + (attributesUnchanged ? "no-change" : "changed")}>
             <p className="label">{I18n.t("revisions.attributes")}</p>
             {
-                attrNames.map(function (attrName, index) {
+                attributeNames.map(function (attributeName) {
                     return (
-                    <div key={attrName}>
+                    <div key={attributeName}>
                       <div className="attribute-container">
-                        <span className={"diff no-change"}>{attrName}</span>
+                        <span className={"diff "+attrResult[attributeName].status}>{attributeName}</span>
                       </div>
                       <div className="attribute-values-container">
                         <p className="label">{I18n.t("policy_attributes.values")}</p>
                         {
-                            grouped[attrName].map(function (attribute) {
+                            attrResult[attributeName].values.map(function (value) {
                                 return (
-                                <div className="value-container" key={"div-" + attrName + "-" + attribute.index + attribute.value}>
-                                  <span className={"diff "+attribute.status}>{attribute.value}</span>
+                                <div className="value-container"
+                                     key={attributeName + "-" + attrResult[attributeName].status +"-" + value.value+"-" +value.status}>
+                                  <span className={"diff "+value.status}>{value.value}</span>
                                 </div>
                                     );
                                 })
@@ -71,21 +91,12 @@ App.Pages.PolicyRevisions = React.createClass({
   },
 
   renderDiff: function (prev, curr) {
-    var properties = [
-      "name",
-      "description",
-      "denyRule",
-      "serviceProviderName",
-      "identityProviderNames",
-      "allAttributesMustMatch",
-      "attributes",
-      "denyAdvice",
-      "denyAdviceNl"
+    var properties = ["name", "description", "denyRule", "serviceProviderName", "identityProviderNames",
+      "allAttributesMustMatch", "attributes", "denyAdvice", "denyAdviceNl"
     ];
-    I18n.t("revisions.deny");
-
+    //means someone if looking at the first initial revision
     if (!prev) {
-      prev = { attributes: []};
+      prev = {attributes: []};
     }
 
     var renderPropertyDiff = function (prev, curr, name) {
@@ -121,25 +132,20 @@ App.Pages.PolicyRevisions = React.createClass({
   renderTopDiff: function (prev, curr) {
     if (prev.revisionNbr !== undefined && prev.revisionNbr !== curr.revisionNbr) {
       return (
-          <div className="top-diff"
-               dangerouslySetInnerHTML={{__html: I18n.t("revisions.changes_info_html",
-         {
-          userDisplayName: curr.userDisplayName ,
-          createdDate: this.createdDate(curr),
-          currRevisionNbr: curr.revisionNbr,
-          prevRevisionNbr: prev.revisionNbr
-          }) }}>
+          <div className="top-diff" dangerouslySetInnerHTML={{__html:
+            I18n.t("revisions.changes_info_html",
+              { userDisplayName: curr.userDisplayName , createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr, prevRevisionNbr: prev.revisionNbr }
+            )
+          }}>
           </div>
       );
     }
     return (
-        <div className="top-diff"
-             dangerouslySetInnerHTML={{__html: I18n.t("revisions.changes_first_html",
-         {
-          userDisplayName: curr.userDisplayName ,
-          createdDate: this.createdDate(curr),
-          currRevisionNbr: curr.revisionNbr
-          }) }}>
+        <div className="top-diff" dangerouslySetInnerHTML={{__html:
+          I18n.t("revisions.changes_first_html",
+            { userDisplayName: curr.userDisplayName ,createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr }
+          )
+        }}>
         </div>
     );
   },
@@ -149,7 +155,7 @@ App.Pages.PolicyRevisions = React.createClass({
     var current = _.isArray(curr) ? curr.join(", ") : curr;
     if (previous === current) {
       return (<span className="diff no-change">{current.toString()}</span>)
-    } else if(_.isEmpty(previous)) {
+    } else if (previous === undefined) {
       return <span className="diff curr">{current.toString()}</span>
     } else {
       return (<div>
@@ -202,7 +208,6 @@ App.Pages.PolicyRevisions = React.createClass({
     this.props.revisions.sort(function (rev1, rev2) {
       return rev2.created - rev1.created;
     });
-    //var renderRevision = this.renderRevision;
     return this.props.revisions.map(function (revision, index) {
       return this.renderRevision(revision, index);
     }.bind(this));
