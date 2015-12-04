@@ -22,8 +22,27 @@ App.Pages.PolicyDetail = React.createClass({
     if (!this.state.denyRule) {
       partialState.allAttributesMustMatch = true;
     }
+    partialState.description = this.buildAutoFormattedDescription(partialState);
     this.setState(partialState);
+  },
 
+  provideProviderNames: function(partialState) {
+    var identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.identityProviderIds;
+    if (_.isEmpty(identityProvidersIds)) {
+      this.state.identityProviderNames = [];
+    } else {
+      //we can safely do it like this - as nothing should be updated
+      this.state.identityProviderNames = identityProvidersIds.map(function(idp){
+        return I18n.entityName(_.find(this.props.identityProviders, "entityId", idp));
+      }.bind(this));
+
+    }
+    var serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.serviceProviderId;
+    if (_.isEmpty(serviceProviderId)) {
+      this.state.serviceProviderName = null;
+    } else {
+      this.state.serviceProviderName =  I18n.entityName(_.find(this.props.serviceProviders,"entityId",serviceProviderId));
+    }
   },
 
   parseEntities: function (entities) {
@@ -34,12 +53,16 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   handleChangeServiceProvider: function (newValue) {
-    this.setState({serviceProviderId: newValue});
+    var partialState = {serviceProviderId: newValue};
+    partialState.description = this.buildAutoFormattedDescription(partialState);
+    this.setState(partialState);
   },
 
 
   handleChangeIdentityProvider: function (newValue) {
-    this.setState({identityProviderIds: newValue});
+    var partialState = {identityProviderIds: newValue};
+    partialState.description = this.buildAutoFormattedDescription(partialState);
+    this.setState(partialState);
   },
 
   cancelForm: function () {
@@ -75,6 +98,35 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState({description: e.target.value});
   },
 
+  handleOnChangeAutoFormat: function(e) {
+    var partialState = {autoFormat: !this.state.autoFormat};
+    if (partialState.autoFormat) {
+      partialState.savedDescription = this.state.description;
+      this.provideProviderNames(partialState);
+      partialState.description = App.Utils.AutoFormat.description(this.state);
+    } else {
+      partialState.description = this.state.savedDescription || "";
+    }
+    this.setState(partialState);
+  },
+
+  buildAutoFormattedDescription: function(partialState) {
+    if (this.state.autoFormat) {
+      this.provideProviderNames(partialState);
+      //we don't want to merge the partialState and this.state before the update
+      var policy = {
+        identityProviderNames: this.state.identityProviderNames,
+        serviceProviderName: this.state.serviceProviderName,
+        attributes: partialState.attributes || this.state.attributes,
+        denyRule: partialState.denyRule !== undefined ? partialState.denyRule : this.state.denyRule,
+        allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.allAttributesMustMatch
+      }
+      return App.Utils.AutoFormat.description(policy);
+    } else {
+      return this.state.description;
+    }
+  },
+
   handleOnDenyAdvice: function (e) {
     this.setState({denyAdvice: e.target.value});
   },
@@ -83,24 +135,36 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState({denyAdviceNl: e.target.value});
   },
 
-  renderNameDescription: function (policy) {
-    var workflow = _.isEmpty(policy.name) || _.isEmpty(policy.description) ? "failure" : "success";
+  renderName: function (policy) {
+    var workflow = _.isEmpty(policy.name) ? "failure" : "success";
     return (
         <div>
           <div className={"form-element "+workflow}>
             <p className="label">{I18n.t("policy_detail.name")}</p>
             <input type="text" name="name" className="form-input" value={policy.name}
                    onChange={this.handleOnChangeName}/>
-
-            <p className="label">{I18n.t("policy_detail.description")}</p>
-          <textarea cols="5" name="description" className="form-input" value={policy.description}
-                    onChange={this.handleOnChangeDescription}/>
           </div>
           <div className="bottom"></div>
         </div>
     );
-  }
-  ,
+  },
+
+  renderDescription: function (policy) {
+    var workflow = _.isEmpty(policy.description) ? "failure" : "success";
+    return (
+        <div>
+          <div className={"form-element "+workflow}>
+            <p className="label">{I18n.t("policy_detail.description")}</p>
+            <textarea rows="2" name="description" className="form-input" value={policy.description}
+                      onChange={this.handleOnChangeDescription}/>
+            <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription" onChange={this.handleOnChangeAutoFormat}/>
+            <label htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
+
   renderDenyAdvice: function (policy) {
     var workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
     return (
@@ -194,7 +258,9 @@ App.Pages.PolicyDetail = React.createClass({
       e.preventDefault();
       e.stopPropagation();
       var allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
-      this.setState({allAttributesMustMatch: allAttributesMustMatch});
+      var partialState = {allAttributesMustMatch: allAttributesMustMatch};
+      partialState.description = this.buildAutoFormattedDescription(partialState);
+      this.setState(partialState);
     }.bind(this);
   },
 
@@ -216,6 +282,7 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   setAttributeState: function (newAttributeState) {
+    newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
     this.setState(newAttributeState);
   },
 
@@ -313,13 +380,14 @@ App.Pages.PolicyDetail = React.createClass({
           {this.renderFlash()}
           <div className="l-split-left form-element-container box">
             <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em></p>
-            {this.renderNameDescription(policy)}
+            {this.renderName(policy)}
             {this.renderDenyPermitRule(policy)}
             {this.renderServiceProvider(policy)}
             {this.renderIdentityProvider(policy)}
             {this.renderLogicalRule(policy)}
             {this.renderAttributes(policy)}
             {this.renderDenyAdvice(policy)}
+            {this.renderDescription(policy)}
             {this.renderActions(policy)}
           </div>
           <div className="l-split-right form-element-container box">

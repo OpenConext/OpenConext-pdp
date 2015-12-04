@@ -8,6 +8,7 @@ input.form-input, textarea.form-input
 
 textarea.form-input
   min-height: 80px
+  max-width: 100%
 
 .smaller
   font-size: smaller
@@ -48,3 +49,11 @@ textarea.form-input
   .sub-element
     position: absolute
     right: 10px
+
+input[type=checkbox] + label
+  position: relative
+  vertical-align: bottom
+  bottom: -1px
+  display: inline-block
+  margin-left: 8px
+  font-size: 12px

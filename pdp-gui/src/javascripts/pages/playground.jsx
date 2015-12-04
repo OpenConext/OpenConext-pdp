@@ -42,7 +42,10 @@ App.Pages.Playground = React.createClass({
 
   parsePolicies: function (policies) {
     var options = policies.map(function (policy) {
-      return {value: policy.id, display: policy.name};
+      return {value: policy.id, display: policy.name.trim()};
+    });
+    options.sort(function (p1, p2) {
+      return p1.display.localeCompare(p2.display);
     });
     return options;
   },

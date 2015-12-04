@@ -120,12 +120,9 @@ App.Pages.PolicyOverview = React.createClass({
   },
 
   renderRevisionsLink: function (policy) {
-    if (policy.numberOfRevisions === 0) {
-      return (<span>0</span>);
-    } else {
-      return (<a href={page.uri("/revisions/:id",{id:policy.id})}
-                 onClick={this.handleShowRevisions(policy)}>{policy.numberOfRevisions}</a>);
-    }
+    var numberOfRevisions = (policy.numberOfRevisions + 1)
+    return (<a href={page.uri("/revisions/:id",{id:policy.id})}
+                 onClick={this.handleShowRevisions(policy)}>{numberOfRevisions}</a>);
   },
 
   renderIdpNames: function (identityProviderNames) {

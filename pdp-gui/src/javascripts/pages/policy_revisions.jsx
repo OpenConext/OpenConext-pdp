@@ -222,7 +222,7 @@ App.Pages.PolicyRevisions = React.createClass({
   createdDate: function (revision) {
     var created = moment(revision.created);
     created.locale(I18n.locale);
-    return created.format('LL');
+    return created.format('LLLL');
   },
 
   renderRevision: function (revision, index) {

@@ -115,7 +115,8 @@ I18n.translations.en = {
     rule_info_add_2: "Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.",
     submit: "Submit",
     cancel: "Cancel",
-    sub_title: "Created by {{displayName}} on {{created}}"
+    sub_title: "Created by {{displayName}} on {{created}}",
+    autoFormat: "AutoFormat policy description"
   },
 
   violations: {

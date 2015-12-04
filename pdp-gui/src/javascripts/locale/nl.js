@@ -90,7 +90,8 @@ I18n.translations.nl = {
     rule_info_add_2: "Een 'Deny' autorisatie regel wordt altijd geevalueerd met de logische EN voor attribuut waarden van verschillende attributen.",
     submit: "Verstuur",
     cancel: "Annuleer",
-    sub_title: "Aangemaakt door {{displayName}} op {{created}}"
+    sub_title: "Aangemaakt door {{displayName}} op {{created}}",
+    autoFormat: "AutoFormat regel omschrijving"
   },
 
   violations: {
