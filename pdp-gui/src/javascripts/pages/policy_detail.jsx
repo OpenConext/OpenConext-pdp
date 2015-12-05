@@ -26,13 +26,13 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState(partialState);
   },
 
-  provideProviderNames: function(partialState) {
+  provideProviderNames: function (partialState) {
     var identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.identityProviderIds;
     if (_.isEmpty(identityProvidersIds)) {
       this.state.identityProviderNames = [];
     } else {
       //we can safely do it like this - as nothing should be updated
-      this.state.identityProviderNames = identityProvidersIds.map(function(idp){
+      this.state.identityProviderNames = identityProvidersIds.map(function (idp) {
         return I18n.entityName(_.find(this.props.identityProviders, "entityId", idp));
       }.bind(this));
 
@@ -41,7 +41,7 @@ App.Pages.PolicyDetail = React.createClass({
     if (_.isEmpty(serviceProviderId)) {
       this.state.serviceProviderName = null;
     } else {
-      this.state.serviceProviderName =  I18n.entityName(_.find(this.props.serviceProviders,"entityId",serviceProviderId));
+      this.state.serviceProviderName = I18n.entityName(_.find(this.props.serviceProviders, "entityId", serviceProviderId));
     }
   },
 
@@ -98,7 +98,7 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState({description: e.target.value});
   },
 
-  handleOnChangeAutoFormat: function(e) {
+  handleOnChangeAutoFormat: function (e) {
     var partialState = {autoFormat: !this.state.autoFormat};
     if (partialState.autoFormat) {
       partialState.savedDescription = this.state.description;
@@ -110,7 +110,7 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState(partialState);
   },
 
-  buildAutoFormattedDescription: function(partialState) {
+  buildAutoFormattedDescription: function (partialState) {
     if (this.state.autoFormat) {
       this.provideProviderNames(partialState);
       //we don't want to merge the partialState and this.state before the update
@@ -157,7 +157,8 @@ App.Pages.PolicyDetail = React.createClass({
             <p className="label">{I18n.t("policy_detail.description")}</p>
             <textarea rows="2" name="description" className="form-input" value={policy.description}
                       onChange={this.handleOnChangeDescription}/>
-            <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription" onChange={this.handleOnChangeAutoFormat}/>
+            <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
+                   onChange={this.handleOnChangeAutoFormat}/>
             <label htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
           </div>
           <div className="bottom"></div>
@@ -306,9 +307,9 @@ App.Pages.PolicyDetail = React.createClass({
               <p className="label">{I18n.t("policy_detail.rule")}</p>
               <ul className="logical-rule">
                 {[
-                  this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
-                  this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
-                ]}
+                    this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
+                    this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
+                    ]}
               </ul>
             </div>
             <div className="column-3 middle">
@@ -341,7 +342,8 @@ App.Pages.PolicyDetail = React.createClass({
   renderFlash: function () {
     if (this.state.flash) {
       return (
-          <div className="flash full"><p className="error">{this.state.flash}</p><a href="#" onClick={this.closeFlash}><i
+          <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
+                                                                                    onClick={this.closeFlash}><i
               className="fa fa-remove"></i></a>
           </div>
       );
@@ -361,7 +363,7 @@ App.Pages.PolicyDetail = React.createClass({
   }
   ,
 
-  createdDate: function(policy) {
+  createdDate: function (policy) {
     var created = moment(policy.created);
     created.locale(I18n.locale);
     return created.format('LL');
@@ -374,7 +376,10 @@ App.Pages.PolicyDetail = React.createClass({
     var created = moment(policy.created);
     created.locale(I18n.locale);
     var date = created.format('LLLL');
-    var subtitle = policy.id ? I18n.t("policy_detail.sub_title", {displayName: policy.userDisplayName, created: this.createdDate(policy)}) : "";
+    var subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
+      displayName: policy.userDisplayName,
+      created: this.createdDate(policy)
+    }) : "";
     return (
         <div className="l-center mod-policy-detail">
           {this.renderFlash()}
