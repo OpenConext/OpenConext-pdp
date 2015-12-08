@@ -3,37 +3,27 @@ package pdp;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
-import org.apache.openaz.xacml.pdp.policy.Policy;
-import org.apache.openaz.xacml.pdp.policy.PolicyDef;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
 import pdp.teams.VootClientConfig;
 import pdp.web.PdpController;
-import pdp.xacml.OpenConextPDPEngine;
 import pdp.xacml.OpenConextPDPEngineFactory;
-import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
@@ -58,7 +48,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
   };
 
-  private void setUp(String... policyFiles) throws IOException, FactoryException {
+  private void setUp(boolean includeAggregatedAttributesInResponse, String... policyFiles) throws IOException, FactoryException {
     Resource resource = new ClassPathResource("xacml.conext.properties");
     String absolutePath = resource.getFile().getAbsolutePath();
 
@@ -72,13 +62,13 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
     OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
-    this.pdpEngine = pdpEngineFactory.newEngine(true, pdpPolicyRepository, mockVootClient);
+    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, mockVootClient);
   }
 
-  private PdpPolicy loadPolicy(String policyFile)  {
+  private PdpPolicy loadPolicy(String policyFile) {
     try {
       String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream());
-      return new PdpPolicy( policyXml, policyFile, true, "system", "http://mock-idp", "John Doe");
+      return new PdpPolicy(policyXml, policyFile, true, "system", "http://mock-idp", "John Doe");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -91,48 +81,61 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   @Test
   public void testMultipleAndPolicy() throws Exception {
-    doDecideTest("test_request_multiple_and.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.and.Policy.xml");
+    doDecideTest("test_request_multiple_and.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.and.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithPermit() throws Exception {
-    doDecideTest("test_request_deny_policy_permit.json", Decision.PERMIT, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_deny_policy_permit.json", Decision.PERMIT, true, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithDeny() throws Exception {
-    doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, true, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithMissingAttribute() throws Exception {
-    Result result = doDecideTest("test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE, "OpenConext.pdp.test.deny.Policy.xml");
+    Result result = doDecideTest("test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE, true, "OpenConext.pdp.test.deny.Policy.xml");
     assertEquals("Missing required attribute", result.getStatus().getStatusMessage());
   }
 
   @Test
   public void testDenyPolicyWithNoPolicyFound() throws Exception {
-    doDecideTest("test_request_no_matching_target.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_no_matching_target.json", Decision.NOTAPPLICABLE, true, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testPermitPolicyWithMultipleOr() throws Exception {
-    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.or.Policy.xml");
+    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.or.Policy.xml");
   }
 
   @Test
-  public void testTeamsPolicy() throws Exception {
-    doDecideTest("test_request_teams_policy.json", Decision.PERMIT, "OpenConext.pdp.test.teams.Policy.xml");
+  public void testTeamsPolicyWithAggregatedAttributes() throws Exception {
+    Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.teams.Policy.xml");
+    List<Attribute> attributes = result.getAttributes().stream().map(AttributeCategory::getAttributes).flatMap(Collection::stream).collect(toList());
+    assertEquals(1, attributes.size());
+    Attribute attribute = attributes.get(0);
+    assertEquals(TeamsPIP.GROUP_URN, attribute.getAttributeId().getUri().toString());
+    assertEquals(TeamsPIP.GROUP_URN, attribute.getCategory().getUri().toString());
+    List<String> attributeValues = attribute.getValues().stream().map(attrValue -> (String) attrValue.getValue()).collect(toList());
+    assertEquals(Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo"), attributeValues);
+  }
+
+  @Test
+  public void testTeamsPolicyWithoutAggregatedAttributes() throws Exception {
+    Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, false, "OpenConext.pdp.test.teams.Policy.xml");
+    assertEquals(0, result.getAttributes().size());
   }
 
   @Test
   public void testPermitPolicyWithMultipleIdp() throws Exception {
-    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.or.Policy.xml");
+    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.or.Policy.xml");
   }
 
   @Test
   public void testConflictingPolicies() throws Exception {
-    Result result = doDecideTest("test_request_conflicting_policies.json", Decision.DENY,
+    Result result = doDecideTest("test_request_conflicting_policies.json", Decision.DENY, true,
         "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
         "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
     );
@@ -142,19 +145,14 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), policy.get().getId().stringValue());
   }
 
-  private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
-    setUp(policyFiles);
+  private Result doDecideTest(final String requestFile, Decision decision, boolean includeAggregatedAttributesInResponse, String... policyFiles) throws Exception {
+    setUp(includeAggregatedAttributesInResponse,policyFiles);
 
     String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
     Request pdpRequest = JSONRequest.load(payload);
 
     Response pdpResponse = pdpEngine.decide(pdpRequest);
-    assertResponse(decision, pdpResponse);
-
-    pdpResponse = pdpEngine.decide(pdpRequest);
-    Result result = assertResponse(decision, pdpResponse);
-
-    return result;
+    return assertResponse(decision, pdpResponse);
   }
 
   private Result assertResponse(Decision decision, Response pdpResponse) throws Exception {

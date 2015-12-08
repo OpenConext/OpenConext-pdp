@@ -30,8 +30,6 @@ public class PdpPolicyDefinitionParser {
 
   public static final String IDP_ENTITY_ID = "IDPentityID";
 
-  public static final String GROUP_URN = "urn:collab:group:surfteams.nl";
-
   public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
 
   public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {

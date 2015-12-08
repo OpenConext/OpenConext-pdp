@@ -8,7 +8,9 @@ import org.apache.openaz.xacml.pdp.eval.EvaluationContext;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
 import org.apache.openaz.xacml.std.StdMutableResponse;
 import org.apache.openaz.xacml.std.StdMutableResult;
+import pdp.teams.TeamsPIP;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -18,6 +20,8 @@ import static pdp.PdpApplication.singletonCollector;
 public class OpenConextPDPEngine extends OpenAZPDPEngine {
 
   private final boolean policyIncludeAggregatedAttributes;
+
+  private static final List<String> includeAggregatedAttributesIdentifiers = Arrays.asList(TeamsPIP.GROUP_URN);
 
   public OpenConextPDPEngine(boolean policyIncludeAggregatedAttributes, EvaluationContextFactory evaluationContextFactoryIn, Decision defaultDecisionIn, ScopeResolver scopeResolverIn) {
     super(evaluationContextFactoryIn, defaultDecisionIn, scopeResolverIn);
@@ -42,12 +46,12 @@ public class OpenConextPDPEngine extends OpenAZPDPEngine {
   @Override
   public Response decide(Request pepRequest) throws PDPException {
     Response pdpResponse = super.decide(pepRequest);
-    pdpResponse = includeAggregatedAttributes(pepRequest, pdpResponse);
+    pdpResponse = includeAggregatedAttributes(pdpResponse);
     return pdpResponse;
   }
 
   //Add the PIP attributes that were aggregated
-  private Response includeAggregatedAttributes(Request request, Response pdpResponse) {
+  private Response includeAggregatedAttributes(Response pdpResponse) {
     Result result = pdpResponse.getResults().stream().collect(singletonCollector());
 
     StdMutableResult newResult = new StdMutableResult(result.getDecision(), result.getStatus());
@@ -58,17 +62,20 @@ public class OpenConextPDPEngine extends OpenAZPDPEngine {
 
     //feature toggle
     if (policyIncludeAggregatedAttributes && result.getDecision().equals(Decision.PERMIT)) {
-      Collection<RequestAttributes> requestAttributes = request.getRequestAttributes();
-      List<Attribute> attributes = requestAttributes.stream().map(RequestAttributes::getAttributes).flatMap(Collection::stream).collect(toList());
-      List<AttributeCategory> attributeCategories = result.getAttributes().stream().filter(attrCat -> isAddedAttributeCategory(attributes, attrCat)).collect(toList());
+      /*
+       * We could filter out all the attributes that were already in the request, but for now we hard-code
+       * which attributes we will send back. When new PIPEngine implementations are added then the
+       * attribute identifier(s) need to be added
+       */
+      List<AttributeCategory> attributeCategories = result.getAttributes().stream().filter(attrCat -> isAddedAttributeCategory(attrCat)).distinct().collect(toList());
       newResult.addAttributeCategories(attributeCategories);
     }
 
     return new StdMutableResponse(newResult);
   }
 
-  private boolean isAddedAttributeCategory(Collection<Attribute> attributes, AttributeCategory attributeCategory) {
-    return attributes.stream().filter(attr -> attr.getAttributeId().equals(attributeCategory.getCategory())).count() == 0;
+  private boolean isAddedAttributeCategory(AttributeCategory attributeCategory) {
+    return includeAggregatedAttributesIdentifiers.contains(attributeCategory.getCategory().getUri().toString());
   }
 
 

@@ -92,5 +92,6 @@ public class AbstractPdpIntegrationTest {
     return objectMapper.getTypeFactory().constructCollectionType(List.class, elementClass);
   }
 
-
+  @Test
+  public void dummyToSatisfyIde() {}
 }

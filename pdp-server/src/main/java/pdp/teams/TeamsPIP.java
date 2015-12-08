@@ -19,12 +19,13 @@ import org.springframework.util.CollectionUtils;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
-import static pdp.xacml.PdpPolicyDefinitionParser.GROUP_URN;
 import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
 
 public class TeamsPIP implements ConfigurableEngine, VootClientAware {
 
   private final static Logger LOG = LoggerFactory.getLogger(TeamsPIP.class);
+
+  public static final String GROUP_URN = "urn:collab:group:surfteams.nl";
 
   private VootClient vootClient;
 

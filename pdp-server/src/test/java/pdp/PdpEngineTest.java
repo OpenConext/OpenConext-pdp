@@ -9,6 +9,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import pdp.domain.*;
+import pdp.teams.TeamsPIP;
 
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     });
 
     //See VootClientConfig#mockVootClient for groups to be returned and VootClientConfig#URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN for the user it expects
-    if (definition.getAttributes().stream().anyMatch(attr -> attr.getName().equalsIgnoreCase(GROUP_URN))) {
+    if (definition.getAttributes().stream().anyMatch(attr -> attr.getName().equalsIgnoreCase(TeamsPIP.GROUP_URN))) {
       permitPolicyRequest.addOrReplaceAccessSubjectAttribute(NAME_ID, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN);
     }
 

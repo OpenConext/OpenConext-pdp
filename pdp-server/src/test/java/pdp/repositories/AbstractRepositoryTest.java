@@ -38,5 +38,7 @@ public class AbstractRepositoryTest {
     return new PdpPolicy("xml", name, true, userIdentifier, authenticatingAuthority, userDisplayName);
   }
 
+  @Test
+  public void dummyToSatisfyIde() {}
 
 }
