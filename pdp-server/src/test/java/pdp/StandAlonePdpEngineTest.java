@@ -1,6 +1,8 @@
 package pdp;
 
+import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
+
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.std.json.JSONRequest;
@@ -31,6 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@NotThreadSafe
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
