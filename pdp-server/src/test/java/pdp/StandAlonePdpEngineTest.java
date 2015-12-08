@@ -47,7 +47,8 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     @SuppressWarnings("ignoreChecked")
     public List<String> groups(String userUrn) {
       return VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
-          Collections.singletonList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo") : Collections.EMPTY_LIST;
+          Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+              "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins") : Collections.EMPTY_LIST;
     }
   };
 
@@ -122,7 +123,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     assertEquals(TeamsPIP.GROUP_URN, attribute.getAttributeId().getUri().toString());
     assertEquals(TeamsPIP.GROUP_URN, attribute.getCategory().getUri().toString());
     List<String> attributeValues = attribute.getValues().stream().map(attrValue -> (String) attrValue.getValue()).collect(toList());
-    assertEquals(Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo"), attributeValues);
+    assertEquals(Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins"), attributeValues);
   }
 
   @Test
