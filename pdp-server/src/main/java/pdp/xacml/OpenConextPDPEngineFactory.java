@@ -13,21 +13,10 @@ import java.util.Properties;
 
 public class OpenConextPDPEngineFactory extends OpenAZPDPEngineFactory {
 
-
-  @Override
-  public PDPEngine newEngine() throws FactoryException {
-    return new OpenConextPDPEngine(EvaluationContextFactory.newInstance(), this.getDefaultBehavior(), this.getScopeResolver());
-  }
-
-  @Override
-  public PDPEngine newEngine(Properties properties) throws FactoryException {
-    return new OpenConextPDPEngine(EvaluationContextFactory.newInstance(properties), this.getDefaultBehavior(), this.getScopeResolver());
-  }
-
-  public PDPEngine newEngine(PdpPolicyRepository pdpPolicyRepository, VootClient vootClient) throws FactoryException, IOException {
+  public PDPEngine newEngine(boolean policyIncludeAggregatedAttributes, PdpPolicyRepository pdpPolicyRepository, VootClient vootClient) throws FactoryException, IOException {
     EvaluationContextFactory evaluationContextFactory = EvaluationContextFactory.newInstance();
     injectDependencies(pdpPolicyRepository, vootClient, evaluationContextFactory);
-    return new OpenConextPDPEngine(evaluationContextFactory, this.getDefaultBehavior(), this.getScopeResolver());
+    return new OpenConextPDPEngine(policyIncludeAggregatedAttributes, evaluationContextFactory, this.getDefaultBehavior(), this.getScopeResolver());
   }
 
   private void injectDependencies(PdpPolicyRepository pdpPolicyRepository, VootClient vootClient, EvaluationContextFactory evaluationContextFactory) {

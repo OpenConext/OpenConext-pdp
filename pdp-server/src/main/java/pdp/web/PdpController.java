@@ -2,11 +2,11 @@ package pdp.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import org.apache.openaz.xacml.api.IdReference;
-import org.apache.openaz.xacml.api.Request;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
+import org.apache.openaz.xacml.std.IdentifierImpl;
+import org.apache.openaz.xacml.std.StdMutableResponse;
+import org.apache.openaz.xacml.std.StdMutableResult;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import pdp.PdpPolicyException;
@@ -40,14 +41,22 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
+import static java.util.Spliterator.ORDERED;
+import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
+import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Stream.generate;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static pdp.PdpApplication.singletonCollector;
 import static pdp.PdpApplication.singletonOptionalCollector;
 
 @RestController
@@ -65,6 +74,7 @@ public class PdpController {
   private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
   private final ServiceRegistry serviceRegistry;
   private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
+  private final boolean policyIncludeAggregatedAttributes;
 
   // Can't be final as we need to swap this to reload policies in production
   private PDPEngine pdpEngine;
@@ -73,14 +83,16 @@ public class PdpController {
   public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
                        @Value("${period.policies.refresh.minutes}") int period,
                        @Value("${policy.idp.access.enforcement}") boolean policyIdpAccessEnforcement,
+                       @Value("${policy.include.aggregated.attributes}") boolean policyIncludeAggregatedAttributes,
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PdpPolicyRepository pdpPolicyRepository,
                        PDPEngineHolder pdpEngineHolder,
                        ServiceRegistry serviceRegistry) {
     this.pdpEngineHolder = pdpEngineHolder;
-    this.pdpEngine = pdpEngineHolder.newPdpEngine();
+    this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
     this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(policyIdpAccessEnforcement);
+    this.policyIncludeAggregatedAttributes = policyIncludeAggregatedAttributes;
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
@@ -111,6 +123,7 @@ public class PdpController {
     } finally {
       pdpEngineLock.readLock().unlock();
     }
+
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
     LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
 
@@ -244,7 +257,6 @@ public class PdpController {
 
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
-    //policy.getRevisions();
     pdpPolicyRepository.delete(policy);
   }
 
@@ -291,7 +303,7 @@ public class PdpController {
     long start = System.currentTimeMillis();
     pdpEngineLock.writeLock().lock();
     try {
-      this.pdpEngine = pdpEngineHolder.newPdpEngine();
+      this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
     } finally {
       pdpEngineLock.writeLock().unlock();
     }

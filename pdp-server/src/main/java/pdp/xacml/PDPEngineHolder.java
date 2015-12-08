@@ -19,13 +19,13 @@ public class PDPEngineHolder {
     this.vootClient = vootClient;
   }
 
-  public PDPEngine newPdpEngine() {
+  public PDPEngine newPdpEngine(boolean policyIncludeAggregatedAttributes) {
     try {
       PDPEngineFactory factory = PDPEngineFactory.newInstance();
 
       //We want to be properties driven for testability, but we can't otherwise hook into the PdpPolicyRepository
       if (factory instanceof OpenConextPDPEngineFactory) {
-        return ((OpenConextPDPEngineFactory) factory).newEngine(pdpPolicyRepository, vootClient);
+        return ((OpenConextPDPEngineFactory) factory).newEngine(policyIncludeAggregatedAttributes, pdpPolicyRepository, vootClient);
       } else {
         return factory.newEngine();
       }

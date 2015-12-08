@@ -28,7 +28,7 @@ public class JsonPolicyRequestTest {
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:schacHomeOrganization", "surfnet.nl"));
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:edu", "what"));
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:different", "surfnet.nl"));
-    accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:terena.org:attribute-def:eduPersonAffiliation", "employee"));
+    accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "employee"));
 
     List<JsonPolicyRequest.Attribute> resourceAttributes = request.resource.attributes;
     resourceAttributes.add(new JsonPolicyRequest.Attribute("SPentityID", "avans_sp"));

@@ -68,7 +68,6 @@ public class PdpApplication {
   @Autowired
   public PDPEngineHolder pdpEngine(
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
-      final Environment environment,
       final PdpPolicyRepository pdpPolicyRepository,
       final VootClient vootClient,
       final PolicyLoader policyLoader
@@ -165,15 +164,6 @@ public class PdpApplication {
     @Autowired
     private Environment environment;
 
-    @Bean
-    @Profile({"dev", "perf", "no-csrf"})
-    public FilterRegistrationBean mockShibbolethFilter() {
-      FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
-      filterRegistrationBean.setFilter(new MockShibbolethFilter());
-      filterRegistrationBean.addUrlPatterns("/*");
-      return filterRegistrationBean;
-    }
-
     @Override
     public void configure(WebSecurity web) throws Exception {
       web
@@ -205,6 +195,10 @@ public class PdpApplication {
 
       if (environment.acceptsProfiles("no-csrf")) {
         http.csrf().disable();
+      }
+      if (environment.acceptsProfiles("dev", "perf", "no-csrf")) {
+        //we can't use @Profile, because we need to add it before the real filter
+        http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
       }
     }
 

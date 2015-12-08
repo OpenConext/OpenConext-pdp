@@ -4,6 +4,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
+import org.apache.openaz.xacml.pdp.policy.Policy;
+import org.apache.openaz.xacml.pdp.policy.PolicyDef;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.FactoryException;
@@ -15,15 +17,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.repositories.PdpPolicyRepository;
+import pdp.teams.VootClient;
+import pdp.teams.VootClientConfig;
 import pdp.web.PdpController;
+import pdp.xacml.OpenConextPDPEngine;
+import pdp.xacml.OpenConextPDPEngineFactory;
+import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static pdp.xacml.ClassPathPolicyFinderFactory.*;
 
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
@@ -32,31 +48,46 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   private PDPEngine pdpEngine;
 
-  @Before
-  public void before() throws IOException, FactoryException {
-    doBefore(false);
-  }
+  private PdpPolicyRepository pdpPolicyRepository;
 
-  private void doBefore(boolean parsePolicyXml) throws IOException, FactoryException {
-    Resource resource = new ClassPathResource("test.standalone.engine.xacml.properties");
+  private VootClient mockVootClient = new VootClient(null, null) {
+    @Override
+    @SuppressWarnings("ignoreChecked")
+    public List<String> groups(String userUrn) {
+      return VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
+          Collections.singletonList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo") : Collections.EMPTY_LIST;
+    }
+  };
+
+  private void setUp(String... policyFiles) throws IOException, FactoryException {
+    Resource resource = new ClassPathResource("xacml.conext.properties");
     String absolutePath = resource.getFile().getAbsolutePath();
 
     //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
-    //This will be picked up by the ClassPathPolicyFinderFactory when creating a new PolicyDef
-    System.setProperty(PARSE_POLICY_XML, Boolean.toString(parsePolicyXml));
-
     XACMLProperties.reloadProperties();
 
-    PDPEngineFactory pdpEngineFactory = PDPEngineFactory.newInstance();
-    this.pdpEngine = pdpEngineFactory.newEngine();
+    pdpPolicyRepository = mock(PdpPolicyRepository.class);
+    List<PdpPolicy> pdpPolicies = Arrays.asList(policyFiles).stream().map(policyFile -> loadPolicy(policyFile)).collect(toList());
+    when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
+
+    OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
+    this.pdpEngine = pdpEngineFactory.newEngine(true, pdpPolicyRepository, mockVootClient);
+  }
+
+  private PdpPolicy loadPolicy(String policyFile)  {
+    try {
+      String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream());
+      return new PdpPolicy( policyXml, policyFile, true, "system", "http://mock-idp", "John Doe");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @After
   public void after() throws Exception {
     super.after();
-    System.setProperty(POLICY_FILES, "not to be found");
   }
 
   @Test
@@ -113,29 +144,13 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
-    /**
-     * We test two different ways:
-     *
-     * First using the policy XML source directly
-     *
-     * Second by parsing the policy XML into a PdPPolicyDefinition using the PdpPolicyDefinitionParser and then
-     * the PolicyTemplateEngine to get the policy XML
-     *
-     * This way we test the semantics of the policy (first way) and additionally the logic in the PdpPolicyDefinitionParser
-     * and the PolicyTemplateEngine to mimic the behaviour runtime by the PdpController
-     *
-     * Policies files and above described alternative ways of creating a PolicyDef
-     * are handled up by ClassPathPolicyFinderFactory
-     */
-    System.setProperty(POLICY_FILES, String.join(",", Arrays.asList(policyFiles)));
+    setUp(policyFiles);
 
     String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
     Request pdpRequest = JSONRequest.load(payload);
 
     Response pdpResponse = pdpEngine.decide(pdpRequest);
     assertResponse(decision, pdpResponse);
-
-    doBefore(true);
 
     pdpResponse = pdpEngine.decide(pdpRequest);
     Result result = assertResponse(decision, pdpResponse);

@@ -17,7 +17,7 @@
           "Value": "surfnet.nl"
         },
         {
-          "AttributeId": "urn:mace:terena.org:attribute-def:eduPersonAffiliation",
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
           "Value": "employee"
         }
       ]
