@@ -22,7 +22,7 @@ import static pdp.policies.PolicyLoader.userIdentifier;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:test.standalone.engine.xacml.properties", "spring.profiles.active=test"})
+@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=test"})
 @Transactional //rollback commits
 public class AbstractRepositoryTest {
 
