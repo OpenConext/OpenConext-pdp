@@ -5,18 +5,21 @@ import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.sab.SabClient;
 import pdp.teams.VootClient;
 
 public class PDPEngineHolder {
 
   private static Logger LOG = LoggerFactory.getLogger(PDPEngineHolder.class);
+  private final SabClient sabClient;
 
   private PdpPolicyRepository pdpPolicyRepository;
   private VootClient vootClient;
 
-  public PDPEngineHolder(PdpPolicyRepository pdpPolicyRepository, VootClient vootClient) {
+  public PDPEngineHolder(PdpPolicyRepository pdpPolicyRepository, VootClient vootClient, SabClient sabClient) {
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.vootClient = vootClient;
+    this.sabClient = sabClient;
   }
 
   public PDPEngine newPdpEngine(boolean policyIncludeAggregatedAttributes) {
@@ -25,7 +28,7 @@ public class PDPEngineHolder {
 
       //We want to be properties driven for testability, but we can't otherwise hook into the PdpPolicyRepository
       if (factory instanceof OpenConextPDPEngineFactory) {
-        return ((OpenConextPDPEngineFactory) factory).newEngine(policyIncludeAggregatedAttributes, pdpPolicyRepository, vootClient);
+        return ((OpenConextPDPEngineFactory) factory).newEngine(policyIncludeAggregatedAttributes, pdpPolicyRepository, vootClient, sabClient);
       } else {
         return factory.newEngine();
       }

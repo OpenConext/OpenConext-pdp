@@ -1,6 +1,7 @@
 package pdp.teams;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -24,7 +25,7 @@ public class VootClientTest {
 
   @Test
   public void testGroups() throws Exception {
-    String response = StreamUtils.copyToString(new ClassPathResource("voot/empty_groups.json").getInputStream(), Charset.forName("UTF-8"));
+    String response = IOUtils.toString(new ClassPathResource("voot/empty_groups.json").getInputStream());
     stubFor(get(urlEqualTo("/internal/groups/id1")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(response)));
     List<String> groups = subject.groups("id1");
     assertTrue(groups.isEmpty());
@@ -32,7 +33,7 @@ public class VootClientTest {
 
   @Test
   public void testHasAccess() throws Exception {
-    String response = StreamUtils.copyToString(new ClassPathResource("voot/groups.json").getInputStream(), Charset.forName("UTF-8"));
+    String response = IOUtils.toString(new ClassPathResource("voot/groups.json").getInputStream());
     stubFor(get(urlEqualTo("/internal/groups/id1")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(response)));
     List<String> groups = subject.groups("id1");
     assertEquals(14, groups.size());

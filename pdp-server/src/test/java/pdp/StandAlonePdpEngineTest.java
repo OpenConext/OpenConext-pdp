@@ -2,7 +2,6 @@ package pdp;
 
 import net.jcip.annotations.NotThreadSafe;
 import org.apache.commons.io.IOUtils;
-
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.std.json.JSONRequest;
@@ -17,6 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.sab.SabClient;
 import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
 import pdp.teams.VootClientConfig;
@@ -52,6 +52,15 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
   };
 
+  private SabClient mockSabClient = new SabClient("http://localhost", null, null) {
+    @Override
+    @SuppressWarnings("ignoreChecked")
+    public List<String> roles(String userUrn) {
+      return VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
+          Arrays.asList("OperationeelBeheerder", "Instellingsbevoegde") : Collections.EMPTY_LIST;
+    }
+  };
+
   private void setUp(boolean includeAggregatedAttributesInResponse, String... policyFiles) throws IOException, FactoryException {
     Resource resource = new ClassPathResource("xacml.conext.properties");
     String absolutePath = resource.getFile().getAbsolutePath();
@@ -66,7 +75,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
     OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
-    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, mockVootClient);
+    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, mockVootClient, mockSabClient);
   }
 
   private PdpPolicy loadPolicy(String policyFile) {
@@ -150,7 +159,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, boolean includeAggregatedAttributesInResponse, String... policyFiles) throws Exception {
-    setUp(includeAggregatedAttributesInResponse,policyFiles);
+    setUp(includeAggregatedAttributesInResponse, policyFiles);
 
     String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
     Request pdpRequest = JSONRequest.load(payload);

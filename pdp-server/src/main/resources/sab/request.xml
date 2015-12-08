@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <samlp:AttributeQuery xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+                          xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                          ID="{0}" Version="2.0"
+                          IssueInstant="{1}">
+      <saml:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://sab.surfnet.nl/</saml:Issuer>
+      <saml:Subject>
+        <saml:NameID Format="urn:oasis:names:tc:SAML:2.0:nameid-format:unspecified">{2}</saml:NameID>
+      </saml:Subject>
+      <saml:Attribute
+        NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+        Name="urn:oid:1.3.6.1.4.1.5923.1.1.1.7"
+        FriendlyName="entitlements">
+      </saml:Attribute>
+      <saml:Attribute
+        NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"
+        Name="urn:oid:1.3.6.1.4.1.1076.20.100.10.50.1"
+        FriendlyName="klantafkorting">
+      </saml:Attribute>
+    </samlp:AttributeQuery>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

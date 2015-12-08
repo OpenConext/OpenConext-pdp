@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
+import pdp.sab.SabClient;
 import pdp.teams.VootClient;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
   }
 
-  public void setPdpPolicyRepository(PdpPolicyRepository pdpPolicyRepository) {
+  public void injectPolicyFinderDependencies(PdpPolicyRepository pdpPolicyRepository) {
     this.pdpPolicyRepository = pdpPolicyRepository;
     setPolicyFinder(loadPolicyFinder());
   }
@@ -92,12 +93,12 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     return policyDef;
   }
 
-  public void setVootClient(VootClient vootClient) {
-    setPIPFinder(loadPIPFinder(vootClient));
+  public void injectPIPFinderDependencies(VootClient vootClient, SabClient sabClient) {
+    setPIPFinder(loadPIPFinder(vootClient, sabClient));
   }
 
-  private PIPFinder loadPIPFinder(VootClient vootClient) {
-    OpenConextConfigurableEngineFinder pipFinder = new OpenConextConfigurableEngineFinder(vootClient);
+  private PIPFinder loadPIPFinder(VootClient vootClient, SabClient sabClient) {
+    OpenConextConfigurableEngineFinder pipFinder = new OpenConextConfigurableEngineFinder(vootClient, sabClient);
     try {
       pipFinder.configure(XACMLProperties.getProperties());
       return pipFinder;

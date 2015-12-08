@@ -34,6 +34,7 @@ import pdp.policies.PerformancePrePolicyLoader;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
+import pdp.sab.SabClient;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
 import pdp.serviceregistry.UrlResourceServiceRegistry;
@@ -70,6 +71,7 @@ public class PdpApplication {
       @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
       final PdpPolicyRepository pdpPolicyRepository,
       final VootClient vootClient,
+      final SabClient sabClient,
       final PolicyLoader policyLoader
   ) throws IOException, FactoryException {
     Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
@@ -80,7 +82,7 @@ public class PdpApplication {
 
     policyLoader.loadPolicies();
 
-    return new PDPEngineHolder(pdpPolicyRepository, vootClient);
+    return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
   }
 
   @Bean

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <samlp:Response xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+                    ID="_a0a93e63d43bba59da30d385aa519edf073696b423"
+                    Version="2.0" IssueInstant="2013-06-17T12:49:05Z"
+                    InResponseTo="aaf23196-1773-2113-474a-fe114412ab72">
+      <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Responder"/>
+        <samlp:StatusMessage>Request blocked by ACL</samlp:StatusMessage>
+      </samlp:Status>
+    </samlp:Response>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
