@@ -2,11 +2,11 @@ package pdp.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import org.apache.openaz.xacml.api.*;
+import org.apache.openaz.xacml.api.IdReference;
+import org.apache.openaz.xacml.api.Request;
+import org.apache.openaz.xacml.api.Response;
+import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.std.IdentifierImpl;
-import org.apache.openaz.xacml.std.StdMutableResponse;
-import org.apache.openaz.xacml.std.StdMutableResult;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import pdp.PdpPolicyException;
@@ -41,23 +40,15 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-import static java.util.Spliterator.ORDERED;
-import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
-import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Stream.generate;
 import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static pdp.PdpApplication.singletonCollector;
-import static pdp.PdpApplication.singletonOptionalCollector;
+import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
@@ -147,6 +138,12 @@ public class PdpController {
     policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
 
     return policies;
+  }
+
+  @RequestMapping(method = GET, value = "/internal/policies/sp")
+  public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
+    List<PdpPolicyDefinition> policies = policyDefinitions();
+    return stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
   }
 
   @RequestMapping(method = GET, value = "/internal/violations")

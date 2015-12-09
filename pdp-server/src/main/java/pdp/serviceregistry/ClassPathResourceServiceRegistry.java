@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
-import static pdp.PdpApplication.singletonOptionalCollector;
+import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 

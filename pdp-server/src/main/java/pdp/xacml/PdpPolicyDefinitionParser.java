@@ -19,7 +19,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
-import static pdp.PdpApplication.singletonOptionalCollector;
+import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 /*
  * Thread-safe

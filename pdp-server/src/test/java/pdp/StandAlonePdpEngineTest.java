@@ -22,6 +22,7 @@ import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
 import pdp.teams.VootClientConfig;
+import pdp.util.StreamUtils;
 import pdp.web.PdpController;
 import pdp.xacml.OpenConextPDPEngineFactory;
 import pdp.xacml.PolicyTemplateEngine;
@@ -36,6 +37,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @NotThreadSafe
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
@@ -163,7 +165,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
         "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
         "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
     );
-    Optional<IdReference> policy = result.getPolicyIdentifiers().stream().collect(PdpApplication.singletonOptionalCollector());
+    Optional<IdReference> policy = result.getPolicyIdentifiers().stream().collect(singletonOptionalCollector());
     assertTrue(policy.isPresent());
     //the violated policy
     assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), policy.get().getId().stringValue());

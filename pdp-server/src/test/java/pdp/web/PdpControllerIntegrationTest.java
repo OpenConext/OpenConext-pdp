@@ -3,9 +3,12 @@ package pdp.web;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
@@ -17,14 +20,18 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static pdp.util.StreamUtils.singletonCollector;
 
-@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.properties", "spring.profiles.active=no-csrf"})
+@RunWith(SpringJUnit4ClassRunner.class)
+@SpringApplicationConfiguration(classes = PdpApplication.class)
+@WebIntegrationTest(randomPort = true, value = { "spring.profiles.active=no-csrf"})
 public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   private static final String policyId = "urn:surfconext:xacml:policy:id:_open_conextpdp_single_attribute";
@@ -45,6 +52,14 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     // exact count depends on the ordering of the tests - does not really matter
     assertTrue(definitions.size() >= 9);
     definitions.forEach(def -> assertNotNull(def.getCreated()));
+
+  }
+
+  @Test
+  public void testPolicyDefinitionsByServiceProvider() throws Exception {
+    String json = get("internal/policies/sp?serviceProvider=https://surftest.viadesk.com");
+    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
+    assertEquals(1 , definitions.size());
   }
 
   @Test
@@ -167,7 +182,7 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   private PdpPolicyDefinition findByRevisionNbr(List<PdpPolicyDefinition> definitions, int revisionNbr) {
-    return definitions.stream().filter(def -> def.getRevisionNbr() == revisionNbr).collect(PdpApplication.singletonCollector());
+    return definitions.stream().filter(def -> def.getRevisionNbr() == revisionNbr).collect(singletonCollector());
   }
 
   private void assertPolicyIsDeleted(PdpPolicy policy) {

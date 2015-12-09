@@ -54,6 +54,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collector;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @SpringBootApplication()
 public class PdpApplication {
@@ -222,24 +224,4 @@ public class PdpApplication {
     }
   }
 
-  public static <T> Collector<T, List<T>, Optional<T>> singletonOptionalCollector() {
-    return Collector.of(ArrayList::new, List::add, (left, right) -> {
-          left.addAll(right);
-          return left;
-        }, list -> list.isEmpty() ? Optional.empty() : Optional.of(list.get(0))
-    );
-  }
-
-  public static <T> Collector<T, List<T>, T> singletonCollector() {
-    return Collector.of(ArrayList::new, List::add, (left, right) -> {
-          left.addAll(right);
-          return left;
-        }, list -> {
-          if (list.isEmpty()) {
-            throw new RuntimeException("Expected at least one element in the List");
-          }
-          return list.get(0);
-    }
-    );
-  }
 }

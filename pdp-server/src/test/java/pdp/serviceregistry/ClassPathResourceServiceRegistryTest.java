@@ -12,7 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static pdp.PdpApplication.singletonOptionalCollector;
+import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 public class ClassPathResourceServiceRegistryTest {
 

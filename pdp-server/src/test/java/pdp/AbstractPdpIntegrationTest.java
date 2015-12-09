@@ -49,7 +49,7 @@ import static pdp.xacml.PdpPolicyDefinitionParser.*;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = {"xacml.properties.path=classpath:xacml.conext.properties", "spring.profiles.active=dev"})
+@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=dev"})
 public class AbstractPdpIntegrationTest {
 
   @Autowired

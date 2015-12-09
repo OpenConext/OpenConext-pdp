@@ -12,11 +12,10 @@ import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static pdp.PdpApplication.singletonCollector;
+import static pdp.util.StreamUtils.singletonCollector;
 
 public class OpenConextPDPEngine extends OpenAZPDPEngine {
 
