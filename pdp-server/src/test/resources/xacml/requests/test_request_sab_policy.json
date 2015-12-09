@@ -1,0 +1,26 @@
+{
+  "Request": {
+    "ReturnPolicyIdList": true,
+    "CombinedDecision": false,
+    "AccessSubject": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+          "Value": "urn:collab:person:example.com:admin"
+        }
+      ]
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "SPentityID",
+          "Value": "https://dashboard.surfconext.nl"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "does_not_matter"
+        }
+      ]
+    }
+  }
+}

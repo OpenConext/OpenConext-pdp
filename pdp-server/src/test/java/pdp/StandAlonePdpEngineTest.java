@@ -9,6 +9,7 @@ import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
+import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
 import pdp.teams.VootClientConfig;
@@ -26,6 +28,8 @@ import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
@@ -52,7 +56,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
   };
 
-  private static SabClient mockSabClient = new SabClient("user", "password","http://localhost") {
+  private static SabClient mockSabClient = new SabClient("user", "password", "http://localhost") {
     @Override
     @SuppressWarnings("ignoreChecked")
     public List<String> roles(String userUrn) {
@@ -124,20 +128,27 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
+
   public void testTeamsPolicyWithAggregatedAttributes() throws Exception {
     Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.teams.Policy.xml");
-    List<Attribute> attributes = result.getAttributes().stream().map(AttributeCategory::getAttributes).flatMap(Collection::stream).collect(toList());
-    assertEquals(1, attributes.size());
-    Attribute attribute = attributes.get(0);
-    assertEquals(TeamsPIP.GROUP_URN, attribute.getAttributeId().getUri().toString());
-    assertEquals(TeamsPIP.GROUP_URN, attribute.getCategory().getUri().toString());
-    List<String> attributeValues = attribute.getValues().stream().map(attrValue -> (String) attrValue.getValue()).collect(toList());
-    assertEquals(Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins"), attributeValues);
+    assertAggregatedAttribute(result, TeamsPIP.GROUP_URN, "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins");
   }
 
   @Test
   public void testTeamsPolicyWithoutAggregatedAttributes() throws Exception {
     Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, false, "OpenConext.pdp.test.teams.Policy.xml");
+    assertEquals(0, result.getAttributes().size());
+  }
+
+  @Test
+  public void testSabPolicyWithAggregatedAttributes() throws Exception {
+    Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.sab.Policy.xml");
+    assertAggregatedAttribute(result, SabPIP.SAB_URN, "OperationeelBeheerder");
+  }
+
+  @Test
+  public void testSabPolicyWithoutAggregatedAttributes() throws Exception {
+    Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, false, "OpenConext.pdp.test.sab.Policy.xml");
     assertEquals(0, result.getAttributes().size());
   }
 
@@ -159,13 +170,13 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, boolean includeAggregatedAttributesInResponse, String... policyFiles) throws Exception {
-    setUp(includeAggregatedAttributesInResponse, policyFiles);
+      setUp(includeAggregatedAttributesInResponse, policyFiles);
 
-    String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
-    Request pdpRequest = JSONRequest.load(payload);
+      String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
+      Request pdpRequest = JSONRequest.load(payload);
 
-    Response pdpResponse = pdpEngine.decide(pdpRequest);
-    return assertResponse(decision, pdpResponse);
+      Response pdpResponse = pdpEngine.decide(pdpRequest);
+      return assertResponse(decision, pdpResponse);
   }
 
   private Result assertResponse(Decision decision, Response pdpResponse) throws Exception {
@@ -176,6 +187,16 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     Result result = pdpResponse.getResults().iterator().next();
     assertEquals(decision, result.getDecision());
     return result;
+  }
+
+  private void assertAggregatedAttribute(Result result, String urn, String attributeValue) {
+    List<Attribute> attributes = result.getAttributes().stream().map(AttributeCategory::getAttributes).flatMap(Collection::stream).collect(toList());
+    assertEquals(1, attributes.size());
+    Attribute attribute = attributes.get(0);
+    assertEquals(urn, attribute.getAttributeId().getUri().toString());
+    assertEquals(urn, attribute.getCategory().getUri().toString());
+    List<String> attributeValues = attribute.getValues().stream().map(attrValue -> (String) attrValue.getValue()).collect(toList());
+    assertEquals(Arrays.asList(attributeValue), attributeValues);
   }
 
 }

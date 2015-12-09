@@ -8,6 +8,7 @@ import org.apache.openaz.xacml.pdp.eval.EvaluationContext;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
 import org.apache.openaz.xacml.std.StdMutableResponse;
 import org.apache.openaz.xacml.std.StdMutableResult;
+import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 
 import java.util.Arrays;
@@ -21,7 +22,7 @@ public class OpenConextPDPEngine extends OpenAZPDPEngine {
 
   private final boolean policyIncludeAggregatedAttributes;
 
-  private static final List<String> includeAggregatedAttributesIdentifiers = Arrays.asList(TeamsPIP.GROUP_URN);
+  private static final List<String> includeAggregatedAttributesIdentifiers = Arrays.asList(TeamsPIP.GROUP_URN, SabPIP.SAB_URN);
 
   public OpenConextPDPEngine(boolean policyIncludeAggregatedAttributes, EvaluationContextFactory evaluationContextFactoryIn, Decision defaultDecisionIn, ScopeResolver scopeResolverIn) {
     super(evaluationContextFactoryIn, defaultDecisionIn, scopeResolverIn);

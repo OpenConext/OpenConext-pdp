@@ -60,7 +60,7 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
   @Override
   public PIPResponse getAttributes(PIPRequest pipRequest, PIPFinder pipFinder) throws PIPException {
     if (!getIdentifierProvidedAttribute().equals(pipRequest.getAttributeId().getUri().toString())) {
-      //this PIP requires a sab role rule to be present in the Policy
+      //this PIP requires a PIP dependent rule to be present in the Policy
       return empty;
     }
     PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(requiredAttribute, this);
