@@ -48,7 +48,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       entityMetaData = new HashMap<>();
       entityMetaData.put(IDP_ENTITY_ID, getIdpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
       entityMetaData.put(SP_ENTITY_ID, getSpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
-      LOG.debug("Initialized SR Rsources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+      LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
     } finally {
       lock.writeLock().unlock();
     }

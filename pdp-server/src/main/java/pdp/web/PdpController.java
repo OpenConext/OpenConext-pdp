@@ -71,8 +71,7 @@ public class PdpController {
   private PDPEngine pdpEngine;
 
   @Autowired
-  public PdpController(@Value("${initial.delay.policies.refresh.minutes}") int initialDelay,
-                       @Value("${period.policies.refresh.minutes}") int period,
+  public PdpController(@Value("${period.policies.refresh.minutes}") int period,
                        @Value("${policy.idp.access.enforcement}") boolean policyIdpAccessEnforcement,
                        @Value("${policy.include.aggregated.attributes}") boolean policyIncludeAggregatedAttributes,
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
@@ -87,7 +86,7 @@ public class PdpController {
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshPolicies, initialDelay, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshPolicies, period, period, TimeUnit.MINUTES);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")

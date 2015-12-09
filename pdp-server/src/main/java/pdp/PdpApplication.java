@@ -118,11 +118,8 @@ public class PdpApplication {
   public ServiceRegistry urlResourceServiceRegistry(
       @Value("metadata.idpRemotePath") String idpRemotePath,
       @Value("metadata.spRemotePath") String spRemotePath,
-      @Value("metadata.userName") String userName,
-      @Value("metadata.password") String password,
-      @Value("${initial.delay.metadata.refresh.minutes}") int initialDelay,
       @Value("${period.metadata.refresh.minutes}") int period) {
-    return new UrlResourceServiceRegistry(idpRemotePath, spRemotePath, userName, password, initialDelay, period);
+    return new UrlResourceServiceRegistry(idpRemotePath, spRemotePath, period);
   }
 
   @Bean
