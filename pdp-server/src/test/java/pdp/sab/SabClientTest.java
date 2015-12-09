@@ -6,12 +6,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class SabClientTest {
 
@@ -30,5 +32,22 @@ public class SabClientTest {
         "Superuser", "Instellingsbevoegde", "Infraverantwoordelijke", "OperationeelBeheerder", "Mailverantwoordelijke",
         "Domeinnamenverantwoordelijke", "DNS-Beheerder", "AAIverantwoordelijke", "Beveiligingsverantwoordelijke"),
         roles);
+  }
+
+  @Test
+  public void testGetRolesFailures() throws Exception {
+    //if something goes wrong, we just don't get roles and SAB policies will return Indeterminate. We log all requests and responses
+    for (String fileName : Arrays.asList("response_acl_blocked.xml", "response_invalid_user.xml", "response_unknown_user.xml")) {
+      //lambda requires error handling
+      assertEmptyRoles(fileName);
+    }
+  }
+
+  private void assertEmptyRoles(String fileName) throws IOException {
+    String response = IOUtils.toString(new ClassPathResource("sab/"+fileName).getInputStream());
+    stubFor(post(urlEqualTo("/sab")).withHeader("Authorization", equalTo("Basic " + encodeBase64String("user:password".getBytes())))
+        .willReturn(aResponse().withStatus(200).withBody(response)));
+    assertTrue(subject.roles("id1").isEmpty());
+
   }
 }

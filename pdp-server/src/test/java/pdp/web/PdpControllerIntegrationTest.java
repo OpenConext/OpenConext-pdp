@@ -121,14 +121,14 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   @Test
   public void testAllowedAttributes() throws Exception {
     List<JsonPolicyRequest.Attribute> allowedAttributes = objectMapper.readValue(get("internal/attributes"), constructCollectionType(JsonPolicyRequest.Attribute.class));
-    assertEquals(7, allowedAttributes.size());
+    assertEquals(8, allowedAttributes.size());
     assertAttributes(allowedAttributes);
   }
 
   @Test
   public void testAllowedSamlAttributes() throws Exception {
     List<JsonPolicyRequest.Attribute> samlAttributes = objectMapper.readValue(get("internal/saml-attributes"), constructCollectionType(JsonPolicyRequest.Attribute.class));
-    assertEquals(8, samlAttributes.size());
+    assertEquals(9, samlAttributes.size());
     JsonPolicyRequest.Attribute nameId = samlAttributes.get(0);
     assertEquals("urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified", nameId.attributeId);
     assertNotNull(nameId.value);

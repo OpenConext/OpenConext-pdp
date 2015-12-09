@@ -10,6 +10,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 public class SabClient {
 
+  private final static Logger LOG = LoggerFactory.getLogger(SabClient.class);
+
   private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone(DateTimeZone.UTC);
 
   private final String sabUserName;
@@ -30,6 +34,8 @@ public class SabClient {
   private final String sabEndpoint;
 
   private final RestTemplate restTemplate;
+  private final String template;
+
   private final SabResponseParser parser = new SabResponseParser();
 
   private final int timeOut = 1000 * 10;
@@ -40,8 +46,10 @@ public class SabClient {
     this.sabEndpoint = sabEndpoint;
 
     try {
+      this.template = IOUtils.toString(new ClassPathResource("sab/request.xml").getInputStream());
       this.restTemplate = new RestTemplate(getRequestFactory());
-    } catch (MalformedURLException e) {
+    } catch (Exception e) {
+      //fail fast
       throw new RuntimeException(e);
     }
   }
@@ -50,7 +58,9 @@ public class SabClient {
     String request = request(userId);
     String response = restTemplate.postForEntity(sabEndpoint, request, String.class).getBody();
     try {
-      return parser.parse(response);
+      List<String> roles = parser.parse(response);
+      LOG.debug("Retrieved SAB roles with request: {} and response: {}", request, response);
+      return roles;
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -58,7 +68,6 @@ public class SabClient {
 
 
   private String request(String userId) throws IOException {
-    String template = IOUtils.toString(new ClassPathResource("sab/request.xml").getInputStream());
     String issueInstant = dateTimeFormatter.print(System.currentTimeMillis());
     return MessageFormat.format(template, UUID.randomUUID().toString(), issueInstant, userId);
   }

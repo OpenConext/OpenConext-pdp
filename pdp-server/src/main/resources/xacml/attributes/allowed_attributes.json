@@ -26,5 +26,10 @@
   {
     "AttributeId": "urn:collab:group:surfteams.nl",
     "Value": "SURFteams group name (fully qualified)"
+  },
+  {
+    "AttributeId": "urn:collab:sab:surfnet.nl",
+    "Value": "SAB role"
+
   }
 ]

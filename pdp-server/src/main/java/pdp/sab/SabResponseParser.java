@@ -32,10 +32,10 @@ import java.util.List;
 
 public class SabResponseParser {
 
-  private XMLInputFactory factory = XMLInputFactory.newInstance();
-
   public List<String> parse(String soap) throws XMLStreamException {
-    //parsing soap sucks...
+    //despite it's name, the XMLInputFactoryImpl is not thread safe
+    XMLInputFactory factory = XMLInputFactory.newInstance();
+
     Reader reader = new StringReader(soap);
     XMLEventReader eventReader = factory.createXMLEventReader(reader);
 
