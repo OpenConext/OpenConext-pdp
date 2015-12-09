@@ -26,7 +26,7 @@ public class PDPEngineHolder {
     try {
       PDPEngineFactory factory = PDPEngineFactory.newInstance();
 
-      //We want to be properties driven for testability, but we can't otherwise hook into the PdpPolicyRepository
+      //We stick to the properties driven design of open-az, but we can't otherwise hook into the needed dependencies
       if (factory instanceof OpenConextPDPEngineFactory) {
         return ((OpenConextPDPEngineFactory) factory).newEngine(policyIncludeAggregatedAttributes, pdpPolicyRepository, vootClient, sabClient);
       } else {

@@ -42,7 +42,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   private PdpPolicyRepository pdpPolicyRepository;
 
-  private VootClient mockVootClient = new VootClient(null, null) {
+  private static VootClient mockVootClient = new VootClient(null, null) {
     @Override
     @SuppressWarnings("ignoreChecked")
     public List<String> groups(String userUrn) {
@@ -52,7 +52,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
   };
 
-  private SabClient mockSabClient = new SabClient("http://localhost", null, null) {
+  private static SabClient mockSabClient = new SabClient("user", "password","http://localhost") {
     @Override
     @SuppressWarnings("ignoreChecked")
     public List<String> roles(String userUrn) {

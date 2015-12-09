@@ -4,10 +4,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
-import pdp.teams.VootClient;
-import pdp.teams.VootClientConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,13 +26,13 @@ public class SabClientConfig {
   @Bean
   @Profile({"test", "acc", "prod"})
   public SabClient sabClient() {
-    return new SabClient(userName,password,endpoint);
+    return new SabClient(userName, password, endpoint);
   }
 
   @Bean
   @Profile({"dev", "perf", "no-csrf"})
   public SabClient mockSabClient() {
-    return new SabClient(userName,password,endpoint) {
+    return new SabClient(userName, password, endpoint) {
       @Override
       public List<String> roles(String userUrn) {
         /*
