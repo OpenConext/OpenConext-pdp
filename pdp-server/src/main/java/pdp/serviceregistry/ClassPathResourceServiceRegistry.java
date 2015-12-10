@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
@@ -25,7 +26,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   protected final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
-  private final static List<String> allowedLanguages = Arrays.asList("en", "nl");
+  private final static List<String> allowedLanguages = asList("en", "nl");
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
   private final String environment;
@@ -62,13 +63,9 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     return doGetResources("service-registry/saml20-sp-remote.json", "service-registry/saml20-sp-remote." + environment + ".json");
   }
 
-  private List<Resource> doGetResources(String defaultPath, String environmentPath) {
-    ClassPathResource defaultIdps = new ClassPathResource(defaultPath);
-    ClassPathResource environmentIdps = new ClassPathResource(environmentPath);
-    if (environmentIdps.exists()) {
-      return Arrays.asList(defaultIdps, environmentIdps);
-    }
-    return Arrays.asList(defaultIdps);
+  protected List<Resource> doGetResources(String... paths) {
+    List<Resource> collect = asList(paths).stream().map(path -> new ClassPathResource(path)).filter(resource -> resource.exists()).collect(toList());
+    return collect;
   }
 
   @Override
@@ -104,7 +101,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       if (StringUtils.hasText(institutionId)) {
         return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
       } else {
-        return new HashSet(Arrays.asList(idp));
+        return new HashSet(asList(idp));
       }
     } finally {
       lock.readLock().unlock();

@@ -2,7 +2,6 @@ package pdp.access;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,20 +41,13 @@ public class PolicyIdpAccessEnforcerTest {
 
   private void setupSecurityContext(boolean policyIdpAccessEnforcement, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
     SecurityContext context = new SecurityContextImpl();
-    Authentication authentication = new TestingAuthenticationToken(
-        new FederatedUser(
-            uid,
-            authenticatingAuthority,
-            displayName,
-            idpEntities,
-            spEntities,
-            EMPTY_LIST) {
+    Authentication authentication = new PolicyIdpAccessAwareToken(
+        new RunAsFederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, EMPTY_LIST) {
           @Override
           public boolean isPolicyIdpAccessEnforcementRequired() {
             return policyIdpAccessEnforcement;
           }
-        },
-        "N/A");
+        });
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);
   }

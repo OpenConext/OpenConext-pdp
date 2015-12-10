@@ -170,11 +170,13 @@ public class PdpApplication {
           .and()
           .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
           .addFilterBefore(
-              new PolicyIdpAccessEnforcerFilter(new BasicAuthenticationManager(policyEnforcementPointUserName, policyEnforcementPointPassword), serviceRegistry), AbstractPreAuthenticatedProcessingFilter.class
+              new PolicyIdpAccessEnforcerFilter(
+                  new BasicAuthenticationManager(policyEnforcementPointUserName, policyEnforcementPointPassword), serviceRegistry),
+              AbstractPreAuthenticatedProcessingFilter.class
           )
           .addFilterAfter(
               new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
-              BasicAuthenticationFilter.class
+              PolicyIdpAccessEnforcerFilter.class
           )
           .authorizeRequests()
           .antMatchers("/decide/**").hasAnyRole("PEP", "ADMIN")
