@@ -1,26 +1,10 @@
 package pdp.teams;
 
-import org.apache.openaz.xacml.api.Attribute;
-import org.apache.openaz.xacml.api.AttributeValue;
-import org.apache.openaz.xacml.api.Identifier;
-import org.apache.openaz.xacml.api.pip.PIPException;
-import org.apache.openaz.xacml.api.pip.PIPFinder;
-import org.apache.openaz.xacml.api.pip.PIPRequest;
-import org.apache.openaz.xacml.api.pip.PIPResponse;
-import org.apache.openaz.xacml.std.*;
-import org.apache.openaz.xacml.std.pip.StdMutablePIPResponse;
-import org.apache.openaz.xacml.std.pip.StdPIPRequest;
-import org.apache.openaz.xacml.std.pip.StdSinglePIPResponse;
-import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 import pdp.xacml.AbstractConfigurableEngine;
 
-import java.util.*;
-
-import static java.util.stream.Collectors.toList;
-import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
+import java.util.List;
 
 public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAware {
 

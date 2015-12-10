@@ -57,7 +57,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
   protected void initializeMetadata() {
     HttpHeaders headers = new HttpHeaders();
     String oneMinuteAgo = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")).minusMinutes(1));
-    headers.add(IF_MODIFIED_SINCE, oneMinuteAgo);
+    headers.set(IF_MODIFIED_SINCE, oneMinuteAgo);
 
     ResponseEntity<String> result = restTemplate.exchange(idpRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
 

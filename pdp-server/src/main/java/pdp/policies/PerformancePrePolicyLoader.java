@@ -1,7 +1,6 @@
 package pdp.policies;
 
 import org.springframework.core.io.ByteArrayResource;
-import pdp.xacml.PolicyTemplateEngine;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
@@ -9,6 +8,7 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
+import pdp.xacml.PolicyTemplateEngine;
 
 import java.util.Arrays;
 import java.util.List;

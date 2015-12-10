@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import pdp.domain.*;
 import pdp.teams.TeamsPIP;
 
@@ -35,7 +36,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
-    //lambda is poor with error handling
+    //lambda's are poor with error handling as the stacktrace gets lost
     for (PdpPolicy policy: policies) {
       doTestPolicy(policyRequest, policy);
     }
@@ -47,6 +48,11 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     Map jsonResponse = testRestTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, Map.class);
     assertEquals(403, jsonResponse.get("status"));
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
+  }
+
+  @Override
+  public RestTemplate getRestTemplate() {
+    return testRestTemplate;
   }
 
   private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) throws Exception {

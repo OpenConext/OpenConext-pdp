@@ -9,7 +9,6 @@ import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,15 +21,12 @@ import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
 import pdp.teams.VootClientConfig;
-import pdp.util.StreamUtils;
 import pdp.web.PdpController;
 import pdp.xacml.OpenConextPDPEngineFactory;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;

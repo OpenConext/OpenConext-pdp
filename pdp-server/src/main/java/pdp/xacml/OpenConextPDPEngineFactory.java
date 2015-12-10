@@ -1,7 +1,6 @@
 package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.pdp.OpenAZPDPEngine;
 import org.apache.openaz.xacml.pdp.OpenAZPDPEngineFactory;
 import org.apache.openaz.xacml.pdp.eval.EvaluationContextFactory;
 import org.apache.openaz.xacml.util.FactoryException;
@@ -10,7 +9,6 @@ import pdp.sab.SabClient;
 import pdp.teams.VootClient;
 
 import java.io.IOException;
-import java.util.Properties;
 
 public class OpenConextPDPEngineFactory extends OpenAZPDPEngineFactory {
 

@@ -2,6 +2,7 @@ package pdp.serviceregistry;
 
 import org.junit.Test;
 import org.springframework.util.StringUtils;
+import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
 
 import java.util.List;
@@ -48,7 +49,7 @@ public class ClassPathResourceServiceRegistryTest {
     assertEquals(4, idps.size());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expected = PolicyIdpAccessUnknownIdentityProvidersException.class)
   public void testIdentityProvidersByAuthenticatingAuthorityNonExistentIdp() throws Exception {
     serviceRegistry.identityProvidersByAuthenticatingAuthority("no");
   }

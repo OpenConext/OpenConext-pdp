@@ -1,8 +1,6 @@
 package pdp.repositories;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 import pdp.PdpApplication;
 import pdp.domain.PdpPolicy;
 
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static pdp.policies.PolicyLoader.authenticatingAuthority;
-import static pdp.policies.PolicyLoader.userDisplayName;
-import static pdp.policies.PolicyLoader.userIdentifier;
+import static pdp.policies.PolicyLoader.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=test"})
 @Transactional //rollback commits
-public class AbstractRepositoryTest {
+public abstract class AbstractRepositoryTest {
 
   protected static final String NAME_ID = "name_id_";
 
@@ -37,8 +30,5 @@ public class AbstractRepositoryTest {
   protected PdpPolicy pdpPolicy(String name) {
     return new PdpPolicy("xml", name, true, userIdentifier, authenticatingAuthority, userDisplayName);
   }
-
-  @Test
-  public void dummyToSatisfyIde() {}
 
 }

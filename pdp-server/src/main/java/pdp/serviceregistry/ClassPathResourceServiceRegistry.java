@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
+import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
 
 import java.io.IOException;
@@ -94,7 +95,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       lock.readLock().lock();
       Optional<EntityMetaData> metaDataOptional = identityProviders().stream().filter(idp -> idp.getEntityId().equals(authenticatingAuthority)).collect(singletonOptionalCollector());
       if (!metaDataOptional.isPresent()) {
-        throw new IllegalArgumentException(authenticatingAuthority + " is not a valid or known IdentityProvider entityId");
+        throw new PolicyIdpAccessUnknownIdentityProvidersException(authenticatingAuthority + " is not a valid or known IdentityProvider entityId");
       }
       EntityMetaData idp = metaDataOptional.get();
       String institutionId = idp.getInstitutionId();

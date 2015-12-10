@@ -3,14 +3,13 @@ package pdp.domain;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import pdp.AbstractXacmlTest;
-import pdp.xacml.PolicyTemplateEngine;
-import pdp.repositories.PdpPolicyRepository;
 import pdp.policies.DevelopmentPrePolicyLoader;
+import pdp.policies.PolicyLoader;
+import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
-import pdp.policies.PolicyLoader;
+import pdp.xacml.PolicyTemplateEngine;
 
-import java.util.Date;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;

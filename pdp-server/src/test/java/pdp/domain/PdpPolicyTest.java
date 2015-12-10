@@ -2,11 +2,7 @@ package pdp.domain;
 
 import org.junit.Test;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import static org.junit.Assert.*;
-import static pdp.xacml.PolicyTemplateEngine.getPolicyId;
 
 public class PdpPolicyTest {
 

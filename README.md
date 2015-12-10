@@ -18,9 +18,9 @@ Connect to your local mysql database: `mysql -uroot`
 Execute the following:
 
 ```sql
-CREATE DATABASE `pdp-server` DEFAULT CHARACTER SET latin1;
-create user 'pdp-serverrw'@'localhost' identified by 'secret';
-grant all on `pdp-server`.* to 'pdp-serverrw'@'localhost';
+CREATE DATABASE pdpserver DEFAULT CHARACTER SET latin1;
+create user 'travis'@'localhost';
+grant all on pdpserver.* to 'travis'@'localhost';
 ```
 
 ## Building and running

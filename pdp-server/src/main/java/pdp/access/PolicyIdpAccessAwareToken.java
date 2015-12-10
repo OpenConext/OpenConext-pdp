@@ -9,6 +9,7 @@ public class PolicyIdpAccessAwareToken extends AbstractAuthenticationToken {
   public PolicyIdpAccessAwareToken(RunAsFederatedUser policyIdpAccessAwarePrincipal) {
     super(policyIdpAccessAwarePrincipal.getAuthorities());
     this.policyIdpAccessAwarePrincipal = policyIdpAccessAwarePrincipal;
+    setAuthenticated(true);
   }
 
   @Override
