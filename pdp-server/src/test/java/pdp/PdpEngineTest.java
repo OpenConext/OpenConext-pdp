@@ -35,7 +35,10 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
-    policies.forEach(policy -> doTestPolicy(policyRequest, policy));
+    //lambda is poor with error handling
+    for (PdpPolicy policy: policies) {
+      doTestPolicy(policyRequest, policy);
+    }
   }
 
   @Test
@@ -46,7 +49,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
   }
 
-  private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) {
+  private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) throws Exception {
     PdpPolicyDefinition definition = policyDefinitionParser.parse(policy);
 
     JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
@@ -78,20 +81,15 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     notApplicablePolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, UUID.randomUUID().toString());
     notApplicablePolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, UUID.randomUUID().toString());
 
-    try {
-      //We can't use Transactional rollback as the Application runs in a different process.
-      postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
-      postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
-      postDecide(policy, denyIndeterminatePolicyRequest,
-          definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
-          definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
-      postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
+    //We can't use Transactional rollback as the Application runs in a different process.
+    postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
+    postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
+    postDecide(policy, denyIndeterminatePolicyRequest,
+        definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
+        definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
+    postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
 
-      assertViolations(policy.getPolicyId());
-    } catch (Exception e) {
-      //we are called from lambda so we do fake error handling here
-      throw new RuntimeException(e);
-    }
+    assertViolations(policy.getPolicyId());
   }
 
   private void postDecide(PdpPolicy policy, JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {

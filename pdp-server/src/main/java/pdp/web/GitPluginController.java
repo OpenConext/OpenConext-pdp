@@ -11,7 +11,7 @@ import java.util.Properties;
 @RestController
 public class GitPluginController {
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/git")
+  @RequestMapping(method = RequestMethod.GET, value = "/public/git")
   public Properties serviceProviders() throws IOException {
     Properties props = new Properties();
     props.load(new ClassPathResource("git.properties").getInputStream());

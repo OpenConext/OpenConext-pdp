@@ -65,7 +65,7 @@ public class OpenConextPDPEngine extends OpenAZPDPEngine {
       /*
        * We could filter out all the attributes that were already in the request, but for now we hard-code
        * which attributes we will send back. When new PIPEngine implementations are added then the
-       * attribute identifier(s) need to be added
+       * attribute getIdentifier(s) need to be added
        */
       List<AttributeCategory> attributeCategories = result.getAttributes().stream().filter(attrCat -> isAddedAttributeCategory(attrCat)).distinct().collect(toList());
       newResult.addAttributeCategories(attributeCategories);

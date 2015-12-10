@@ -4,16 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.util.StringUtils;
+import pdp.access.FederatedUser;
 import pdp.domain.EntityMetaData;
 import pdp.serviceregistry.ServiceRegistry;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
+
+import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
@@ -23,22 +24,20 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
   public static final String SHIB_AUTHENTICATING_AUTHORITY = "Shib-Authenticating-Authority";
 
   private static final Logger LOG = LoggerFactory.getLogger(ShibbolethPreAuthenticatedProcessingFilter.class);
+  private static final Collection<? extends GrantedAuthority> authorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");
 
   private final ServiceRegistry serviceRegsitry;
-  private final boolean policyIdpAccessEnforcement;
 
-  public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry, boolean policyIdpAccessEnforcement) {
+  public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry) {
     super();
     setAuthenticationManager(authenticationManager);
     this.serviceRegsitry = serviceRegistry;
-    this.policyIdpAccessEnforcement = policyIdpAccessEnforcement;
   }
 
   @Override
   protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
     String uid = request.getHeader(UID_HEADER_NAME);
     String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
-    String isMemberOf = request.getHeader(IS_MEMBER_OF);
     String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
 
     if (isHeaderValueInvalid(uid, UID_HEADER_NAME)) {
@@ -51,10 +50,6 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
       return null;
     }
 
-    String role = StringUtils.hasText(isMemberOf) ? "PAP_ADMIN" : "PAP_CLIENT";
-
-    Collection<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(role));
-
     //By contract we always get at least one Idp, but in case there are two - http://mock-idp;http://mock-idp - we need the first
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
@@ -64,7 +59,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     Set<EntityMetaData> spEntities = serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
 
     LOG.debug("Creating ShibbolethUser {}",uid);
-    return new ShibbolethUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, authorities, policyIdpAccessEnforcement);
+    return new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, authorities);
   }
 
   @Override

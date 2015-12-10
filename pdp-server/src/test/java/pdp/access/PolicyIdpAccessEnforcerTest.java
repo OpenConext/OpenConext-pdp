@@ -1,4 +1,4 @@
-package pdp.security;
+package pdp.access;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +9,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicy;
-import pdp.shibboleth.ShibbolethUser;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -23,10 +22,9 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest {
 
-  private PolicyIdpAccessEnforcer subject;
+  private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer();
   private PdpPolicy pdpPolicy;
 
-  private String pdpPolicyName = "pdpPolicyName";
   private String uid = "uid";
   private String displayName = "John Doe";
   private String authenticatingAuthority = "http://mock-idp";
@@ -37,8 +35,7 @@ public class PolicyIdpAccessEnforcerTest {
 
   @Before
   public void before() {
-    this.subject = new PolicyIdpAccessEnforcer(true);
-    this.pdpPolicy = new PdpPolicy("N/A", pdpPolicyName, true, uid, authenticatingAuthority, displayName);
+    this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName);
     //individual tests can overwrite this behaviour
     setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
   }
@@ -46,14 +43,18 @@ public class PolicyIdpAccessEnforcerTest {
   private void setupSecurityContext(boolean policyIdpAccessEnforcement, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
     SecurityContext context = new SecurityContextImpl();
     Authentication authentication = new TestingAuthenticationToken(
-        new ShibbolethUser(
+        new FederatedUser(
             uid,
             authenticatingAuthority,
             displayName,
             idpEntities,
             spEntities,
-            EMPTY_LIST,
-            policyIdpAccessEnforcement),
+            EMPTY_LIST) {
+          @Override
+          public boolean isPolicyIdpAccessEnforcementRequired() {
+            return policyIdpAccessEnforcement;
+          }
+        },
         "N/A");
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);
@@ -97,12 +98,6 @@ public class PolicyIdpAccessEnforcerTest {
   @Test
   public void testActionNotAllowedButNoEnforcementForUser() throws Exception {
     setupSecurityContext(false, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
-    this.subject.actionAllowed(pdpPolicy, null, null);
-  }
-
-  @Test
-  public void testActionNotAllowedButNoGlobalEnforcement() throws Exception {
-    this.subject = new PolicyIdpAccessEnforcer(false);
     this.subject.actionAllowed(pdpPolicy, null, null);
   }
 

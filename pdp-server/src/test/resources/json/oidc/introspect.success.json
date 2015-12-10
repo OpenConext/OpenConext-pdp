@@ -1,0 +1,12 @@
+{
+  "active": true,
+  "scope": "openid userids profile organization groups entitlement email",
+  "expires_at": "2015-11-25T08:24:31+0100",
+  "exp": 1448436271,
+  "sub": "75726e3a-636f-6c6c-6162-3a706572736f",
+  "user_id": "75726e3a-636f-6c6c-6162-3a706572736f",
+  "client_id": "https@//oidc.localhost.surfconext.nl",
+  "token_type": "Bearer",
+  "schac_home": "surfteams.nl",
+  "unspecified_id": "urn:collab:person:example.com:admin"
+}

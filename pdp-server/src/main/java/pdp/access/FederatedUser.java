@@ -1,4 +1,4 @@
-package pdp.shibboleth;
+package pdp.access;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -7,29 +7,19 @@ import pdp.domain.EntityMetaData;
 import java.util.Collection;
 import java.util.Set;
 
-public class ShibbolethUser extends User {
+public class FederatedUser extends User {
 
   private final String displayName;
   private final Set<EntityMetaData> idpEntities;
   private final Set<EntityMetaData> spEntities;
   private final String authenticatingAuthority;
-  private final boolean policyIdpAccessEnforcement;
 
-  public ShibbolethUser(String uid, String authenticatingAuthority, String displayName, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities, Collection<? extends GrantedAuthority> authorities, boolean policyIdpAccessEnforcement) {
+  public FederatedUser(String uid, String authenticatingAuthority, String displayName, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities, Collection<? extends GrantedAuthority> authorities) {
     super(uid, "N/A", authorities);
     this.displayName = displayName;
     this.authenticatingAuthority = authenticatingAuthority;
     this.idpEntities = idpEntities;
     this.spEntities = spEntities;
-    this.policyIdpAccessEnforcement = policyIdpAccessEnforcement;
-  }
-
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public String getAuthenticatingAuthority() {
-    return authenticatingAuthority;
   }
 
   public Set<EntityMetaData> getIdpEntities() {
@@ -40,7 +30,20 @@ public class ShibbolethUser extends User {
     return spEntities;
   }
 
-  public boolean isPolicyIdpAccessEnforcement() {
-    return policyIdpAccessEnforcement;
+  public boolean isPolicyIdpAccessEnforcementRequired() {
+    return false;
   }
+
+  public String getIdentifier() {
+    return getUsername();
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  public String getAuthenticatingAuthority() {
+    return authenticatingAuthority;
+  }
+
 }

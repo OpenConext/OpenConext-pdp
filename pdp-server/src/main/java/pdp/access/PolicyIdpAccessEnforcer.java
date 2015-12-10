@@ -1,11 +1,8 @@
-package pdp.security;
+package pdp.access;
 
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicy;
-import pdp.shibboleth.ShibbolethUser;
 
 import java.util.List;
 import java.util.Set;
@@ -15,13 +12,6 @@ import static org.springframework.util.Assert.hasText;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 public class PolicyIdpAccessEnforcer {
-
-  //feature toggle
-  private final boolean active;
-
-  public PolicyIdpAccessEnforcer(boolean active) {
-    this.active = active;
-  }
 
   /**
    * Create, update or delete are only allowed if the AuthenticatingAuthority of the signed in user equals the
@@ -35,19 +25,18 @@ public class PolicyIdpAccessEnforcer {
    * AuthenticatingAuthority of the signed in user.
    */
   public void actionAllowed(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds) {
-    if (!active || !getShibbolethUser().isPolicyIdpAccessEnforcement()) {
+    FederatedUser user = federatedUser();
+    if (!user.isPolicyIdpAccessEnforcementRequired()) {
       return;
     }
 
     hasText(serviceProviderId);
 
-    ShibbolethUser shibbolethUser = getShibbolethUser();
+    String authenticatingAuthorityUser = user.getAuthenticatingAuthority();
+    String userIdentifier = user.getIdentifier();
 
-    String authenticatingAuthorityUser = shibbolethUser.getAuthenticatingAuthority();
-    String userIdentifier = shibbolethUser.getUsername();
-
-    Set<String> idpsOfUserEntityIds = getEntityIds(shibbolethUser.getIdpEntities());
-    Set<String> spsOfUserEntityIds = getEntityIds(shibbolethUser.getSpEntities());
+    Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
+    Set<String> spsOfUserEntityIds = getEntityIds(user.getSpEntities());
 
     if (isEmpty(identityProviderIds)) {
       //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
@@ -71,7 +60,7 @@ public class PolicyIdpAccessEnforcer {
       }
     }
 
-    //finally check (e.g. for update and delete actions) if the authenticatingAuthority of the policy is owned by this user
+    //finally check (e.g. for update and delete actions) if the getAuthenticatingAuthority of the policy is owned by this user
     String authenticatingAuthorityPolicy = pdpPolicy.getAuthenticatingAuthority();
     if (!authenticatingAuthorityPolicy.equals(authenticatingAuthorityUser) &&
         !idpsOfUserEntityIds.contains(authenticatingAuthorityPolicy)) {
@@ -89,19 +78,23 @@ public class PolicyIdpAccessEnforcer {
     return idpEntities.stream().map(EntityMetaData::getEntityId).collect(toSet());
   }
 
-  private ShibbolethUser getShibbolethUser() {
-    return (ShibbolethUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  private FederatedUser federatedUser() {
+    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (principal instanceof FederatedUser) {
+      return (FederatedUser) principal;
+    }
+    throw new RuntimeException("Principal is not FederatedUser. " + principal.getClass().getName());
   }
 
   public String username() {
-    return getShibbolethUser().getUsername();
+    return federatedUser().getIdentifier();
   }
 
   public String authenticatingAuthority() {
-    return getShibbolethUser().getAuthenticatingAuthority();
+    return federatedUser().getAuthenticatingAuthority();
   }
 
   public String userDisplayName() {
-    return getShibbolethUser().getDisplayName();
+    return federatedUser().getDisplayName();
   }
 }

@@ -20,8 +20,8 @@ public abstract class StreamUtils {
           left.addAll(right);
           return left;
         }, list -> {
-          if (list.isEmpty()) {
-            throw new RuntimeException("Expected at least one element in the List");
+          if (list.isEmpty() || list.size() > 1) {
+            throw new RuntimeException("Expected only one element in the List");
           }
           return list.get(0);
         }

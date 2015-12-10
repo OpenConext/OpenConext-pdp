@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,13 +13,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -28,6 +26,8 @@ import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import pdp.access.BasicAuthenticationManager;
+import pdp.access.PolicyIdpAccessEnforcerFilter;
 import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.policies.NoopPrePolicyLoader;
 import pdp.policies.PerformancePrePolicyLoader;
@@ -49,13 +49,6 @@ import pdp.xacml.PDPEngineHolder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collector;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 @SpringBootApplication()
 public class PdpApplication {
@@ -156,9 +149,6 @@ public class PdpApplication {
     @Value("${policy.enforcement.point.user.password}")
     private String policyEnforcementPointPassword;
 
-    @Value("${policy.idp.access.enforcement}")
-    private boolean policyIdpAccessEnforcement;
-
     @Autowired
     private ServiceRegistry serviceRegistry;
 
@@ -180,19 +170,17 @@ public class PdpApplication {
           .and()
           .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
           .addFilterBefore(
-              new BasicAuthenticationFilter(getBasicAuthenticationManager()), AbstractPreAuthenticatedProcessingFilter.class
+              new PolicyIdpAccessEnforcerFilter(new BasicAuthenticationManager(policyEnforcementPointUserName, policyEnforcementPointPassword), serviceRegistry), AbstractPreAuthenticatedProcessingFilter.class
           )
-          .authorizeRequests()
-          .antMatchers("/decide/**")
-          .authenticated()
-          .and()
           .addFilterAfter(
-              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry, policyIdpAccessEnforcement),
+              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
               BasicAuthenticationFilter.class
           )
           .authorizeRequests()
-          .antMatchers("/internal/**")
-          .authenticated();
+          .antMatchers("/decide/**").hasAnyRole("PEP", "ADMIN")
+          .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN")
+          .antMatchers("/public/**","/health/**","/info/**").permitAll()
+          .antMatchers("/**").hasRole("USER");
 
       if (environment.acceptsProfiles("no-csrf")) {
         http.csrf().disable();
@@ -201,16 +189,6 @@ public class PdpApplication {
         //we can't use @Profile, because we need to add it before the real filter
         http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
       }
-    }
-
-    private AuthenticationManager getBasicAuthenticationManager() {
-      return authentication -> {
-        if (authentication.getPrincipal().equals(policyEnforcementPointUserName)
-            && authentication.getCredentials().equals(policyEnforcementPointPassword)) {
-          return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(), authentication.getCredentials(), Arrays.asList(new SimpleGrantedAuthority("PEP")));
-        }
-        return null;
-      };
     }
 
     @Override

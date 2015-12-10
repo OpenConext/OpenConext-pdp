@@ -1,7 +1,4 @@
-package pdp.security;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
+package pdp.access;
 
 public abstract class AbstractPolicyIdpAccessException extends RuntimeException {
 

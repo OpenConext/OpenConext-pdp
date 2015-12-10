@@ -27,9 +27,9 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.security.PolicyIdpAccessEnforcer;
+import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.serviceregistry.ServiceRegistry;
-import pdp.shibboleth.ShibbolethUser;
+import pdp.access.FederatedUser;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
@@ -72,7 +72,6 @@ public class PdpController {
 
   @Autowired
   public PdpController(@Value("${period.policies.refresh.minutes}") int period,
-                       @Value("${policy.idp.access.enforcement}") boolean policyIdpAccessEnforcement,
                        @Value("${policy.include.aggregated.attributes}") boolean policyIncludeAggregatedAttributes,
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PdpPolicyRepository pdpPolicyRepository,
@@ -81,7 +80,7 @@ public class PdpController {
     this.pdpEngineHolder = pdpEngineHolder;
     this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
-    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(policyIdpAccessEnforcement);
+    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer();
     this.policyIncludeAggregatedAttributes = policyIncludeAggregatedAttributes;
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
@@ -265,8 +264,8 @@ public class PdpController {
   }
 
   @RequestMapping(method = GET, value = "internal/users/me")
-  public ShibbolethUser user() {
-    return (ShibbolethUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  public FederatedUser user() {
+    return (FederatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   private void reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
