@@ -52,7 +52,6 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     // exact count depends on the ordering of the tests - does not really matter
     assertTrue(definitions.size() >= 9);
     definitions.forEach(def -> assertNotNull(def.getCreated()));
-
   }
 
   @Test

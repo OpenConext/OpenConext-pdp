@@ -13,6 +13,7 @@ import javax.servlet.FilterChain;
 
 import static java.util.Base64.getEncoder;
 import static org.junit.Assert.assertEquals;
+import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
 
 public class PolicyIdpAccessEnforcerFilterTest {
 
@@ -28,9 +29,9 @@ public class PolicyIdpAccessEnforcerFilterTest {
 
     request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + getEncoder().encodeToString(new String("user:password").getBytes()));
 
-    request.addHeader("X-IDP-ENTITY-ID", "http://mock-idp");
-    request.addHeader("X-UNSPECIFIED-NAME-ID", "uuid");
-    request.addHeader("X-DISPLAY-NAME", "John Doe");
+    request.addHeader(X_IDP_ENTITY_ID, "http://mock-idp");
+    request.addHeader(X_UNSPECIFIED_NAME_ID, "uuid");
+    request.addHeader(X_DISPLAY_NAME, "John Doe");
 
     subject.doFilter(request, response, filterChain);
 

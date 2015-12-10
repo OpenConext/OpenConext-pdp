@@ -17,6 +17,10 @@ import java.util.Set;
 
 public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
 
+  public static final String X_IDP_ENTITY_ID = "X-IDP-ENTITY-ID";
+  public static final String X_UNSPECIFIED_NAME_ID = "X-UNSPECIFIED-NAME-ID";
+  public static final String X_DISPLAY_NAME = "X-DISPLAY-NAME";
+
   private final ServiceRegistry serviceRegsitry;
 
   public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegsitry) {
@@ -27,9 +31,9 @@ public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
   @Override
   protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException {
     //check headers for enrichment of the Authentication
-    String idpEntityId = request.getHeader("X-IDP-ENTITY-ID");
-    String nameId = request.getHeader("X-UNSPECIFIED-NAME-ID");
-    String displayName = request.getHeader("X-DISPLAY-NAME");
+    String idpEntityId = request.getHeader(X_IDP_ENTITY_ID);
+    String nameId = request.getHeader(X_UNSPECIFIED_NAME_ID);
+    String displayName = request.getHeader(X_DISPLAY_NAME);
 
     if (!StringUtils.hasText(idpEntityId) || !StringUtils.hasText(nameId) || !StringUtils.hasText(displayName)) {
       //any policy idp access checks will fail, but it might be that this call is not for something that requires access
