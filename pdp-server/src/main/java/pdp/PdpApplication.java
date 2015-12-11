@@ -163,7 +163,7 @@ public class PdpApplication {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
       http
-          .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+          .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
           .and()
           .csrf()
           .requireCsrfProtectionMatcher(new CsrfProtectionMatcher())

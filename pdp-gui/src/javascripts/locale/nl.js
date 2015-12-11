@@ -24,8 +24,8 @@ I18n.translations.nl = {
   },
 
   profile: {
-    PAP_CLIENT: "Instellings beheerder",
-    PAP_ADMIN: "SURFnet beheerder"
+    ROLE_PEP: "Instellings beheerder",
+    ROLE_ADMIN: "SURFnet beheerder"
   },
 
   navigation: {

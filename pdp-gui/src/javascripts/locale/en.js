@@ -48,8 +48,8 @@ I18n.translations.en = {
   },
 
   profile: {
-    PAP_CLIENT: "Institution admin",
-    PAP_ADMIN: "SURFnet admin"
+    ROLE_PEP: "Institution admin",
+    ROLE_ADMIN: "SURFnet admin"
   },
 
   navigation: {
