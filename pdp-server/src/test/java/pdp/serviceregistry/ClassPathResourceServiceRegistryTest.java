@@ -64,7 +64,7 @@ public class ClassPathResourceServiceRegistryTest {
   public void testServiceProvidersByInstitutionId() {
     Set<EntityMetaData> surfnetSps = serviceRegistry.serviceProvidersByInstitutionId("SURFNET");
     assertEquals(60, surfnetSps.size());
-    assertTrue(surfnetSps.stream().allMatch(sp -> !sp.isPolicyEnforcementDecisionRequired()));
+    assertEquals(1, surfnetSps.stream().filter(sp -> sp.isPolicyEnforcementDecisionRequired()).count());
   }
 
   @Test
