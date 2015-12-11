@@ -1,6 +1,7 @@
 package pdp.access;
 
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockFilterChain;
@@ -17,9 +18,15 @@ import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
 
 public class PolicyIdpAccessEnforcerFilterTest {
 
-  private PolicyIdpAccessEnforcerFilter subject = new PolicyIdpAccessEnforcerFilter(
-      new BasicAuthenticationManager("user", "password"),
-      new TestingServiceRegistry());
+  private PolicyIdpAccessEnforcerFilter subject;
+
+  @Before
+  public void before() throws Exception {
+    subject = new PolicyIdpAccessEnforcerFilter(
+        new BasicAuthenticationManager("user", "password"),
+        new TestingServiceRegistry());
+    SecurityContextHolder.clearContext();
+  }
 
   @Test
   public void testOnSuccessfulAuthentication() throws Exception {

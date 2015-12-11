@@ -64,7 +64,7 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
 
   }
   @Test
-  @Ignore
+  @Ignore(value = "Work in progress to get the correct access......")
   public void testDeletePdpPolicy() throws Exception {
     //verify that violations are also deleted - so we create one
     setUpViolation(policyId);
