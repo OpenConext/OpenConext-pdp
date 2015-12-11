@@ -109,7 +109,7 @@ public class PolicyIdpAccessEnforcerTest {
   }
 
   private Set<EntityMetaData> entityMetadata(String... entityIds) {
-    return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null)).collect(toSet());
+    return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null, true)).collect(toSet());
   }
 
 }

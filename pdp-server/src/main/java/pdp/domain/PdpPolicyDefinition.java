@@ -56,6 +56,8 @@ public class PdpPolicyDefinition {
 
   private int revisionNbr;
 
+  private boolean isActivatedSr;
+
   public PdpPolicyDefinition() {
   }
 
@@ -199,6 +201,14 @@ public class PdpPolicyDefinition {
     return revisionNbr;
   }
 
+  public boolean isActivatedSr() {
+    return isActivatedSr;
+  }
+
+  public void setActivatedSr(boolean activatedSr) {
+    isActivatedSr = activatedSr;
+  }
+
   //used in the mustache templates
   @JsonIgnore
   public List anyIdentityProviders() {
@@ -223,7 +233,7 @@ public class PdpPolicyDefinition {
         Objects.equals(identityProviderIds, that.identityProviderIds) &&
         Objects.equals(attributes, that.attributes) &&
         Objects.equals(denyAdvice, that.denyAdvice) &&
-        Objects.equals(denyAdviceNl, that.denyAdviceNl)  ;
+        Objects.equals(denyAdviceNl, that.denyAdviceNl);
   }
 
   @Override
@@ -233,19 +243,18 @@ public class PdpPolicyDefinition {
 
   @Override
   public String toString() {
-    return "PdpPolicyDefinition{" +"\n" +
-        "name='" + name + '\'' +"\n" +
-        ", description='" + description + '\'' +"\n" +
-        ", serviceProviderId='" + serviceProviderId + '\'' +"\n" +
-        ", identityProviderIds=" + identityProviderIds +"\n" +
-        ", attributes=" + attributes +"\n" +
-        ", denyAdvice='" + denyAdvice + '\'' +"\n" +
-        ", denyAdviceNl='" + denyAdviceNl + '\'' +"\n" +
-        ", denyRule=" + denyRule +"\n" +
-        ", allAttributesMustMatch=" + allAttributesMustMatch +"\n" +
+    return "PdpPolicyDefinition{" + "\n" +
+        "name='" + name + '\'' + "\n" +
+        ", description='" + description + '\'' + "\n" +
+        ", serviceProviderId='" + serviceProviderId + '\'' + "\n" +
+        ", identityProviderIds=" + identityProviderIds + "\n" +
+        ", attributes=" + attributes + "\n" +
+        ", denyAdvice='" + denyAdvice + '\'' + "\n" +
+        ", denyAdviceNl='" + denyAdviceNl + '\'' + "\n" +
+        ", denyRule=" + denyRule + "\n" +
+        ", allAttributesMustMatch=" + allAttributesMustMatch + "\n" +
         '}';
   }
-
 
 
 }

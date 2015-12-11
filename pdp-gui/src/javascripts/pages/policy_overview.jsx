@@ -11,6 +11,11 @@ App.Pages.PolicyOverview = React.createClass({
   },
 
   initDataTable: function () {
+    $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+      return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+        return $('input', td).prop('checked') ? '1' : '0';
+      });
+    };
     $('#policies_table').DataTable({
       paging: true,
       language: {
@@ -27,10 +32,10 @@ App.Pages.PolicyOverview = React.createClass({
           last: I18n.t("datatable.paginate_last")
         }
       },
-      columnDefs: [{
-        targets: [6],
-        orderable: false
-      }]
+      columnDefs: [
+        { targets: [3], orderDataType: "dom-checkbox"},
+        { targets: [7], orderable: false}
+      ]
     });
   },
 
@@ -138,6 +143,8 @@ App.Pages.PolicyOverview = React.createClass({
             <td>{policy.name}</td>
             <td>{policy.description}</td>
             <td>{policy.serviceProviderName}</td>
+            <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
+                                                          disabled="true"/></td>
             <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
             <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
             <td className='policy_violations'>{this.renderRevisionsLink(policy)}</td>
@@ -161,6 +168,7 @@ App.Pages.PolicyOverview = React.createClass({
                 <th className='policy_name_col'>{I18n.t('policies.name')}</th>
                 <th className='policy_description_col'>{I18n.t('policies.description')}</th>
                 <th className='policy_sp_col'>{I18n.t('policies.serviceProviderId')}</th>
+                <th className='policy_is_activated_sr'>{I18n.t('policies.activatedSr')}</th>
                 <th className='policy_idps_col'>{I18n.t('policies.identityProviderIds')}</th>
                 <th className='policy_violations'>{I18n.t('policies.violations')}</th>
                 <th className='policy_violations'>{I18n.t('policies.revisions')}</th>

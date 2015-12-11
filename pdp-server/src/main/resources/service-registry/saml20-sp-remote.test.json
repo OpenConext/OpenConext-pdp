@@ -4,7 +4,8 @@
     "state": "prodaccepted",
     "type": "saml20-sp",
     "coin": {
-      "institution_id": "MUJINA"
+      "institution_id": "MUJINA",
+      "policy_enforcement_decision_required": true
     },
     "description": {
       "en": "Mujina Mock SP",

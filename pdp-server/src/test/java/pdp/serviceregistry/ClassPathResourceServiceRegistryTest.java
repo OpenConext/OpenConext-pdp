@@ -64,12 +64,20 @@ public class ClassPathResourceServiceRegistryTest {
   public void testServiceProvidersByInstitutionId() {
     Set<EntityMetaData> surfnetSps = serviceRegistry.serviceProvidersByInstitutionId("SURFNET");
     assertEquals(60, surfnetSps.size());
+    assertTrue(surfnetSps.stream().allMatch(sp -> !sp.isPolicyEnforcementDecisionRequired()));
   }
 
   @Test
   public void testServiceProvidersByInstitutionIdEmpty() {
     Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId("NOOP");
     assertEquals(0, sps.size());
+  }
+
+  @Test
+  public void testPolicyEnforcementDecisionRequired() {
+    Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId("MUJINA");
+    assertEquals(1, sps.size());
+    assertTrue(sps.iterator().next().isPolicyEnforcementDecisionRequired());
   }
 
   @Test

@@ -132,12 +132,27 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
               getMetaDateEntry(entry, "en", "description"),
               getMetaDateEntry(entry, "en", "name"),
               getMetaDateEntry(entry, "nl", "description"),
-              getMetaDateEntry(entry, "nl", "name")
+              getMetaDateEntry(entry, "nl", "name"),
+              getPolicyEnforcementDecisionRequired(entry)
           )
       ).sorted(sortEntityMetaData()).collect(Collectors.toList());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {
+    Object coin = entry.get("coin");
+    if (coin != null && coin instanceof Map) {
+      Map<String, Object> coinMap = (Map) coin;
+      Object policyEnforcementDecisionRequired = coinMap.get("policy_enforcement_decision_required");
+      if (policyEnforcementDecisionRequired != null && policyEnforcementDecisionRequired instanceof Boolean) {
+        return (Boolean) policyEnforcementDecisionRequired;
+      }
+      return false;
+    }
+    return false;
+
   }
 
   private Comparator<? super EntityMetaData> sortEntityMetaData() {

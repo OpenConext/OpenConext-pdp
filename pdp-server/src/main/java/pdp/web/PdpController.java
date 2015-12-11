@@ -23,10 +23,7 @@ import pdp.PdpPolicyException;
 import pdp.PolicyNotFoundException;
 import pdp.access.FederatedUser;
 import pdp.access.PolicyIdpAccessEnforcer;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
+import pdp.domain.*;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
@@ -256,8 +253,10 @@ public class PdpController {
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
-    pd.setServiceProviderName(serviceRegistry.serviceProviders().stream().filter(sp ->
-        sp.getEntityId().equals(pd.getServiceProviderId())).collect(singletonOptionalCollector()).get().getNameEn());
+    EntityMetaData sp = serviceRegistry.serviceProviders().stream().filter(md ->
+        md.getEntityId().equals(pd.getServiceProviderId())).collect(singletonOptionalCollector()).get();
+    pd.setServiceProviderName(sp.getNameEn());
+    pd.setActivatedSr(sp.isPolicyEnforcementDecisionRequired());
     pd.setIdentityProviderNames(pd.getIdentityProviderIds().stream().map(idpId ->
         serviceRegistry.identityProviders().stream().filter(idp -> idp.getEntityId().equals(idpId)).collect(singletonOptionalCollector()).get().getNameEn()).collect(toList()));
     return pd;

@@ -40,6 +40,7 @@ I18n.translations.nl = {
     name: "Naam",
     description: "Omschrijving",
     serviceProviderId: "Dienst",
+    activatedSr: "Geactiveerd in SR",
     identityProviderIds: "Instelling(en)",
     identityProviderId: "Instelling",
     violations: "Overtredingen",

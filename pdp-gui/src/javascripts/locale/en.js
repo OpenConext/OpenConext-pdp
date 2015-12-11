@@ -65,6 +65,7 @@ I18n.translations.en = {
     name: "Name",
     description: "Description",
     serviceProviderId: "Service",
+    activatedSr: "Activated in SR",
     identityProviderId: "Institution",
     identityProviderIds: "Institution(s)",
     violations: "Unauthorized logins",
