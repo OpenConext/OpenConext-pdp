@@ -18,6 +18,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
@@ -27,6 +28,8 @@ import java.text.MessageFormat;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+
+import static java.util.Arrays.asList;
 
 public class SabClient {
 
@@ -52,8 +55,8 @@ public class SabClient {
 
     try {
       this.template = IOUtils.toString(new ClassPathResource("sab/request.xml").getInputStream());
-      this.restTemplate = new RestTemplate(getRequestFactory());
-      this.restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
+      this.restTemplate = new RestTemplate(asList(new ByteArrayHttpMessageConverter(), new StringHttpMessageConverter()));
+      this.restTemplate.setRequestFactory(getRequestFactory());
     } catch (IOException e) {
       //fail fast
       throw new RuntimeException(e);
@@ -62,7 +65,7 @@ public class SabClient {
 
   public List<String> roles(String userId) throws IOException {
     String request = request(userId);
-    ResponseEntity<byte[]> response = restTemplate.exchange(sabEndpoint, HttpMethod.POST, new HttpEntity<>(request),byte[].class);
+    ResponseEntity<byte[]> response = restTemplate.exchange(sabEndpoint, HttpMethod.POST, new HttpEntity<>(request), byte[].class);
     try {
       List<String> roles = parser.parse(new ByteArrayInputStream(response.getBody()));
       LOG.debug("Retrieved SAB roles with request: {} and response: {}", request, response);
