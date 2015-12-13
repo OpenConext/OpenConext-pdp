@@ -13,9 +13,14 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.text.MessageFormat;
@@ -48,7 +53,8 @@ public class SabClient {
     try {
       this.template = IOUtils.toString(new ClassPathResource("sab/request.xml").getInputStream());
       this.restTemplate = new RestTemplate(getRequestFactory());
-    } catch (Exception e) {
+      this.restTemplate.getMessageConverters().add(new ByteArrayHttpMessageConverter());
+    } catch (IOException e) {
       //fail fast
       throw new RuntimeException(e);
     }
@@ -56,9 +62,9 @@ public class SabClient {
 
   public List<String> roles(String userId) throws IOException {
     String request = request(userId);
-    String response = restTemplate.postForEntity(sabEndpoint, request, String.class).getBody();
+    ResponseEntity<byte[]> response = restTemplate.exchange(sabEndpoint, HttpMethod.POST, new HttpEntity<>(request),byte[].class);
     try {
-      List<String> roles = parser.parse(response);
+      List<String> roles = parser.parse(new ByteArrayInputStream(response.getBody()));
       LOG.debug("Retrieved SAB roles with request: {} and response: {}", request, response);
       return roles;
     } catch (Exception e) {
