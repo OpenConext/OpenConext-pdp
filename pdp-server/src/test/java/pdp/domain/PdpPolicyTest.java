@@ -10,7 +10,7 @@ public class PdpPolicyTest {
   public void testRevision() throws Exception {
     PdpPolicy parent = new PdpPolicy();
 
-    PdpPolicy revision = PdpPolicy.revision("new policy", parent, "xml", "uid", "http://mock-idp", "John Doe");
+    PdpPolicy revision = PdpPolicy.revision("new policy", parent, "xml", "uid", "http://mock-idp", "John Doe",true);
 
     assertFalse(parent.isLatestRevision());
     assertEquals(1, parent.getRevisions().size());

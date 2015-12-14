@@ -44,6 +44,7 @@ public class PdpPolicyDefinitionParser {
     definition.setCreated(pdpPolicy.getCreated());
     definition.setUserDisplayName(pdpPolicy.getUserDisplayName());
     definition.setRevisionNbr(pdpPolicy.getRevisionNbr());
+    definition.setActive(pdpPolicy.isActive());
 
     parseTargets(policyXml, definition, policy);
 

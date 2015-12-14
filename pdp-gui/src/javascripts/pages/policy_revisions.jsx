@@ -110,7 +110,7 @@ App.Pages.PolicyRevisions = React.createClass({
 
   renderDiff: function (prev, curr) {
     var properties = ["name", "description", "denyRule", "serviceProviderName", "identityProviderNames",
-      "allAttributesMustMatch", "attributes", "denyAdvice", "denyAdviceNl"
+      "allAttributesMustMatch", "attributes", "denyAdvice", "denyAdviceNl", "active"
     ];
     //means someone if looking at the first initial revision
     if (!prev) {

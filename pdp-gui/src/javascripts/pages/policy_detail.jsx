@@ -14,7 +14,11 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   getInitialState: function () {
-    return this.props.policy;
+    var state = this.props.policy;
+    if (state.id === undefined || state.id === null) {
+      state.active = true;
+    }
+    return state;
   },
 
   toggleDenyRule: function (e) {
@@ -110,6 +114,10 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState(partialState);
   },
 
+  handleOnChangeIsActive: function(e) {
+    this.setState({active: !this.state.active});
+  },
+
   buildAutoFormattedDescription: function (partialState) {
     if (this.state.autoFormat) {
       this.provideProviderNames(partialState);
@@ -159,7 +167,22 @@ App.Pages.PolicyDetail = React.createClass({
                       onChange={this.handleOnChangeDescription}/>
             <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
                    onChange={this.handleOnChangeAutoFormat}/>
-            <label htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
+            <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
+          </div>
+          <div className="bottom"></div>
+        </div>
+    );
+  },
+
+  renderActive: function (policy) {
+    return (
+        <div>
+          <div className={"form-element success"}>
+            <p className="label">{I18n.t("policy_detail.isActive")}</p>
+            <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
+                   onChange={this.handleOnChangeIsActive}/>
+            <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
+            <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
           </div>
           <div className="bottom"></div>
         </div>
@@ -393,6 +416,7 @@ App.Pages.PolicyDetail = React.createClass({
             {this.renderAttributes(policy)}
             {this.renderDenyAdvice(policy)}
             {this.renderDescription(policy)}
+            {this.renderActive(policy)}
             {this.renderActions(policy)}
           </div>
           <div className="l-split-right form-element-container box">

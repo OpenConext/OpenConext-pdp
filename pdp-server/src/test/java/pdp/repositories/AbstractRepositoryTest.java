@@ -28,7 +28,7 @@ public abstract class AbstractRepositoryTest {
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
   protected PdpPolicy pdpPolicy(String name) {
-    return new PdpPolicy("xml", name, true, userIdentifier, authenticatingAuthority, userDisplayName);
+    return new PdpPolicy("xml", name, true, userIdentifier, authenticatingAuthority, userDisplayName, true);
   }
 
 }

@@ -66,6 +66,7 @@ I18n.translations.en = {
     description: "Description",
     serviceProviderId: "Service",
     activatedSr: "Activated in SR",
+    isActive: "Active",
     identityProviderId: "Institution",
     identityProviderIds: "Institution(s)",
     violations: "Unauthorized logins",
@@ -117,7 +118,10 @@ I18n.translations.en = {
     submit: "Submit",
     cancel: "Cancel",
     sub_title: "Created by {{displayName}} on {{created}}",
-    autoFormat: "AutoFormat policy description"
+    autoFormat: "AutoFormat policy description",
+    isActiveDescription: "Mark the policy active",
+    isActiveInfo: " Inactive policies are not evaluated in enforcement decisions",
+    isActive: "Active"
   },
 
   violations: {
@@ -155,6 +159,7 @@ I18n.translations.en = {
     attributes: "Attributes",
     denyAdvice: "Deny message",
     denyAdviceNl: "Deny message in Dutch",
+    active: "Active",
     changes_info_html: "Showing the changes between <span class=\"prev\"> revision number {{prevRevisionNbr}}</span> and <span class=\"curr\">revision number {{currRevisionNbr}}</span> made by {{userDisplayName}} on {{createdDate}}.",
     changes_first_html: "This is the first <span class=\"curr\">initial revision {{currRevisionNbr}}</span> created by {{userDisplayName}} on {{createdDate}}."
   },

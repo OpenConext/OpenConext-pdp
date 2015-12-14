@@ -34,7 +34,7 @@ public class PolicyIdpAccessEnforcerTest {
 
   @Before
   public void before() {
-    this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName);
+    this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName, true);
     //individual tests can overwrite this behaviour
     setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
   }

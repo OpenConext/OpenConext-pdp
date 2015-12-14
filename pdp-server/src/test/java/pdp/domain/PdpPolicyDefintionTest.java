@@ -33,7 +33,7 @@ public class PdpPolicyDefintionTest extends AbstractXacmlTest {
     List<PdpPolicy> policies = policyLoader.getPolicies();
     List<PdpPolicyDefinition> input = policies.stream().map(policy -> policyDefinitionParser.parse(policy)).collect(toList());
     List<PdpPolicyDefinition> output = input.stream().map(definition ->
-        policyDefinitionParser.parse(new PdpPolicy(templateEngine.createPolicyXml(definition), definition.getName(), true, "system", "http://mock-idp", "system-user"))).collect(toList());
+        policyDefinitionParser.parse(new PdpPolicy(templateEngine.createPolicyXml(definition), definition.getName(), true, "system", "http://mock-idp", "system-user", true))).collect(toList());
     /*
      * This is redundant but if there are differences between the PdpPolicyDefinition's then the List comparison is un-readable
      */

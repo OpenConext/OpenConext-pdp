@@ -28,6 +28,12 @@ App.Components.Header = React.createClass({
           <ul className="links">
             <li dangerouslySetInnerHTML={{__html: I18n.t("header.links.help_html") }}></li>
             {this.renderExitLogout()}
+            <li>
+              <a href="https://github.com/OpenConext/OpenConext-pdp" target="_blank">
+                <img src="images/github.png"/>
+              </a>
+            </li>
+
           </ul>
         </div>
     );

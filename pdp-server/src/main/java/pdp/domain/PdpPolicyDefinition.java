@@ -58,6 +58,8 @@ public class PdpPolicyDefinition {
 
   private boolean isActivatedSr;
 
+  private boolean active;
+
   public PdpPolicyDefinition() {
   }
 
@@ -207,6 +209,14 @@ public class PdpPolicyDefinition {
 
   public void setActivatedSr(boolean activatedSr) {
     isActivatedSr = activatedSr;
+  }
+
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
   }
 
   //used in the mustache templates

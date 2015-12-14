@@ -83,7 +83,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   private PdpPolicy loadPolicy(String policyFile) {
     try {
       String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream());
-      return new PdpPolicy(policyXml, policyFile, true, "system", "http://mock-idp", "John Doe");
+      return new PdpPolicy(policyXml, policyFile, true, "system", "http://mock-idp", "John Doe", true);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

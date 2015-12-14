@@ -41,6 +41,7 @@ I18n.translations.nl = {
     description: "Omschrijving",
     serviceProviderId: "Dienst",
     activatedSr: "Geactiveerd in SR",
+    isActive: "Actief",
     identityProviderIds: "Instelling(en)",
     identityProviderId: "Instelling",
     violations: "Overtredingen",
@@ -92,7 +93,10 @@ I18n.translations.nl = {
     submit: "Verstuur",
     cancel: "Annuleer",
     sub_title: "Aangemaakt door {{displayName}} op {{created}}",
-    autoFormat: "AutoFormat regel omschrijving"
+    autoFormat: "AutoFormat regel omschrijving",
+    isActiveDescription: "Markeer de regel actief",
+    isActiveInfo: " Inactieve regels worden niet geevalueerd in access beslissingen",
+    isActive: "Actief"
   },
 
   violations: {
@@ -130,6 +134,7 @@ I18n.translations.nl = {
     attributes: "Attributen",
     denyAdvice: "Ongeautoriseerd melding in het Engels",
     denyAdviceNl: "Ongeautoriseerd melding",
+    active: "Actief",
     changes_info_html: "Veranderingen tussen <span class=\"prev\"> revisie nummer {{prevRevisionNbr}}</span> en <span class=\"curr\">revisie nummer {{currRevisionNbr}}</span> gemaakt door  {{userDisplayName}} op {{createdDate}}.",
     changes_first_html: "Dit is de <span class=\"curr\">eerste revisie {{currRevisionNbr}}</span> aangemaakt door {{userDisplayName}} op {{createdDate}}."
   },

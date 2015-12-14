@@ -39,6 +39,9 @@ public class PdpPolicy {
   @Column
   private boolean latestRevision;
 
+  @Column(name = "is_active")
+  private boolean active;
+
   @ManyToOne
   @JoinColumn(name = "revision_parent_id", nullable = true)
   //to prevent cycles
@@ -57,14 +60,16 @@ public class PdpPolicy {
   public PdpPolicy() {
   }
 
-  public PdpPolicy(String policyXml, String name, boolean latestRevision, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
+  public PdpPolicy(String policyXml, String name, boolean latestRevision, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean active) {
     this.policyXml = policyXml;
     this.name = name;
     this.latestRevision = latestRevision;
     this.userIdentifier = userIdentifier;
     this.userDisplayName = userDisplayName;
     this.authenticatingAuthority = authenticatingAuthority;
+    this.active = active;
     this.policyId = PolicyTemplateEngine.getPolicyId(name);
+
   }
 
   public Long getId() {
@@ -172,6 +177,14 @@ public class PdpPolicy {
     this.latestRevision = latestRevision;
   }
 
+  public boolean isActive() {
+    return active;
+  }
+
+  public void setActive(boolean active) {
+    this.active = active;
+  }
+
   public PdpPolicy getParentPolicy() {
     return parentPolicy;
   }
@@ -180,11 +193,11 @@ public class PdpPolicy {
     this.parentPolicy = parentPolicy;
   }
 
-  public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName) {
+  public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean isActive) {
     parent.getRevisions().forEach(p -> p.setLatestRevision(false));
     parent.setLatestRevision(false);
 
-    PdpPolicy clone = new PdpPolicy(newPolicyXml, newName, true, userIdentifier, authenticatingAuthority, userDisplayName);
+    PdpPolicy clone = new PdpPolicy(newPolicyXml, newName, true, userIdentifier, authenticatingAuthority, userDisplayName, isActive);
     clone.setRevisionNbr(parent.getRevisions().size() + 1);
 
     parent.addRevision(clone);

@@ -16,17 +16,15 @@
 
 package pdp.sab;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.*;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.IntStream.range;
 
 public class SabResponseParser {
 
@@ -44,8 +42,7 @@ public class SabResponseParser {
         case XMLStreamConstants.START_ELEMENT:
           switch (reader.getLocalName()) {
             case "Attribute":
-              String value = reader.getAttributeValue(0);
-              if (value != null && value.equals("urn:oid:1.3.6.1.4.1.5923.1.1.1.7")) {
+              if (hasAttributeValue(reader, "urn:oid:1.3.6.1.4.1.5923.1.1.1.7")) {
                 processRoles = true;
               }
               break;
@@ -64,5 +61,9 @@ public class SabResponseParser {
       }
     }
     return roles;
+  }
+
+  private boolean hasAttributeValue(XMLStreamReader reader, String attributeValue) {
+    return range(0, reader.getAttributeCount()).mapToObj(i -> reader.getAttributeValue(i)).anyMatch(v -> v != null && v.equals(attributeValue));
   }
 }

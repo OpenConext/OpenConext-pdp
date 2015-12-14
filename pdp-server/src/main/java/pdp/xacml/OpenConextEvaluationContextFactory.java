@@ -32,9 +32,11 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private PdpPolicyRepository pdpPolicyRepository;
   private boolean cachePolicies;
+  private boolean includeInactivePolicies;
 
   public OpenConextEvaluationContextFactory() throws IOException {
     this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
+    this.includeInactivePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.includeInactivePolicies", "false"));
   }
 
   public void injectPolicyFinderDependencies(PdpPolicyRepository pdpPolicyRepository) {
@@ -53,7 +55,10 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private PolicyFinder loadPolicyFinder() {
     Collection<PolicySetChild> policies =
-        stream(pdpPolicyRepository.findAll().spliterator(), false).map(policy -> (PolicySetChild) convertToPolicyDef(policy)).collect(toCollection(ArrayList::new));
+        stream(pdpPolicyRepository.findAll().spliterator(), false)
+            .filter(policy -> policy.isActive() || includeInactivePolicies)
+            .map(policy -> (PolicySetChild) convertToPolicyDef(policy))
+            .collect(toCollection(ArrayList::new));
     LOG.info("(Re)-loaded {} policies from the database", policies.size());
     try {
       return new StdPolicyFinder(combinePolicies(policies), null);

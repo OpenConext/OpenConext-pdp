@@ -59,7 +59,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
   private void assertEquality() {
     String policyXml = engine.createPolicyXml(definition);
-    PdpPolicy policy = new PdpPolicy(policyXml, definition.getName(), true, "system", "http://mock-ipd", "John Doe");
+    PdpPolicy policy = new PdpPolicy(policyXml, definition.getName(), true, "system", "http://mock-ipd", "John Doe", true);
 
     PdpPolicyDefinition fromPolicyXml = parser.parse(policy);
     assertEquals(fromPolicyXml, definition);

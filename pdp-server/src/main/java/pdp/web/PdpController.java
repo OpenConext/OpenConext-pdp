@@ -205,7 +205,8 @@ public class PdpController {
           policyXml,
           policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(),
-          policyIdpAccessEnforcer.userDisplayName());
+          policyIdpAccessEnforcer.userDisplayName(),
+          pdpPolicyDefinition.isActive());
     } else {
       policy = new PdpPolicy(
           policyXml,
@@ -213,7 +214,8 @@ public class PdpController {
           true,
           policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(),
-          policyIdpAccessEnforcer.userDisplayName());
+          policyIdpAccessEnforcer.userDisplayName(),
+          pdpPolicyDefinition.isActive());
     }
     try {
       //this will throw an Exception if it is not allowed

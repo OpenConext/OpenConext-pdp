@@ -33,8 +33,8 @@ App.Pages.PolicyOverview = React.createClass({
         }
       },
       columnDefs: [
-        { targets: [3], orderDataType: "dom-checkbox"},
-        { targets: [7], orderable: false}
+        { targets: [3,6], orderDataType: "dom-checkbox"},
+        { targets: [8], orderable: false}
       ]
     });
   },
@@ -147,7 +147,9 @@ App.Pages.PolicyOverview = React.createClass({
                                                           disabled="true"/></td>
             <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
             <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
-            <td className='policy_violations'>{this.renderRevisionsLink(policy)}</td>
+            <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
+                                                          disabled="true"/></td>
+            <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
             <td className="policy_controls">
               <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
                  data-tooltip={I18n.t("policies.edit")}>
@@ -171,7 +173,8 @@ App.Pages.PolicyOverview = React.createClass({
                 <th className='policy_is_activated_sr'>{I18n.t('policies.activatedSr')}</th>
                 <th className='policy_idps_col'>{I18n.t('policies.identityProviderIds')}</th>
                 <th className='policy_violations'>{I18n.t('policies.violations')}</th>
-                <th className='policy_violations'>{I18n.t('policies.revisions')}</th>
+                <th className='policy_is_active'>{I18n.t('policies.isActive')}</th>
+                <th className='policy_revisions'>{I18n.t('policies.revisions')}</th>
                 <th className='policy_controls'></th>
               </tr>
               </thead>
