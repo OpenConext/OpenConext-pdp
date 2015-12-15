@@ -33,7 +33,8 @@ I18n.translations.nl = {
     violations: "Ongeautoriseerde logins",
     playground: "Playground",
     my_idp: "Mijn instelling",
-    new_policy: "+ Nieuwe autorisatie regel"
+    new_policy: "+ Nieuwe autorisatie regel",
+    identity: "Identiteit"
   },
 
   policies: {
@@ -145,6 +146,18 @@ I18n.translations.nl = {
     values: "Waarde(s)",
     new_value: "Voeg een nieuwe waarde toe...",
     new_attribute: "Voeg een nieuw attribuut toe..."
+  },
+  identity: {
+    title: "Identiteit impersonatie",
+    subTitle: "",
+    confirmation: "Verander identiteit",
+    unspecifiedNameId: "Naam ID",
+    unspecifiedNameIdInfo: "De unieke naam ID wordt opgeslagen bij elke regel verandering",
+    displayName: "Naam",
+    displayNameInfo: "De naam can de gebruiker wordt ook opgeslagen bij elke nieuwe regel revisie",
+    submit: "Verstuur",
+    clear: "Stop impersonatie",
+    cancel: "Annuleer"
   },
 
   contact: {

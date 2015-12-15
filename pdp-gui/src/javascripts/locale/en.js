@@ -58,7 +58,8 @@ I18n.translations.en = {
     playground: "Playground",
     about: "About",
     my_idp: "My institute",
-    new_policy: "+ New Policy"
+    new_policy: "+ New Policy",
+    identity: "Identity"
   },
 
   policies: {
@@ -169,6 +170,21 @@ I18n.translations.en = {
     values: "Values(s)",
     new_value: "Add a new value...",
     new_attribute: "Add new attribute...."
+  },
+  identity: {
+    title: "Identity impersonation",
+    subTitle: "",
+    confirmation: "Change identity",
+    idpEntityId: "Institution / IdP",
+    idpEntityIdPlaceHolder: "Select one Identity Provider",
+    unspecifiedNameId: "Name ID",
+    unspecifiedNameIdPlaceholder: "urn:collab:person:example.com:admin",
+    unspecifiedNameIdInfo: "The unique name ID is stored with each new policy revision",
+    displayName: "Display name",
+    displayNameInfo: "The display name is also stored with new policy revisions",
+    submit: "Impersonate",
+    clear: "Reset impersonations",
+    cancel: "Cancel"
   },
   contact: {
     email: "Service support email"

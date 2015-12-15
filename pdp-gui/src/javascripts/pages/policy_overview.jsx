@@ -136,6 +136,21 @@ App.Pages.PolicyOverview = React.createClass({
     });
   },
 
+  renderControls: function(policy) {
+
+    if (policy.actionsAllowed) {
+      return (
+          <div>
+            <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
+               data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
+            </a>
+            <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
+              <i className="fa fa-remove"></i>
+            </a>
+          </div>);
+    }
+  },
+
   render: function () {
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
@@ -150,13 +165,7 @@ App.Pages.PolicyOverview = React.createClass({
             <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
                                                           disabled="true"/></td>
             <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
-            <td className="policy_controls">
-              <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
-                 data-tooltip={I18n.t("policies.edit")}>
-                <i className="fa fa-edit"></i>
-              </a>
-              <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}><i
-                  className="fa fa-remove"></i></a></td>
+            <td className="policy_controls">{this.renderControls(policy)}</td>
           </tr>)
     }.bind(this));
 

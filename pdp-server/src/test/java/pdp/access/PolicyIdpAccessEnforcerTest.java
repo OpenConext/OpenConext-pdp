@@ -8,8 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicy;
+import pdp.serviceregistry.TestingServiceRegistry;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -21,7 +24,7 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest {
 
-  private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer();
+  private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(new TestingServiceRegistry());
   private PdpPolicy pdpPolicy;
 
   private String uid = "uid";
@@ -109,7 +112,7 @@ public class PolicyIdpAccessEnforcerTest {
   }
 
   private Set<EntityMetaData> entityMetadata(String... entityIds) {
-    return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null, true)).collect(toSet());
+    return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null, true, true, new HashSet<String>())).collect(toSet());
   }
 
 }

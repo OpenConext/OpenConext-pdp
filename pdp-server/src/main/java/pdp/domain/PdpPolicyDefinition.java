@@ -60,6 +60,8 @@ public class PdpPolicyDefinition {
 
   private boolean active;
 
+  private boolean actionsAllowed;
+
   public PdpPolicyDefinition() {
   }
 
@@ -217,6 +219,14 @@ public class PdpPolicyDefinition {
 
   public void setActive(boolean active) {
     this.active = active;
+  }
+
+  public boolean isActionsAllowed() {
+    return actionsAllowed;
+  }
+
+  public void setActionsAllowed(boolean actionsAllowed) {
+    this.actionsAllowed = actionsAllowed;
   }
 
   //used in the mustache templates

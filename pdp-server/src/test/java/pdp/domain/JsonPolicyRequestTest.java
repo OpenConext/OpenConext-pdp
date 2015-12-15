@@ -5,10 +5,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
+import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 public class JsonPolicyRequestTest {
 
@@ -31,8 +34,8 @@ public class JsonPolicyRequestTest {
     accessSubjectAttributes.add(new JsonPolicyRequest.Attribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "employee"));
 
     List<JsonPolicyRequest.Attribute> resourceAttributes = request.resource.attributes;
-    resourceAttributes.add(new JsonPolicyRequest.Attribute("SPentityID", "avans_sp"));
-    resourceAttributes.add(new JsonPolicyRequest.Attribute("IDPentityID", "avans_idp"));
+    resourceAttributes.add(new JsonPolicyRequest.Attribute(SP_ENTITY_ID, "avans_sp"));
+    resourceAttributes.add(new JsonPolicyRequest.Attribute(IDP_ENTITY_ID, "avans_idp"));
 
     String json = objectMapper.writeValueAsString(policyRequest);
     String expected = IOUtils.toString(new ClassPathResource("xacml/requests/json_policy_request.json").getInputStream());

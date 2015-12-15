@@ -16,7 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
-import static pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
 
 public class MockShibbolethFilter extends GenericFilterBean {
 
@@ -61,7 +61,6 @@ public class MockShibbolethFilter extends GenericFilterBean {
     wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
     wrapper.setHeader(SHIB_AUTHENTICATING_AUTHORITY, "http://adfs2prod.aventus.nl/adfs/services/trust");
     wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
-    wrapper.setHeader(IS_MEMBER_OF, "surfnet");
 
     filterChain.doFilter(wrapper, servletResponse);
   }

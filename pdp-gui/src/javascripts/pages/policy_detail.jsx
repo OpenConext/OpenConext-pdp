@@ -88,7 +88,6 @@ App.Pages.PolicyDetail = React.createClass({
     var emptyAttributes = policy.attributes.filter(function (attr) {
       return _.isEmpty(attr.value);
     });
-    var validClassName = (_.isEmpty(policy.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
     var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
         || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;

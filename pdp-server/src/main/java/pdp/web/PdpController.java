@@ -77,7 +77,7 @@ public class PdpController {
     this.pdpEngineHolder = pdpEngineHolder;
     this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
-    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer();
+    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
     this.policyIncludeAggregatedAttributes = policyIncludeAggregatedAttributes;
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
@@ -121,7 +121,7 @@ public class PdpController {
   public List<PdpPolicyDefinition> policyDefinitions() {
     Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
     List<PdpPolicyDefinition> policies = stream(all.spliterator(), false)
-        .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
+        .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
 
     //can't use Formula - https://issues.jboss.org/browse/JBPAPP-6571
     List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
@@ -132,24 +132,28 @@ public class PdpController {
     Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
     policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
 
-    return policies;
+    return this.policyIdpAccessEnforcer.filterPdpPolicies(policies);
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/sp")
   public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
     List<PdpPolicyDefinition> policies = policyDefinitions();
-    return stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
+
+    List<PdpPolicyDefinition> filterBySp = stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
+
+    return this.policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
   }
 
   @RequestMapping(method = GET, value = "/internal/violations")
   public Iterable<PdpPolicyViolation> violations() {
-    return pdpPolicyViolationRepository.findAll();
+    Iterable<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findAll();
+    return this.policyIdpAccessEnforcer.filterViolations(violations);
   }
 
   @RequestMapping(method = GET, value = "/internal/violations/{id}")
-  public Collection<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
-    PdpPolicy policy = findPolicyById(id);
-    return policy.getViolations();
+  public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
+    Set<PdpPolicyViolation> violations = findPolicyById(id).getViolations();
+    return this.policyIdpAccessEnforcer.filterViolations(violations);
   }
 
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
@@ -237,6 +241,9 @@ public class PdpController {
     if (policy == null) {
       throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
     }
+    PdpPolicyDefinition definition = pdpPolicyDefinitionParser.parse(policy);
+    //this will throw an Exception if it is not allowed
+    this.policyIdpAccessEnforcer.actionAllowed(policy, definition.getServiceProviderId(), definition.getIdentityProviderIds());
     return policy;
   }
 
@@ -252,6 +259,12 @@ public class PdpController {
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
     pdpPolicyRepository.delete(policy);
+  }
+
+  private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
+    boolean actionsAllowed = this.policyIdpAccessEnforcer.actionAllowedIndicator(policy, pd.getServiceProviderId(), pd.getIdentityProviderIds());
+    pd.setActionsAllowed(actionsAllowed);
+    return pd;
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {

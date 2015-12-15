@@ -6,7 +6,7 @@ import pdp.access.FederatedUser;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 
 import static org.junit.Assert.assertEquals;
-import static pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
 
 public class ShibbolethPreAuthenticatedProcessingFilterTest {
 
@@ -19,7 +19,6 @@ public class ShibbolethPreAuthenticatedProcessingFilterTest {
     request.addHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
     request.addHeader(SHIB_AUTHENTICATING_AUTHORITY, "http://adfs2prod.aventus.nl/adfs/services/trust");
     request.addHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
-    request.addHeader(IS_MEMBER_OF, "surfnet");
 
     FederatedUser principal = (FederatedUser) filter.getPreAuthenticatedPrincipal(request);
 

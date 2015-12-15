@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
-import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
+
 public class CsrfProtectionMatcher implements RequestMatcher {
 
   private Pattern allowedMethods = Pattern.compile("^(GET|HEAD|TRACE|OPTIONS)$");

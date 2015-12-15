@@ -21,7 +21,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)

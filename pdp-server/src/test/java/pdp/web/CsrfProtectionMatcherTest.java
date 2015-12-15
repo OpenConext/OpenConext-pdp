@@ -6,7 +6,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
 
 public class CsrfProtectionMatcherTest {
 

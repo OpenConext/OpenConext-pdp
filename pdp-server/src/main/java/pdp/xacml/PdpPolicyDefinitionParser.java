@@ -19,6 +19,7 @@ import static java.util.Spliterators.spliteratorUnknownSize;
 import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
+import static pdp.util.StreamUtils.iteratorToList;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 /*
@@ -171,10 +172,6 @@ public class PdpPolicyDefinitionParser {
     } catch (DOMStructureException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  private <E> List<E> iteratorToList(Iterator<E> iterator) {
-    return stream(spliteratorUnknownSize(iterator, ORDERED), false).collect(toCollection(ArrayList::new));
   }
 
 }

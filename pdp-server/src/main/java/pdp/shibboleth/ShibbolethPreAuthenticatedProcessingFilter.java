@@ -1,65 +1,44 @@
 package pdp.shibboleth;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.util.StringUtils;
 import pdp.access.FederatedUser;
-import pdp.domain.EntityMetaData;
+import pdp.access.FederatedUserBuilder;
+import pdp.access.PolicyIdpAccessAwareToken;
+import pdp.access.RunAsFederatedUser;
 import pdp.serviceregistry.ServiceRegistry;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Collection;
-import java.util.Set;
+import java.util.Optional;
 
-import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
+import static org.springframework.util.StringUtils.hasText;
+import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-  public static final String UID_HEADER_NAME = "uid";
-  public static final String DISPLAY_NAME_HEADER_NAME = "displayname";
-  public static final String IS_MEMBER_OF = "is-member-of";
-  public static final String SHIB_AUTHENTICATING_AUTHORITY = "Shib-Authenticating-Authority";
-
-  private static final Logger LOG = LoggerFactory.getLogger(ShibbolethPreAuthenticatedProcessingFilter.class);
-  private static final Collection<? extends GrantedAuthority> authorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");
-
-  private final ServiceRegistry serviceRegsitry;
+  private final FederatedUserBuilder federatedUserBuilder;
 
   public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry) {
     super();
     setAuthenticationManager(authenticationManager);
-    this.serviceRegsitry = serviceRegistry;
+    this.federatedUserBuilder = new FederatedUserBuilder(serviceRegistry);
+    setCheckForPrincipalChanges(true);
   }
 
   @Override
   protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
-    String uid = request.getHeader(UID_HEADER_NAME);
-    String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
-    String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
-
-    if (isHeaderValueInvalid(uid, UID_HEADER_NAME)) {
-      return null;
-    }
-    if (isHeaderValueInvalid(displayName, DISPLAY_NAME_HEADER_NAME)) {
-      return null;
-    }
-    if (isHeaderValueInvalid(authenticatingAuthority, SHIB_AUTHENTICATING_AUTHORITY)) {
-      return null;
-    }
-
-    //By contract we always get at least one Idp, but in case there are two - http://mock-idp;http://mock-idp - we need the first
-    authenticatingAuthority = authenticatingAuthority.split(";")[0];
-    Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
-
-    //By contract we have at least one Idp - otherwise an Exception is already raised
-    String institutionId = idpEntities.iterator().next().getInstitutionId();
-    Set<EntityMetaData> spEntities = serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
-
-    LOG.debug("Creating ShibbolethUser {}",uid);
-    return new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, authorities);
+    Optional<FederatedUser> federatedUserOptional = hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE)) ?
+            federatedUserBuilder.basicAuthUser(request, new UsernamePasswordAuthenticationToken("N/A", "N/A", apiAuthorities)) :
+            federatedUserBuilder.shibUser(request);
+    //null is how the contract for AbstractPreAuthenticatedProcessingFilter works
+    return federatedUserOptional.isPresent() ? federatedUserOptional.get() : null;
   }
 
   @Override
@@ -67,11 +46,10 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     return "N/A";
   }
 
-  private boolean isHeaderValueInvalid(String header, String name) {
-    if (StringUtils.isEmpty(header)) {
-      LOG.warn("Missing {} header. Not possible to login", name);
-      return true;
-    }
-    return false;
+  @Override
+  protected boolean principalChanged(HttpServletRequest request, Authentication currentAuthentication) {
+    //the Javascript client has the functionality to impersonate an user. If this functionality if off then
+    //only need to check if the currentAuthentication is not the cached impersonation
+    return hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE)) || currentAuthentication.getPrincipal() instanceof RunAsFederatedUser;
   }
 }

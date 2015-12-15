@@ -14,7 +14,7 @@ import javax.servlet.FilterChain;
 
 import static java.util.Base64.getEncoder;
 import static org.junit.Assert.assertEquals;
-import static pdp.access.PolicyIdpAccessEnforcerFilter.*;
+import static pdp.access.FederatedUserBuilder.*;
 
 public class PolicyIdpAccessEnforcerFilterTest {
 

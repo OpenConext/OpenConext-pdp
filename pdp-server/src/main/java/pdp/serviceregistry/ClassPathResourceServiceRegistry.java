@@ -48,12 +48,16 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     try {
       lock.writeLock().lock();
       entityMetaData = new HashMap<>();
-      entityMetaData.put(IDP_ENTITY_ID, getIdpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
-      entityMetaData.put(SP_ENTITY_ID, getSpResources().stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList()));
+      entityMetaData.put(IDP_ENTITY_ID, mapResources(getIdpResources()));
+      entityMetaData.put(SP_ENTITY_ID, mapResources(getSpResources()));
       LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
     } finally {
       lock.writeLock().unlock();
     }
+  }
+
+  private List<EntityMetaData> mapResources(List<Resource> resources) {
+    return resources.stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList());
   }
 
   protected List<Resource> getIdpResources() {
@@ -133,12 +137,24 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
               getMetaDateEntry(entry, "en", "name"),
               getMetaDateEntry(entry, "nl", "description"),
               getMetaDateEntry(entry, "nl", "name"),
-              getPolicyEnforcementDecisionRequired(entry)
+              getPolicyEnforcementDecisionRequired(entry),
+              getAllowedAll(entry),
+              getAllowedEntries(entry)
           )
       ).sorted(sortEntityMetaData()).collect(Collectors.toList());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private Set<String> getAllowedEntries(Map<String, Object> entry) {
+    List<String> allowedEntities = (List<String>) entry.getOrDefault("allowedEntities", Collections.EMPTY_LIST);
+    return new HashSet<>(allowedEntities);
+  }
+
+  private boolean getAllowedAll(Map<String, Object> entry) {
+    String allowedall = (String) entry.getOrDefault("allowedall", "yes");
+    return allowedall.equals("yes");
   }
 
   private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {

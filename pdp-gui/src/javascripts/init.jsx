@@ -18,10 +18,7 @@ var App = {
     $(document).ajaxStop(this.hideSpinner.bind(this));
     $(document).ajaxComplete(this.checkSessionExpired.bind(this));
 
-    $(document).ajaxSend(function (event, jqxhr, settings) {
-      jqxhr.setRequestHeader("Content-Type", "application/json");
-      jqxhr.setRequestHeader("X-CSRF-TOKEN", this.crsfToken);
-    }.bind(this));
+    this.setupAjaxSend();
 
     this.fetchUserData(function (user) {
       this.currentUser = user;
@@ -63,6 +60,21 @@ var App = {
     return page.uri(BASE_URL + value, params);
   },
 
+  setupAjaxSend: function () {
+    $(document).ajaxSend(function (event, jqxhr, settings) {
+      jqxhr.setRequestHeader("Content-Type", "application/json");
+      jqxhr.setRequestHeader("X-CSRF-TOKEN", this.crsfToken);
+
+      if (this.store.identity) {
+        jqxhr.setRequestHeader("X-IDP-ENTITY-ID", this.store.identity.idpEntityId);
+        jqxhr.setRequestHeader("X-UNSPECIFIED-NAME-ID", this.store.identity.unspecifiedNameId);
+        jqxhr.setRequestHeader("X-DISPLAY-NAME", this.store.identity.displayName);
+        jqxhr.setRequestHeader("X_IMPERSONATE", "true");
+      }
+
+    }.bind(this));
+  },
+
   fetchUserData: function (callback) {
     var self = this;
     $.get(App.apiUrl("/internal/users/me"), function (data) {
@@ -101,7 +113,7 @@ var App = {
 
   },
 
-  determineLanguage: function() {
+  determineLanguage: function () {
     var parameterByName = App.Utils.QueryParameter.getParameterByName("lang");
     if (_.isEmpty(parameterByName)) {
       parameterByName = Cookies.get("lang");
@@ -131,5 +143,22 @@ var App = {
     var message = this.store.flash;
     this.store.flash = undefined;
     return message;
+  },
+
+  getIdentity: function () {
+    return this.store.identity || {};
+  },
+
+  changeIdentity: function (idpEntityId, unspecifiedNameId, displayName) {
+    this.store.identity = {idpEntityId: idpEntityId, unspecifiedNameId: unspecifiedNameId, displayName: displayName};
+    this.initialize();
+    this.rootPath();
+  },
+
+  clearIdentity: function () {
+    delete this.store.identity;
+    this.initialize();
+    this.rootPath();
   }
+
 };

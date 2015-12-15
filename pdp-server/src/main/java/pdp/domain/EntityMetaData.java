@@ -1,5 +1,10 @@
 package pdp.domain;
 
+import java.util.Arrays;
+import java.util.Set;
+
+import static java.util.Arrays.stream;
+
 public class EntityMetaData {
 
   private final String entityId;
@@ -9,15 +14,20 @@ public class EntityMetaData {
   private final String descriptionNl;
   private final String nameNl;
   private final boolean policyEnforcementDecisionRequired;
+  private final boolean allowedAll;
+  private final Set<String> allowedEntityIds;
 
-  public EntityMetaData(String entityId, String institutionId, String descriptionEn, String nameEn, String descriptionNl, String nameNl, boolean policyEnforcementDecisionRequired) {
+  public EntityMetaData(String entityId, String institutionId, String descriptionEn, String nameEn, String descriptionNl,
+                        String nameNl, boolean policyEnforcementDecisionRequired, boolean allowedAll, Set<String> allowedEntityIds) {
     this.entityId = entityId;
-    this.institutionId= institutionId;
+    this.institutionId = institutionId;
     this.descriptionEn = descriptionEn;
     this.nameEn = nameEn;
     this.descriptionNl = descriptionNl;
     this.nameNl = nameNl;
     this.policyEnforcementDecisionRequired = policyEnforcementDecisionRequired;
+    this.allowedAll = allowedAll;
+    this.allowedEntityIds = allowedEntityIds;
   }
 
   public String getEntityId() {
@@ -46,5 +56,9 @@ public class EntityMetaData {
 
   public boolean isPolicyEnforcementDecisionRequired() {
     return policyEnforcementDecisionRequired;
+  }
+
+  public boolean isAllowedFrom(String... entityIds) {
+    return allowedAll || stream(entityIds).anyMatch(entityId -> allowedEntityIds.contains(entityId));
   }
 }
