@@ -119,8 +119,7 @@ public class PdpController {
 
   @RequestMapping(method = GET, value = "/internal/policies")
   public List<PdpPolicyDefinition> policyDefinitions() {
-    Iterable<PdpPolicy> all = pdpPolicyRepository.findAll();
-    List<PdpPolicyDefinition> policies = stream(all.spliterator(), false)
+    List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
 
     //can't use Formula - https://issues.jboss.org/browse/JBPAPP-6571
@@ -203,23 +202,12 @@ public class PdpController {
     if (pdpPolicyDefinition.getId() != null) {
       PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
-      PdpPolicy.revision(
-          pdpPolicyDefinition.getName(),
-          policy,
-          policyXml,
-          policyIdpAccessEnforcer.username(),
-          policyIdpAccessEnforcer.authenticatingAuthority(),
-          policyIdpAccessEnforcer.userDisplayName(),
-          pdpPolicyDefinition.isActive());
+      //Cascade.ALL
+      PdpPolicy.revision(pdpPolicyDefinition.getName(), policy, policyXml, policyIdpAccessEnforcer.username(),
+          policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
     } else {
-      policy = new PdpPolicy(
-          policyXml,
-          pdpPolicyDefinition.getName(),
-          true,
-          policyIdpAccessEnforcer.username(),
-          policyIdpAccessEnforcer.authenticatingAuthority(),
-          policyIdpAccessEnforcer.userDisplayName(),
-          pdpPolicyDefinition.isActive());
+      policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
+          policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
     }
     try {
       //this will throw an Exception if it is not allowed

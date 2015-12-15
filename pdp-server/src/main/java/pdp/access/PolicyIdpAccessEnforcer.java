@@ -3,7 +3,6 @@ package pdp.access;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import pdp.domain.*;
 import pdp.serviceregistry.ServiceRegistry;
 import pdp.util.StreamUtils;
@@ -16,7 +15,9 @@ import java.util.Set;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
+import static org.springframework.util.Assert.isInstanceOf;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
@@ -47,7 +48,7 @@ public class PolicyIdpAccessEnforcer {
   }
 
   public boolean actionAllowedIndicator(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds) {
-    return doActionAllowed(pdpPolicy, serviceProviderId, identityProviderIds, false) ;
+    return doActionAllowed(pdpPolicy, serviceProviderId, identityProviderIds, false);
   }
 
   private boolean doActionAllowed(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds, boolean throwException) {
@@ -137,6 +138,7 @@ public class PolicyIdpAccessEnforcer {
                                   Set<String> spsOfUserEntityIds) {
     JsonPolicyRequest jsonPolicyRequest;
     try {
+      //we are called from lambda
       jsonPolicyRequest = objectMapper.readValue(violation.getJsonRequest(), JsonPolicyRequest.class);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -144,17 +146,13 @@ public class PolicyIdpAccessEnforcer {
     String idp = getEntityAttributeValue(jsonPolicyRequest, IDP_ENTITY_ID);
     String sp = getEntityAttributeValue(jsonPolicyRequest, SP_ENTITY_ID);
 
-    if (idpsOfUserEntityIds.contains(idp)) {
-      return true;
-    }
-    if (spsOfUserEntityIds.contains(sp)) {
-      return true;
-    }
-    return false;
+    return idpsOfUserEntityIds.contains(idp) || spsOfUserEntityIds.contains(sp);
   }
 
   private String getEntityAttributeValue(JsonPolicyRequest jsonPolicyRequest, String attributeName) {
-    return jsonPolicyRequest.request.resource.attributes.stream().filter(attr -> attr.attributeId.equals(attributeName)).collect(StreamUtils.singletonCollector()).value;
+    return jsonPolicyRequest.request.resource.attributes.stream()
+        .filter(attr -> attr.attributeId.equals(attributeName))
+        .collect(singletonCollector()).value;
   }
 
   /**
@@ -183,7 +181,7 @@ public class PolicyIdpAccessEnforcer {
    */
   private boolean maySeePolicy(PdpPolicyDefinition pdpPolicyDefinition, FederatedUser user,
                                Set<String> idpsOfUserEntityIds, Set<String> spsOfUserEntityIds) {
-    if (CollectionUtils.isEmpty(pdpPolicyDefinition.getIdentityProviderIds())
+    if (isEmpty(pdpPolicyDefinition.getIdentityProviderIds())
         && idpIsAllowed(user, idpsOfUserEntityIds, pdpPolicyDefinition.getServiceProviderId())) {
       return true;
     }
@@ -210,10 +208,8 @@ public class PolicyIdpAccessEnforcer {
 
   private FederatedUser federatedUser() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (principal instanceof FederatedUser) {
-      return (FederatedUser) principal;
-    }
-    throw new RuntimeException("Principal is not FederatedUser. " + principal.getClass().getName());
+    isInstanceOf(FederatedUser.class, principal);
+    return (FederatedUser) principal;
   }
 
   public String username() {
@@ -228,7 +224,4 @@ public class PolicyIdpAccessEnforcer {
     return federatedUser().getDisplayName();
   }
 
-  public boolean isPolicyIdpAccessEnforcementRequired() {
-    return federatedUser().isPolicyIdpAccessEnforcementRequired();
-  }
 }
