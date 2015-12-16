@@ -201,6 +201,16 @@ public class PolicyIdpAccessEnforcer {
     return isAllowedFromIdp && spOptional.isPresent() && spOptional.get().isAllowedFrom(idps);
   }
 
+  public List<EntityMetaData> filterIdentityProviders(List<EntityMetaData> identityProviders) {
+    FederatedUser user = federatedUser();
+    if (!user.isPolicyIdpAccessEnforcementRequired()) {
+      return identityProviders;
+    }
+    Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
+
+    return identityProviders.stream().filter(idp -> idpsOfUserEntityIds.contains(idp.getEntityId())).collect(toList());
+  }
+
   private Set<String> getEntityIds(Set<EntityMetaData> entities) {
     return entities.stream().map(EntityMetaData::getEntityId).collect(toSet());
   }

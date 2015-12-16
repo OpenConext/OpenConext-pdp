@@ -66,6 +66,17 @@ App.Pages.PolicyDetail = React.createClass({
   handleChangeIdentityProvider: function (newValue) {
     var partialState = {identityProviderIds: newValue};
     partialState.description = this.buildAutoFormattedDescription(partialState);
+    var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
+    var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+    if (scopeSPs) {
+      if (scopeSPs && this.state.serviceProviderId && !_.any(serviceProviders, 'value', this.state.serviceProviderId)) {
+        //Unfortunately we have to set the current value manually as the integration with select2 is done one-way
+        var select2ServiceProvider = $('[data-select2selector-id="serviceProvider"]');
+        // select2ServiceProvider.removeClass('select2-offscreen').select2({data: serviceProviders});
+        select2ServiceProvider.val("").trigger("change");
+      }
+      partialState.spDataChanged = true;
+    }
     this.setState(partialState);
   },
 
@@ -113,7 +124,7 @@ App.Pages.PolicyDetail = React.createClass({
     this.setState(partialState);
   },
 
-  handleOnChangeIsActive: function(e) {
+  handleOnChangeIsActive: function (e) {
     this.setState({active: !this.state.active});
   },
 
@@ -209,6 +220,8 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderServiceProvider: function (policy) {
     var workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
+    var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
+    var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
     return (
         <div>
           <div className={"form-element " + workflow}>
@@ -217,14 +230,21 @@ App.Pages.PolicyDetail = React.createClass({
                 defaultValue={policy.serviceProviderId}
                 placeholder={I18n.t("policy_detail.sp_placeholder")}
                 select2selectorId={"serviceProvider"}
-                options={this.parseEntities(this.props.serviceProviders)}
+                options={serviceProviders}
+                dataChanged={policy.spDataChanged}
                 handleChange={this.handleChangeServiceProvider}/>
+            {this.renderScopedWarning(scopeSPs)}
           </div>
           <div className="bottom"></div>
         </div>
     );
   }
   ,
+  renderScopedWarning: function (scopedSPs) {
+    if (scopedSPs) {
+      return (<em className="note"><sup>*</sup>{I18n.t("policy_detail.spScopeInfo")} </em>);
+    }
+  },
 
   renderIdentityProvider: function (policy) {
     return (
@@ -237,6 +257,7 @@ App.Pages.PolicyDetail = React.createClass({
                 placeholder={I18n.t("policy_detail.idps_placeholder")}
                 select2selectorId={"identityProvider"}
                 options={this.parseEntities(this.props.identityProviders)}
+                dataChanged={false}
                 multiple={true}
                 handleChange={this.handleChangeIdentityProvider}/>
           </div>
@@ -329,9 +350,9 @@ App.Pages.PolicyDetail = React.createClass({
               <p className="label">{I18n.t("policy_detail.rule")}</p>
               <ul className="logical-rule">
                 {[
-                    this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
-                    this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
-                    ]}
+                  this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
+                  this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
+                ]}
               </ul>
             </div>
             <div className="column-3 middle">

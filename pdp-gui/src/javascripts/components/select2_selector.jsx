@@ -35,13 +35,14 @@ App.Components.Select2Selector = React.createClass({
   },
 
   render: function () {
+    var initialValue = this.props.defaultValue || (this.props.multiple ? [] : '');
     var renderOption = this.props.options.map(function (option, index) {
       return (<option key={option.value} value={option.value}>{option.display}</option>);
     });
     var multiple = this.props.multiple ? {multiple: "multiple"} : {};
     return (
         <div>
-          <select id="lang" data-select2selector-id={this.props.select2selectorId} {...multiple}>
+          <select id="lang" value={initialValue} data-select2selector-id={this.props.select2selectorId} {...multiple}>
             <option></option>
             {renderOption}
           </select>

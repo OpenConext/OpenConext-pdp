@@ -97,7 +97,8 @@ I18n.translations.nl = {
     autoFormat: "AutoFormat regel omschrijving",
     isActiveDescription: "Markeer de regel actief",
     isActiveInfo: " Inactieve regels worden niet geevalueerd in access beslissingen",
-    isActive: "Actief"
+    isActive: "Actief",
+    spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen"
   },
 
   violations: {

@@ -8,7 +8,7 @@ App.Controllers.Policies = {
 
     page("/policy/:id",
         this.loadPolicy.bind(this),
-        this.loadIdentityProviders.bind(this),
+        this.loadIdentityProvidersScoped.bind(this),
         this.loadServiceProviders.bind(this),
         this.loadAllowedAttributes.bind(this),
         this.detail.bind(this)
@@ -16,7 +16,7 @@ App.Controllers.Policies = {
 
     page("/new-policy",
         this.loadPolicy.bind(this),
-        this.loadIdentityProviders.bind(this),
+        this.loadIdentityProvidersScoped.bind(this),
         this.loadServiceProviders.bind(this),
         this.loadAllowedAttributes.bind(this),
         this.detail.bind(this)
@@ -39,6 +39,13 @@ App.Controllers.Policies = {
 
   loadIdentityProviders: function (ctx, next) {
     $.get(App.apiUrl("/internal/identityProviders"), function (data) {
+      ctx.identityProviders = data;
+      next();
+    });
+  },
+
+  loadIdentityProvidersScoped: function (ctx, next) {
+    $.get(App.apiUrl("/internal/identityProviders/scoped"), function (data) {
       ctx.identityProviders = data;
       next();
     });

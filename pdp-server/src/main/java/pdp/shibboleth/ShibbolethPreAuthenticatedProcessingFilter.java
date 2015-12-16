@@ -1,17 +1,11 @@
 package pdp.shibboleth;
 
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
-import org.springframework.util.StringUtils;
 import pdp.access.FederatedUser;
 import pdp.access.FederatedUserBuilder;
-import pdp.access.PolicyIdpAccessAwareToken;
 import pdp.access.RunAsFederatedUser;
 import pdp.serviceregistry.ServiceRegistry;
 

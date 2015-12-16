@@ -122,7 +122,8 @@ I18n.translations.en = {
     autoFormat: "AutoFormat policy description",
     isActiveDescription: "Mark the policy active",
     isActiveInfo: " Inactive policies are not evaluated in enforcement decisions",
-    isActive: "Active"
+    isActive: "Active",
+    spScopeInfo: "The available Services are scoped to your services if you don't select an Institution"
   },
 
   violations: {
