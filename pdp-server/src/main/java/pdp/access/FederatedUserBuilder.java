@@ -33,7 +33,7 @@ public class FederatedUserBuilder {
   public static final String X_DISPLAY_NAME = "X-DISPLAY-NAME";
 
   //impersonate header
-  public static final String X_IMPERSONATE = "X_IMPERSONATE";
+  public static final String X_IMPERSONATE = "X-IMPERSONATE";
 
   private static final Logger LOG = LoggerFactory.getLogger(FederatedUserBuilder.class);
 

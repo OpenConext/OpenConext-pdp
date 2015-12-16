@@ -1,8 +1,10 @@
 package pdp.access;
 
 import org.junit.Test;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 
@@ -16,10 +18,13 @@ public class BasicAuthenticationManagerTest {
     assertEquals("[ROLE_USER, ROLE_PEP]", authenticate.getAuthorities().toString());
   }
 
-  @Test
-  public void testAuthenticateNonHappyFlow() throws Exception {
-    Authentication authenticate = manager.authenticate(new TestingAuthenticationToken("", ""));
-    assertEquals(null, authenticate);
+  @Test(expected = UsernameNotFoundException.class)
+  public void testAuthenticateUsername() throws Exception {
+    manager.authenticate(new TestingAuthenticationToken("unknown", "password"));
   }
 
+  @Test(expected = BadCredentialsException.class)
+  public void testAuthenticateBadCredentials() throws Exception {
+    manager.authenticate(new TestingAuthenticationToken("user", "faulty"));
+  }
 }

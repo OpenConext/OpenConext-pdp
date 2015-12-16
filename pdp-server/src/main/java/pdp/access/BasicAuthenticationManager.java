@@ -1,14 +1,13 @@
 package pdp.access;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.util.Assert;
 
-import java.util.List;
-
-import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 /**
@@ -21,19 +20,25 @@ public class BasicAuthenticationManager implements AuthenticationManager {
   private final String password;
 
   public BasicAuthenticationManager(String userName, String password) {
+    Assert.notNull(userName);
+    Assert.notNull(password);
+
     this.userName = userName;
     this.password = password;
   }
 
   @Override
   public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    if (authentication.getPrincipal().equals(userName)
-        && authentication.getCredentials().equals(password)) {
-      return new UsernamePasswordAuthenticationToken(
-          authentication.getPrincipal(),
-          authentication.getCredentials(),
-          apiAuthorities);
+    //the exceptions are for logging and are not propagated to the end user / application
+    if (!userName.equals(authentication.getPrincipal())) {
+      throw new UsernameNotFoundException("Unknown user: " + authentication.getPrincipal());
     }
-    return null;
+    if (!password.equals(authentication.getCredentials())) {
+      throw new BadCredentialsException("Bad credentials");
+    }
+    return new UsernamePasswordAuthenticationToken(
+        authentication.getPrincipal(),
+        authentication.getCredentials(),
+        apiAuthorities);
   }
 }

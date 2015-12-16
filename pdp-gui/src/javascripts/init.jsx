@@ -69,7 +69,7 @@ var App = {
         jqxhr.setRequestHeader("X-IDP-ENTITY-ID", this.store.identity.idpEntityId);
         jqxhr.setRequestHeader("X-UNSPECIFIED-NAME-ID", this.store.identity.unspecifiedNameId);
         jqxhr.setRequestHeader("X-DISPLAY-NAME", this.store.identity.displayName);
-        jqxhr.setRequestHeader("X_IMPERSONATE", "true");
+        jqxhr.setRequestHeader("X-IMPERSONATE", "true");
       }
 
     }.bind(this));
