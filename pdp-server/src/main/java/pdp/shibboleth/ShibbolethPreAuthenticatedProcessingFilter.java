@@ -34,11 +34,16 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
   @Override
   protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
-    Optional<FederatedUser> federatedUserOptional = hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE)) ?
-            federatedUserBuilder.basicAuthUser(request, new UsernamePasswordAuthenticationToken("N/A", "N/A", apiAuthorities)) :
-            federatedUserBuilder.shibUser(request);
-    //null is how the contract for AbstractPreAuthenticatedProcessingFilter works
-    return federatedUserOptional.isPresent() ? federatedUserOptional.get() : null;
+    Optional<FederatedUser> federatedUser = federatedUserBuilder.shibUser(request);
+    if (!federatedUser.isPresent()) {
+      //null is how the contract for AbstractPreAuthenticatedProcessingFilter works
+      return null;
+    }
+    //Now we are certain a shib admin user is logged in and we can check if there is impersonation requested
+    if (hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE))) {
+      federatedUser = federatedUserBuilder.basicAuthUser(request, new UsernamePasswordAuthenticationToken("N/A", "N/A", apiAuthorities));
+    }
+    return federatedUser.isPresent() ? federatedUser.get() : null;
   }
 
   @Override

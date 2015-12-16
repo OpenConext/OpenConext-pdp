@@ -5,7 +5,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 import pdp.domain.*;
 import pdp.serviceregistry.ServiceRegistry;
-import pdp.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.List;
