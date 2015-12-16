@@ -86,18 +86,31 @@ App.Components.PolicyAttributes = React.createClass({
     }.bind(this);
   },
 
+  renderAttributeInfo: function(attrName, index) {
+    if (index !== 0) {
+      return;
+    }
+    if ("urn:collab:sab:surfnet.nl" === attrName) {
+      return (<em className="attribute-value"><sup>*</sup>{I18n.t("policy_attributes.sab_info")}</em>);
+    } else if ("urn:collab:group:surfteams.nl" === attrName) {
+      return (<em className="attribute-value"><sup>*</sup>{I18n.t("policy_attributes.group_info")}</em>);
+    }
+  },
 
-  renderAttributeValue: function (attrName, attribute) {
+  renderAttributeValue: function (attrName, attribute, index) {
+    var className = this.renderAttributeInfo(attrName, index) === undefined ? "" : "before-em";
     return (
         <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
-          <input type="text" name="value" className="form-input"
+          <input type="text" name="value" className={"form-input " + className}
                  key={attrName + "-" + attribute.index}
                  value={attribute.value}
                  placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
                  onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
+          {this.renderAttributeInfo(attrName, index)}
           <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
             <i className="fa fa-remove"></i>
           </a>
+
         </div>
     )
   },
@@ -120,7 +133,7 @@ App.Components.PolicyAttributes = React.createClass({
     return (
         <div className={"form-element "+css+" "+validClassName}>
           {
-            attrNames.map(function (attrName, index) {
+            attrNames.map(function (attrName) {
               return (
                   <div key={attrName}>
                     <p className="label">{I18n.t("policy_attributes.attribute")}</p>
@@ -135,8 +148,8 @@ App.Components.PolicyAttributes = React.createClass({
                     <div className="attribute-values">
                       <p className="label">{I18n.t("policy_attributes.values")}</p>
                       {
-                        grouped[attrName].map(function (attribute) {
-                          return self.renderAttributeValue(attrName, attribute);
+                        grouped[attrName].map(function (attribute, index) {
+                          return self.renderAttributeValue(attrName, attribute, index);
                         })
                       }
                       <a href="#" onClick={self.handleNewAttributeValue(attrName)} className="plus">

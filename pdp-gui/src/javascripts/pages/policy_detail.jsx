@@ -69,10 +69,9 @@ App.Pages.PolicyDetail = React.createClass({
     var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
     var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
     if (scopeSPs) {
-      if (scopeSPs && this.state.serviceProviderId && !_.any(serviceProviders, 'value', this.state.serviceProviderId)) {
+      if (this.state.serviceProviderId && !_.any(serviceProviders, 'value', this.state.serviceProviderId)) {
         //Unfortunately we have to set the current value manually as the integration with select2 is done one-way
         var select2ServiceProvider = $('[data-select2selector-id="serviceProvider"]');
-        // select2ServiceProvider.removeClass('select2-offscreen').select2({data: serviceProviders});
         select2ServiceProvider.val("").trigger("change");
       }
       partialState.spDataChanged = true;
@@ -185,18 +184,20 @@ App.Pages.PolicyDetail = React.createClass({
   },
 
   renderActive: function (policy) {
-    return (
-        <div>
-          <div className={"form-element success"}>
-            <p className="label">{I18n.t("policy_detail.isActive")}</p>
-            <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
-                   onChange={this.handleOnChangeIsActive}/>
-            <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
-            <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
+    if (!App.currentUser.policyIdpAccessEnforcementRequired) {
+      return (
+          <div>
+            <div className={"form-element success"}>
+              <p className="label">{I18n.t("policy_detail.isActive")}</p>
+              <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
+                     onChange={this.handleOnChangeIsActive}/>
+              <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
+              <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
+            </div>
+            <div className="bottom"></div>
           </div>
-          <div className="bottom"></div>
-        </div>
-    );
+      );
+    }
   },
 
   renderDenyAdvice: function (policy) {

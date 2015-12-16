@@ -233,4 +233,7 @@ public class PolicyIdpAccessEnforcer {
     return federatedUser().getDisplayName();
   }
 
+  public boolean isPolicyIdpAccessEnforcementRequired() {
+    return federatedUser().isPolicyIdpAccessEnforcementRequired();
+  }
 }

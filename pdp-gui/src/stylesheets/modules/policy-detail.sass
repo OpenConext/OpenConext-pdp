@@ -118,6 +118,9 @@
     input
       margin-bottom: 10px
 
+      &.before-em
+        margin-bottom: 0px
+
   .attribute-container, .value-container
     position: relative
 
@@ -138,3 +141,9 @@
 
   a.plus i
     margin-right: 10px
+
+  input + em.attribute-value
+    margin-bottom: 10px
+    display: inline-block
+    margin-top: 3px
+

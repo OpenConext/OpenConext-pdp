@@ -170,7 +170,9 @@ I18n.translations.en = {
     attribute: "Attribute",
     values: "Values(s)",
     new_value: "Add a new value...",
-    new_attribute: "Add new attribute...."
+    new_attribute: "Add new attribute....",
+    group_info: " The value(s) must be fully qualified group IDs e.g. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
+    sab_info: " The value(s) must be valid roles in SAB e.g. 'Instellingsbevoegde'"
   },
   identity: {
     title: "Identity impersonation",

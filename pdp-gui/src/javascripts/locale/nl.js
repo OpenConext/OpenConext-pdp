@@ -146,8 +146,11 @@ I18n.translations.nl = {
     attribute: "Attribuut",
     values: "Waarde(s)",
     new_value: "Voeg een nieuwe waarde toe...",
-    new_attribute: "Voeg een nieuw attribuut toe..."
+    new_attribute: "Voeg een nieuw attribuut toe...",
+    group_info: " De waarde(s) moeten volledige unieke groep ID zijn e.g. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
+    sab_info: " De waarde(s) moet geldige rollen in SAB zijn e.g. 'Instellingsbevoegde'"
   },
+
   identity: {
     title: "Identiteit impersonatie",
     subTitle: "",
