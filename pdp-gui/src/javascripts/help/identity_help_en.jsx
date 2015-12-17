@@ -46,6 +46,7 @@ App.Help.IdentityHelpEn = React.createClass({
                 <li>the SP in the JSON request of the violation is linked to one IdP's of the user</li>
               </ul>
             </ul>
+            <li>Policy revisions can only be seen when the policy is shown in the overview</li>
           </ul>
 
         </div>

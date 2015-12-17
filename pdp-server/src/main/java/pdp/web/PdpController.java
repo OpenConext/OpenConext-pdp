@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import pdp.PdpPolicyException;
 import pdp.PolicyNotFoundException;
 import pdp.access.FederatedUser;
+import pdp.access.PolicyAccess;
 import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.domain.*;
 import pdp.repositories.PdpPolicyRepository;
@@ -45,7 +46,7 @@ import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
-import static pdp.util.StreamUtils.singletonCollector;
+import static pdp.access.PolicyAccess.*;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
@@ -152,13 +153,13 @@ public class PdpController {
 
   @RequestMapping(method = GET, value = "/internal/violations/{id}")
   public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
-    Set<PdpPolicyViolation> violations = findPolicyById(id).getViolations();
+    Set<PdpPolicyViolation> violations = findPolicyById(id, VIOLATIONS).getViolations();
     return this.policyIdpAccessEnforcer.filterViolations(violations);
   }
 
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
-    PdpPolicy policy = findPolicyById(id);
+    PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
     PdpPolicy parent = policy.getParentPolicy();
     Set<PdpPolicy> revisions = parent != null ? parent.getRevisions() : policy.getRevisions();
     List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
@@ -169,7 +170,7 @@ public class PdpController {
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")
   public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-    return addEntityMetaData(pdpPolicyDefinitionParser.parse(findPolicyById(id)));
+    return addEntityMetaData(pdpPolicyDefinitionParser.parse(findPolicyById(id, READ)));
   }
 
   @RequestMapping(method = GET, value = "internal/default-policy")
@@ -205,7 +206,7 @@ public class PdpController {
     PdpPolicy policy;
 
     if (pdpPolicyDefinition.getId() != null) {
-      PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId());
+      PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId(), WRITE);
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
       //Cascade.ALL
       PdpPolicy.revision(pdpPolicyDefinition.getName(), policy, policyXml, policyIdpAccessEnforcer.username(),
@@ -213,10 +214,10 @@ public class PdpController {
     } else {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
+      //this will throw an Exception if it is not allowed
+      this.policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.READ, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
     }
     try {
-      //this will throw an Exception if it is not allowed
-      this.policyIdpAccessEnforcer.actionAllowed(policy, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
       PdpPolicy saved = pdpPolicyRepository.save(policy);
       LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
       return saved;
@@ -229,25 +230,20 @@ public class PdpController {
     }
   }
 
-  private PdpPolicy findPolicyById(Long id) {
+  private PdpPolicy findPolicyById(Long id, PolicyAccess policyAccess) {
     PdpPolicy policy = pdpPolicyRepository.findOne(id);
     if (policy == null) {
       throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
     }
     PdpPolicyDefinition definition = pdpPolicyDefinitionParser.parse(policy);
     //this will throw an Exception if it is not allowed
-    this.policyIdpAccessEnforcer.actionAllowed(policy, definition.getServiceProviderId(), definition.getIdentityProviderIds());
+    this.policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
     return policy;
   }
 
   @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
   public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
-    PdpPolicy policy = findPolicyById(id);
-
-    //we need the sp entityId and (if any) idp entityIds and this is the easiest way to do this
-    PdpPolicyDefinition pdpPolicyDefinition = pdpPolicyDefinitionParser.parse(policy);
-    //this will throw an Exception if it is not allowed
-    this.policyIdpAccessEnforcer.actionAllowed(policy, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
+    PdpPolicy policy = findPolicyById(id, PolicyAccess.WRITE);
 
     LOG.info("Deleting PdpPolicy {}", policy.getName());
     policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
@@ -255,7 +251,7 @@ public class PdpController {
   }
 
   private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
-    boolean actionsAllowed = this.policyIdpAccessEnforcer.actionAllowedIndicator(policy, pd.getServiceProviderId(), pd.getIdentityProviderIds());
+    boolean actionsAllowed = this.policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
     pd.setActionsAllowed(actionsAllowed);
     pd.setAuthenticatingAuthorityName(serviceRegistry.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
     return pd;

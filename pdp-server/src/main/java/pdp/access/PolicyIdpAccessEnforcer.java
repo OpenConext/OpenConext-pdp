@@ -17,9 +17,7 @@ import static java.util.stream.StreamSupport.stream;
 import static org.springframework.util.Assert.isInstanceOf;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static pdp.util.StreamUtils.singletonCollector;
-import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
-import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 public class PolicyIdpAccessEnforcer {
 
@@ -32,25 +30,29 @@ public class PolicyIdpAccessEnforcer {
   }
 
   /**
-   * Create, update or delete are only allowed if the AuthenticatingAuthority of the signed in user equals the
-   * AuthenticatingAuthority of the PdpPolicy or the AuthenticatingAuthority of the user is linked (through the
-   * InstitutionID) to the AuthenticatingAuthority of the PdpPolicy.
+   * Create, update or delete actions and access to the (read-only) revisions are only allowed if the
+   * AuthenticatingAuthority of the signed in user equals the AuthenticatingAuthority of the PdpPolicy or the
+   * AuthenticatingAuthority of the user is linked (through the InstitutionID) to the AuthenticatingAuthority of
+   * the PdpPolicy.
    * <p/>
    * The CUD actions are also only allowed if all of the Idps of the pdpPolicy equal or are linked to the
    * AuthenticatingAuthority of the signed in user.
    * <p/>
    * If the Idp list of the policy is empty then the SP must have the same institutionID as the institutionID of the
    * AuthenticatingAuthority of the signed in user.
+   * <p/>
+   * Violations can only be seen if the IdP of the JSON request is equal or linked to the AuthenticatingAuthority of
+   * the signed in user.
    */
-  public void actionAllowed(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds) {
-    doActionAllowed(pdpPolicy, serviceProviderId, identityProviderIds, true);
+  public void actionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds) {
+    doActionAllowed(pdpPolicy, policyAccess, serviceProviderId, identityProviderIds, true);
   }
 
-  public boolean actionAllowedIndicator(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds) {
-    return doActionAllowed(pdpPolicy, serviceProviderId, identityProviderIds, false);
+  public boolean actionAllowedIndicator(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds) {
+    return doActionAllowed(pdpPolicy, policyAccess, serviceProviderId, identityProviderIds, false);
   }
 
-  private boolean doActionAllowed(PdpPolicy pdpPolicy, String serviceProviderId, List<String> identityProviderIds, boolean throwException) {
+  private boolean doActionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds, boolean throwException) {
     FederatedUser user = federatedUser();
     if (!user.isPolicyIdpAccessEnforcementRequired()) {
       return true;
@@ -58,11 +60,17 @@ public class PolicyIdpAccessEnforcer {
 
     Assert.hasText(serviceProviderId);
 
+    if (policyAccess.equals(PolicyAccess.VIOLATIONS)) {
+      //No way of telling based on the pdpPolicy and violations are filtered later
+      return true;
+    }
+
     String authenticatingAuthorityUser = user.getAuthenticatingAuthority();
     String userIdentifier = user.getIdentifier();
 
     Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
     Set<String> spsOfUserEntityIds = getEntityIds(user.getSpEntities());
+
 
     if (isEmpty(identityProviderIds)) {
       //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
@@ -91,6 +99,10 @@ public class PolicyIdpAccessEnforcer {
         return false;
       }
 
+    }
+    if (policyAccess.equals(PolicyAccess.READ)) {
+      //Revisions may be seen when we get to this point
+      return true;
     }
 
     //finally check (e.g. for update and delete actions) if the getAuthenticatingAuthority of the policy is owned by this user
@@ -130,8 +142,6 @@ public class PolicyIdpAccessEnforcer {
    * Only PdpPolicyViolation are returned where
    * <p/>
    * the Idp of the violation is owned by the user
-   * <p/>
-   * or the SP of the violation is owned by the user
    */
   private boolean maySeeViolation(PdpPolicyViolation violation, Set<String> idpsOfUserEntityIds,
                                   Set<String> spsOfUserEntityIds) {
@@ -143,9 +153,8 @@ public class PolicyIdpAccessEnforcer {
       throw new RuntimeException(e);
     }
     String idp = getEntityAttributeValue(jsonPolicyRequest, IDP_ENTITY_ID);
-    String sp = getEntityAttributeValue(jsonPolicyRequest, SP_ENTITY_ID);
 
-    return idpsOfUserEntityIds.contains(idp) || spsOfUserEntityIds.contains(sp);
+    return idpsOfUserEntityIds.contains(idp);
   }
 
   private String getEntityAttributeValue(JsonPolicyRequest jsonPolicyRequest, String attributeName) {

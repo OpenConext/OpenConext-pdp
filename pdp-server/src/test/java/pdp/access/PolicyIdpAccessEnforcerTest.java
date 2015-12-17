@@ -12,7 +12,6 @@ import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -58,29 +57,29 @@ public class PolicyIdpAccessEnforcerTest {
 
   @Test
   public void testActionAllowedHappyFlowNoIdps() throws Exception {
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], EMPTY_LIST);
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], EMPTY_LIST);
   }
 
   @Test
   public void testActionAllowedHappyFlowOwnedIdps() throws Exception {
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], Arrays.asList(identityProviderIds));
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], Arrays.asList(identityProviderIds));
   }
 
   @Test(expected = PolicyIdpAccessMismatchServiceProviderException.class)
   public void testActionNotAllowedSpDoesNotMatch() throws Exception {
     setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata("http://not-owned-sp"));
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], EMPTY_LIST);
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], EMPTY_LIST);
   }
 
   @Test(expected = PolicyIdpAccessMismatchIdentityProvidersException.class)
   public void testActionNotAllowedIdpsDoNotMatch() throws Exception {
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], singletonList(notOwnedIdp));
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], singletonList(notOwnedIdp));
   }
 
   @Test(expected = PolicyIdpAccessOriginatingIdentityProviderException.class)
   public void testActionNotAllowedWrongAuthenticatingAuthority() throws Exception {
     this.pdpPolicy.setAuthenticatingAuthority(notOwnedIdp);
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], EMPTY_LIST);
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], EMPTY_LIST);
   }
 
   @Test
@@ -88,13 +87,13 @@ public class PolicyIdpAccessEnforcerTest {
     this.pdpPolicy.setAuthenticatingAuthority(notOwnedIdp);
     //we now do own notOwnedIdp
     setupSecurityContext(false, entityMetadata(identityProviderIds[0]), entityMetadata(notOwnedIdp));
-    this.subject.actionAllowed(pdpPolicy, serviceProviderIds[0], singletonList(identityProviderIds[0]));
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], singletonList(identityProviderIds[0]));
   }
 
   @Test
   public void testActionNotAllowedButNoEnforcementForUser() throws Exception {
     setupSecurityContext(false, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
-    this.subject.actionAllowed(pdpPolicy, null, null);
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, null, null);
   }
 
   @Test
