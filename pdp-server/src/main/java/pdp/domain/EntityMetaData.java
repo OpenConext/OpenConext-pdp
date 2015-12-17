@@ -61,4 +61,6 @@ public class EntityMetaData {
   public boolean isAllowedFrom(String... entityIds) {
     return allowedAll || stream(entityIds).anyMatch(entityId -> allowedEntityIds.contains(entityId));
   }
+
+
 }

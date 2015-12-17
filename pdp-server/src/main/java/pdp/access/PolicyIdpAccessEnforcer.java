@@ -59,12 +59,14 @@ public class PolicyIdpAccessEnforcer {
       return true;
     }
 
-    Assert.hasText(serviceProviderId);
+    Assert.notNull(policyAccess);
 
     if (policyAccess.equals(VIOLATIONS)) {
       //No way of telling based on the pdpPolicy and violations are filtered later
       return true;
     }
+
+    Assert.hasText(serviceProviderId);
 
     String authenticatingAuthorityUser = user.getAuthenticatingAuthority();
     String userIdentifier = user.getIdentifier();

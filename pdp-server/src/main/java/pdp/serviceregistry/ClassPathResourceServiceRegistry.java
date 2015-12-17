@@ -63,7 +63,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected List<Resource> doGetResources(String... paths) {
-    List<Resource> collect = asList(paths).stream().map(path -> new ClassPathResource(path)).filter(resource -> resource.exists()).collect(toList());
+    List<Resource> collect = asList(paths).stream().map(path -> new ClassPathResource(path)).collect(toList());
     return collect;
   }
 
@@ -147,12 +147,12 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private EntityMetaData getOptionalEntityMetaData(String entityId, Optional<EntityMetaData> optional) {
     if (!optional.isPresent()) {
-      throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdentityProvider entityId");
+      throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP entityId");
     }
     return optional.get();
   }
 
-  private List<EntityMetaData> parseEntities(Resource resource) {
+  protected List<EntityMetaData> parseEntities(Resource resource) {
     try {
       List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
       return list.stream().map(entry ->

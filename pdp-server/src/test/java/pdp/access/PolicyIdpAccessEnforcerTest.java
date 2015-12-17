@@ -12,6 +12,7 @@ import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,8 @@ import static org.junit.Assert.assertEquals;
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest {
 
-  private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(new TestingServiceRegistry());
+  private TestingServiceRegistry serviceRegistry = new TestingServiceRegistry("service-registry/saml20-idp.test.json","service-registry/saml20-sp.test.json");
+  private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);
   private PdpPolicy pdpPolicy;
 
   private String uid = "uid";
@@ -34,12 +36,14 @@ public class PolicyIdpAccessEnforcerTest {
   private String[] serviceProviderIds = {"http://mock-sp", "http://mock-sp2"};
   private String institutionId = "MOCK";
   private String notOwnedIdp = "http://not-owned-idp";
+  private String notOwnedSp = "http://not-owned-sp";
 
   @Before
   public void before() {
     this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName, true);
     //individual tests can overwrite this behaviour
     setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
+    serviceRegistry.allowAll(false);
   }
 
   private void setupSecurityContext(boolean policyIdpAccessEnforcement, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
@@ -94,6 +98,17 @@ public class PolicyIdpAccessEnforcerTest {
   public void testActionNotAllowedButNoEnforcementForUser() throws Exception {
     setupSecurityContext(false, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
     this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, null, null);
+  }
+
+  @Test
+  public void testActionAllowedViolations() throws Exception {
+    this.subject.actionAllowed(null, PolicyAccess.VIOLATIONS, null, null);
+  }
+
+  @Test
+  public void testActionAllowedIdpsAndSpAllowed() throws Exception {
+    serviceRegistry.allowAll(true);
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.READ, notOwnedSp, Collections.EMPTY_LIST);
   }
 
   @Test

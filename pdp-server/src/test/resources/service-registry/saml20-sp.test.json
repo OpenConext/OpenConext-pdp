@@ -1,0 +1,32 @@
+[
+  {
+    "entityid": "http://mock-sp",
+    "state": "prodaccepted",
+    "type": "saml20-sp",
+    "coin": {
+      "institution_id": "MUJINA",
+      "policy_enforcement_decision_required": true
+    },
+    "description": {
+      "en": "Mujina Mock SP",
+      "nl": "Mujina Mock SP"
+    },
+    "name": {
+      "en": "Mujina Mock SP",
+      "nl": "Mujina Mock SP"
+    }
+  },
+  {
+    "entityid": "http://not-owned-sp",
+    "state": "prodaccepted",
+    "type": "saml20-sp",
+    "description": {
+      "en": "Not Owned",
+      "nl": "Not Owned"
+    },
+    "name": {
+      "en": "Not Owned",
+      "nl": "Not Owned"
+    }
+  }
+]

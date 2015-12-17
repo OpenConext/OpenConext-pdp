@@ -47,7 +47,7 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
     ResponseEntity<String> post = post("internal/policies", policyDefinition);
 
     assertEquals(HttpStatus.BAD_REQUEST, post.getStatusCode());
-    assertTrue(post.getBody().contains("http://xxx-idp is not a valid or known IdentityProvider entityId"));
+    assertTrue(post.getBody().contains("http://xxx-idp is not a valid or known IdP / SP entityId"));
   }
 
   @Ignore(value = "Work in progress to get the correct access......")
