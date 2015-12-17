@@ -55,6 +55,9 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     return testRestTemplate;
   }
 
+  /**
+   * Test for the policy all possible scenario's mangling the JSON request
+   */
   private void doTestPolicy(JsonPolicyRequest policyRequest, PdpPolicy policy) throws Exception {
     PdpPolicyDefinition definition = policyDefinitionParser.parse(policy);
 
