@@ -50,39 +50,6 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
     assertTrue(post.getBody().contains("http://xxx-idp is not a valid or known IdP / SP entityId"));
   }
 
-  @Ignore(value = "Work in progress to get the correct access......")
-  @Test
-  public void testCreatePolicy() throws Exception {
-    PdpPolicyDefinition policyDefinition = getPdpPolicyDefinitionFromExistingPolicy();
-    policyDefinition.setDenyAdvice("advice_changed");
-
-    headers.set(X_IDP_ENTITY_ID, policyDefinition.getIdentityProviderIds().get(0));
-
-    ResponseEntity<String> post = post("internal/policies", policyDefinition);
-
-    PdpPolicy newRevision = getExistingPolicy();
-    assertEquals("advice_changed", pdpPolicyDefinitionParser.parse(newRevision).getDenyAdvice());
-
-  }
-  @Test
-  @Ignore(value = "Work in progress to get the correct access......")
-  public void testDeletePdpPolicy() throws Exception {
-    //verify that violations are also deleted - so we create one
-    setUpViolation(policyId);
-    PdpPolicy policy = getExistingPolicy();
-    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
-    //verify that revisions are also deleted - so we create one
-    post("internal/policies", policyDefinition);
-
-    PdpPolicy latestRevision = getExistingPolicy();
-    int statusCode = restTemplate.exchange("http://localhost:" + port + "/pdp/api/internal/policies/" + latestRevision.getId(), HttpMethod.DELETE, new HttpEntity<>(headers), String.class).getStatusCode().value();
-    assertEquals(200, statusCode);
-
-    assertPolicyIsDeleted(policy);
-    assertPolicyIsDeleted(latestRevision);
-  }
-
-
   @Override
   public RestTemplate getRestTemplate() {
     return testRestTemplate;

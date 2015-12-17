@@ -32,13 +32,6 @@ import static pdp.util.StreamUtils.singletonCollector;
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=no-csrf"})
 public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
-  @Before
-  @Override
-  public void before() throws IOException {
-    super.before();
-    pdpPolicyViolationRepository.deleteAll();
-  }
-
   @Test
   public void testPolicyDefinitionsImpersonated() throws Exception {
     String json = getImpersonated("internal/policies", PolicyLoader.authenticatingAuthority).getBody();

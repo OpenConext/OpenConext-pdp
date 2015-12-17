@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -34,6 +36,7 @@ import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.teams.VootClientConfig;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.List;
 
@@ -63,6 +66,9 @@ public abstract class AbstractPdpIntegrationTest {
   @Autowired
   protected PdpPolicyRepository pdpPolicyRepository;
 
+  @Autowired
+  protected DataSource dataSource;
+
   protected static ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${local.server.port}")
@@ -87,6 +93,8 @@ public abstract class AbstractPdpIntegrationTest {
   public void before() throws IOException {
     headers = new HttpHeaders();
     headers.set("Content-Type", "application/json");
+
+    pdpPolicyViolationRepository.deleteAll();
   }
 
   //to differentiate between the Basic Auth and the shib restTemplate
@@ -141,8 +149,8 @@ public abstract class AbstractPdpIntegrationTest {
 
   protected void assertPolicyIsDeleted(PdpPolicy policy) {
     try {
-      get("/internal/policies/" + policy.getId());
-      fail("Policy should not exists");
+      ResponseEntity<String> response = get("/internal/policies/" + policy.getId());
+      assertEquals(404, response.getStatusCode().value());
     } catch (HttpClientErrorException e) {
       assertEquals(404, e.getStatusCode().value());
     }
