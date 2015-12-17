@@ -1,6 +1,7 @@
 package pdp.domain;
 
 import org.junit.Test;
+import pdp.policies.PolicyLoader;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +11,7 @@ public class PdpPolicyTest {
   public void testRevision() throws Exception {
     PdpPolicy parent = new PdpPolicy();
 
-    PdpPolicy revision = PdpPolicy.revision("new policy", parent, "xml", "uid", "http://mock-idp", "John Doe",true);
+    PdpPolicy revision = PdpPolicy.revision("new policy", parent, "xml", "uid", PolicyLoader.authenticatingAuthority, "John Doe",true);
 
     assertFalse(parent.isLatestRevision());
     assertEquals(1, parent.getRevisions().size());

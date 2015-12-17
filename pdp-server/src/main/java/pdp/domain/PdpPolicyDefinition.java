@@ -46,6 +46,8 @@ public class PdpPolicyDefinition {
 
   private String userDisplayName;
 
+  private String authenticatingAuthorityName;
+
   private int numberOfViolations;
 
   private int numberOfRevisions;
@@ -227,6 +229,14 @@ public class PdpPolicyDefinition {
 
   public void setActionsAllowed(boolean actionsAllowed) {
     this.actionsAllowed = actionsAllowed;
+  }
+
+  public String getAuthenticatingAuthorityName() {
+    return authenticatingAuthorityName;
+  }
+
+  public void setAuthenticatingAuthorityName(String authenticatingAuthorityName) {
+    this.authenticatingAuthorityName = authenticatingAuthorityName;
   }
 
   //used in the mustache templates

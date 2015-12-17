@@ -196,7 +196,7 @@ public class PolicyIdpAccessEnforcer {
   private boolean idpIsAllowed(FederatedUser user, Set<String> idpsOfUserEntityIds, String serviceProviderId) {
     boolean isAllowedFromIdp = user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderId));
     //rare case to check: ACLs are mostly defined on IdPs, but the SP can also have an ACL to restrict IDPs
-    Optional<EntityMetaData> spOptional = serviceRegistry.serviceProviders().stream().filter(metaData -> metaData.getEntityId().equals(serviceProviderId)).collect(singletonOptionalCollector());
+    Optional<EntityMetaData> spOptional = serviceRegistry.serviceProviderOptionalByEntityId(serviceProviderId);
     String[] idps = idpsOfUserEntityIds.toArray(new String[idpsOfUserEntityIds.size()]);
     return isAllowedFromIdp && spOptional.isPresent() && spOptional.get().isAllowedFrom(idps);
   }

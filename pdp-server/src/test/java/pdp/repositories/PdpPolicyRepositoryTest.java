@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import pdp.domain.PdpPolicy;
+import pdp.policies.PolicyLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -40,8 +41,8 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
   @Test
   public void testFindRevisionCountPerId() throws Exception {
     PdpPolicy policy = pdpPolicy(NAME_ID + 2);
-    PdpPolicy.revision(NAME_ID + 3, policy, "xml", "system", "http://mock-idp", "John Doe", true);
-    PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", "http://mock-idp", "John Doe", true);
+    PdpPolicy.revision(NAME_ID + 3, policy, "xml", "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
+    PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
     pdpPolicyRepository.save(policy);
 
     PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 4), true).get(0);

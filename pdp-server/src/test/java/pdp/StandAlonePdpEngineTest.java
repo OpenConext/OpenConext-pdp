@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import pdp.domain.PdpPolicy;
+import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
 import pdp.sab.SabPIP;
@@ -83,7 +84,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   private PdpPolicy loadPolicy(String policyFile) {
     try {
       String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream());
-      return new PdpPolicy(policyXml, policyFile, true, "system", "http://mock-idp", "John Doe", true);
+      return new PdpPolicy(policyXml, policyFile, true, "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

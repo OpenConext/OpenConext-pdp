@@ -7,7 +7,7 @@ import java.util.List;
 public class TestingServiceRegistry extends ClassPathResourceServiceRegistry {
 
   public TestingServiceRegistry() {
-    super("test");
+    super(true);
   }
 
   @Override

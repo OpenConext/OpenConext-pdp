@@ -17,7 +17,7 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 public class ClassPathResourceServiceRegistryTest {
 
-  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry("test");
+  private static ServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry(true);
 
   @Test
   public void testServiceProviders() throws Exception {
@@ -37,9 +37,8 @@ public class ClassPathResourceServiceRegistryTest {
 
   @Test
   public void testInstitutionId() throws Exception {
-    Optional<EntityMetaData> saraOptional = serviceRegistry.identityProviders().stream().filter(idp -> idp.getEntityId().equals("http://sso.sara.nl/adfs/services/trust")).collect(singletonOptionalCollector());
-    assertTrue(saraOptional.isPresent());
-    assertEquals("SARA", saraOptional.get().getInstitutionId());
+    EntityMetaData sara = serviceRegistry.identityProviderByEntityId("http://sso.sara.nl/adfs/services/trust");
+    assertEquals("SARA", sara.getInstitutionId());
 
   }
 
@@ -78,12 +77,6 @@ public class ClassPathResourceServiceRegistryTest {
     Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId("MUJINA");
     assertEquals(1, sps.size());
     assertTrue(sps.iterator().next().isPolicyEnforcementDecisionRequired());
-  }
-
-  @Test
-  public void testNonExistingEnvironmentSps() {
-    ServiceRegistry env = new ClassPathResourceServiceRegistry("dev");
-    assertEquals(295, env.identityProviders().size());
   }
 
 }

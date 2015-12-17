@@ -16,6 +16,7 @@ import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.policies.PolicyLoader;
 
 import java.io.IOException;
 
@@ -32,7 +33,7 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
   @Override
   public void before() throws IOException {
     super.before();
-    headers.set(X_IDP_ENTITY_ID, "http://mock-idp");
+    headers.set(X_IDP_ENTITY_ID, PolicyLoader.authenticatingAuthority);
     headers.set(X_UNSPECIFIED_NAME_ID, "urn:collab:person:example.com:mary.doe");
     headers.set(X_DISPLAY_NAME, "Mary Doe");
   }

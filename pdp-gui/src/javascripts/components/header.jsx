@@ -30,7 +30,7 @@ App.Components.Header = React.createClass({
             {this.renderExitLogout()}
             <li>
               <a href="https://github.com/OpenConext/OpenConext-pdp" target="_blank">
-                <img src="images/github.png"/>
+                <img src="/images/github.png"/>
               </a>
             </li>
 

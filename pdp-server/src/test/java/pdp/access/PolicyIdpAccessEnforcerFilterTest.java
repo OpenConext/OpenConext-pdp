@@ -8,6 +8,7 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
+import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
 
 import javax.servlet.FilterChain;
@@ -36,7 +37,7 @@ public class PolicyIdpAccessEnforcerFilterTest {
 
     request.addHeader(HttpHeaders.AUTHORIZATION, "Basic " + getEncoder().encodeToString(new String("user:password").getBytes()));
 
-    request.addHeader(X_IDP_ENTITY_ID, "http://mock-idp");
+    request.addHeader(X_IDP_ENTITY_ID, PolicyLoader.authenticatingAuthority);
     request.addHeader(X_UNSPECIFIED_NAME_ID, "uid");
     request.addHeader(X_DISPLAY_NAME, "John Doe");
 
@@ -48,7 +49,7 @@ public class PolicyIdpAccessEnforcerFilterTest {
     assertEquals("John Doe", user.getDisplayName());
     assertEquals(1, user.getIdpEntities().size());
     assertEquals(1, user.getSpEntities().size());
-    assertEquals("http://mock-idp", user.getAuthenticatingAuthority());
+    assertEquals(PolicyLoader.authenticatingAuthority, user.getAuthenticatingAuthority());
     assertEquals("[ROLE_PEP, ROLE_USER]", user.getAuthorities().toString());
 
 

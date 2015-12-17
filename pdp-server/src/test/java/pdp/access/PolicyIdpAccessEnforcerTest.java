@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicy;
+import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
 
 import java.util.Arrays;
@@ -29,8 +30,8 @@ public class PolicyIdpAccessEnforcerTest {
 
   private String uid = "uid";
   private String displayName = "John Doe";
-  private String authenticatingAuthority = "http://mock-idp";
-  private String[] identityProviderIds = {"http://mock-idp", "http://mock-idp2"};
+  private String authenticatingAuthority = PolicyLoader.authenticatingAuthority;
+  private String[] identityProviderIds = {authenticatingAuthority, "http://mock-idp2"};
   private String[] serviceProviderIds = {"http://mock-sp", "http://mock-sp2"};
   private String institutionId = "MOCK";
   private String notOwnedIdp = "http://not-owned-idp";

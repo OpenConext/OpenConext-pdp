@@ -32,7 +32,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
       String idpRemotePath,
       String spRemotePath,
       int period) {
-    super("prod", false);
+    super(false);
     this.idpRemotePath = idpRemotePath;
     this.spRemotePath = spRemotePath;
     this.period = period;

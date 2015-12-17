@@ -2,6 +2,7 @@ package pdp.domain;
 
 import org.junit.Before;
 import org.junit.Test;
+import pdp.policies.PolicyLoader;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,7 +16,7 @@ public class EntityMetaDataTest {
 
   @Before
   public void before() {
-    metaData = new EntityMetaData("http://mock-idp", "institutionId", "descriptionEn", "nameEn", "descriptionNl",
+    metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority, "institutionId", "descriptionEn", "nameEn", "descriptionNl",
         "nameNl", true, false, new HashSet(asList("http://mock-sp", "http://dummy-sp")));
   }
 

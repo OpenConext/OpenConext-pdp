@@ -100,8 +100,8 @@ public class PdpApplication {
 
   @Bean
   @Profile("!prod")
-  public ServiceRegistry classPathResourceServiceRegistry(@Value("${spring.profiles.active}") String activeEnvironment) {
-    return new ClassPathResourceServiceRegistry(activeEnvironment);
+  public ServiceRegistry classPathResourceServiceRegistry() {
+    return new ClassPathResourceServiceRegistry(true);
   }
 
   @Bean

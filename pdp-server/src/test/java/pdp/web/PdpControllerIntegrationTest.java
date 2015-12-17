@@ -15,6 +15,7 @@ import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
+import pdp.policies.PolicyLoader;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
@@ -28,7 +29,7 @@ import static pdp.util.StreamUtils.singletonCollector;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = { "spring.profiles.active=no-csrf"})
+@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=no-csrf"})
 public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Before
@@ -39,19 +40,27 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testPolicyDefinitions() throws Exception {
+  public void testPolicyDefinitionsImpersonated() throws Exception {
+    String json = getImpersonated("internal/policies", PolicyLoader.authenticatingAuthority).getBody();
+    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
+    // only one, the policy with no IdP and a SP with allowedAll
+    assertEquals(1, definitions.size());
+    assertEquals("google.com/a/terenatest.org", definitions.get(0).getServiceProviderId());
+  }
+
+  @Test
+  public void testPolicyDefinitionsAdmin() throws Exception {
     String json = get("internal/policies").getBody();
     List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
-    // exact count depends on the ordering of the tests - does not really matter
-    assertTrue(definitions.size() >= 9);
-    definitions.forEach(def -> assertNotNull(def.getCreated()));
+    // all of the policies
+    assertTrue( definitions.size() >= 9);
   }
 
   @Test
   public void testPolicyDefinitionsByServiceProvider() throws Exception {
     String json = get("internal/policies/sp?serviceProvider=https://surftest.viadesk.com").getBody();
     List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, constructCollectionType(PdpPolicyDefinition.class));
-    assertEquals(1 , definitions.size());
+    assertEquals(1, definitions.size());
   }
 
   @Test
@@ -168,9 +177,9 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     Map<String, Object> shibbolethUser = objectMapper.readValue(get("internal/users/me").getBody(), Map.class);
     assertEquals("urn:collab:person:example.com:admin", shibbolethUser.get("username"));
     assertEquals("John Doe", shibbolethUser.get("displayName"));
-    assertEquals("http://adfs2prod.aventus.nl/adfs/services/trust", shibbolethUser.get("authenticatingAuthority"));
-    assertEquals(4, ArrayList.class.cast(shibbolethUser.get("idpEntities")).size());
-    assertEquals(2, ArrayList.class.cast(shibbolethUser.get("spEntities")).size());
+    assertEquals(PolicyLoader.authenticatingAuthority, shibbolethUser.get("authenticatingAuthority"));
+    assertEquals(1, ArrayList.class.cast(shibbolethUser.get("idpEntities")).size());
+    assertEquals(1, ArrayList.class.cast(shibbolethUser.get("spEntities")).size());
   }
 
 

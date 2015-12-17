@@ -30,14 +30,8 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   private final static List<String> allowedLanguages = asList("en", "nl");
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
-  private final String environment;
 
-  public ClassPathResourceServiceRegistry(String environment) {
-    this(environment, true);
-  }
-
-  protected ClassPathResourceServiceRegistry(String environment, boolean initialize) {
-    this.environment = environment;
+  public ClassPathResourceServiceRegistry(boolean initialize) {
     //this provides subclasses a hook to set properties before initializing metadata
     if (initialize) {
       initializeMetadata();
@@ -61,11 +55,11 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected List<Resource> getIdpResources() {
-    return doGetResources("service-registry/saml20-idp-remote.json", "service-registry/saml20-idp-remote." + environment + ".json");
+    return doGetResources("service-registry/saml20-idp-remote.json", "service-registry/saml20-idp-remote.test.json");
   }
 
   protected List<Resource> getSpResources() {
-    return doGetResources("service-registry/saml20-sp-remote.json", "service-registry/saml20-sp-remote." + environment + ".json");
+    return doGetResources("service-registry/saml20-sp-remote.json", "service-registry/saml20-sp-remote.test.json");
   }
 
   protected List<Resource> doGetResources(String... paths) {
@@ -97,11 +91,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   public Set<EntityMetaData> identityProvidersByAuthenticatingAuthority(String authenticatingAuthority) {
     try {
       lock.readLock().lock();
-      Optional<EntityMetaData> metaDataOptional = identityProviders().stream().filter(idp -> idp.getEntityId().equals(authenticatingAuthority)).collect(singletonOptionalCollector());
-      if (!metaDataOptional.isPresent()) {
-        throw new PolicyIdpAccessUnknownIdentityProvidersException(authenticatingAuthority + " is not a valid or known IdentityProvider entityId");
-      }
-      EntityMetaData idp = metaDataOptional.get();
+      EntityMetaData idp = identityProviderByEntityId(authenticatingAuthority);
       String institutionId = idp.getInstitutionId();
       if (StringUtils.hasText(institutionId)) {
         return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
@@ -126,6 +116,42 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     }
   }
 
+  @Override
+  public Optional<EntityMetaData> serviceProviderOptionalByEntityId(String entityId) {
+    return entityMetaDataOptionalByEntityId(entityId, serviceProviders());
+  }
+
+  @Override
+  public Optional<EntityMetaData> identityProviderOptionalByEntityId(String entityId) {
+    return entityMetaDataOptionalByEntityId(entityId, identityProviders());
+  }
+
+  private Optional<EntityMetaData> entityMetaDataOptionalByEntityId(String entityId, List<EntityMetaData> entityMetaDatas) {
+    return entityMetaDatas.stream().filter(sp -> sp.getEntityId().equals(entityId)).collect(singletonOptionalCollector());
+  }
+
+  @Override
+  public EntityMetaData serviceProviderByEntityId(String entityId) {
+    return getOptionalEntityMetaData(entityId, serviceProviderOptionalByEntityId(entityId));
+  }
+
+  @Override
+  public EntityMetaData identityProviderByEntityId(String entityId) {
+    return getOptionalEntityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
+  }
+
+  @Override
+  public List<String> identityProviderNames(List<String> entityIds) {
+    return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map(EntityMetaData::getNameEn).collect(toList());
+  }
+
+  private EntityMetaData getOptionalEntityMetaData(String entityId, Optional<EntityMetaData> optional) {
+    if (!optional.isPresent()) {
+      throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdentityProvider entityId");
+    }
+    return optional.get();
+  }
+
   private List<EntityMetaData> parseEntities(Resource resource) {
     try {
       List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
@@ -141,7 +167,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
               getAllowedAll(entry),
               getAllowedEntries(entry)
           )
-      ).sorted(sortEntityMetaData()).collect(Collectors.toList());
+      ).sorted(sortEntityMetaData()).collect(toList());
     } catch (IOException e) {
       throw new RuntimeException(e);
     }

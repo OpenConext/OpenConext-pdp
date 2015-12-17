@@ -6,6 +6,7 @@ import pdp.AbstractXacmlTest;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.policies.PolicyLoader;
 
 import java.util.Arrays;
 
@@ -29,7 +30,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
         new PdpAttribute("attr1", "value1"),
         new PdpAttribute("attr1", "value1a"),
         new PdpAttribute("attr2", "value2")));
-    definition.setIdentityProviderIds(Arrays.asList("http://mock-idp", "http://mock-ipd2"));
+    definition.setIdentityProviderIds(Arrays.asList(PolicyLoader.authenticatingAuthority, "http://mock-ipd2"));
     definition.setServiceProviderId("http://mock-sp");
   }
 

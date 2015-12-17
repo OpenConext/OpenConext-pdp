@@ -71,7 +71,7 @@ public class FederatedUserBuilder {
       return Optional.empty();
     }
 
-    //By contract we always get at least one Idp, but in case there are two - http://mock-idp;http://mock-idp - we need the first
+    //By contract we always get at least one Idp and usually two separated by an semi-colon
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
 

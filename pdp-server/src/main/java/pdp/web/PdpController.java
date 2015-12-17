@@ -45,6 +45,7 @@ import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
@@ -194,7 +195,7 @@ public class PdpController {
 
   @RequestMapping(method = {PUT, POST}, value = "/internal/policies")
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
-    //We be default don't allow active policies from non admins
+    //We by default don't allow active policies from non admins
     if (this.policyIdpAccessEnforcer.isPolicyIdpAccessEnforcementRequired()) {
       pdpPolicyDefinition.setActive(false);
     }
@@ -256,16 +257,15 @@ public class PdpController {
   private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
     boolean actionsAllowed = this.policyIdpAccessEnforcer.actionAllowedIndicator(policy, pd.getServiceProviderId(), pd.getIdentityProviderIds());
     pd.setActionsAllowed(actionsAllowed);
+    pd.setAuthenticatingAuthorityName(serviceRegistry.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
     return pd;
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
-    EntityMetaData sp = serviceRegistry.serviceProviders().stream().filter(md ->
-        md.getEntityId().equals(pd.getServiceProviderId())).collect(singletonOptionalCollector()).get();
+    EntityMetaData sp = serviceRegistry.serviceProviderByEntityId(pd.getServiceProviderId());
     pd.setServiceProviderName(sp.getNameEn());
     pd.setActivatedSr(sp.isPolicyEnforcementDecisionRequired());
-    pd.setIdentityProviderNames(pd.getIdentityProviderIds().stream().map(idpId ->
-        serviceRegistry.identityProviders().stream().filter(idp -> idp.getEntityId().equals(idpId)).collect(singletonOptionalCollector()).get().getNameEn()).collect(toList()));
+    pd.setIdentityProviderNames(serviceRegistry.identityProviderNames(pd.getIdentityProviderIds()));
     return pd;
   }
 

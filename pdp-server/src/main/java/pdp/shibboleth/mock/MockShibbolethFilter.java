@@ -3,6 +3,7 @@ package pdp.shibboleth.mock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
+import pdp.policies.PolicyLoader;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -59,7 +60,7 @@ public class MockShibbolethFilter extends GenericFilterBean {
   public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
     SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
     wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
-    wrapper.setHeader(SHIB_AUTHENTICATING_AUTHORITY, "http://adfs2prod.aventus.nl/adfs/services/trust");
+    wrapper.setHeader(SHIB_AUTHENTICATING_AUTHORITY, PolicyLoader.authenticatingAuthority);
     wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
 
     filterChain.doFilter(wrapper, servletResponse);
