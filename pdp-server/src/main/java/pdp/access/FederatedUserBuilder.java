@@ -71,7 +71,7 @@ public class FederatedUserBuilder {
       return Optional.empty();
     }
 
-    //By contract we always get at least one Idp and usually two separated by an semi-colon
+    //By contract we always get at least one Idp and usually two separated by a semi-colon
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
 

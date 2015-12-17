@@ -1,0 +1,20 @@
+{
+  "name": "test_policy",
+  "description": "Description test",
+  "serviceProviderId": "http://mock-sp",
+  "identityProviderIds": [
+    "http://mock-idp"
+  ],
+  "attributes": [
+    {
+      "name": "urn:mace:dir:attribute-def:isMemberOf",
+      "value": "urn:collab:org:surf.nl"
+    }
+  ],
+  "denyAdvice": "You are not a member of the SURF organization",
+  "denyRule": false,
+  "allAttributesMustMatch": false,
+  "userDisplayName": "system",
+  "denyAdviceNl": "Je bent geen lid van de SURF organisatie",
+  "active": true,
+}

@@ -81,6 +81,7 @@ public class SabClient {
     return MessageFormat.format(template, UUID.randomUUID().toString(), issueInstant, userId);
   }
 
+  //lot of code to prevent preemptive authentication
   private ClientHttpRequestFactory getRequestFactory() throws MalformedURLException {
     HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().evictExpiredConnections().evictIdleConnections(10l, TimeUnit.SECONDS);
     BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
