@@ -87,4 +87,8 @@ public class PdpPolicyViolation {
   public void setPlayground(boolean playground) {
     isPlayground = playground;
   }
+
+  public String getPolicyName() {
+    return policy.getName();
+  }
 }

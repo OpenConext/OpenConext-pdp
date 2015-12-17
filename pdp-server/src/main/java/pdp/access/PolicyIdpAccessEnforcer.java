@@ -16,6 +16,7 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.springframework.util.Assert.isInstanceOf;
 import static org.springframework.util.CollectionUtils.isEmpty;
+import static pdp.access.PolicyAccess.*;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 
@@ -60,7 +61,7 @@ public class PolicyIdpAccessEnforcer {
 
     Assert.hasText(serviceProviderId);
 
-    if (policyAccess.equals(PolicyAccess.VIOLATIONS)) {
+    if (policyAccess.equals(VIOLATIONS)) {
       //No way of telling based on the pdpPolicy and violations are filtered later
       return true;
     }
@@ -73,17 +74,36 @@ public class PolicyIdpAccessEnforcer {
 
 
     if (isEmpty(identityProviderIds)) {
-      //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
-      if (!spsOfUserEntityIds.contains(serviceProviderId)) {
-        if (throwException) {
-          throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
-              "Policy for target SP '%s' requested by '%s', but this SP is not linked to users IdP '%s'",
-              serviceProviderId,
-              userIdentifier,
-              authenticatingAuthorityUser)
-          );
-        }
-        return false;
+      switch (policyAccess) {
+        case READ:
+          //Valid to have no identityProvidersIds, but then the SP must be allowed access by this users IdP
+          if (!idpIsAllowed(user,idpsOfUserEntityIds,serviceProviderId)) {
+            if (throwException) {
+              throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
+                  "Policy for target SP '%s' requested by '%s', but this SP is not allowed access by users from IdP '%s'",
+                  serviceProviderId,
+                  userIdentifier,
+                  authenticatingAuthorityUser)
+              );
+            }
+            return false;
+          }
+          break;
+        case WRITE:
+          //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
+          if (!spsOfUserEntityIds.contains(serviceProviderId)) {
+            if (throwException) {
+              throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
+                  "Policy for target SP '%s' requested by '%s', but this SP is not linked to users IdP '%s'",
+                  serviceProviderId,
+                  userIdentifier,
+                  authenticatingAuthorityUser)
+              );
+            }
+            return false;
+          }
+          break;
+        default: throw new IllegalArgumentException("Not handled PolicyAccess "+policyAccess);
       }
     } else {
       //now the SP may be anything, however all selected IDPs for this policy must be linked to this users IDP
@@ -100,7 +120,7 @@ public class PolicyIdpAccessEnforcer {
       }
 
     }
-    if (policyAccess.equals(PolicyAccess.READ)) {
+    if (policyAccess.equals(READ)) {
       //Revisions may be seen when we get to this point
       return true;
     }
@@ -133,18 +153,14 @@ public class PolicyIdpAccessEnforcer {
       return violations;
     }
     Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
-    Set<String> spsOfUserEntityIds = getEntityIds(user.getSpEntities());
 
-    return stream(violations.spliterator(), false).filter(violation -> maySeeViolation(violation, idpsOfUserEntityIds, spsOfUserEntityIds)).collect(toList());
+    return stream(violations.spliterator(), false).filter(violation -> maySeeViolation(violation, idpsOfUserEntityIds)).collect(toList());
   }
 
   /**
-   * Only PdpPolicyViolation are returned where
-   * <p/>
-   * the Idp of the violation is owned by the user
+   * Only PdpPolicyViolation are returned where the Idp of the violation is owned by the user
    */
-  private boolean maySeeViolation(PdpPolicyViolation violation, Set<String> idpsOfUserEntityIds,
-                                  Set<String> spsOfUserEntityIds) {
+  private boolean maySeeViolation(PdpPolicyViolation violation, Set<String> idpsOfUserEntityIds) {
     JsonPolicyRequest jsonPolicyRequest;
     try {
       //we are called from lambda
@@ -205,9 +221,9 @@ public class PolicyIdpAccessEnforcer {
   private boolean idpIsAllowed(FederatedUser user, Set<String> idpsOfUserEntityIds, String serviceProviderId) {
     boolean isAllowedFromIdp = user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderId));
     //rare case to check: ACLs are mostly defined on IdPs, but the SP can also have an ACL to restrict IDPs
-    Optional<EntityMetaData> spOptional = serviceRegistry.serviceProviderOptionalByEntityId(serviceProviderId);
+    EntityMetaData sp = serviceRegistry.serviceProviderByEntityId(serviceProviderId);
     String[] idps = idpsOfUserEntityIds.toArray(new String[idpsOfUserEntityIds.size()]);
-    return isAllowedFromIdp && spOptional.isPresent() && spOptional.get().isAllowedFrom(idps);
+    return isAllowedFromIdp && sp.isAllowedFrom(idps);
   }
 
   public List<EntityMetaData> filterIdentityProviders(List<EntityMetaData> identityProviders) {

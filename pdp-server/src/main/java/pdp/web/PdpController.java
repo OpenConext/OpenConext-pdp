@@ -162,9 +162,10 @@ public class PdpController {
     PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
     PdpPolicy parent = policy.getParentPolicy();
     Set<PdpPolicy> revisions = parent != null ? parent.getRevisions() : policy.getRevisions();
-    List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(pdpPolicyDefinitionParser.parse(rev))).collect(toList());
+    List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
 
-    definitions.add(addEntityMetaData(pdpPolicyDefinitionParser.parse(parent != null ? parent : policy)));
+    parent = (parent != null ? parent : policy);
+    definitions.add(addEntityMetaData(addAccessRules(parent, pdpPolicyDefinitionParser.parse(parent))));
     return definitions;
   }
 
@@ -215,7 +216,7 @@ public class PdpController {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
       //this will throw an Exception if it is not allowed
-      this.policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.READ, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
+      this.policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
     }
     try {
       PdpPolicy saved = pdpPolicyRepository.save(policy);

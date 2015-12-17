@@ -129,6 +129,9 @@ var App = {
       case 404:
         App.actionNotFound();
         break;
+      case 403:
+        App.actionNotFound();
+        break;
       default:
         this.render(App.Pages.ServerError());
         console.error("Ajax request failed");

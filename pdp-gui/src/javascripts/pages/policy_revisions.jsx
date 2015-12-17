@@ -152,7 +152,7 @@ App.Pages.PolicyRevisions = React.createClass({
       return (
           <div className="top-diff" dangerouslySetInnerHTML={{__html:
             I18n.t("revisions.changes_info_html",
-              { userDisplayName: curr.userDisplayName , createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr, prevRevisionNbr: prev.revisionNbr }
+              { userDisplayName: curr.userDisplayName , authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr, prevRevisionNbr: prev.revisionNbr }
             )
           }}>
           </div>
@@ -161,7 +161,7 @@ App.Pages.PolicyRevisions = React.createClass({
     return (
         <div className="top-diff" dangerouslySetInnerHTML={{__html:
           I18n.t("revisions.changes_first_html",
-            { userDisplayName: curr.userDisplayName ,createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr }
+            { userDisplayName: curr.userDisplayName ,authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr }
           )
         }}>
         </div>

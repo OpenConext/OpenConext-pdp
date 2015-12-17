@@ -132,7 +132,7 @@ App.Pages.PolicyOverview = React.createClass({
 
   renderIdpNames: function (identityProviderNames) {
     return identityProviderNames.map(function (name) {
-      return (<p>{name}</p>)
+      return (<p key={name}>{name}</p>)
     });
   },
 

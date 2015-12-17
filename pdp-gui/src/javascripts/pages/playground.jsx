@@ -30,7 +30,8 @@ App.Pages.Playground = React.createClass({
         return policy.id === parseInt(newValue);
       })[0];
 
-      var identityProviderId = _.isEmpty(policy.identityProviderIds) ? this.props.identityProviders[0].entityId : policy.identityProviderIds[0];
+      var identityProviderId = _.isEmpty(policy.identityProviderIds) ? App.currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
+
       this.setState({
         attributes: policy.attributes
       });
