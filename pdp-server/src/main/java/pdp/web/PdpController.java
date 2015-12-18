@@ -160,13 +160,13 @@ public class PdpController {
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
-    PdpPolicy parent = policy.getParentPolicy();
-    Set<PdpPolicy> revisions = parent != null ? parent.getRevisions() : policy.getRevisions();
-    List<PdpPolicyDefinition> definitions = revisions.stream().map(rev -> addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
+    PdpPolicy parent = (policy.getParentPolicy() != null ? policy.getParentPolicy() : policy);
 
-    parent = (parent != null ? parent : policy);
-    definitions.add(addEntityMetaData(addAccessRules(parent, pdpPolicyDefinitionParser.parse(parent))));
-    return definitions;
+    Set<PdpPolicy> policies = parent.getRevisions();
+    policies.add(parent);
+
+    return policies.stream().map(rev ->
+        addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/{id}")

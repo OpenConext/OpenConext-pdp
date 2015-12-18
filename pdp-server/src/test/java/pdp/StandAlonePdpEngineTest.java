@@ -9,6 +9,7 @@ import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.junit.After;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @NotThreadSafe
@@ -64,7 +66,8 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
   };
 
-  private void setUp(boolean includeAggregatedAttributesInResponse, String... policyFiles) throws IOException, FactoryException {
+  @BeforeClass
+  public static void beforeClass() throws IOException {
     Resource resource = new ClassPathResource("xacml.conext.properties");
     String absolutePath = resource.getFile().getAbsolutePath();
 
@@ -72,7 +75,10 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
 
     XACMLProperties.reloadProperties();
+  }
 
+
+  private void setUp(boolean includeAggregatedAttributesInResponse, String... policyFiles) throws IOException, FactoryException {
     pdpPolicyRepository = mock(PdpPolicyRepository.class);
     List<PdpPolicy> pdpPolicies = Arrays.asList(policyFiles).stream().map(policyFile -> loadPolicy(policyFile)).collect(toList());
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
@@ -162,10 +168,9 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
         "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
         "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
     );
-    Optional<IdReference> policy = result.getPolicyIdentifiers().stream().collect(singletonOptionalCollector());
-    assertTrue(policy.isPresent());
+    IdReference reference = result.getPolicyIdentifiers().stream().collect(singletonCollector());
     //the violated policy
-    assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), policy.get().getId().stringValue());
+    assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), reference.getId().stringValue());
   }
 
   private Result doDecideTest(final String requestFile, Decision decision, boolean includeAggregatedAttributesInResponse, String... policyFiles) throws Exception {
