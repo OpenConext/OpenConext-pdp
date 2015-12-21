@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
+import static pdp.access.FederatedUserBuilder.*;
 import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
@@ -34,7 +35,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
       return null;
     }
     //Now we are certain a shib admin user is logged in and we can check if there is impersonation requested
-    if (hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE))) {
+    if (hasText(request.getHeader(X_IMPERSONATE))) {
       federatedUser = federatedUserBuilder.basicAuthUser(request, new UsernamePasswordAuthenticationToken("N/A", "N/A", apiAuthorities));
     }
     return federatedUser.isPresent() ? federatedUser.get() : null;
@@ -47,8 +48,8 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
   @Override
   protected boolean principalChanged(HttpServletRequest request, Authentication currentAuthentication) {
-    //the Javascript client has the functionality to impersonate an user. If this functionality if off then
-    //only need to check if the currentAuthentication is not the cached impersonation
-    return hasText(request.getHeader(FederatedUserBuilder.X_IMPERSONATE)) || currentAuthentication.getPrincipal() instanceof RunAsFederatedUser;
+    //the Javascript client has the functionality to impersonate an user. If this functionality is off then
+    //only need to check if the currentAuthentication is not a previous cached impersonation
+    return hasText(request.getHeader(X_IMPERSONATE)) || currentAuthentication.getPrincipal() instanceof RunAsFederatedUser;
   }
 }

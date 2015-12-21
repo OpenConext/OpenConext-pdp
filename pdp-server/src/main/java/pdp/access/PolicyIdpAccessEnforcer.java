@@ -8,7 +8,6 @@ import pdp.serviceregistry.ServiceRegistry;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
@@ -16,7 +15,8 @@ import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
 import static org.springframework.util.Assert.isInstanceOf;
 import static org.springframework.util.CollectionUtils.isEmpty;
-import static pdp.access.PolicyAccess.*;
+import static pdp.access.PolicyAccess.READ;
+import static pdp.access.PolicyAccess.VIOLATIONS;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 
@@ -79,7 +79,7 @@ public class PolicyIdpAccessEnforcer {
       switch (policyAccess) {
         case READ:
           //Valid to have no identityProvidersIds, but then the SP must be allowed access by this users IdP
-          if (!idpIsAllowed(user,idpsOfUserEntityIds,serviceProviderId)) {
+          if (!idpIsAllowed(user, idpsOfUserEntityIds, serviceProviderId)) {
             if (throwException) {
               throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
                   "Policy for target SP '%s' requested by '%s', but this SP is not allowed access by users from IdP '%s'",
@@ -105,7 +105,8 @@ public class PolicyIdpAccessEnforcer {
             return false;
           }
           break;
-        default: throw new IllegalArgumentException("Not handled PolicyAccess "+policyAccess);
+        default:
+          throw new IllegalArgumentException("Not handled PolicyAccess " + policyAccess);
       }
     } else {
       //now the SP may be anything, however all selected IDPs for this policy must be linked to this users IDP
