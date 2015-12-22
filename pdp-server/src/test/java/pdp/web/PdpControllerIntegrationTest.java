@@ -7,6 +7,7 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import pdp.AbstractPdpIntegrationTest;
@@ -69,6 +70,14 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     Long policyId = setUpViolation(PdpControllerIntegrationTest.policyId).getId();
     String json = get("internal/violations/" + policyId).getBody();
     assertViolations(json, 1);
+  }
+
+  @Test
+  public void findPolicyById() throws IOException {
+    PdpPolicy policy = getExistingPolicy();
+    ResponseEntity<String> response = get("/internal/policies/" + policy.getId());
+    PdpPolicyDefinition definition = objectMapper.readValue(response.getBody(), PdpPolicyDefinition.class);
+    assertNotNull(definition.getId());
   }
 
   @Test

@@ -27,7 +27,7 @@ public abstract class StreamUtils {
           return left;
         }, list -> {
           if (list.isEmpty() || list.size() > 1) {
-            throw new RuntimeException("Expected only one element in the List");
+            throw new IllegalArgumentException("Expected only one element in the List");
           }
           return list.get(0);
         }

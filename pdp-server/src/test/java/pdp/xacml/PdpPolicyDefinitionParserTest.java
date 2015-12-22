@@ -17,7 +17,7 @@ public class PdpPolicyDefinitionParserTest {
   private PdpPolicyDefinitionParser subject = new PdpPolicyDefinitionParser();
 
   @Test
-  public void testParse() throws Exception {
+  public void testParseWithoutSp() throws Exception {
     //happy path is extensively tested in the StandAlonePdpEngineTest
     //we test here the various constraints
     List<PdpPolicy> policies = Arrays.asList("no.advice.deny.xml", "no.nl.advice.xml", "no.any.xml", "no.assignment.deny.xml", "no.sp.xml")
@@ -26,7 +26,7 @@ public class PdpPolicyDefinitionParserTest {
       try {
         subject.parse(policy);
         fail();
-      } catch (PdpParseException p) {
+      } catch (PdpParseException|IllegalArgumentException e) {
       }
     });
   }

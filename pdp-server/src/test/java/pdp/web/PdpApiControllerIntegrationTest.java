@@ -1,11 +1,17 @@
 package pdp.web;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.openaz.xacml.api.Decision;
+import org.apache.openaz.xacml.api.Response;
+import org.apache.openaz.xacml.std.json.JSONResponse;
+import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -14,20 +20,28 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
 import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
+import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.policies.PolicyLoader;
+import pdp.util.StreamUtils;
 
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.access.FederatedUserBuilder.*;
+import static pdp.util.StreamUtils.singletonCollector;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = { "spring.profiles.active=dev"})
 public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest {
+
+  @Override
+  public RestTemplate getRestTemplate() {
+    return testRestTemplate;
+  }
 
   @Before
   @Override
@@ -50,9 +64,14 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
     assertTrue(post.getBody().contains("http://xxx-idp is not a valid or known IdP / SP entityId"));
   }
 
-  @Override
-  public RestTemplate getRestTemplate() {
-    return testRestTemplate;
+  @Test
+  public void testInternalDecide() throws IOException, JSONStructureException {
+    JsonPolicyRequest policyRequest = getJsonPolicyRequest();
+    String jsonRequest = objectMapper.writeValueAsString(policyRequest);
+    HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
+    String jsonResponse = testRestTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, String.class);
+    Response response = JSONResponse.load(jsonResponse);
+    assertEquals(Decision.NOTAPPLICABLE, response.getResults().stream().collect(singletonCollector()).getDecision());
   }
 
 

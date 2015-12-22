@@ -13,6 +13,7 @@ import pdp.domain.PdpPolicyDefinition;
 
 import java.io.ByteArrayInputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Spliterator.ORDERED;
 import static java.util.Spliterators.spliteratorUnknownSize;
@@ -20,6 +21,7 @@ import static java.util.stream.Collectors.toCollection;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 import static pdp.util.StreamUtils.iteratorToList;
+import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 /*
@@ -62,49 +64,39 @@ public class PdpPolicyDefinitionParser {
   }
 
   private void parseDeny(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
-    Rule denyRule = getRule(policyXml, rules, Decision.DENY);
+    Rule denyRule = getRule(rules, Decision.DENY);
 
-    parseAdviceExpression(policyXml, definition, denyRule);
+    parseAdviceExpression(definition, denyRule);
 
     if (!definition.isDenyRule()) {
       return;
     }
-    parseAttributes(policyXml, definition, denyRule, Decision.DENY);
+    parseAttributes(definition, denyRule, Decision.DENY);
   }
 
   private void parsePermit(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
     if (definition.isDenyRule()) {
       return;
     }
-    Rule permitRule = getRule(policyXml, rules, Decision.PERMIT);
-    parseAttributes(policyXml, definition, permitRule, Decision.PERMIT);
+    Rule permitRule = getRule(rules, Decision.PERMIT);
+    parseAttributes(definition, permitRule, Decision.PERMIT);
   }
 
   private boolean isPermitRule(String policyXml, List<Rule> rules) {
-    Rule rule = getRule(policyXml, rules, Decision.PERMIT);
+    Rule rule = getRule(rules, Decision.PERMIT);
     return rule.getTarget().getAnyOfs() != null;
   }
 
-  private Rule getRule(String policyXml, List<Rule> rules, Decision decision) {
-    Optional<Rule> rule = rules.stream().filter(r -> r.getRuleEffect().getDecision().equals(decision)).findFirst();
-    if (!rule.isPresent()) {
-      throw new PdpParseException("No " + decision + " rule defined in the Policy " + policyXml);
-    }
-    return rule.get();
+  private Rule getRule(List<Rule> rules, Decision decision) {
+    return rules.stream().filter(r -> r.getRuleEffect().getDecision().equals(decision)).collect(singletonCollector());
   }
 
-  private void parseAttributes(String policyXml, PdpPolicyDefinition definition, Rule rule, Decision decision) {
+  private void parseAttributes(PdpPolicyDefinition definition, Rule rule, Decision decision) {
     List<AnyOf> anyOfs = iteratorToList(rule.getTarget().getAnyOfs());
-    if (CollectionUtils.isEmpty(anyOfs)) {
-      throw new PdpParseException("Expected at least 1 anyOf in the " + decision + " rule for " + decision + " policy " + policyXml);
-    }
     if (anyOfs.size() > 1) {
       definition.setAllAttributesMustMatch(true);
     }
     List<AllOf> allOfs = anyOfs.stream().map(anyOf -> iteratorToList(anyOf.getAllOfs())).flatMap(allOf -> allOf.stream()).collect(toList());
-    if (CollectionUtils.isEmpty(allOfs)) {
-      throw new PdpParseException("Expected at least one allOf in the " + decision + " rule for " + decision + " policy " + policyXml);
-    }
     List<Match> matches = allOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(m -> m.stream()).collect(toList());
     List<PdpAttribute> pdpAttributes = matches.stream().map(match -> {
       String attributeName = ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString();
@@ -116,14 +108,8 @@ public class PdpPolicyDefinitionParser {
 
   private void parseTargets(String policyXml, PdpPolicyDefinition definition, Policy policy) {
     List<AnyOf> targetAnyOfs = iteratorToList(policy.getTarget().getAnyOfs());
-    if (CollectionUtils.isEmpty(targetAnyOfs) || targetAnyOfs.size() > 2) {
-      throw new PdpParseException("Expected 1 or two anyOf in the Target section " + policyXml);
-    }
     targetAnyOfs.forEach(anyOf -> {
       List<AllOf> targetAllOfs = iteratorToList(anyOf.getAllOfs());
-      if (CollectionUtils.isEmpty(targetAllOfs)) {
-        throw new PdpParseException("Expected at least 1 allOfs in the Target anyOf sections " + policyXml);
-      }
       List<Match> targetMatches = targetAllOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(Collection::stream).collect(toList());
       Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
       if (spEntityID.isPresent()) {
@@ -140,29 +126,22 @@ public class PdpPolicyDefinitionParser {
     }
   }
 
-  private void parseAdviceExpression(String policyXml, PdpPolicyDefinition definition, Rule denyRule) {
-    List<AdviceExpression> adviceExpressions = iteratorToList(denyRule.getAdviceExpressions());
-    if (CollectionUtils.isEmpty(adviceExpressions) || adviceExpressions.size() > 1) {
-      throw new PdpParseException("Expected 1 and only one adviceExpressions in the Deny rule " + policyXml);
-    }
-    AdviceExpression adviceExpression = adviceExpressions.get(0);
+  private void parseAdviceExpression(PdpPolicyDefinition definition, Rule denyRule) {
+    AdviceExpression adviceExpression = iteratorToList(denyRule.getAdviceExpressions()).stream().collect(singletonCollector());
 
     List<AttributeAssignmentExpression> attributeAssignmentExpressions = iteratorToList(adviceExpression.getAttributeAssignmentExpressions());
-    if (CollectionUtils.isEmpty(attributeAssignmentExpressions) || attributeAssignmentExpressions.size() != 2) {
-      throw new PdpParseException("Expected 2 and only two attributeAssignmentExpressions in the Deny rule " + policyXml);
-    }
-    String denyMesssageEN = extractDenyMessage(policyXml, attributeAssignmentExpressions, "en");
-    String denyMesssageNL = extractDenyMessage(policyXml, attributeAssignmentExpressions, "nl");
+
+    String denyMesssageEN = extractDenyMessage(attributeAssignmentExpressions, "en");
+    String denyMesssageNL = extractDenyMessage(attributeAssignmentExpressions, "nl");
     definition.setDenyAdvice(denyMesssageEN);
     definition.setDenyAdviceNl(denyMesssageNL);
   }
 
-  private String extractDenyMessage(String policyXml, List<AttributeAssignmentExpression> attributeAssignmentExpressions, String language) {
-    Optional<String> denyMessage = attributeAssignmentExpressions.stream().filter(ase -> ase.getAttributeId().getUri().toString().equals("DenyMessage:" + language)).map(ase -> (String) (((AttributeValueExpression) ase.getExpression()).getAttributeValue().getValue())).collect(singletonOptionalCollector());
-    if (!denyMessage.isPresent()) {
-      throw new PdpParseException("Expected 1 and only one AttributeAssignmentExpression in the Deny rule with AttributeId " + "DenyMessage:" + language + "  " + policyXml);
-    }
-    return denyMessage.get();
+  private String extractDenyMessage(List<AttributeAssignmentExpression> attributeAssignmentExpressions, String language) {
+    return attributeAssignmentExpressions.stream()
+        .filter(ase -> ase.getAttributeId().getUri().toString().equals("DenyMessage:" + language))
+        .map(ase -> (String) (((AttributeValueExpression) ase.getExpression()).getAttributeValue().getValue()))
+        .collect(singletonCollector());
   }
 
   public Policy parsePolicy(String policyXml) {
