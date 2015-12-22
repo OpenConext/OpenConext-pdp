@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openconext</groupId>
         <artifactId>pdp</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -98,6 +98,18 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>2.9.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.tapstream</groupId>
+            <artifactId>rollbar-logback</artifactId>
+            <version>0.1.4</version>
+            <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -196,6 +208,17 @@
             <id>openconext-releases</id>
             <name>OpenConext public releases repository</name>
             <url>https://build.surfconext.nl/repository/public/releases</url>
+        </repository>
+        <repository>
+            <id>openconext-third-party-releases</id>
+            <name>OpenConext third-party repository</name>
+            <url>https://build.surfconext.nl/repository/public/third-party</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
     </repositories>
 
