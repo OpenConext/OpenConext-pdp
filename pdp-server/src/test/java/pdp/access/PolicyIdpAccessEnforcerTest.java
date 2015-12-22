@@ -1,29 +1,38 @@
 package pdp.access;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
 import pdp.domain.EntityMetaData;
+import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
+import pdp.util.StreamUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.StreamSupport.stream;
 import static org.junit.Assert.assertEquals;
+import static pdp.util.StreamUtils.singletonCollector;
 
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest {
+
+  private final static ObjectMapper objectMapper = new ObjectMapper();
 
   private TestingServiceRegistry serviceRegistry = new TestingServiceRegistry("service-registry/saml20-idp.test.json","service-registry/saml20-sp.test.json");
   private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);
@@ -66,7 +75,7 @@ public class PolicyIdpAccessEnforcerTest {
 
   @Test
   public void testActionAllowedHappyFlowOwnedIdps() throws Exception {
-    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], Arrays.asList(identityProviderIds));
+    this.subject.actionAllowed(pdpPolicy, PolicyAccess.WRITE, serviceProviderIds[0], asList(identityProviderIds));
   }
 
   @Test(expected = PolicyIdpAccessMismatchServiceProviderException.class)
@@ -112,6 +121,29 @@ public class PolicyIdpAccessEnforcerTest {
   }
 
   @Test
+  public void filterViolations() throws Exception {
+    List<PdpPolicyViolation> violations = pdpPolicyViolation(authenticatingAuthority, notOwnedIdp);
+    Iterable<PdpPolicyViolation> filtered = this.subject.filterViolations(violations);
+
+    //we expect exactly 1
+    PdpPolicyViolation violation = stream(filtered.spliterator(), false).collect(singletonCollector());
+
+    //we cheat. See PolicyIdpAccessEnforcerTest#pdpPolicyViolation
+    assertEquals(authenticatingAuthority, violation.getResponse());
+  }
+
+  @Test
+  public void filterViolationsNotEnforced() throws Exception {
+    setupSecurityContext(false, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
+
+    List<PdpPolicyViolation> violations = pdpPolicyViolation(authenticatingAuthority, notOwnedIdp);
+    Iterable<PdpPolicyViolation> filtered = this.subject.filterViolations(violations);
+
+    assertEquals(2, stream(filtered.spliterator(), false).count());
+  }
+
+
+  @Test
   public void testAuthenticatingAuthority() throws Exception {
     assertEquals(authenticatingAuthority, subject.authenticatingAuthority());
   }
@@ -128,6 +160,20 @@ public class PolicyIdpAccessEnforcerTest {
 
   private Set<EntityMetaData> entityMetadata(String... entityIds) {
     return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null, true, true, new HashSet<String>())).collect(toSet());
+  }
+
+  private List<PdpPolicyViolation> pdpPolicyViolation(String... idpEntityIds) throws IOException {
+    return asList(idpEntityIds).stream().map(idpEntityId -> new PdpPolicyViolation(new PdpPolicy(), jsonPolicyRequest(idpEntityId), idpEntityId, false)).collect(toList());
+  }
+
+  private String jsonPolicyRequest(String idpEntityId) {
+    try {
+      JsonPolicyRequest jsonPolicyRequest = objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
+      jsonPolicyRequest.addOrReplaceResourceAttribute("IDPentityID", idpEntityId);
+      return objectMapper.writeValueAsString(jsonPolicyRequest);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
 }

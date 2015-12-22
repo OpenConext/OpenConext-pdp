@@ -12,7 +12,7 @@ import java.util.Properties;
 public class GitPluginController {
 
   @RequestMapping(method = RequestMethod.GET, value = "/public/git")
-  public Properties serviceProviders() throws IOException {
+  public Properties git() throws IOException {
     Properties props = new Properties();
     props.load(new ClassPathResource("git.properties").getInputStream());
     return props;
