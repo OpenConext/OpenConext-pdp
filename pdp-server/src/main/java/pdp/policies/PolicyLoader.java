@@ -2,6 +2,7 @@ package pdp.policies;
 
 import pdp.domain.PdpPolicy;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PolicyLoader {
@@ -10,7 +11,7 @@ public interface PolicyLoader {
   String userIdentifier = "system";
   String userDisplayName = "system";
 
-  List<PdpPolicy> getPolicies();
+  List<PdpPolicy> getPolicies() throws IOException;
 
-  void loadPolicies();
+  void loadPolicies() throws IOException;
 }

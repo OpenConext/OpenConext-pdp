@@ -197,8 +197,16 @@ public class PdpPolicy {
     parent.getRevisions().forEach(p -> p.setLatestRevision(false));
     parent.setLatestRevision(false);
 
-    PdpPolicy clone = new PdpPolicy(newPolicyXml, newName, true, userIdentifier, authenticatingAuthority, userDisplayName, isActive);
+    PdpPolicy clone = new PdpPolicy();
+    clone.setPolicyXml(newPolicyXml);
+    clone.setName(newName);
+    clone.setLatestRevision(true);
+    clone.setUserIdentifier(userIdentifier);
+    clone.setAuthenticatingAuthority(authenticatingAuthority);
+    clone.setUserDisplayName(userDisplayName);
+    clone.setActive(isActive);
     clone.setRevisionNbr(parent.getRevisions().size() + 1);
+    clone.setPolicyId(PolicyTemplateEngine.getPolicyId(newName));
 
     parent.addRevision(clone);
 

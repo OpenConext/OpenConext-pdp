@@ -203,7 +203,7 @@ public class PdpController {
     }
     String policyXml = this.policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
     //if this works then we know the input was correct
-    PdpPolicyDefinitionParser.parsePolicy(policyXml);
+    pdpPolicyDefinitionParser.parsePolicy(policyXml);
     PdpPolicy policy;
 
     if (pdpPolicyDefinition.getId() != null) {

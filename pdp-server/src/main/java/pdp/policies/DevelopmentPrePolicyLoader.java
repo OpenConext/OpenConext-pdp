@@ -39,19 +39,14 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
   }
 
   @Override
-  public List<PdpPolicy> getPolicies() {
-    List<File> policyFiles;
-    try {
-      policyFiles = Arrays.asList(baseDirResource.getFile().listFiles((dir, name) ->
-          name.endsWith("xml")));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+  public List<PdpPolicy> getPolicies() throws IOException {
+    List<File> policyFiles = Arrays.asList(baseDirResource.getFile().listFiles((dir, name) ->
+        name.endsWith("xml")));
     return policyFiles.stream().map(file -> this.createPdpPolicy(getXml(file), file.getName())).collect(toList());
   }
 
   @Override
-  public void loadPolicies() {
+  public void loadPolicies() throws IOException {
     pdpPolicyViolationRepository.deleteAll();
     pdpPolicyRepository.deleteAll();
     List<PdpPolicy> policies = getPolicies();
@@ -71,7 +66,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
     return new PdpPolicy(xml, name, true, userIdentifier, authenticatingAuthority, userDisplayName, true);
   }
 
-  private String getXml(File file) {
+  private String getXml(File file)  {
     try {
       return IOUtils.toString(new FileInputStream(file));
     } catch (IOException e) {

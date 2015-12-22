@@ -30,6 +30,8 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private static Logger LOG = LoggerFactory.getLogger(OpenConextEvaluationContextFactory.class);
 
+  private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
+
   private PdpPolicyRepository pdpPolicyRepository;
   private boolean cachePolicies;
   private boolean includeInactivePolicies;
@@ -85,7 +87,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
   }
 
   private PolicyDef convertToPolicyDef(PdpPolicy pdpPolicy) {
-    Policy policyDef = PdpPolicyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml());
+    Policy policyDef = policyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml());
     policyDef.setIdentifier(new IdentifierImpl(getPolicyId(pdpPolicy.getName())));
     policyDef.getRules().forEachRemaining(rule -> {
           if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {

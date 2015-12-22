@@ -117,7 +117,7 @@ public class PdpPolicyDefinitionParser {
   private void parseTargets(String policyXml, PdpPolicyDefinition definition, Policy policy) {
     List<AnyOf> targetAnyOfs = iteratorToList(policy.getTarget().getAnyOfs());
     if (CollectionUtils.isEmpty(targetAnyOfs) || targetAnyOfs.size() > 2) {
-      throw new PdpParseException("Expected 2 and only two anyOf in the Target section " + policyXml);
+      throw new PdpParseException("Expected 1 or two anyOf in the Target section " + policyXml);
     }
     targetAnyOfs.forEach(anyOf -> {
       List<AllOf> targetAllOfs = iteratorToList(anyOf.getAllOfs());
@@ -165,7 +165,7 @@ public class PdpPolicyDefinitionParser {
     return denyMessage.get();
   }
 
-  public static final Policy parsePolicy(String policyXml) {
+  public Policy parsePolicy(String policyXml) {
     String cleanedXml = policyXml.trim().replaceAll("\n", "").replaceAll(" +", " ");
     try {
       return (Policy) DOMPolicyDef.load(new ByteArrayInputStream(cleanedXml.getBytes()));

@@ -4,6 +4,7 @@ jdk:
 services:
   - mysql
 before_install:
+  - pip install --user codecov
   - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'travis';" -uroot
   - cd ./pdp-gui && gem install sass && cd ..
   - cd ./pdp-gui && gem install sass-globbing && cd ..
@@ -11,4 +12,6 @@ before_install:
   - cd ./pdp-gui && npm install -g grunt-cli && cd ..
 before_script:
   - cd ./pdp-gui && npm install && cd ..
+after_success:
+  - codecov
 

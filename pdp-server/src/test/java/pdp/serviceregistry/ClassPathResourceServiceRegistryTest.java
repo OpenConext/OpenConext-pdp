@@ -67,6 +67,12 @@ public class ClassPathResourceServiceRegistryTest {
   }
 
   @Test
+  public void testServiceProvidersByInstitutionIdNull() {
+    Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId(null);
+    assertEquals(0, sps.size());
+  }
+
+  @Test
   public void testServiceProvidersByInstitutionIdEmpty() {
     Set<EntityMetaData> sps = serviceRegistry.serviceProvidersByInstitutionId("NOOP");
     assertEquals(0, sps.size());

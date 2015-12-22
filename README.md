@@ -1,5 +1,8 @@
 # OpenConext-pdp
 
+[![Build Status](https://travis-ci.org/OpenConext/OpenConext-pdp.svg)](https://travis-ci.org/OpenConext/OpenConext-pdp)
+[![codecov.io](https://codecov.io/github/OpenConext/OpenConext-pdp/coverage.svg)](https://codecov.io/github/OpenConext/OpenConext-pdp)
+
 OpenConext implementation of a XACML based PDP engine for access policy enforcement including a GUI for maintaining policies
 
 ## Getting started

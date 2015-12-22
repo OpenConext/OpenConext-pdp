@@ -21,10 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toMap;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RestController
-@RequestMapping("/error")
 public class ErrorController implements org.springframework.boot.autoconfigure.web.ErrorController {
 
   private final ErrorAttributes errorAttributes;
@@ -40,8 +40,8 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
     return "/error";
   }
 
-  @RequestMapping
-  public ResponseEntity<Map<String, Object>>  error(HttpServletRequest aRequest, HttpServletResponse response) {
+  @RequestMapping("/error")
+  public ResponseEntity<Map<String, Object>>  error(HttpServletRequest aRequest) {
     RequestAttributes requestAttributes = new ServletRequestAttributes(aRequest);
     Map<String, Object> result = this.errorAttributes.getErrorAttributes(requestAttributes, false);
 
@@ -49,7 +49,8 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
     if (error instanceof MethodArgumentNotValidException) {
       BindingResult bindingResult = ((MethodArgumentNotValidException) error).getBindingResult();
       if (bindingResult.hasErrors()) {
-        Map<String, String> details = bindingResult.getAllErrors().stream().filter(e -> e instanceof FieldError).map(e -> (FieldError) e).collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+        Map<String, String> details = bindingResult.getAllErrors().stream().filter(e -> e instanceof FieldError)
+            .map(e -> (FieldError) e).collect(toMap(FieldError::getField, FieldError::getDefaultMessage));
         result.put("details", details);
       }
     } else if (error instanceof PdpPolicyException) {
