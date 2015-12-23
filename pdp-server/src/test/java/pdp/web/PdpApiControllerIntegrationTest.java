@@ -27,6 +27,7 @@ import pdp.policies.PolicyLoader;
 import pdp.util.StreamUtils;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -72,6 +73,20 @@ public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest 
     String jsonResponse = testRestTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, String.class);
     Response response = JSONResponse.load(jsonResponse);
     assertEquals(Decision.NOTAPPLICABLE, response.getResults().stream().collect(singletonCollector()).getDecision());
+  }
+
+  @Test
+  public void testCreatePolicyWithNameError() throws Exception {
+    PdpPolicy policy = getExistingPolicy();
+    PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
+    policyDefinition.setId(null);
+    ResponseEntity<String> response = post("internal/policies", policyDefinition);
+
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    Map map = objectMapper.readValue(response.getBody(), Map.class);
+    String message = (String) ((Map) map.get("details")).get("name");
+    assertTrue(message.contains("Policy name must be unique"));
   }
 
 
