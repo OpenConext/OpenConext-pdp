@@ -1,0 +1,48 @@
+package pdp.web;
+
+import org.junit.Test;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
+import pdp.access.PolicyIdpAccessAwareToken;
+import pdp.access.RunAsFederatedUser;
+import pdp.domain.EntityMetaData;
+import pdp.serviceregistry.TestingServiceRegistry;
+
+import java.util.Collections;
+import java.util.Set;
+
+import static java.util.Collections.EMPTY_LIST;
+import static java.util.Collections.EMPTY_SET;
+import static org.junit.Assert.assertEquals;
+
+public class ServiceRegistryControllerTest {
+
+  private ServiceRegistryController subject = new ServiceRegistryController(new TestingServiceRegistry());
+
+  @Test
+  public void testServiceProviders() throws Exception {
+    assertEquals(3, subject.serviceProviders().size());
+  }
+
+  @Test
+  public void testIdentityProviders() throws Exception {
+    assertEquals(1, subject.identityProviders().size());
+  }
+
+  @Test
+  public void testIdentityProvidersScoped() throws Exception {
+    setupSecurityContext(EMPTY_SET, EMPTY_SET);
+    assertEquals(0, subject.identityProvidersScoped().size());
+
+  }
+
+  private void setupSecurityContext(Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
+    SecurityContext context = new SecurityContextImpl();
+    Authentication authentication = new PolicyIdpAccessAwareToken(
+        new RunAsFederatedUser("uid", "unknown-idp", "John Doe", idpEntities, spEntities, EMPTY_LIST));
+    context.setAuthentication(authentication);
+    SecurityContextHolder.setContext(context);
+  }
+}

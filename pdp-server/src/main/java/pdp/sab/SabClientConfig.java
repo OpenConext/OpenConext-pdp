@@ -14,24 +14,19 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 @Configuration
 public class SabClientConfig {
 
-  @Value("${sab.userName}")
-  private String userName;
-
-  @Value("${sab.password}")
-  private String password;
-
-  @Value("${sab.endpoint}")
-  private String endpoint;
-
   @Bean
   @Profile({"test", "acc", "prod"})
-  public SabClient sabClient() {
+  public SabClient sabClient(@Value("${sab.userName}") String userName,
+                             @Value("${sab.password}") String password,
+                             @Value("${sab.endpoint}") String endpoint) {
     return new SabClient(userName, password, endpoint);
   }
 
   @Bean
   @Profile({"dev", "perf", "no-csrf"})
-  public SabClient mockSabClient() {
+  public SabClient mockSabClient(@Value("${sab.userName}") String userName,
+                                 @Value("${sab.password}") String password,
+                                 @Value("${sab.endpoint}") String endpoint) {
     return new SabClient(userName, password, endpoint) {
       @Override
       public List<String> roles(String userUrn) {

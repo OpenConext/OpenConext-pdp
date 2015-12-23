@@ -19,6 +19,7 @@ import pdp.domain.PdpPolicy;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
+import pdp.sab.SabClientConfig;
 import pdp.sab.SabPIP;
 import pdp.teams.TeamsPIP;
 import pdp.teams.VootClient;
@@ -36,7 +37,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static pdp.util.StreamUtils.singletonCollector;
-import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @NotThreadSafe
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
@@ -47,24 +47,9 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   private PdpPolicyRepository pdpPolicyRepository;
 
-  private static VootClient mockVootClient = new VootClient(null, null) {
-    @Override
-    @SuppressWarnings("ignoreChecked")
-    public List<String> groups(String userUrn) {
-      return VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
-          Arrays.asList("urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
-              "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins") : Collections.EMPTY_LIST;
-    }
-  };
+  private static VootClient vootClient = new VootClientConfig().mockVootClient();
 
-  private static SabClient mockSabClient = new SabClient("user", "password", "http://localhost") {
-    @Override
-    @SuppressWarnings("ignoreChecked")
-    public List<String> roles(String userUrn) {
-      return VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
-          Arrays.asList("OperationeelBeheerder", "Instellingsbevoegde") : Collections.EMPTY_LIST;
-    }
-  };
+  private static SabClient sabClient = new SabClientConfig().mockSabClient("user", "password", "http://localhost");
 
   @BeforeClass
   public static void beforeClass() throws IOException {
@@ -84,7 +69,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
     OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
-    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, mockVootClient, mockSabClient);
+    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, vootClient, sabClient);
   }
 
   private PdpPolicy loadPolicy(String policyFile) {
@@ -136,7 +121,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   public void testTeamsPolicyWithAggregatedAttributes() throws Exception {
     Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.teams.Policy.xml");
-    assertAggregatedAttribute(result, TeamsPIP.GROUP_URN, "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:admins");
+    assertAggregatedAttribute(result, TeamsPIP.GROUP_URN, "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo");
   }
 
   @Test

@@ -11,6 +11,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_LIST;
+
 @Configuration
 public class VootClientConfig {
 
@@ -50,12 +53,12 @@ public class VootClientConfig {
          * These are the groups names defined in the test set of policies
          */
         return URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
-            Arrays.asList(
+            asList(
                 "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
                 "urn:collab:group:avans.nl:HRemployees",
                 "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
                 "urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess"
-            ) : Collections.EMPTY_LIST;
+            ) : EMPTY_LIST;
       }
     };
   }
@@ -66,7 +69,7 @@ public class VootClientConfig {
     details.setClientId(clientId);
     details.setClientSecret(clientSecret);
     details.setAccessTokenUri(accessTokenUri);
-    details.setScope(Arrays.asList(spaceDelimitedScopes.split(" ")));
+    details.setScope((spaceDelimitedScopes != null) ? asList(spaceDelimitedScopes.split(" ")) : EMPTY_LIST);
     return new OAuth2RestTemplate(details);
   }
 
