@@ -22,8 +22,8 @@ Execute the following:
 
 ```sql
 CREATE DATABASE pdpserver DEFAULT CHARACTER SET latin1;
-create user 'travis'@'localhost';
-grant all on pdpserver.* to 'travis'@'localhost';
+create user 'root'@'localhost';
+grant all on pdpserver.* to 'root'@'localhost';
 ```
 
 ## Building and running

@@ -5,7 +5,7 @@ services:
   - mysql
 before_install:
   - pip install --user codecov
-  - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'travis';" -uroot
+  - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'root';" -uroot
   - cd ./pdp-gui && gem install sass && cd ..
   - cd ./pdp-gui && gem install sass-globbing && cd ..
   - cd ./pdp-gui && gem install compass && cd ..
