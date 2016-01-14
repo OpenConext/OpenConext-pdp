@@ -110,7 +110,6 @@ var App = {
     if (!_.isEmpty(csrfToken)) {
       this.crsfToken = csrfToken;
     }
-
   },
 
   determineLanguage: function () {
