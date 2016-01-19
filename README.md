@@ -32,9 +32,9 @@ grant all on pdpserver.* to 'root'@'localhost';
 
 This project uses Spring Boot and Maven. To run locally, type:
 
-`cd pdp-server`
+    cd pdp-server
 
-`mvn spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=dev"`
+    mvn spring-boot:run -Drun.jvmArguments="-Dspring.profiles.active=dev"
 
 When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](pdp-server/src/main/java/pdp/PdpApplication.java). Don't forget
 to set the active profile to dev otherwise the application uses the real VOOT client on the test environment.
@@ -43,31 +43,26 @@ to set the active profile to dev otherwise the application uses the real VOOT cl
 
 The client is build with react.js and to get initially started:
 
-`cd pdp-gui`
+    brew install rbenv
+    rbenv install
+    gem install bundler
+    bunderl install
 
-`brew install npm;`
-
-`gem install sass;`
-
-`gem install sass-globbing;`
-
-`gem install compass;`
-
-`npm install -g grunt-cli;`
-
-`npm install;`
+    brew install npm
+    npm install -g grunt-cli
+    npm insatll
 
 When new grunt dependencies are added:
 
-`npm install`
+    npm install
 
 To build:
 
-`grunt watch`
+    grunt watch
 
 To run locally:
 
-`grunt server`
+    grunt server
 
 Browse to the [application homepage](http://localhost:8001/).
 
@@ -75,7 +70,7 @@ Browse to the [application homepage](http://localhost:8001/).
 
 For ruby users you can start everything at once with:
 
-`foreman start`
+    foreman start
 
 ## Testing
 
@@ -125,7 +120,7 @@ in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are 
 ### Service Registry
 
 The pdp-server needs to access the metadata of Identity and Service providers from the Service Registry. In production modus the content is read (and periodically refreshed) from:
-  
+
 * https://tools.surfconext.nl/export/saml20-idp-remote.json
 * https://tools.surfconext.nl/export/saml20-sp-remote.json
 

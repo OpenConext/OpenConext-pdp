@@ -4,14 +4,14 @@ jdk:
 services:
   - mysql
 before_install:
+  - gem install bundler
   - pip install --user codecov
-  - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'root';" -uroot
-  - cd ./pdp-gui && gem install sass && cd ..
-  - cd ./pdp-gui && gem install sass-globbing && cd ..
-  - cd ./pdp-gui && gem install compass && cd ..
-  - cd ./pdp-gui && npm install -g grunt-cli && cd ..
+install:
+  - bundle install
+  - cd pdp-gui && npm install && cd ..
+  - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 before_script:
-  - cd ./pdp-gui && npm install && cd ..
+  - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'root';" -uroot
 after_success:
   - codecov
 
