@@ -9,7 +9,6 @@ import pdp.serviceregistry.ServiceRegistry;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

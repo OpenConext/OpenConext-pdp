@@ -1,11 +1,8 @@
 package pdp.util;
 
-import org.apache.el.stream.Stream;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;

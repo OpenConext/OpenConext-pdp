@@ -14,11 +14,9 @@ import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.TestingServiceRegistry;
-import pdp.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.StreamSupport;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;

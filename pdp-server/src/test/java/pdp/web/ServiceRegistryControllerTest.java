@@ -10,7 +10,6 @@ import pdp.access.RunAsFederatedUser;
 import pdp.domain.EntityMetaData;
 import pdp.serviceregistry.TestingServiceRegistry;
 
-import java.util.Collections;
 import java.util.Set;
 
 import static java.util.Collections.EMPTY_LIST;

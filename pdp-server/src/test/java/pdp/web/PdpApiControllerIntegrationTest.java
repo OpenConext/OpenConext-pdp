@@ -1,19 +1,15 @@
 package pdp.web;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,7 +20,6 @@ import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.policies.PolicyLoader;
-import pdp.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.Map;

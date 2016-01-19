@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import pdp.policies.PolicyLoader;
 
-import java.util.Arrays;
 import java.util.HashSet;
 
 import static java.util.Arrays.asList;

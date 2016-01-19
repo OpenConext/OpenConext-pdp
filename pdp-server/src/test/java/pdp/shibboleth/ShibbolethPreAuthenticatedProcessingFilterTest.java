@@ -3,7 +3,6 @@ package pdp.shibboleth;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import pdp.access.FederatedUser;
 import pdp.access.RunAsFederatedUser;

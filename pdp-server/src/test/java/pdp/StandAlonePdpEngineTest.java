@@ -33,7 +33,6 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static pdp.util.StreamUtils.singletonCollector;
