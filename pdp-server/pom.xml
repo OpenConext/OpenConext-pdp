@@ -15,17 +15,11 @@
 
     <name>pdp-server</name>
 
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
-        <httpclient.version>4.4</httpclient.version>
         <openaz.version>0.0.4-OPENCONEXT</openaz.version>
-        <flyway.version>3.2.1</flyway.version>
-        <mysql-jdbc-driver.version>5.1.34</mysql-jdbc-driver.version>
-        <spring-security-oauth2.version>2.0.8.RELEASE</spring-security-oauth2.version>
     </properties>
-
 
     <dependencies>
         <dependency>
@@ -51,7 +45,6 @@
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
-            <version>${spring-security-oauth2.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.openaz</groupId>
@@ -66,18 +59,15 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql-jdbc-driver.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${httpclient.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
@@ -97,7 +87,6 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.9.1</version>
         </dependency>
         <dependency>
             <groupId>com.tapstream</groupId>
@@ -139,7 +128,6 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.2.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -167,7 +155,6 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-scm-plugin</artifactId>
