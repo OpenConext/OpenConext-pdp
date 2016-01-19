@@ -10,7 +10,8 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.EMPTY_LIST;
+
+import java.util.Collections;
 
 @Configuration
 public class VootClientConfig {
@@ -56,7 +57,7 @@ public class VootClientConfig {
                 "urn:collab:group:avans.nl:HRemployees",
                 "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
                 "urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess"
-            ) : EMPTY_LIST;
+            ) : Collections.emptyList();
       }
     };
   }
@@ -67,7 +68,7 @@ public class VootClientConfig {
     details.setClientId(clientId);
     details.setClientSecret(clientSecret);
     details.setAccessTokenUri(accessTokenUri);
-    details.setScope((spaceDelimitedScopes != null) ? asList(spaceDelimitedScopes.split(" ")) : EMPTY_LIST);
+    details.setScope((spaceDelimitedScopes != null) ? asList(spaceDelimitedScopes.split(" ")) : Collections.emptyList());
     return new OAuth2RestTemplate(details);
   }
 

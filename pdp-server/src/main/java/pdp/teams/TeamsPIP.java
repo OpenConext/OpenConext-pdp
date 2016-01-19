@@ -1,14 +1,10 @@
 package pdp.teams;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import pdp.xacml.AbstractConfigurableEngine;
 
 import java.util.List;
 
 public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAware {
-
-  private final static Logger LOG = LoggerFactory.getLogger(TeamsPIP.class);
 
   public static final String GROUP_URN = "urn:collab:group:surfteams.nl";
 

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
-import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.List;
 

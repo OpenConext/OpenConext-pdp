@@ -10,10 +10,9 @@ import pdp.access.RunAsFederatedUser;
 import pdp.domain.EntityMetaData;
 import pdp.serviceregistry.TestingServiceRegistry;
 
+import java.util.Collections;
 import java.util.Set;
 
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.EMPTY_SET;
 import static org.junit.Assert.assertEquals;
 
 public class ServiceRegistryControllerTest {
@@ -32,7 +31,7 @@ public class ServiceRegistryControllerTest {
 
   @Test
   public void testIdentityProvidersScoped() throws Exception {
-    setupSecurityContext(EMPTY_SET, EMPTY_SET);
+    setupSecurityContext(Collections.emptySet(), Collections.emptySet());
     assertEquals(0, subject.identityProvidersScoped().size());
 
   }
@@ -40,7 +39,7 @@ public class ServiceRegistryControllerTest {
   private void setupSecurityContext(Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
     SecurityContext context = new SecurityContextImpl();
     Authentication authentication = new PolicyIdpAccessAwareToken(
-        new RunAsFederatedUser("uid", "unknown-idp", "John Doe", idpEntities, spEntities, EMPTY_LIST));
+        new RunAsFederatedUser("uid", "unknown-idp", "John Doe", idpEntities, spEntities, Collections.emptyList()));
     context.setAuthentication(authentication);
     SecurityContextHolder.setContext(context);
   }

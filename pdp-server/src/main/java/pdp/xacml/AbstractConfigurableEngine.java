@@ -41,7 +41,7 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
     IdentifierImpl identifierAttribute = new IdentifierImpl(getIdentifierProvidedAttribute());
     providedAttribute = new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
 
-    Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.EMPTY_LIST, null, true);
+    Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.emptyList(), null, true);
     empty = new StdSinglePIPResponse(attribute);
     missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
 

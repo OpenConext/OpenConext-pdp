@@ -241,8 +241,8 @@ public class PdpPolicyDefinition {
 
   //used in the mustache templates
   @JsonIgnore
-  public List anyIdentityProviders() {
-    return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.EMPTY_LIST : Arrays.asList("will-iterate-once");
+  public List<String> anyIdentityProviders() {
+    return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
   }
 
   @JsonIgnore

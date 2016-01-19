@@ -1,23 +1,18 @@
 package pdp.domain;
 
-import org.junit.Before;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import com.google.common.collect.ImmutableSet;
+
 import org.junit.Test;
+
 import pdp.policies.PolicyLoader;
-
-import java.util.HashSet;
-
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
 
 public class EntityMetaDataTest {
 
-  private EntityMetaData metaData;
-
-  @Before
-  public void before() {
-    metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority, "institutionId", "descriptionEn", "nameEn", "descriptionNl",
-        "nameNl", true, false, new HashSet(asList("http://mock-sp", "http://dummy-sp")));
-  }
+  private EntityMetaData metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority, "institutionId", "descriptionEn", "nameEn", "descriptionNl",
+        "nameNl", true, false, ImmutableSet.of("http://mock-sp", "http://dummy-sp"));
 
   @Test
   public void testIsAllowedFrom() throws Exception {

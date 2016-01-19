@@ -37,7 +37,7 @@ public class SabClientConfig {
             Arrays.asList(
                 "OperationeelBeheerder",
                 "Instellingsbevoegde"
-            ) : Collections.EMPTY_LIST;
+            ) : Collections.emptyList();
       }
     };
   }

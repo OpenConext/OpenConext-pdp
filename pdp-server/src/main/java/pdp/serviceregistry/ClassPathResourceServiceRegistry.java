@@ -1,6 +1,8 @@
 package pdp.serviceregistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -95,7 +97,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       if (StringUtils.hasText(institutionId)) {
         return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
       } else {
-        return new HashSet(asList(idp));
+        return Sets.newHashSet(idp);
       }
     } finally {
       lock.readLock().unlock();
@@ -105,7 +107,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   @Override
   public Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId) {
     if (StringUtils.isEmpty(institutionId)) {
-      return Collections.EMPTY_SET;
+      return Collections.emptySet();
     }
     try {
       lock.readLock().lock();
@@ -173,7 +175,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   private Set<String> getAllowedEntries(Map<String, Object> entry) {
-    List<String> allowedEntities = (List<String>) entry.getOrDefault("allowedEntities", Collections.EMPTY_LIST);
+    List<String> allowedEntities = (List<String>) entry.getOrDefault("allowedEntities", Collections.emptyList());
     return new HashSet<>(allowedEntities);
   }
 
@@ -185,7 +187,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {
     Object coin = entry.get("coin");
     if (coin != null && coin instanceof Map) {
-      Map<String, Object> coinMap = (Map) coin;
+      Map<String, Object> coinMap = (Map<String, Object>) coin;
       Object policyEnforcementDecisionRequired = coinMap.get("policy_enforcement_decision_required");
       if (policyEnforcementDecisionRequired != null && policyEnforcementDecisionRequired instanceof Boolean) {
         return (Boolean) policyEnforcementDecisionRequired;
@@ -207,7 +209,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   private String getInstitutionId(Map<String, Object> entry) {
     Object coin = entry.get("coin");
     if (coin != null && coin instanceof Map) {
-      Map<String, Object> coinMap = (Map) coin;
+      Map<String, Object> coinMap = (Map<String, Object>) coin;
       return (String) coinMap.get("institution_id");
     }
     return null;

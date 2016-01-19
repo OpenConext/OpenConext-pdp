@@ -9,7 +9,7 @@ public class NoopPrePolicyLoader implements PolicyLoader {
 
   @Override
   public List<PdpPolicy> getPolicies() {
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   @Override
