@@ -119,7 +119,7 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = GET, value = "/internal/policies")
+  @RequestMapping(method = GET, value = { "/internal/policies", "/policies" })
   public List<PdpPolicyDefinition> policyDefinitions() {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
