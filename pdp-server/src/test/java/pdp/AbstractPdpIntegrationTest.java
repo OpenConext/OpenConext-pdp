@@ -1,9 +1,22 @@
 package pdp;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static pdp.access.FederatedUserBuilder.X_DISPLAY_NAME;
+import static pdp.access.FederatedUserBuilder.X_IDP_ENTITY_ID;
+import static pdp.access.FederatedUserBuilder.X_IMPERSONATE;
+import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
+
+import java.io.IOException;
+
+import javax.sql.DataSource;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.CollectionType;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -16,10 +29,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -29,15 +44,6 @@ import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
-
-import javax.sql.DataSource;
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static pdp.access.FederatedUserBuilder.*;
-import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.
@@ -69,10 +75,10 @@ public abstract class AbstractPdpIntegrationTest {
   protected HttpHeaders headers;
 
   //use this one to mock EB and username / password authentication
-  protected TestRestTemplate testRestTemplate = new TestRestTemplate("pdp-admin", "secret");
+  protected RestTemplate testRestTemplate = new TestRestTemplate("pdp-admin", "secret");
 
   //use this one to mock internal api calls that expects a shib user in the security context
-  protected RestTemplate restTemplate = new RestTemplate();
+  protected RestTemplate restTemplate = new TestRestTemplate();
 
   protected PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
   protected PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
@@ -85,7 +91,7 @@ public abstract class AbstractPdpIntegrationTest {
   @Before
   public void before() throws IOException {
     headers = new HttpHeaders();
-    headers.set("Content-Type", "application/json");
+    headers.set(CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
     pdpPolicyViolationRepository.deleteAll();
   }
@@ -97,15 +103,15 @@ public abstract class AbstractPdpIntegrationTest {
     return objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
   }
 
-  protected CollectionType constructCollectionType(Class<?> elementClass) {
-    return objectMapper.getTypeFactory().constructCollectionType(List.class, elementClass);
+  protected void impersonate(String idp, String nameId, String displayName) {
+    headers.set(X_IDP_ENTITY_ID, idp);
+    headers.set(X_UNSPECIFIED_NAME_ID, nameId);
+    headers.set(X_DISPLAY_NAME, displayName);
+    headers.set(X_IMPERSONATE, "true");
   }
 
   protected ResponseEntity<String> getImpersonated(String path, String idp) {
-    headers.add(X_IDP_ENTITY_ID, idp);
-    headers.add(X_UNSPECIFIED_NAME_ID, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN);
-    headers.add(X_DISPLAY_NAME, "John Doe");
-    headers.add(X_IMPERSONATE, "true");
+    impersonate(idp, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN, "John Doe");
     return doExchange(path, new HttpEntity<>(headers), HttpMethod.GET);
   }
 
@@ -118,6 +124,10 @@ public abstract class AbstractPdpIntegrationTest {
     return doExchange(path, new HttpEntity<>(jsonRequest, headers), HttpMethod.POST);
   }
 
+  protected ResponseEntity<String> delete(String path) {
+    return doExchange(path, new HttpEntity<>(headers), HttpMethod.DELETE);
+  }
+
   protected ResponseEntity<String> doExchange(String path, HttpEntity<?> requestEntity, HttpMethod method) {
     if (path.startsWith("/")) {
       path = path.substring(1);
@@ -126,13 +136,17 @@ public abstract class AbstractPdpIntegrationTest {
   }
 
   protected PdpPolicy setUpViolation(String policyId) {
-    PdpPolicy policy = getExistingPolicy();
+    PdpPolicy policy = getExistingPolicy(policyId);
     pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, "json", "response", true));
     return policy;
   }
 
+  protected PdpPolicy getExistingPolicy(String id) {
+    return pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(id, true).get(0);
+  }
+
   protected PdpPolicy getExistingPolicy() {
-    return pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).get(0);
+    return getExistingPolicy(policyId);
   }
 
   protected PdpPolicyDefinition getPdpPolicyDefinitionFromExistingPolicy() {

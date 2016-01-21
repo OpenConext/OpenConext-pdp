@@ -12,6 +12,7 @@ import pdp.repositories.PdpPolicyViolationRepository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -40,17 +41,16 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
 
   @Override
   public List<PdpPolicy> getPolicies() throws IOException {
-    List<File> policyFiles = Arrays.asList(baseDirResource.getFile().listFiles((dir, name) ->
-        name.endsWith("xml")));
-    return policyFiles.stream().map(file -> this.createPdpPolicy(getXml(file), file.getName())).collect(toList());
+    return Arrays.stream(baseDirResource.getFile().listFiles((dir, name) -> name.endsWith("xml")))
+      .map(file -> this.createPdpPolicy(getXml(file), file.getName())).collect(toList());
   }
 
   @Override
   public void loadPolicies() throws IOException {
     pdpPolicyViolationRepository.deleteAll();
     pdpPolicyRepository.deleteAll();
-    List<PdpPolicy> policies = getPolicies();
-    policies.forEach(policy -> {
+
+    getPolicies().forEach(policy -> {
       pdpPolicyRepository.save(policy);
       LOG.info("Loaded {} policy", policy.getName());
     });
@@ -67,8 +67,8 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
   }
 
   private String getXml(File file)  {
-    try {
-      return IOUtils.toString(new FileInputStream(file));
+    try (InputStream is = new FileInputStream(file)) {
+      return IOUtils.toString(is);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
