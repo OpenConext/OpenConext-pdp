@@ -11,6 +11,7 @@ import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -24,6 +25,8 @@ import pdp.policies.PolicyLoader;
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=dev"})
 public class PdpApiControllerIntegrationTest extends AbstractPdpIntegrationTest {
+
+  private RestTemplate testRestTemplate = new TestRestTemplate("pdp-admin", "secret");
 
   @Override
   public RestTemplate getRestTemplate() {

@@ -1,16 +1,14 @@
 package pdp;
 
-import org.apache.openaz.xacml.api.Decision;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
-import org.apache.openaz.xacml.std.json.JSONResponse;
-import org.junit.Test;
-import org.springframework.http.HttpEntity;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
-import pdp.domain.*;
-import pdp.teams.TeamsPIP;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.StreamSupport.stream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
+import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
+import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
+import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 import java.util.List;
 import java.util.Map;
@@ -18,11 +16,23 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
-import static org.junit.Assert.*;
-import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
-import static pdp.xacml.PdpPolicyDefinitionParser.*;
+import org.apache.openaz.xacml.api.Decision;
+import org.apache.openaz.xacml.api.Response;
+import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.std.json.JSONResponse;
+import org.junit.Test;
+import org.springframework.boot.test.TestRestTemplate;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
+
+import pdp.domain.JsonPolicyRequest;
+import pdp.domain.PdpAttribute;
+import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.domain.PdpPolicyViolation;
+import pdp.teams.TeamsPIP;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.
@@ -30,6 +40,8 @@ import static pdp.xacml.PdpPolicyDefinitionParser.*;
  * If you want to test policies quickly then see StandAlonePdpEngineTest
  */
 public class PdpEngineTest extends AbstractPdpIntegrationTest {
+
+  private final RestTemplate restTemplate = new TestRestTemplate();
 
   @Test
   public void testAllPolicies() throws Exception {
@@ -44,15 +56,15 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testCrsfConfiguration() throws Exception {
-    HttpEntity<String> request = new HttpEntity<>(objectMapper.writeValueAsString(getJsonPolicyRequest()), headers);
-    Map jsonResponse = testRestTemplate.postForObject("http://localhost:" + port + "/pdp/api/internal/decide/policy", request, Map.class);
+    Map<String, Object> jsonResponse = postForObject("internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {});
+
     assertEquals(403, jsonResponse.get("status"));
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
   }
 
   @Override
   public RestTemplate getRestTemplate() {
-    return testRestTemplate;
+    return restTemplate;
   }
 
   /**
@@ -102,10 +114,8 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
   }
 
   private void postDecide(PdpPolicy policy, JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {
-    final String url = "http://localhost:" + port + "/pdp/api/decide/policy";
-    String jsonRequest = objectMapper.writeValueAsString(policyRequest);
-    HttpEntity<String> request = new HttpEntity<>(jsonRequest, headers);
-    String jsonResponse = testRestTemplate.postForObject(url, request, String.class);
+    String jsonResponse = post("decide/policy", policyRequest).getBody();
+
     Response response = JSONResponse.load(jsonResponse);
     assertEquals(policy.getName(), 1, response.getResults().size());
     Result result = response.getResults().iterator().next();

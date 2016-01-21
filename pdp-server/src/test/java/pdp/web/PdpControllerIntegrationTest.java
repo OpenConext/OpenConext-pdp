@@ -16,12 +16,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,6 +38,7 @@ import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
+import pdp.teams.VootClientConfig;
 import pdp.xacml.PolicyTemplateEngine;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -41,12 +46,15 @@ import pdp.xacml.PolicyTemplateEngine;
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=no-csrf"})
 public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
-  private static final TypeReference<List<PdpPolicyDefinition>> pdpPolicyDefinitionsType = new TypeReference<List<PdpPolicyDefinition>>() {};
+  private static final ParameterizedTypeReference<List<PdpPolicyDefinition>> pdpPolicyDefinitionsType = new ParameterizedTypeReference<List<PdpPolicyDefinition>>() {};
+
+  private RestTemplate restTemplate = new TestRestTemplate();
 
   @Test
-  public void testPolicyDefinitionsImpersonated() throws Exception {
-    String json = getImpersonated("internal/policies", PolicyLoader.authenticatingAuthority).getBody();
-    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, pdpPolicyDefinitionsType);
+  public void testPolicyDefinitionsImpersonated() {
+    impersonate(PolicyLoader.authenticatingAuthority, VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN, "John Doe");
+
+    List<PdpPolicyDefinition> definitions = getForObject("internal/policies", pdpPolicyDefinitionsType);
 
     // only one, the policy with no IdP and a SP with allowedAll
     assertThat(definitions, hasSize(1));
@@ -54,63 +62,58 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testPolicyDefinitionsAdmin() throws Exception {
-    String json = get("internal/policies").getBody();
-    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, pdpPolicyDefinitionsType);
+  public void testPolicyDefinitionsAdmin() {
+    List<PdpPolicyDefinition> definitions = getForObject("internal/policies", pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(greaterThan(9)));
   }
 
   @Test
-  public void testPolicyDefinitionsByServiceProvider() throws Exception {
-    String json = get("internal/policies/sp?serviceProvider=https://surftest.viadesk.com").getBody();
-    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, pdpPolicyDefinitionsType);
+  public void testPolicyDefinitionsByServiceProvider() {
+    List<PdpPolicyDefinition> definitions = getForObject("internal/policies/sp?serviceProvider=https://surftest.viadesk.com", pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(1));
   }
 
   @Test
-  public void testViolations() throws Exception {
+  public void testViolations() {
     setUpViolation(policyId);
     setUpViolation(policyId);
-    String json = get("internal/violations").getBody();
+    List<PdpPolicyViolation> violations = getForObject("internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
 
-    assertViolations(json, 2);
+    assertViolations(violations, 2);
   }
 
   @Test
-  public void testViolationsByPolicyId() throws Exception {
+  public void testViolationsByPolicyId() {
     Long policyId = setUpViolation(PdpControllerIntegrationTest.policyId).getId();
-    String json = get("internal/violations/" + policyId).getBody();
+    List<PdpPolicyViolation> violations = getForObject("internal/violations/" + policyId, new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
 
-    assertViolations(json, 1);
+    assertViolations(violations, 1);
   }
 
   @Test
-  public void findPolicyById() throws IOException {
+  public void findPolicyById() {
     PdpPolicy policy = getExistingPolicy();
-    ResponseEntity<String> response = get("/internal/policies/" + policy.getId());
-    PdpPolicyDefinition definition = objectMapper.readValue(response.getBody(), PdpPolicyDefinition.class);
+    PdpPolicyDefinition definition = getForObject("/internal/policies/" + policy.getId(), new ParameterizedTypeReference<PdpPolicyDefinition>() {});
 
     assertNotNull(definition.getId());
   }
 
   @Test
-  public void testRevisionsByPolicyIdWithExistingPolicy() throws Exception {
+  public void testRevisionsByPolicyIdWithExistingPolicy() {
     //we use the API to set up the revisions
     PdpPolicy policy = getExistingPolicy();
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
     String initialDenyAdvice = policyDefinition.getDenyAdvice();
-
     policyDefinition.setDenyAdvice("advice_changed");
 
-    post("internal/policies", policyDefinition);
+    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     policyDefinition.setDenyAdvice("advice_changed_again");
-    post("internal/policies", policyDefinition);
+    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
-    String json = get("internal/revisions/" + policy.getId()).getBody();
-    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, pdpPolicyDefinitionsType);
+    List<PdpPolicyDefinition> definitions = getForObject("internal/revisions/" + policy.getId(), pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(3));
     assertEquals(initialDenyAdvice, findByRevisionNbr(definitions, 0).getDenyAdvice());
@@ -122,45 +125,45 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testRevisionsByPolicyIdWithNewPolicy() throws Exception {
+  public void testRevisionsByPolicyIdWithNewPolicy() {
     PdpPolicy policy = getExistingPolicy();
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
 
-    //this will ensure a new policy is created
+    // this will ensure a new policy is created
     policyDefinition.setId(null);
     policyDefinition.setName("some name");
 
-    post("internal/policies", policyDefinition);
+    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     PdpPolicy saved = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(
         PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get(0);
-    String json = get("internal/revisions/" + saved.getId()).getBody();
-    List<PdpPolicyDefinition> definitions = objectMapper.readValue(json, pdpPolicyDefinitionsType);
+
+    List<PdpPolicyDefinition> definitions = getForObject("internal/revisions/" + saved.getId(), pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(1));
     assertEquals(policyDefinition.getName(), definitions.get(0).getName());
   }
 
   @Test
-  public void testDefaultPolicy() throws Exception {
-    String json = get("internal/default-policy").getBody();
-    PdpPolicyDefinition definition = objectMapper.readValue(json, PdpPolicyDefinition.class);
+  public void testDefaultPolicy() {
+    PdpPolicyDefinition definition = getForObject("internal/default-policy", new ParameterizedTypeReference<PdpPolicyDefinition>() {});
 
     assertFalse(definition.isAllAttributesMustMatch());
     assertFalse(definition.isDenyRule());
   }
 
   @Test
-  public void testAllowedAttributes() throws Exception {
-    List<JsonPolicyRequest.Attribute> allowedAttributes = objectMapper.readValue(get("internal/attributes").getBody(), new TypeReference<List<JsonPolicyRequest.Attribute>>() {});
+  public void testAllowedAttributes() {
+    List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("internal/attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
 
     assertThat(allowedAttributes, hasSize(8));
     assertAttributes(allowedAttributes);
   }
 
   @Test
-  public void testAllowedSamlAttributes() throws Exception {
-    List<JsonPolicyRequest.Attribute> samlAttributes = objectMapper.readValue(get("internal/saml-attributes").getBody(), new TypeReference<List<JsonPolicyRequest.Attribute>>() {});
+  public void testAllowedSamlAttributes() {
+    List<JsonPolicyRequest.Attribute> samlAttributes = getForObject("internal/saml-attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
+
     assertThat(samlAttributes, hasSize(9));
 
     JsonPolicyRequest.Attribute nameId = samlAttributes.get(0);
@@ -171,9 +174,7 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testDeletePdpPolicy() throws Exception {
-    String policyIdToDelete = "urn:surfconext:xacml:policy:id:_open_conextpdp_deny_rule_policy_empty_permit";
-
+  public void testDeletePdpPolicy() {
     // verify that violations are also deleted - so we create one
     setUpViolation(policyIdToDelete);
 
@@ -189,14 +190,15 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
     assertThat(response.getStatusCode(), is(HttpStatus.OK));
 
-    assertViolations(get("internal/violations").getBody(), 0);
+    List<PdpPolicyViolation> violations = getForObject("internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
+    assertViolations(violations, 0);
     assertPolicyIsDeleted(policy);
     assertPolicyIsDeleted(latestRevision);
   }
 
   @Test
-  public void testUser() throws Exception {
-    Map<String, Object> shibbolethUser = objectMapper.readValue(get("internal/users/me").getBody(), new TypeReference<Map<String, Object>>() {});
+  public void testUser() {
+    Map<String, Object> shibbolethUser = getForObject("internal/users/me", new ParameterizedTypeReference<Map<String, Object>>() {});
 
     assertEquals("urn:collab:person:example.com:admin", shibbolethUser.get("username"));
     assertEquals("John Doe", shibbolethUser.get("displayName"));
@@ -207,7 +209,7 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testCreatePolicyWithNameError() throws Exception {
+  public void testCreatePolicyWithNameError() throws JsonParseException, JsonMappingException, IOException {
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(getExistingPolicy());
     policyDefinition.setId(null);
 
@@ -222,7 +224,7 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
   }
 
   @Test
-  public void testAssertBadRequestUnknownIdentityProvider() throws Exception {
+  public void testAssertBadRequestUnknownIdentityProvider() {
     PdpPolicyDefinition policyDefinition = getPdpPolicyDefinitionFromExistingPolicy();
 
     impersonate("http://xxx-idp", "urn:collab:person:example.com:mary.doe", "Mary Doe");
@@ -242,11 +244,8 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     return definitions.stream().filter(def -> def.getRevisionNbr() == revisionNbr).collect(singletonCollector());
   }
 
-  private void assertViolations(String json, int expectedSize) throws IOException {
-    List<PdpPolicyViolation> violations = objectMapper.readValue(json, new TypeReference<List<PdpPolicyViolation>>() {});
-
+  private void assertViolations(List<PdpPolicyViolation> violations, int expectedSize) {
     assertThat(violations, hasSize(expectedSize));
-
     violations.forEach(v -> assertTrue(v.getCreated().before(new Date())));
   }
 

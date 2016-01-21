@@ -10,12 +10,12 @@ import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 import java.io.IOException;
-
-import javax.sql.DataSource;
+import java.net.URI;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -23,8 +23,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.boot.test.TestRestTemplate;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -56,8 +56,9 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 public abstract class AbstractPdpIntegrationTest {
 
   protected static final String policyId = "urn:surfconext:xacml:policy:id:_open_conextpdp_single_attribute";
+  protected static final String policyIdToDelete = "urn:surfconext:xacml:policy:id:_open_conextpdp_deny_rule_policy_empty_permit";
 
-  protected PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
+  protected static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
@@ -65,23 +66,14 @@ public abstract class AbstractPdpIntegrationTest {
   @Autowired
   protected PdpPolicyRepository pdpPolicyRepository;
 
-  @Autowired
-  protected DataSource dataSource;
-
-  protected static ObjectMapper objectMapper = new ObjectMapper();
-
   @Value("${local.server.port}")
   protected int port;
+
   protected HttpHeaders headers;
 
-  //use this one to mock EB and username / password authentication
-  protected RestTemplate testRestTemplate = new TestRestTemplate("pdp-admin", "secret");
-
-  //use this one to mock internal api calls that expects a shib user in the security context
-  protected RestTemplate restTemplate = new TestRestTemplate();
-
-  protected PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-  protected PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
+  protected final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
+  protected final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
+  protected final PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
   @BeforeClass
   public static void beforeClass() {
@@ -119,20 +111,45 @@ public abstract class AbstractPdpIntegrationTest {
     return doExchange(path, new HttpEntity<>(headers), HttpMethod.GET);
   }
 
-  protected ResponseEntity<String> post(String path, Object requestBody) throws JsonProcessingException {
-    String jsonRequest = objectMapper.writeValueAsString(requestBody);
-    return doExchange(path, new HttpEntity<>(jsonRequest, headers), HttpMethod.POST);
+  protected <T> T getForObject(String path, ParameterizedTypeReference<T> responseType) {
+    return doExchangeForObject(path, new HttpEntity<>(headers), HttpMethod.GET, responseType);
+  }
+
+  protected ResponseEntity<String> post(String path, Object requestBody) {
+    try {
+      String jsonRequest = objectMapper.writeValueAsString(requestBody);
+      return doExchange(path, new HttpEntity<>(jsonRequest, headers), HttpMethod.POST);
+    } catch (JsonProcessingException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  protected <T> T postForObject(String path, Object requestObject, ParameterizedTypeReference<T> responseType) {
+    try {
+      String requestBody = objectMapper.writeValueAsString(requestObject);
+      return doExchangeForObject(path, new HttpEntity<>(requestBody, headers), HttpMethod.POST, responseType);
+    } catch (JsonProcessingException e) {
+      throw Throwables.propagate(e);
+    }
+  }
+
+  private URI getServerUri(String path) {
+    return URI.create("http://localhost:" + port + "/pdp/api/" + path);
   }
 
   protected ResponseEntity<String> delete(String path) {
+    if (path.startsWith("/")) {
+      path = path.substring(1);
+    }
     return doExchange(path, new HttpEntity<>(headers), HttpMethod.DELETE);
   }
 
   protected ResponseEntity<String> doExchange(String path, HttpEntity<?> requestEntity, HttpMethod method) {
-    if (path.startsWith("/")) {
-      path = path.substring(1);
-    }
-    return getRestTemplate().exchange("http://localhost:" + port + "/pdp/api/" + path, method, requestEntity, String.class);
+    return getRestTemplate().exchange(getServerUri(path), method, requestEntity, String.class);
+  }
+
+  protected <T> T doExchangeForObject(String path, HttpEntity<?> requestEntity, HttpMethod method, ParameterizedTypeReference<T> responseType) {
+    return getRestTemplate().exchange(getServerUri(path), method, requestEntity, responseType).getBody();
   }
 
   protected PdpPolicy setUpViolation(String policyId) {
