@@ -1,14 +1,14 @@
 package pdp.access;
 
+import static org.springframework.util.Assert.notNull;
+import static pdp.access.FederatedUserBuilder.apiAuthorities;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.util.Assert;
-
-import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 /**
  * EngineBlock and Dashboard call the PDP and we don't want to use OAuth for this as
@@ -20,8 +20,8 @@ public class BasicAuthenticationManager implements AuthenticationManager {
   private final String password;
 
   public BasicAuthenticationManager(String userName, String password) {
-    Assert.notNull(userName);
-    Assert.notNull(password);
+    notNull(userName);
+    notNull(password);
 
     this.userName = userName;
     this.password = password;

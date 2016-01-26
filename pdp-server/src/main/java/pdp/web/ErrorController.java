@@ -39,7 +39,7 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
   }
 
   @RequestMapping("/error")
-  public ResponseEntity<Map<String, Object>>  error(HttpServletRequest aRequest) {
+  public ResponseEntity<Map<String, Object>> error(HttpServletRequest aRequest) {
     RequestAttributes requestAttributes = new ServletRequestAttributes(aRequest);
     Map<String, Object> result = this.errorAttributes.getErrorAttributes(requestAttributes, false);
 
@@ -61,7 +61,7 @@ public class ErrorController implements org.springframework.boot.autoconfigure.w
     }
     HttpStatus statusCode;
     if (error == null) {
-      statusCode = INTERNAL_SERVER_ERROR;
+      statusCode = result.containsKey("status") ? HttpStatus.valueOf((Integer) result.get("status")) : INTERNAL_SERVER_ERROR;
     } else {
       //https://github.com/spring-projects/spring-boot/issues/3057
       ResponseStatus annotation = AnnotationUtils.getAnnotation(error.getClass(), ResponseStatus.class);

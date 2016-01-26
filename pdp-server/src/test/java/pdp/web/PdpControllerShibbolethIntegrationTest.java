@@ -44,7 +44,7 @@ import pdp.xacml.PolicyTemplateEngine;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=no-csrf"})
-public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
+public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrationTest {
 
   private static final ParameterizedTypeReference<List<PdpPolicyDefinition>> pdpPolicyDefinitionsType = new ParameterizedTypeReference<List<PdpPolicyDefinition>>() {};
 
@@ -52,9 +52,10 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testPolicyDefinitionsImpersonated() {
+    addShibHeaders();
     impersonate(PolicyLoader.authenticatingAuthority, VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN, "John Doe");
 
-    List<PdpPolicyDefinition> definitions = getForObject("internal/policies", pdpPolicyDefinitionsType);
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
     // only one, the policy with no IdP and a SP with allowedAll
     assertThat(definitions, hasSize(1));
@@ -63,37 +64,47 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testPolicyDefinitionsAdmin() {
-    List<PdpPolicyDefinition> definitions = getForObject("internal/policies", pdpPolicyDefinitionsType);
+    addShibHeaders();
+
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(greaterThan(9)));
   }
 
   @Test
   public void testPolicyDefinitionsByServiceProvider() {
-    List<PdpPolicyDefinition> definitions = getForObject("internal/policies/sp?serviceProvider=https://surftest.viadesk.com", pdpPolicyDefinitionsType);
+    addShibHeaders();
+
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/policies/sp?serviceProvider=https://surftest.viadesk.com", pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(1));
   }
 
   @Test
   public void testViolations() {
+    addShibHeaders();
+
     setUpViolation(policyId);
     setUpViolation(policyId);
-    List<PdpPolicyViolation> violations = getForObject("internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
+    List<PdpPolicyViolation> violations = getForObject("/internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
 
     assertViolations(violations, 2);
   }
 
   @Test
   public void testViolationsByPolicyId() {
-    Long policyId = setUpViolation(PdpControllerIntegrationTest.policyId).getId();
-    List<PdpPolicyViolation> violations = getForObject("internal/violations/" + policyId, new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
+    addShibHeaders();
+
+    Long policyId = setUpViolation(PdpControllerShibbolethIntegrationTest.policyId).getId();
+    List<PdpPolicyViolation> violations = getForObject("/internal/violations/" + policyId, new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
 
     assertViolations(violations, 1);
   }
 
   @Test
   public void findPolicyById() {
+    addShibHeaders();
+
     PdpPolicy policy = getExistingPolicy();
     PdpPolicyDefinition definition = getForObject("/internal/policies/" + policy.getId(), new ParameterizedTypeReference<PdpPolicyDefinition>() {});
 
@@ -102,18 +113,20 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testRevisionsByPolicyIdWithExistingPolicy() {
+    addShibHeaders();
+
     //we use the API to set up the revisions
     PdpPolicy policy = getExistingPolicy();
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
     String initialDenyAdvice = policyDefinition.getDenyAdvice();
     policyDefinition.setDenyAdvice("advice_changed");
 
-    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
+    assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     policyDefinition.setDenyAdvice("advice_changed_again");
-    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
+    assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
-    List<PdpPolicyDefinition> definitions = getForObject("internal/revisions/" + policy.getId(), pdpPolicyDefinitionsType);
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/revisions/" + policy.getId(), pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(3));
     assertEquals(initialDenyAdvice, findByRevisionNbr(definitions, 0).getDenyAdvice());
@@ -126,6 +139,8 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testRevisionsByPolicyIdWithNewPolicy() {
+    addShibHeaders();
+
     PdpPolicy policy = getExistingPolicy();
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
 
@@ -133,12 +148,12 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     policyDefinition.setId(null);
     policyDefinition.setName("some name");
 
-    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
+    assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     PdpPolicy saved = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(
         PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get(0);
 
-    List<PdpPolicyDefinition> definitions = getForObject("internal/revisions/" + saved.getId(), pdpPolicyDefinitionsType);
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/revisions/" + saved.getId(), pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(1));
     assertEquals(policyDefinition.getName(), definitions.get(0).getName());
@@ -146,7 +161,9 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testDefaultPolicy() {
-    PdpPolicyDefinition definition = getForObject("internal/default-policy", new ParameterizedTypeReference<PdpPolicyDefinition>() {});
+    addShibHeaders();
+
+    PdpPolicyDefinition definition = getForObject("/internal/default-policy", new ParameterizedTypeReference<PdpPolicyDefinition>() {});
 
     assertFalse(definition.isAllAttributesMustMatch());
     assertFalse(definition.isDenyRule());
@@ -154,7 +171,9 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testAllowedAttributes() {
-    List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("internal/attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
+    addShibHeaders();
+
+    List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("/internal/attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
 
     assertThat(allowedAttributes, hasSize(8));
     assertAttributes(allowedAttributes);
@@ -162,7 +181,9 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testAllowedSamlAttributes() {
-    List<JsonPolicyRequest.Attribute> samlAttributes = getForObject("internal/saml-attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
+    addShibHeaders();
+
+    List<JsonPolicyRequest.Attribute> samlAttributes = getForObject("/internal/saml-attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {});
 
     assertThat(samlAttributes, hasSize(9));
 
@@ -175,6 +196,8 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testDeletePdpPolicy() {
+    addShibHeaders();
+
     // verify that violations are also deleted - so we create one
     setUpViolation(policyIdToDelete);
 
@@ -182,15 +205,13 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
 
     // verify that revisions are also deleted - so we create one
-    assertThat(post("internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
+    assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     PdpPolicy latestRevision = getExistingPolicy(policyIdToDelete);
 
-    ResponseEntity<String> response = delete("internal/policies/" + latestRevision.getId());
+    assertThat(delete("/internal/policies/" + latestRevision.getId()).getStatusCode(), is(HttpStatus.OK));
 
-    assertThat(response.getStatusCode(), is(HttpStatus.OK));
-
-    List<PdpPolicyViolation> violations = getForObject("internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
+    List<PdpPolicyViolation> violations = getForObject("/internal/violations", new ParameterizedTypeReference<List<PdpPolicyViolation>>() {});
     assertViolations(violations, 0);
     assertPolicyIsDeleted(policy);
     assertPolicyIsDeleted(latestRevision);
@@ -198,7 +219,9 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testUser() {
-    Map<String, Object> shibbolethUser = getForObject("internal/users/me", new ParameterizedTypeReference<Map<String, Object>>() {});
+    addShibHeaders();
+
+    Map<String, Object> shibbolethUser = getForObject("/internal/users/me", new ParameterizedTypeReference<Map<String, Object>>() {});
 
     assertEquals("urn:collab:person:example.com:admin", shibbolethUser.get("username"));
     assertEquals("John Doe", shibbolethUser.get("displayName"));
@@ -210,10 +233,12 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testCreatePolicyWithNameError() throws JsonParseException, JsonMappingException, IOException {
+    addShibHeaders();
+
     PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(getExistingPolicy());
     policyDefinition.setId(null);
 
-    ResponseEntity<String> response = post("internal/policies", policyDefinition);
+    ResponseEntity<String> response = post("/internal/policies", policyDefinition);
 
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
@@ -225,11 +250,13 @@ public class PdpControllerIntegrationTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testAssertBadRequestUnknownIdentityProvider() {
+    addShibHeaders();
+
     PdpPolicyDefinition policyDefinition = getPdpPolicyDefinitionFromExistingPolicy();
 
     impersonate("http://xxx-idp", "urn:collab:person:example.com:mary.doe", "Mary Doe");
 
-    ResponseEntity<String> post = post("internal/policies", policyDefinition);
+    ResponseEntity<String> post = post("/internal/policies", policyDefinition);
 
     assertEquals(HttpStatus.BAD_REQUEST, post.getStatusCode());
     assertTrue(post.getBody().contains("http://xxx-idp is not a valid or known IdP / SP entityId"));

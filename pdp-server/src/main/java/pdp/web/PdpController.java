@@ -119,7 +119,7 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = GET, value = { "/internal/policies", "/policies" })
+  @RequestMapping(method = GET, value = { "/internal/policies", "/protected/policies" })
   public List<PdpPolicyDefinition> policyDefinitions() {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
@@ -252,7 +252,7 @@ public class PdpController {
   }
 
   private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
-    boolean actionsAllowed = this.policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
+    boolean actionsAllowed = policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
     pd.setActionsAllowed(actionsAllowed);
     pd.setAuthenticatingAuthorityName(serviceRegistry.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
     return pd;

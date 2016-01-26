@@ -57,8 +57,8 @@ public class FederatedUserBuilder {
     Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
     LOG.debug("Creating RunAsFederatedUser {}",nameId);
-    return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authResult.getAuthorities()));
 
+    return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authResult.getAuthorities()));
   }
 
   public Optional<FederatedUser> shibUser(HttpServletRequest request) {
@@ -78,8 +78,8 @@ public class FederatedUserBuilder {
     Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
     LOG.debug("Creating FederatedUser {}",uid);
-    return Optional.of(new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, shibAuthorities));
 
+    return Optional.of(new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, shibAuthorities));
   }
 
   private Set<EntityMetaData> getSpEntities(Set<EntityMetaData> idpEntities) {

@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.util.HashMap;
 import java.util.Map;
 
+@SuppressWarnings("serial")
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
 public class PdpPolicyException extends RuntimeException {
 

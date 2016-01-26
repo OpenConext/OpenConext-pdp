@@ -2,8 +2,10 @@ package pdp;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
@@ -32,6 +34,7 @@ import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
+import pdp.policies.PolicyLoader;
 import pdp.teams.TeamsPIP;
 
 /**
@@ -41,10 +44,12 @@ import pdp.teams.TeamsPIP;
  */
 public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
-  private final RestTemplate restTemplate = new TestRestTemplate();
+  private RestTemplate restTemplate = new TestRestTemplate();
 
   @Test
   public void testAllPolicies() throws Exception {
+    addShibHeaders();
+
     JsonPolicyRequest policyRequest = getJsonPolicyRequest();
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
@@ -56,7 +61,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
   @Test
   public void testCrsfConfiguration() throws Exception {
-    Map<String, Object> jsonResponse = postForObject("internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {});
+    Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {});
 
     assertEquals(403, jsonResponse.get("status"));
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
@@ -102,7 +107,9 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     notApplicablePolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, UUID.randomUUID().toString());
     notApplicablePolicyRequest.addOrReplaceResourceAttribute(IDP_ENTITY_ID, UUID.randomUUID().toString());
 
-    //We can't use Transactional rollback as the Application runs in a different process.
+    becomeAnApiClientSoWeDontNeedACSRFToken();
+
+    // We can't use Transactional rollback as the Application runs in a different process.
     postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
     postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
     postDecide(policy, denyIndeterminatePolicyRequest,
@@ -113,11 +120,17 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     assertViolations(policy.getPolicyId());
   }
 
+  private void becomeAnApiClientSoWeDontNeedACSRFToken() {
+    restTemplate = new TestRestTemplate("pdp-admin", "secret");
+    impersonate(PolicyLoader.authenticatingAuthority, "urn:collab:person:example.com:mary.doe", "Mary Doe");
+  }
+
   private void postDecide(PdpPolicy policy, JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {
-    String jsonResponse = post("decide/policy", policyRequest).getBody();
+    String jsonResponse = post("/decide/policy", policyRequest).getBody();
 
     Response response = JSONResponse.load(jsonResponse);
-    assertEquals(policy.getName(), 1, response.getResults().size());
+
+    assertThat(policy.getName(), response.getResults(), hasSize(1));
     Result result = response.getResults().iterator().next();
     assertEquals(policy.getName(), expectedDecision, result.getDecision());
     assertEquals(policy.getName(), statusCodeValue, result.getStatus().getStatusCode().getStatusCodeValue().getUri().toString());

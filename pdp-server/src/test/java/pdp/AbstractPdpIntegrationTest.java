@@ -1,8 +1,12 @@
 package pdp;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static pdp.access.FederatedUserBuilder.DISPLAY_NAME_HEADER_NAME;
+import static pdp.access.FederatedUserBuilder.SHIB_AUTHENTICATING_AUTHORITY;
+import static pdp.access.FederatedUserBuilder.UID_HEADER_NAME;
 import static pdp.access.FederatedUserBuilder.X_DISPLAY_NAME;
 import static pdp.access.FederatedUserBuilder.X_IDP_ENTITY_ID;
 import static pdp.access.FederatedUserBuilder.X_IMPERSONATE;
@@ -15,6 +19,7 @@ import java.net.URI;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 import org.junit.Before;
@@ -95,6 +100,12 @@ public abstract class AbstractPdpIntegrationTest {
     return objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
   }
 
+  protected void addShibHeaders() {
+    headers.set(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
+    headers.set(SHIB_AUTHENTICATING_AUTHORITY, PolicyLoader.authenticatingAuthority);
+    headers.set(DISPLAY_NAME_HEADER_NAME, "John Doe");
+  }
+
   protected void impersonate(String idp, String nameId, String displayName) {
     headers.set(X_IDP_ENTITY_ID, idp);
     headers.set(X_UNSPECIFIED_NAME_ID, nameId);
@@ -134,13 +145,12 @@ public abstract class AbstractPdpIntegrationTest {
   }
 
   private URI getServerUri(String path) {
-    return URI.create("http://localhost:" + port + "/pdp/api/" + path);
+    checkArgument(path.startsWith("/"));
+
+    return URI.create("http://localhost:" + port + "/pdp/api" + path);
   }
 
   protected ResponseEntity<String> delete(String path) {
-    if (path.startsWith("/")) {
-      path = path.substring(1);
-    }
     return doExchange(path, new HttpEntity<>(headers), HttpMethod.DELETE);
   }
 

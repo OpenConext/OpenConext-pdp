@@ -1,24 +1,30 @@
 package pdp.access;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.Assert;
-import pdp.domain.*;
-import pdp.serviceregistry.ServiceRegistry;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
-import static org.springframework.util.Assert.isInstanceOf;
+import static org.springframework.util.Assert.hasText;
+import static org.springframework.util.Assert.notNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static pdp.access.PolicyAccess.READ;
 import static pdp.access.PolicyAccess.VIOLATIONS;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import pdp.domain.EntityMetaData;
+import pdp.domain.JsonPolicyRequest;
+import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.domain.PdpPolicyViolation;
+import pdp.serviceregistry.ServiceRegistry;
 
 public class PolicyIdpAccessEnforcer {
 
@@ -59,21 +65,20 @@ public class PolicyIdpAccessEnforcer {
       return true;
     }
 
-    Assert.notNull(policyAccess);
+    notNull(policyAccess);
 
     if (policyAccess.equals(VIOLATIONS)) {
       //No way of telling based on the pdpPolicy and violations are filtered later
       return true;
     }
 
-    Assert.hasText(serviceProviderId);
+    hasText(serviceProviderId);
 
     String authenticatingAuthorityUser = user.getAuthenticatingAuthority();
     String userIdentifier = user.getIdentifier();
 
     Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
     Set<String> spsOfUserEntityIds = getEntityIds(user.getSpEntities());
-
 
     if (isEmpty(identityProviderIds)) {
       switch (policyAccess) {
@@ -245,7 +250,11 @@ public class PolicyIdpAccessEnforcer {
 
   private FederatedUser federatedUser() {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    isInstanceOf(FederatedUser.class, principal);
+
+    if (!FederatedUser.class.isAssignableFrom(principal.getClass())) {
+      throw new PolicyIdpAccessMissingFederatedUser("Could not find authenticated federated user");
+    }
+
     return (FederatedUser) principal;
   }
 
