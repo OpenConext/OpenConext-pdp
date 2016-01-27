@@ -85,11 +85,12 @@ public class PdpApplication {
     return new ClassPathResourceServiceRegistry(true);
   }
 
+
   @Bean
   @Profile("prod")
   public ServiceRegistry urlResourceServiceRegistry(
-      @Value("metadata.idpRemotePath") String idpRemotePath,
-      @Value("metadata.spRemotePath") String spRemotePath,
+      @Value("${metadata.idpRemotePath}") String idpRemotePath,
+      @Value("${metadata.spRemotePath}") String spRemotePath,
       @Value("${period.metadata.refresh.minutes}") int period) {
     return new UrlResourceServiceRegistry(idpRemotePath, spRemotePath, period);
   }
