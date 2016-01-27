@@ -56,7 +56,7 @@ public class FederatedUserBuilder {
     Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(idpEntityId);
     Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
-    LOG.debug("Creating RunAsFederatedUser {}",nameId);
+    LOG.debug("Creating RunAsFederatedUser {}", nameId);
 
     return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authResult.getAuthorities()));
   }

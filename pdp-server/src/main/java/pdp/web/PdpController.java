@@ -133,7 +133,7 @@ public class PdpController {
     Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
     policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
 
-    return this.policyIdpAccessEnforcer.filterPdpPolicies(policies);
+    return policyIdpAccessEnforcer.filterPdpPolicies(policies);
   }
 
   @RequestMapping(method = GET, value = "/internal/policies/sp")
@@ -142,19 +142,19 @@ public class PdpController {
 
     List<PdpPolicyDefinition> filterBySp = stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
 
-    return this.policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
+    return policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
   }
 
   @RequestMapping(method = GET, value = "/internal/violations")
   public Iterable<PdpPolicyViolation> violations() {
     Iterable<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findAll();
-    return this.policyIdpAccessEnforcer.filterViolations(violations);
+    return policyIdpAccessEnforcer.filterViolations(violations);
   }
 
   @RequestMapping(method = GET, value = "/internal/violations/{id}")
   public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
     Set<PdpPolicyViolation> violations = findPolicyById(id, VIOLATIONS).getViolations();
-    return this.policyIdpAccessEnforcer.filterViolations(violations);
+    return policyIdpAccessEnforcer.filterViolations(violations);
   }
 
   @RequestMapping(method = GET, value = "/internal/revisions/{id}")
@@ -179,7 +179,7 @@ public class PdpController {
     return new PdpPolicyDefinition();
   }
 
-  @RequestMapping(method = GET, value = "internal/attributes")
+  @RequestMapping(method = GET, value = { "internal/attributes", "protected/attributes" })
   public List<JsonPolicyRequest.Attribute> allowedAttributes() throws IOException {
     InputStream inputStream = new ClassPathResource("xacml/attributes/allowed_attributes.json").getInputStream();
     CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);

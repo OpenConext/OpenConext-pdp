@@ -7,6 +7,7 @@ import pdp.domain.EntityMetaData;
 import java.util.Collection;
 import java.util.Set;
 
+@SuppressWarnings("serial")
 public class FederatedUser extends User {
 
   private final String displayName;
