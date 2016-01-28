@@ -27,7 +27,7 @@ import pdp.web.CsrfTokenResponseHeaderBindingFilter;
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  public static final String NON_SHIBBOLETH_PROTECTED_METHODS = "^(?!/protected/policies|/decide/policy|/health|/info).*$";
+  public static final String NON_SHIBBOLETH_PROTECTED_METHODS = "^(?!/protected/*|/decide/policy|/health|/info).*$";
 
   @Value("${policy.enforcement.point.user.name}")
   private String policyEnforcementPointUserName;

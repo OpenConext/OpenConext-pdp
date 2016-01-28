@@ -136,66 +136,7 @@ public class PdpController {
     return policyIdpAccessEnforcer.filterPdpPolicies(policies);
   }
 
-  @RequestMapping(method = GET, value = "/internal/policies/sp")
-  public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
-    List<PdpPolicyDefinition> policies = policyDefinitions();
-
-    List<PdpPolicyDefinition> filterBySp = stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
-
-    return policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
-  }
-
-  @RequestMapping(method = GET, value = "/internal/violations")
-  public Iterable<PdpPolicyViolation> violations() {
-    Iterable<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findAll();
-    return policyIdpAccessEnforcer.filterViolations(violations);
-  }
-
-  @RequestMapping(method = GET, value = "/internal/violations/{id}")
-  public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
-    Set<PdpPolicyViolation> violations = findPolicyById(id, VIOLATIONS).getViolations();
-    return policyIdpAccessEnforcer.filterViolations(violations);
-  }
-
-  @RequestMapping(method = GET, value = "/internal/revisions/{id}")
-  public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
-    PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
-    PdpPolicy parent = (policy.getParentPolicy() != null ? policy.getParentPolicy() : policy);
-
-    Set<PdpPolicy> policies = parent.getRevisions();
-    policies.add(parent);
-
-    return policies.stream().map(rev ->
-        addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
-  }
-
-  @RequestMapping(method = GET, value = "/internal/policies/{id}")
-  public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-    return addEntityMetaData(pdpPolicyDefinitionParser.parse(findPolicyById(id, READ)));
-  }
-
-  @RequestMapping(method = GET, value = "internal/default-policy")
-  public PdpPolicyDefinition defaultPolicy() {
-    return new PdpPolicyDefinition();
-  }
-
-  @RequestMapping(method = GET, value = { "internal/attributes", "protected/attributes" })
-  public List<JsonPolicyRequest.Attribute> allowedAttributes() throws IOException {
-    InputStream inputStream = new ClassPathResource("xacml/attributes/allowed_attributes.json").getInputStream();
-    CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
-    return objectMapper.readValue(inputStream, type);
-  }
-
-  @RequestMapping(method = GET, value = "internal/saml-attributes")
-  public List<JsonPolicyRequest.Attribute> allowedSamlAttributes() throws IOException {
-    InputStream inputStream = new ClassPathResource("xacml/attributes/extra_saml_attributes.json").getInputStream();
-    CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
-    List<JsonPolicyRequest.Attribute> attributes = objectMapper.readValue(inputStream, type);
-    attributes.addAll(allowedAttributes());
-    return attributes;
-  }
-
-  @RequestMapping(method = {PUT, POST}, value = "/internal/policies")
+  @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "protected/policies"})
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
     //We by default don't allow active policies from non admins
     if (this.policyIdpAccessEnforcer.isPolicyIdpAccessEnforcementRequired()) {
@@ -231,6 +172,74 @@ public class PdpController {
     }
   }
 
+  @RequestMapping(method = GET, value = {"/internal/policies/{id}", "/protected/policies/{id}"})
+  public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
+    return addEntityMetaData(pdpPolicyDefinitionParser.parse(findPolicyById(id, READ)));
+  }
+
+  @RequestMapping(method = DELETE, value = {"/internal/policies/{id}", "/protected/policies/{id}"})
+  public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
+    PdpPolicy policy = findPolicyById(id, PolicyAccess.WRITE);
+
+    LOG.info("Deleting PdpPolicy {}", policy.getName());
+    policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
+    pdpPolicyRepository.delete(policy);
+  }
+
+  @RequestMapping(method = GET, value = "internal/default-policy")
+  public PdpPolicyDefinition defaultPolicy() {
+    return new PdpPolicyDefinition();
+  }
+
+  @RequestMapping(method = GET, value = "/internal/policies/sp")
+  public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
+    List<PdpPolicyDefinition> policies = policyDefinitions();
+
+    List<PdpPolicyDefinition> filterBySp = stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
+
+    return policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
+  }
+
+  @RequestMapping(method = GET, value = "/internal/violations")
+  public Iterable<PdpPolicyViolation> violations() {
+    Iterable<PdpPolicyViolation> violations = pdpPolicyViolationRepository.findAll();
+    return policyIdpAccessEnforcer.filterViolations(violations);
+  }
+
+  @RequestMapping(method = GET, value = "/internal/violations/{id}")
+  public Iterable<PdpPolicyViolation> violationsByPolicyId(@PathVariable Long id) {
+    Set<PdpPolicyViolation> violations = findPolicyById(id, VIOLATIONS).getViolations();
+    return policyIdpAccessEnforcer.filterViolations(violations);
+  }
+
+  @RequestMapping(method = GET, value = "/internal/revisions/{id}")
+  public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
+    PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
+    PdpPolicy parent = (policy.getParentPolicy() != null ? policy.getParentPolicy() : policy);
+
+    Set<PdpPolicy> policies = parent.getRevisions();
+    policies.add(parent);
+
+    return policies.stream().map(rev ->
+        addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
+  }
+
+  @RequestMapping(method = GET, value = { "internal/attributes", "protected/attributes" })
+  public List<JsonPolicyRequest.Attribute> allowedAttributes() throws IOException {
+    InputStream inputStream = new ClassPathResource("xacml/attributes/allowed_attributes.json").getInputStream();
+    CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
+    return objectMapper.readValue(inputStream, type);
+  }
+
+  @RequestMapping(method = GET, value = "internal/saml-attributes")
+  public List<JsonPolicyRequest.Attribute> allowedSamlAttributes() throws IOException {
+    InputStream inputStream = new ClassPathResource("xacml/attributes/extra_saml_attributes.json").getInputStream();
+    CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
+    List<JsonPolicyRequest.Attribute> attributes = objectMapper.readValue(inputStream, type);
+    attributes.addAll(allowedAttributes());
+    return attributes;
+  }
+
   private PdpPolicy findPolicyById(Long id, PolicyAccess policyAccess) {
     PdpPolicy policy = pdpPolicyRepository.findOne(id);
     if (policy == null) {
@@ -240,15 +249,6 @@ public class PdpController {
     //this will throw an Exception if it is not allowed
     this.policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
     return policy;
-  }
-
-  @RequestMapping(method = DELETE, value = "/internal/policies/{id}")
-  public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
-    PdpPolicy policy = findPolicyById(id, PolicyAccess.WRITE);
-
-    LOG.info("Deleting PdpPolicy {}", policy.getName());
-    policy = policy.getParentPolicy() != null ? policy.getParentPolicy() : policy;
-    pdpPolicyRepository.delete(policy);
   }
 
   private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
