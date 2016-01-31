@@ -59,7 +59,6 @@ public class PdpController {
   private final PDPEngineHolder pdpEngineHolder;
   private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
   private final PdpPolicyRepository pdpPolicyRepository;
-  private final ReadWriteLock pdpEngineLock = new ReentrantReadWriteLock();
   private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
   private final ServiceRegistry serviceRegistry;
@@ -104,13 +103,7 @@ public class PdpController {
 
     Request request = JSONRequest.load(payload);
 
-    Response pdpResponse;
-    try {
-      pdpEngineLock.readLock().lock();
-      pdpResponse = pdpEngine.decide(request);
-    } finally {
-      pdpEngineLock.readLock().unlock();
-    }
+    Response pdpResponse = pdpEngine.decide(request);
 
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
     LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
@@ -119,7 +112,7 @@ public class PdpController {
     return response;
   }
 
-  @RequestMapping(method = GET, value = { "/internal/policies", "/protected/policies" })
+  @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
   public List<PdpPolicyDefinition> policyDefinitions() {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
@@ -224,7 +217,7 @@ public class PdpController {
         addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
   }
 
-  @RequestMapping(method = GET, value = { "internal/attributes", "protected/attributes" })
+  @RequestMapping(method = GET, value = {"internal/attributes", "protected/attributes"})
   public List<JsonPolicyRequest.Attribute> allowedAttributes() throws IOException {
     InputStream inputStream = new ClassPathResource("xacml/attributes/allowed_attributes.json").getInputStream();
     CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
@@ -299,12 +292,7 @@ public class PdpController {
   private void refreshPolicies() {
     LOG.info("Starting reloading policies");
     long start = System.currentTimeMillis();
-    pdpEngineLock.writeLock().lock();
-    try {
-      this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
-    } finally {
-      pdpEngineLock.writeLock().unlock();
-    }
+    this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
     LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
   }
 
