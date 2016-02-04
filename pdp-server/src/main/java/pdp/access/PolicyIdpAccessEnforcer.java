@@ -17,6 +17,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import pdp.domain.EntityMetaData;
@@ -28,7 +30,9 @@ import pdp.serviceregistry.ServiceRegistry;
 
 public class PolicyIdpAccessEnforcer {
 
-  private final static ObjectMapper objectMapper = new ObjectMapper();
+  private static final Logger LOG = LoggerFactory.getLogger(PolicyIdpAccessEnforcer.class);
+
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   private final ServiceRegistry serviceRegistry;
 
@@ -252,6 +256,7 @@ public class PolicyIdpAccessEnforcer {
     Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (!FederatedUser.class.isAssignableFrom(principal.getClass())) {
+      LOG.warn("Could not find federated user, but {}", principal);
       throw new PolicyIdpAccessMissingFederatedUser("Could not find authenticated federated user");
     }
 

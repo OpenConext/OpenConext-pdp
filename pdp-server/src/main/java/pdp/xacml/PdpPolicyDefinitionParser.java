@@ -6,6 +6,9 @@ import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -22,10 +25,10 @@ import static pdp.util.StreamUtils.singletonCollector;
  */
 public class PdpPolicyDefinitionParser {
 
+  private static final Logger LOG = LoggerFactory.getLogger(PdpPolicyDefinitionParser.class);
+
   public static final String SP_ENTITY_ID = "SPentityID";
-
   public static final String IDP_ENTITY_ID = "IDPentityID";
-
   public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
 
   public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
@@ -142,6 +145,7 @@ public class PdpPolicyDefinitionParser {
     try {
       return (Policy) DOMPolicyDef.load(new ByteArrayInputStream(cleanedXml.getBytes()));
     } catch (DOMStructureException e) {
+      LOG.warn("Failed to parse policyXml", e);
       throw new RuntimeException(e);
     }
   }

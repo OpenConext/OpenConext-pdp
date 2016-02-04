@@ -12,9 +12,9 @@ import java.io.StringWriter;
 
 public class PolicyTemplateEngine {
 
-  private MustacheFactory mf = new DefaultMustacheFactory();
-
   private final static Logger LOG = LoggerFactory.getLogger(PolicyTemplateEngine.class);
+
+  private final MustacheFactory mf = new DefaultMustacheFactory();
 
   public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
     Mustache mustache = mf.compile("templates/policy-definition.xml");
