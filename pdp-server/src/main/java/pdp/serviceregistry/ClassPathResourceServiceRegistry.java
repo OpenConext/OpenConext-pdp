@@ -29,7 +29,6 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private final static List<String> allowedLanguages = asList("en", "nl");
-  private final ReadWriteLock lock = new ReentrantReadWriteLock();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
 
   public ClassPathResourceServiceRegistry(boolean initialize) {
@@ -40,15 +39,10 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected void initializeMetadata() {
-    try {
-      lock.writeLock().lock();
       entityMetaData = new HashMap<>();
       entityMetaData.put(IDP_ENTITY_ID, mapResources(getIdpResources()));
       entityMetaData.put(SP_ENTITY_ID, mapResources(getSpResources()));
       LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
-    } finally {
-      lock.writeLock().unlock();
-    }
   }
 
   private List<EntityMetaData> mapResources(List<Resource> resources) {
@@ -70,28 +64,16 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   @Override
   public List<EntityMetaData> serviceProviders() {
-    try {
-      lock.readLock().lock();
       return entityMetaData.get(SP_ENTITY_ID);
-    } finally {
-      lock.readLock().unlock();
-    }
   }
 
   @Override
   public List<EntityMetaData> identityProviders() {
-    try {
-      lock.readLock().lock();
       return entityMetaData.get(IDP_ENTITY_ID);
-    } finally {
-      lock.readLock().unlock();
-    }
   }
 
   @Override
   public Set<EntityMetaData> identityProvidersByAuthenticatingAuthority(String authenticatingAuthority) {
-    try {
-      lock.readLock().lock();
       EntityMetaData idp = identityProviderByEntityId(authenticatingAuthority);
       String institutionId = idp.getInstitutionId();
       if (StringUtils.hasText(institutionId)) {
@@ -99,9 +81,6 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       } else {
         return Sets.newHashSet(idp);
       }
-    } finally {
-      lock.readLock().unlock();
-    }
   }
 
   @Override
@@ -109,12 +88,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     if (StringUtils.isEmpty(institutionId)) {
       return Collections.emptySet();
     }
-    try {
-      lock.readLock().lock();
       return serviceProviders().stream().filter(sp -> institutionId.equals(sp.getInstitutionId())).collect(toSet());
-    } finally {
-      lock.readLock().unlock();
-    }
   }
 
   @Override

@@ -38,7 +38,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     this.period = period;
     newScheduledThreadPool(1).scheduleAtFixedRate(() ->
         this.initializeMetadata(), period, period, TimeUnit.MINUTES);
-    this.initializeMetadata();
+    super.initializeMetadata();
   }
 
   @Override
@@ -56,8 +56,8 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
   @Override
   protected void initializeMetadata() {
     HttpHeaders headers = new HttpHeaders();
-    String oneMinuteAgo = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")).minusMinutes(1));
-    headers.set(IF_MODIFIED_SINCE, oneMinuteAgo);
+    String modifiedSinceLastCall = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")).minusMinutes(period));
+    headers.set(IF_MODIFIED_SINCE, modifiedSinceLastCall);
 
     ResponseEntity<String> result = restTemplate.exchange(idpRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
 
