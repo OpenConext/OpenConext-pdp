@@ -2,6 +2,10 @@ package pdp.web;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
+import com.google.common.net.HttpHeaders;
+
 import org.apache.openaz.xacml.api.IdReference;
 import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
@@ -16,6 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +44,8 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.servlet.http.HttpServletResponse;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
@@ -93,7 +101,7 @@ public class PdpController {
 
   @RequestMapping(method = RequestMethod.POST, value = "/internal/decide/policy")
   public String decideInternal(@RequestBody String payload) throws Exception {
-    this.refreshPolicies();
+    refreshPolicies();
     return doDecide(payload, true);
   }
 
@@ -110,6 +118,12 @@ public class PdpController {
 
     reportPolicyViolation(pdpResponse, response, payload, isPlayground);
     return response;
+  }
+
+  @RequestMapping(method = OPTIONS, value = "/protected/policies")
+  public ResponseEntity<Void> options(HttpServletResponse response) {
+    response.setHeader(HttpHeaders.ALLOW, Joiner.on(",").join(ImmutableList.of(GET, POST, PUT, DELETE)));
+    return new ResponseEntity<Void>(HttpStatus.OK);
   }
 
   @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
@@ -129,17 +143,17 @@ public class PdpController {
     return policyIdpAccessEnforcer.filterPdpPolicies(policies);
   }
 
-  @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "protected/policies"})
+  @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "/protected/policies"})
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
     //We by default don't allow active policies from non admins
-    if (this.policyIdpAccessEnforcer.isPolicyIdpAccessEnforcementRequired()) {
+    if (policyIdpAccessEnforcer.isPolicyIdpAccessEnforcementRequired()) {
       pdpPolicyDefinition.setActive(false);
     }
-    String policyXml = this.policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
+    String policyXml = policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
     //if this works then we know the input was correct
     pdpPolicyDefinitionParser.parsePolicy(policyXml);
-    PdpPolicy policy;
 
+    PdpPolicy policy;
     if (pdpPolicyDefinition.getId() != null) {
       PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId(), WRITE);
       policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
@@ -149,9 +163,11 @@ public class PdpController {
     } else {
       policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
           policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
+
       //this will throw an Exception if it is not allowed
-      this.policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
+      policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
     }
+
     try {
       PdpPolicy saved = pdpPolicyRepository.save(policy);
       LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
@@ -179,7 +195,7 @@ public class PdpController {
     pdpPolicyRepository.delete(policy);
   }
 
-  @RequestMapping(method = GET, value = "internal/default-policy")
+  @RequestMapping(method = GET, value = "/internal/default-policy")
   public PdpPolicyDefinition defaultPolicy() {
     return new PdpPolicyDefinition();
   }
@@ -205,7 +221,7 @@ public class PdpController {
     return policyIdpAccessEnforcer.filterViolations(violations);
   }
 
-  @RequestMapping(method = GET, value = "/internal/revisions/{id}")
+  @RequestMapping(method = GET, value = { "/internal/revisions/{id}", "/protected/revisions/{id}" })
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
     PdpPolicy parent = (policy.getParentPolicy() != null ? policy.getParentPolicy() : policy);
@@ -217,14 +233,14 @@ public class PdpController {
         addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
   }
 
-  @RequestMapping(method = GET, value = {"internal/attributes", "protected/attributes"})
+  @RequestMapping(method = GET, value = {"/internal/attributes", "/protected/attributes"})
   public List<JsonPolicyRequest.Attribute> allowedAttributes() throws IOException {
     InputStream inputStream = new ClassPathResource("xacml/attributes/allowed_attributes.json").getInputStream();
     CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
     return objectMapper.readValue(inputStream, type);
   }
 
-  @RequestMapping(method = GET, value = "internal/saml-attributes")
+  @RequestMapping(method = GET, value = "/internal/saml-attributes")
   public List<JsonPolicyRequest.Attribute> allowedSamlAttributes() throws IOException {
     InputStream inputStream = new ClassPathResource("xacml/attributes/extra_saml_attributes.json").getInputStream();
     CollectionType type = objectMapper.getTypeFactory().constructCollectionType(List.class, JsonPolicyRequest.Attribute.class);
@@ -240,7 +256,7 @@ public class PdpController {
     }
     PdpPolicyDefinition definition = pdpPolicyDefinitionParser.parse(policy);
     //this will throw an Exception if it is not allowed
-    this.policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
+    policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
     return policy;
   }
 

@@ -15,11 +15,11 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 
 import org.junit.Before;
@@ -120,6 +120,11 @@ public abstract class AbstractPdpIntegrationTest {
 
   protected ResponseEntity<String> get(String path) {
     return doExchange(path, new HttpEntity<>(headers), HttpMethod.GET);
+  }
+
+  protected Set<HttpMethod> options(String path) {
+    ResponseEntity<String> response = doExchange(path, new HttpEntity<>(headers), HttpMethod.OPTIONS);
+    return response.getHeaders().getAllow();
   }
 
   protected <T> T getForObject(String path, ParameterizedTypeReference<T> responseType) {
