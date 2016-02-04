@@ -46,11 +46,11 @@ The client is build with react.js and to get initially started:
     brew install rbenv
     rbenv install
     gem install bundler
-    bunderl install
+    bundler install
 
     brew install npm
     npm install -g grunt-cli
-    npm insatll
+    npm install
 
 When new grunt dependencies are added:
 
