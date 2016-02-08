@@ -5,6 +5,8 @@ import org.apache.openaz.xacml.util.XACMLProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +27,7 @@ import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
 import pdp.serviceregistry.UrlResourceServiceRegistry;
 import pdp.teams.VootClient;
+import pdp.web.SessionAliveInterceptor;
 import pdp.xacml.PDPEngineHolder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,7 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {TraceWebFilterAutoConfiguration.class, MetricFilterAutoConfiguration.class})
 public class PdpApplication {
 
   @Autowired
@@ -109,15 +112,7 @@ public class PdpApplication {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
       super.addInterceptors(registry);
-      registry.addInterceptor(new HandlerInterceptorAdapter() {
-        @Override
-        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-            throws Exception {
-          // add this header as an indication to the JS-client that this is a regular, non-session-expired response.
-          response.addHeader("X-SESSION-ALIVE", "true");
-          return true;
-        }
-      });
+      registry.addInterceptor(new SessionAliveInterceptor());
     }
   }
 
