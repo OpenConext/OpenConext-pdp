@@ -29,7 +29,9 @@ import pdp.xacml.OpenConextPDPEngineFactory;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;

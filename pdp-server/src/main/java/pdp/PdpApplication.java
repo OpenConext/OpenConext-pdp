@@ -14,7 +14,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
 import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.policies.NoopPrePolicyLoader;
 import pdp.policies.PerformancePrePolicyLoader;
@@ -31,6 +30,7 @@ import pdp.xacml.PDPEngineHolder;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 @SpringBootApplication
 public class PdpApplication {
@@ -80,19 +80,21 @@ public class PdpApplication {
   }
 
   @Bean
-  @Profile("!prod")
+  @Profile({"dev", "no-csrf"})
   public ServiceRegistry classPathResourceServiceRegistry() {
     return new ClassPathResourceServiceRegistry(true);
   }
 
 
   @Bean
-  @Profile("prod")
+  @Profile({"test","acc","prod"})
   public ServiceRegistry urlResourceServiceRegistry(
+      @Value("${metadata.username}") String username,
+      @Value("${metadata.password}") String password,
       @Value("${metadata.idpRemotePath}") String idpRemotePath,
       @Value("${metadata.spRemotePath}") String spRemotePath,
-      @Value("${period.metadata.refresh.minutes}") int period) {
-    return new UrlResourceServiceRegistry(idpRemotePath, spRemotePath, period);
+      @Value("${period.metadata.refresh.minutes}") int period) throws MalformedURLException {
+    return new UrlResourceServiceRegistry(username, password, idpRemotePath, spRemotePath, period);
   }
 
   @Bean

@@ -8,13 +8,15 @@ import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.ByteArrayInputStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 import static pdp.util.StreamUtils.iteratorToList;

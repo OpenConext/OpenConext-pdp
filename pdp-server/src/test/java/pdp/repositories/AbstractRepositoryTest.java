@@ -14,7 +14,7 @@ import static pdp.policies.PolicyLoader.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
-@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=test"})
+@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=dev"})
 @Transactional //rollback commits
 public abstract class AbstractRepositoryTest {
 

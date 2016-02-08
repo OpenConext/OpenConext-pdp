@@ -15,7 +15,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://avans-uat.mediasalsa.eu/simplesamlphp/module.php/saml/sp/metadata.php/mediasalsa-avans</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://profile.test.surfconext.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp</AttributeValue>
 
                     <AttributeDesignator
                             AttributeId="SPentityID"
@@ -30,7 +30,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://namidp-hslfh02.avans.nl/nidp/saml2/metadata</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://openidp.feide.no</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

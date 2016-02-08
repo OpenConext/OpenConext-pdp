@@ -14,7 +14,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://mytimetable-acc.uva.nl</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">http://mock-sp</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -28,7 +28,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">http://ststest.windesheim.nl/adfs/services/trust</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://idp.surfnet.nl</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

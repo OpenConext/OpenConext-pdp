@@ -14,7 +14,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://surftest.viadesk.com</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://grouper.test.surfconext.nl/grouper/shibboleth</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -28,7 +28,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://auth.onderwijsgroeptilburg.nl/simplesaml/saml2/idp/metadata.php</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://idp.surfnet.nl</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

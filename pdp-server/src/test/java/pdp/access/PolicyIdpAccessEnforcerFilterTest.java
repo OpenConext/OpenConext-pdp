@@ -9,7 +9,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.TestingServiceRegistry;
+import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 
 import javax.servlet.FilterChain;
 
@@ -25,7 +25,7 @@ public class PolicyIdpAccessEnforcerFilterTest {
   public void before() throws Exception {
     subject = new PolicyIdpAccessEnforcerFilter(
         new BasicAuthenticationManager("user", "password"),
-        new TestingServiceRegistry());
+        new ClassPathResourceServiceRegistry(true));
     SecurityContextHolder.clearContext();
   }
 
@@ -47,8 +47,8 @@ public class PolicyIdpAccessEnforcerFilterTest {
 
     assertEquals("uid", user.getIdentifier());
     assertEquals("John Doe", user.getDisplayName());
-    assertEquals(1, user.getIdpEntities().size());
-    assertEquals(1, user.getSpEntities().size());
+    assertEquals(2, user.getIdpEntities().size());
+    assertEquals(3, user.getSpEntities().size());
     assertEquals(PolicyLoader.authenticatingAuthority, user.getAuthenticatingAuthority());
     assertEquals("[ROLE_PEP, ROLE_USER]", user.getAuthorities().toString());
 

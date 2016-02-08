@@ -1,5 +1,16 @@
 package pdp.access;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
+import pdp.domain.*;
+import pdp.serviceregistry.ServiceRegistry;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
@@ -10,23 +21,6 @@ import static pdp.access.PolicyAccess.READ;
 import static pdp.access.PolicyAccess.VIOLATIONS;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import pdp.domain.EntityMetaData;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
-import pdp.serviceregistry.ServiceRegistry;
 
 public class PolicyIdpAccessEnforcer {
 

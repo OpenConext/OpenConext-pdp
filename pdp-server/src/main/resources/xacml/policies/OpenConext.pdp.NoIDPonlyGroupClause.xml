@@ -15,7 +15,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">google.com/a/terenatest.org</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://csa.test.surfconext.nl</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

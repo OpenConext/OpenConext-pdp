@@ -2,19 +2,18 @@ package pdp.serviceregistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -28,7 +27,6 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   protected final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
-  private final static List<String> allowedLanguages = asList("en", "nl");
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
 
   public ClassPathResourceServiceRegistry(boolean initialize) {
@@ -39,10 +37,10 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected void initializeMetadata() {
-      entityMetaData = new HashMap<>();
-      entityMetaData.put(IDP_ENTITY_ID, mapResources(getIdpResources()));
-      entityMetaData.put(SP_ENTITY_ID, mapResources(getSpResources()));
-      LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+    entityMetaData = new HashMap<>();
+    entityMetaData.put(IDP_ENTITY_ID, mapResources(getIdpResources()));
+    entityMetaData.put(SP_ENTITY_ID, mapResources(getSpResources()));
+    LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
   }
 
   private List<EntityMetaData> mapResources(List<Resource> resources) {
@@ -50,11 +48,11 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected List<Resource> getIdpResources() {
-    return doGetResources("service-registry/saml20-idp-remote.json", "service-registry/saml20-idp-remote.test.json");
+    return doGetResources("service-registry/identity-providers.json");
   }
 
   protected List<Resource> getSpResources() {
-    return doGetResources("service-registry/saml20-sp-remote.json", "service-registry/saml20-sp-remote.test.json");
+    return doGetResources("service-registry/service-providers.json");
   }
 
   protected List<Resource> doGetResources(String... paths) {
@@ -64,23 +62,23 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   @Override
   public List<EntityMetaData> serviceProviders() {
-      return entityMetaData.get(SP_ENTITY_ID);
+    return entityMetaData.get(SP_ENTITY_ID);
   }
 
   @Override
   public List<EntityMetaData> identityProviders() {
-      return entityMetaData.get(IDP_ENTITY_ID);
+    return entityMetaData.get(IDP_ENTITY_ID);
   }
 
   @Override
   public Set<EntityMetaData> identityProvidersByAuthenticatingAuthority(String authenticatingAuthority) {
-      EntityMetaData idp = identityProviderByEntityId(authenticatingAuthority);
-      String institutionId = idp.getInstitutionId();
-      if (StringUtils.hasText(institutionId)) {
-        return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
-      } else {
-        return Sets.newHashSet(idp);
-      }
+    EntityMetaData idp = identityProviderByEntityId(authenticatingAuthority);
+    String institutionId = idp.getInstitutionId();
+    if (StringUtils.hasText(institutionId)) {
+      return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
+    } else {
+      return Sets.newHashSet(idp);
+    }
   }
 
   @Override
@@ -88,7 +86,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     if (StringUtils.isEmpty(institutionId)) {
       return Collections.emptySet();
     }
-      return serviceProviders().stream().filter(sp -> institutionId.equals(sp.getInstitutionId())).collect(toSet());
+    return serviceProviders().stream().filter(sp -> institutionId.equals(sp.getInstitutionId())).collect(toSet());
   }
 
   @Override
@@ -133,11 +131,11 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
       return list.stream().map(entry ->
           new EntityMetaData(
               (String) entry.get("entityid"),
-              getInstitutionId(entry),
-              getMetaDateEntry(entry, "en", "description"),
-              getMetaDateEntry(entry, "en", "name"),
-              getMetaDateEntry(entry, "nl", "description"),
-              getMetaDateEntry(entry, "nl", "name"),
+              (String) entry.get("coin:institution_id"),
+              getMetaDateEntry(entry, "description"),
+              getMetaDateEntry(entry, "name"),
+              getMetaDateEntry(entry, "description"),
+              getMetaDateEntry(entry, "name"),
               getPolicyEnforcementDecisionRequired(entry),
               getAllowedAll(entry),
               getAllowedEntries(entry)
@@ -159,14 +157,13 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {
-    Object coin = entry.get("coin");
-    if (coin != null && coin instanceof Map) {
-      Map<String, Object> coinMap = (Map<String, Object>) coin;
-      Object policyEnforcementDecisionRequired = coinMap.get("policy_enforcement_decision_required");
-      if (policyEnforcementDecisionRequired != null && policyEnforcementDecisionRequired instanceof Boolean) {
+    Object policyEnforcementDecisionRequired = entry.get("coin:policy_enforcement_decision_required");
+    if (policyEnforcementDecisionRequired != null) {
+      if (policyEnforcementDecisionRequired instanceof Boolean) {
         return (Boolean) policyEnforcementDecisionRequired;
+      } else if (policyEnforcementDecisionRequired instanceof String) {
+        return policyEnforcementDecisionRequired.equals("1");
       }
-      return false;
     }
     return false;
 
@@ -180,27 +177,29 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     };
   }
 
-  private String getInstitutionId(Map<String, Object> entry) {
-    Object coin = entry.get("coin");
-    if (coin != null && coin instanceof Map) {
-      Map<String, Object> coinMap = (Map<String, Object>) coin;
-      return (String) coinMap.get("institution_id");
+  private String getMetaDateEntry(Map<String, Object> entry, String attributeName) {
+    String attribute = (String) entry.get(attributeName + ":en");
+    if (attribute == null) {
+      // try the other language
+      attribute = (String) entry.get(attributeName + ":nl");
     }
-    return null;
+    return attribute;
   }
 
-  private String getMetaDateEntry(Map<String, Object> entry, String lang, String attributeName) {
-    lang = allowedLanguages.contains(lang.toLowerCase()) ? lang : "en";
-    String attr = null;
-    Map<String, String> attributes = (Map<String, String>) entry.get(attributeName);
-    if (attributes != null) {
-      attr = attributes.get(lang.toLowerCase());
-      if (attr == null) {
-        // try the other language
-        attr = attributes.get(lang.equalsIgnoreCase("nl") ? "en" : "nl");
-      }
+  /**
+   * Not part of the ServiceRegistry contract, but used for testing
+   */
+  public void allowAll(boolean allowAll) {
+    identityProviders().forEach(md -> doAllowAll(md, allowAll));
+    serviceProviders().forEach(md -> doAllowAll(md, allowAll));
+  }
+
+  private void doAllowAll(EntityMetaData md, boolean allowAll) {
+    try {
+      ReflectionUtils.setField(EntityMetaData.class.getDeclaredField("allowedAll"), md, allowAll);
+    } catch (NoSuchFieldException e) {
+      throw new RuntimeException(e);
     }
-    return attr;
   }
 
 }

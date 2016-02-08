@@ -14,7 +14,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">http://rave.demo.surfconext.nl</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://engine.test.surfconext.nl/authentication/sp/metadata</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -28,7 +28,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://beta.onegini.me</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">http://mock-idp</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

@@ -7,7 +7,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import pdp.access.FederatedUser;
 import pdp.access.RunAsFederatedUser;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.TestingServiceRegistry;
+import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 
 import static java.util.Collections.emptySet;
 import static junit.framework.TestCase.assertFalse;
@@ -16,7 +16,7 @@ import static pdp.access.FederatedUserBuilder.*;
 
 public class ShibbolethPreAuthenticatedProcessingFilterTest {
 
-  private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new TestingServiceRegistry());
+  private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceServiceRegistry(true));
 
   @Test
   public void testGetPreAuthenticatedShibPrincipal() throws Exception {
@@ -85,8 +85,8 @@ public class ShibbolethPreAuthenticatedProcessingFilterTest {
   }
 
   private void assertPrincipal(FederatedUser principal, String authorities) {
-    assertEquals(1, principal.getIdpEntities().size());
-    assertEquals(1, principal.getSpEntities().size());
+    assertEquals(2, principal.getIdpEntities().size());
+    assertEquals(3, principal.getSpEntities().size());
     assertEquals(2, principal.getAuthorities().size());
     assertEquals(authorities, principal.getAuthorities().toString());
     assertEquals("John Doe", principal.getDisplayName());

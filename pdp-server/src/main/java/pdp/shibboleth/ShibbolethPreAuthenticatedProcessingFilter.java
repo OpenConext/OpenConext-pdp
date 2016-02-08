@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 import static org.springframework.util.StringUtils.hasText;
-import static pdp.access.FederatedUserBuilder.*;
+import static pdp.access.FederatedUserBuilder.X_IMPERSONATE;
 import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {

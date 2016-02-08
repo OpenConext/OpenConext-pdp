@@ -5,10 +5,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
-import static pdp.util.StreamUtils.iteratorToList;
-import static pdp.util.StreamUtils.singletonCollector;
-import static pdp.util.StreamUtils.singletonOptionalCollector;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static pdp.util.StreamUtils.*;
 
 public class StreamUtilsTest {
 

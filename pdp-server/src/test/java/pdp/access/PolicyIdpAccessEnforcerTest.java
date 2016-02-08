@@ -13,10 +13,14 @@ import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.TestingServiceRegistry;
+import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.serviceregistry.ServiceRegistry;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_LIST;
@@ -32,7 +36,7 @@ public class PolicyIdpAccessEnforcerTest {
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
 
-  private TestingServiceRegistry serviceRegistry = new TestingServiceRegistry("service-registry/saml20-idp.test.json","service-registry/saml20-sp.test.json");
+  private ClassPathResourceServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry(true);
   private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);
   private PdpPolicy pdpPolicy;
 
@@ -43,7 +47,7 @@ public class PolicyIdpAccessEnforcerTest {
   private String[] serviceProviderIds = {"http://mock-sp", "http://mock-sp2"};
   private String institutionId = "MOCK";
   private String notOwnedIdp = "http://not-owned-idp";
-  private String notOwnedSp = "http://not-owned-sp";
+  private String notOwnedSp = "https://thki-sid.pt-48.utr.surfcloud.nl/mellon/metadata";
 
   @Before
   public void before() {

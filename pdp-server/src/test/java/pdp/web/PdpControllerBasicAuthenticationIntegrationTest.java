@@ -1,16 +1,5 @@
 package pdp.web;
 
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.OK;
-import static pdp.util.StreamUtils.singletonCollector;
-
-import java.io.IOException;
-import java.util.Set;
-
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.std.json.JSONStructureException;
@@ -24,10 +13,20 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
-
 import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
 import pdp.policies.PolicyLoader;
+
+import java.io.IOException;
+import java.util.Set;
+
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.OK;
+import static pdp.util.StreamUtils.singletonCollector;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)

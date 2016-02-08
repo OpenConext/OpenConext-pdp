@@ -13,7 +13,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 import org.springframework.security.web.csrf.CsrfFilter;
-
 import pdp.access.BasicAuthenticationManager;
 import pdp.access.PolicyIdpAccessEnforcerFilter;
 import pdp.serviceregistry.ServiceRegistry;

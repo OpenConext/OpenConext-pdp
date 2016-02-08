@@ -17,7 +17,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://uba-primostg.hosted.exlibrisgroup.com/shib</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://apis.test.surfconext.nl</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -31,7 +31,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">http://stsfed.test.vu.nl/adfs/services/trust</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">urn:test:idp:bas</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -43,7 +43,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://ssoacc.test.saxion.nl/opensso</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://thki-sid.pt-48.utr.surfcloud.nl/ssp/saml2/idp/metadata.php</AttributeValue>
                     <AttributeDesignator
                             AttributeId="IDPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

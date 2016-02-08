@@ -7,11 +7,10 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-
-import java.util.Collections;
 
 @Configuration
 public class VootClientConfig {

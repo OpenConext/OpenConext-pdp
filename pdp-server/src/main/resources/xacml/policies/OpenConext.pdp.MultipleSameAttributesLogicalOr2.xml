@@ -12,7 +12,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                            DataType="http://www.w3.org/2001/XMLSchema#string">https://test.teacherschannel.nl</AttributeValue>
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://authz-admin.test.surfconext.nl/shibboleth</AttributeValue>
                     <AttributeDesignator
                             AttributeId="SPentityID"
                             DataType="http://www.w3.org/2001/XMLSchema#string"

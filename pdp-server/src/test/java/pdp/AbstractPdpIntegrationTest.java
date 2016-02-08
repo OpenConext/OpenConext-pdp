@@ -1,27 +1,9 @@
 package pdp;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static pdp.access.FederatedUserBuilder.DISPLAY_NAME_HEADER_NAME;
-import static pdp.access.FederatedUserBuilder.SHIB_AUTHENTICATING_AUTHORITY;
-import static pdp.access.FederatedUserBuilder.UID_HEADER_NAME;
-import static pdp.access.FederatedUserBuilder.X_DISPLAY_NAME;
-import static pdp.access.FederatedUserBuilder.X_IDP_ENTITY_ID;
-import static pdp.access.FederatedUserBuilder.X_IMPERSONATE;
-import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
-import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
-
-import java.io.IOException;
-import java.net.URI;
-import java.util.Set;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -31,15 +13,10 @@ import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-
 import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -49,6 +26,17 @@ import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static pdp.access.FederatedUserBuilder.*;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.

@@ -1,23 +1,5 @@
 package pdp;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
-import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
-import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
-import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
@@ -28,14 +10,22 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpAttribute;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
+import pdp.domain.*;
 import pdp.policies.PolicyLoader;
 import pdp.teams.TeamsPIP;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
+import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.

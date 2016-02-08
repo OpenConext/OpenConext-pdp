@@ -26,27 +26,28 @@ public class UrlResourceServiceRegistryTest {
 
   @Before
   public void before() throws IOException {
-    this.idpResponse = IOUtils.toString(new ClassPathResource("service-registry/saml20-idp-remote.test.json").getInputStream());
+    this.idpResponse = IOUtils.toString(new ClassPathResource("service-registry/identity-providers.json").getInputStream());
     stubFor(get(urlEqualTo("/idp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(idpResponse)));
 
-    this.spResponse = IOUtils.toString(new ClassPathResource("service-registry/saml20-sp-remote.test.json").getInputStream());
+    this.spResponse = IOUtils.toString(new ClassPathResource("service-registry/service-providers.json").getInputStream());
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(spResponse)));
 
     stubFor(head(urlEqualTo("/idp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(200)));
 
-    this.subject = new UrlResourceServiceRegistry("http://localhost:8889/idp", "http://localhost:8889/sp", 10);
+    this.subject = new UrlResourceServiceRegistry("user", "password", "http://localhost:8889/idp", "http://localhost:8889/sp", 10);
   }
 
   @Test
   public void testMetaData() throws Exception {
-    assertEquals(1, subject.identityProviders().size());
-    assertEquals(3, subject.serviceProviders().size());
+    assertEquals(8, subject.identityProviders().size());
+    assertEquals(24, subject.serviceProviders().size());
   }
 
   @Test
   public void testInitializeMetaDataNotModifed() throws IOException {
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(500)));
     stubFor(head(urlEqualTo("/idp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(304)));
+    stubFor(head(urlEqualTo("/sp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(304)));
     subject.initializeMetadata();
   }
 }

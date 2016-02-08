@@ -1,10 +1,11 @@
 package pdp.domain;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import static java.util.Arrays.stream;
 
-public class EntityMetaData {
+public class EntityMetaData implements Serializable {
 
   private final String entityId;
   private final String institutionId;
@@ -13,7 +14,7 @@ public class EntityMetaData {
   private final String descriptionNl;
   private final String nameNl;
   private final boolean policyEnforcementDecisionRequired;
-  private final boolean allowedAll;
+  private boolean allowedAll;
   private final Set<String> allowedEntityIds;
 
   public EntityMetaData(String entityId, String institutionId, String descriptionEn, String nameEn, String descriptionNl,

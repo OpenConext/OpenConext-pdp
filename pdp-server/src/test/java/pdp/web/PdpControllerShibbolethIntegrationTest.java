@@ -1,25 +1,8 @@
 package pdp.web;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static pdp.util.StreamUtils.singletonCollector;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -30,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.web.client.RestTemplate;
-
 import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpApplication;
 import pdp.domain.JsonPolicyRequest;
@@ -40,6 +22,16 @@ import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
 import pdp.teams.VootClientConfig;
 import pdp.xacml.PolicyTemplateEngine;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static pdp.util.StreamUtils.singletonCollector;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
@@ -58,8 +50,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
     // only one, the policy with no IdP and a SP with allowedAll
-    assertThat(definitions, hasSize(1));
-    assertEquals("google.com/a/terenatest.org", definitions.get(0).getServiceProviderId());
+    assertEquals(definitions.size(), 5);
   }
 
   @Test
@@ -75,7 +66,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
   public void testPolicyDefinitionsByServiceProvider() {
     addShibHeaders();
 
-    List<PdpPolicyDefinition> definitions = getForObject("/internal/policies/sp?serviceProvider=https://surftest.viadesk.com", pdpPolicyDefinitionsType);
+    List<PdpPolicyDefinition> definitions = getForObject("/internal/policies/sp?serviceProvider=http://mock-sp", pdpPolicyDefinitionsType);
 
     assertThat(definitions, hasSize(1));
   }
@@ -227,8 +218,8 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     assertEquals("John Doe", shibbolethUser.get("displayName"));
     assertEquals(PolicyLoader.authenticatingAuthority, shibbolethUser.get("authenticatingAuthority"));
 
-    assertThat((Collection<?>) shibbolethUser.get("idpEntities"), hasSize(1));
-    assertThat((Collection<?>) shibbolethUser.get("spEntities"), hasSize(1));
+    assertEquals(2, ((Collection)shibbolethUser.get("idpEntities")).size());
+    assertEquals(3, ((Collection)shibbolethUser.get("spEntities")).size());
   }
 
   @Test
