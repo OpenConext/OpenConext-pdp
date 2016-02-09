@@ -19,7 +19,7 @@ public class PdpAttribute {
 
   public PdpAttribute(String name, String value) {
     this.name = name;
-    this.value = value;
+    this.value = value != null ? value.trim() : value;
   }
 
   public String getName() {

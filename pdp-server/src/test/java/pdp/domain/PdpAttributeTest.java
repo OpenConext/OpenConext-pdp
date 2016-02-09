@@ -24,4 +24,11 @@ public class PdpAttributeTest {
     assertTrue(s.contains("some_name"));
     assertTrue(s.contains("some_value"));
   }
+
+  @Test
+  public void testValueTrim() {
+    PdpAttribute nullCheck = new PdpAttribute("some_name",null);
+    PdpAttribute attr = new PdpAttribute("some_name","  123  ");
+    assertEquals("123", attr.getValue());
+  }
 }
