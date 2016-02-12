@@ -2,13 +2,19 @@ package pdp.serviceregistry;
 
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URLConnection;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Base64;
+
+import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
+import static org.springframework.http.HttpHeaders.IF_MODIFIED_SINCE;
 
 public class BasicAuthenticationUrlResource extends UrlResource {
 
@@ -22,9 +28,7 @@ public class BasicAuthenticationUrlResource extends UrlResource {
   @Override
   public InputStream getInputStream() throws IOException {
     URLConnection con = this.getURL().openConnection();
-    con.setRequestProperty("Authorization", basicAuth);
-    con.setRequestProperty(HttpHeaders.CONTENT_TYPE, "application/json");
-    con.setConnectTimeout(5 * 1000);
+    setHeaders(con);
     try {
       return con.getInputStream();
     } catch (IOException ex) {
@@ -35,7 +39,29 @@ public class BasicAuthenticationUrlResource extends UrlResource {
     }
   }
 
-  public String getBasicAuth() {
-    return basicAuth;
+  public boolean isModified(int minutes) {
+    HttpURLConnection con = null;
+    try {
+      con = (HttpURLConnection) this.getURL().openConnection();
+      con.setRequestMethod("HEAD");
+      setHeaders(con);
+
+      String lastRefresh = RFC_1123_DATE_TIME.format(ZonedDateTime.now(ZoneId.of("GMT")).minusMinutes(minutes));
+      con.setRequestProperty(IF_MODIFIED_SINCE, lastRefresh);
+
+      int responseCode = con.getResponseCode();
+      return responseCode != HttpStatus.NOT_MODIFIED.value();
+    } catch (IOException ex) {
+      con.disconnect();
+      throw new RuntimeException(ex);
+    }
   }
+
+  private void setHeaders(URLConnection con) {
+    con.setRequestProperty("Authorization", basicAuth);
+    con.setRequestProperty(HttpHeaders.CONTENT_TYPE, "application/json");
+    con.setConnectTimeout(5 * 1000);
+  }
+
+
 }

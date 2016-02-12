@@ -67,16 +67,10 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
 
   @Override
   protected void initializeMetadata() {
-    HttpHeaders headers = new HttpHeaders();
-    String modifiedSinceLastCall = RFC_1123_DATE_TIME.format(ZonedDateTime.now(GMT).minusMinutes(period));
-    headers.set(IF_MODIFIED_SINCE, modifiedSinceLastCall);
-    headers.set("Authorization", idpUrlResource.getBasicAuth());
-
-    ResponseEntity<String> resultIdp = restTemplate.exchange(idpRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
-    ResponseEntity<String> resultSp = restTemplate.exchange(spRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
-
-    if (resultIdp.getStatusCode().equals(OK) || resultSp.getStatusCode().equals(OK)) {
+    if (spUrlResource.isModified(period) || idpUrlResource.isModified(period) ) {
       super.initializeMetadata();
+    } else {
+      LOG.debug("Not refreshing SP metadata. Not modified");
     }
   }
 
