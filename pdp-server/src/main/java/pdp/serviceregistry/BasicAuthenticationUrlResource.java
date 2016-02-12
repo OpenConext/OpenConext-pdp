@@ -34,4 +34,8 @@ public class BasicAuthenticationUrlResource extends UrlResource {
       throw ex;
     }
   }
+
+  public String getBasicAuth() {
+    return basicAuth;
+  }
 }

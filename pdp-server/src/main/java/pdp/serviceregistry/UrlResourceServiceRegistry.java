@@ -49,8 +49,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
     requestFactory.setConnectTimeout(5 * 1000);
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(() ->
-        this.initializeMetadata(), period, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshMetaData, period, period, TimeUnit.MINUTES);
     super.initializeMetadata();
   }
 
@@ -71,12 +70,22 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     HttpHeaders headers = new HttpHeaders();
     String modifiedSinceLastCall = RFC_1123_DATE_TIME.format(ZonedDateTime.now(GMT).minusMinutes(period));
     headers.set(IF_MODIFIED_SINCE, modifiedSinceLastCall);
+    headers.set("Authorization", idpUrlResource.getBasicAuth());
 
     ResponseEntity<String> resultIdp = restTemplate.exchange(idpRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
     ResponseEntity<String> resultSp = restTemplate.exchange(spRemotePath, HttpMethod.HEAD, new HttpEntity<>(headers), String.class);
 
     if (resultIdp.getStatusCode().equals(OK) || resultSp.getStatusCode().equals(OK)) {
       super.initializeMetadata();
+    }
+  }
+
+  private void refreshMetaData() {
+    try {
+      this.initializeMetadata();
+    } catch (RuntimeException e) {
+      LOG.error("Error in refreshing metadata", e);
+      //don't rethrow as this will stop the scheduled thread pool
     }
   }
 

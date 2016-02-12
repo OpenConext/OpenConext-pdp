@@ -24,7 +24,7 @@ import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
 public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
-  protected final static Logger LOG = LoggerFactory.getLogger(ClassPathResourceServiceRegistry.class);
+  protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
   private final static ObjectMapper objectMapper = new ObjectMapper();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
