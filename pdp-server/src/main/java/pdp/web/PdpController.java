@@ -141,10 +141,6 @@ public class PdpController {
 
   @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "/protected/policies"})
   public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
-    //We by default don't allow active policies from non admins
-    if (policyIdpAccessEnforcer.isPolicyIdpAccessEnforcementRequired()) {
-      pdpPolicyDefinition.setActive(false);
-    }
     String policyXml = policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
     //if this works then we know the input was correct
     pdpPolicyDefinitionParser.parsePolicy(policyXml);
