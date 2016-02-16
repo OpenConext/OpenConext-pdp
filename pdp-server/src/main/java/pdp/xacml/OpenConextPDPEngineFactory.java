@@ -17,19 +17,8 @@ public class OpenConextPDPEngineFactory extends OpenAZPDPEngineFactory {
                              PdpPolicyRepository pdpPolicyRepository,
                              VootClient vootClient,
                              SabClient sabClient) throws FactoryException, IOException {
-    EvaluationContextFactory evaluationContextFactory = EvaluationContextFactory.newInstance();
-    /**
-     * Need to do this to remain property driven as OpenAZ is designed and be able to inject dependencies
-     */
-    if (evaluationContextFactory instanceof OpenConextEvaluationContextFactory) {
-      OpenConextEvaluationContextFactory factory = (OpenConextEvaluationContextFactory) evaluationContextFactory;
-      factory.injectPolicyFinderDependencies(pdpPolicyRepository);
-      factory.injectPIPFinderDependencies(vootClient, sabClient);
-      factory.setCachePolicies(cachePolicies);
-      factory.setIncludeInactivePolicies(includeInactivePolicies);
-    }
+    EvaluationContextFactory evaluationContextFactory = new OpenConextEvaluationContextFactory(pdpPolicyRepository, vootClient, sabClient, cachePolicies, includeInactivePolicies);
     return new OpenConextPDPEngine(evaluationContextFactory, this.getDefaultBehavior(), this.getScopeResolver());
   }
-
 
 }

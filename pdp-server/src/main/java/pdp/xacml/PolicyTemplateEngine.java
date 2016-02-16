@@ -10,6 +10,9 @@ import pdp.domain.PdpPolicyDefinition;
 import java.io.IOException;
 import java.io.StringWriter;
 
+/*
+ * Thread-safe
+ */
 public class PolicyTemplateEngine {
 
   private final static Logger LOG = LoggerFactory.getLogger(PolicyTemplateEngine.class);

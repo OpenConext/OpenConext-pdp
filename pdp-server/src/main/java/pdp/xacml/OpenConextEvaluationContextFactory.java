@@ -30,18 +30,22 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   private static Logger LOG = LoggerFactory.getLogger(OpenConextEvaluationContextFactory.class);
 
-  private PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
+  private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
 
-  private PdpPolicyRepository pdpPolicyRepository;
-  private boolean cachePolicies;
-  private boolean includeInactivePolicies;
+  private final PdpPolicyRepository pdpPolicyRepository;
+  private final boolean cachePolicies;
+  private final boolean includeInactivePolicies;
 
-  public OpenConextEvaluationContextFactory() throws IOException {
-  }
-
-  public void injectPolicyFinderDependencies(PdpPolicyRepository pdpPolicyRepository) {
+  public OpenConextEvaluationContextFactory(PdpPolicyRepository pdpPolicyRepository,
+                                            VootClient vootClient,
+                                            SabClient sabClient,
+                                            boolean cachePolicies,
+                                            boolean includeInactivePolicies) throws IOException {
     this.pdpPolicyRepository = pdpPolicyRepository;
+    this.cachePolicies = cachePolicies;
+    this.includeInactivePolicies = includeInactivePolicies;
     setPolicyFinder(loadPolicyFinder());
+    setPIPFinder(loadPIPFinder(vootClient, sabClient));
   }
 
   @Override
@@ -96,18 +100,6 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
         }
     );
     return policyDef;
-  }
-
-  public void injectPIPFinderDependencies(VootClient vootClient, SabClient sabClient) {
-    setPIPFinder(loadPIPFinder(vootClient, sabClient));
-  }
-
-  public void setCachePolicies(boolean cachePolicies) {
-    this.cachePolicies = cachePolicies;
-  }
-
-  public void setIncludeInactivePolicies(boolean includeInactivePolicies) {
-    this.includeInactivePolicies = includeInactivePolicies;
   }
 
   private PIPFinder loadPIPFinder(VootClient vootClient, SabClient sabClient) {

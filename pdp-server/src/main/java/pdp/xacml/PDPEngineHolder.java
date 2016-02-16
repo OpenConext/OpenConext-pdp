@@ -2,11 +2,14 @@ package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
+import org.apache.openaz.xacml.util.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
 import pdp.teams.VootClient;
+
+import java.io.IOException;
 
 public class PDPEngineHolder {
 
@@ -24,15 +27,9 @@ public class PDPEngineHolder {
 
   public PDPEngine newPdpEngine(boolean cachePolicies, boolean includeInactivePolicies) {
     try {
-      PDPEngineFactory factory = PDPEngineFactory.newInstance();
-
-      //We stick to the properties driven design of open-az, but we can't otherwise hook into the needed dependencies
-      if (factory instanceof OpenConextPDPEngineFactory) {
-        return ((OpenConextPDPEngineFactory) factory).newEngine(cachePolicies, includeInactivePolicies, pdpPolicyRepository, vootClient, sabClient);
-      } else {
-        return factory.newEngine();
-      }
-    } catch (Exception e) {
+      OpenConextPDPEngineFactory factory = new OpenConextPDPEngineFactory();
+      return factory.newEngine(cachePolicies, includeInactivePolicies, pdpPolicyRepository, vootClient, sabClient);
+    } catch (IOException | FactoryException e) {
       LOG.error("Exception while re-creating PDPEngine", e);
       throw new RuntimeException(e);
     }

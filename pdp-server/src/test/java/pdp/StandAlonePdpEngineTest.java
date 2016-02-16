@@ -64,7 +64,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
 
-  private void setUp(boolean includeAggregatedAttributesInResponse, String... policyFiles) throws IOException, FactoryException {
+  private void setUp(String... policyFiles) throws IOException, FactoryException {
     pdpPolicyRepository = mock(PdpPolicyRepository.class);
     List<PdpPolicy> pdpPolicies = Arrays.asList(policyFiles).stream().map(policyFile -> loadPolicy(policyFile)).collect(toList());
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
@@ -89,56 +89,56 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
   @Test
   public void testMultipleAndPolicy() throws Exception {
-    doDecideTest("test_request_multiple_and.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.and.Policy.xml");
+    doDecideTest("test_request_multiple_and.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.and.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithPermit() throws Exception {
-    doDecideTest("test_request_deny_policy_permit.json", Decision.PERMIT, true, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_deny_policy_permit.json", Decision.PERMIT, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithDeny() throws Exception {
-    doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, true, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testDenyPolicyWithMissingAttribute() throws Exception {
-    Result result = doDecideTest("test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE, true, "OpenConext.pdp.test.deny.Policy.xml");
+    Result result = doDecideTest("test_request_deny_policy_missing_attribute.json", Decision.INDETERMINATE, "OpenConext.pdp.test.deny.Policy.xml");
     assertEquals("Missing required attribute", result.getStatus().getStatusMessage());
   }
 
   @Test
   public void testDenyPolicyWithNoPolicyFound() throws Exception {
-    doDecideTest("test_request_no_matching_target.json", Decision.NOTAPPLICABLE, true, "OpenConext.pdp.test.deny.Policy.xml");
+    doDecideTest("test_request_no_matching_target.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.deny.Policy.xml");
   }
 
   @Test
   public void testPermitPolicyWithMultipleOr() throws Exception {
-    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.or.Policy.xml");
+    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.or.Policy.xml");
   }
 
   @Test
 
   public void testTeamsPolicyWithAggregatedAttributes() throws Exception {
-    Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.teams.Policy.xml");
+    Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, "OpenConext.pdp.test.teams.Policy.xml");
     assertAggregatedAttribute(result, TeamsPIP.GROUP_URN, "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo");
   }
 
   @Test
   public void testSabPolicyWithAggregatedAttributes() throws Exception {
-    Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.sab.Policy.xml");
+    Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, "OpenConext.pdp.test.sab.Policy.xml");
     assertAggregatedAttribute(result, SabPIP.SAB_URN, "OperationeelBeheerder");
   }
 
   @Test
   public void testPermitPolicyWithMultipleIdp() throws Exception {
-    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, true, "OpenConext.pdp.test.multiple.or.Policy.xml");
+    doDecideTest("test_request_multiple_or.json", Decision.PERMIT, "OpenConext.pdp.test.multiple.or.Policy.xml");
   }
 
   @Test
   public void testConflictingPolicies() throws Exception {
-    Result result = doDecideTest("test_request_conflicting_policies.json", Decision.DENY, true,
+    Result result = doDecideTest("test_request_conflicting_policies.json", Decision.DENY,
         "OpenConext.pdp.test.conflicting.policies.1.Policy.xml",
         "OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
     );
@@ -147,14 +147,19 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     assertEquals(PolicyTemplateEngine.getPolicyId("OpenConext.pdp.test.conflicting.policies.2.Policy.xml"), reference.getId().stringValue());
   }
 
-  private Result doDecideTest(final String requestFile, Decision decision, boolean includeAggregatedAttributesInResponse, String... policyFiles) throws Exception {
-      setUp(includeAggregatedAttributesInResponse, policyFiles);
+  @Test
+  public void testNotApplicable() throws Exception {
+    doDecideTest("json_policy_request.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.unknown.SP.Policy.xml");
+  }
 
-      String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
-      Request pdpRequest = JSONRequest.load(payload);
+  private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
+    setUp(policyFiles);
 
-      Response pdpResponse = pdpEngine.decide(pdpRequest);
-      return assertResponse(decision, pdpResponse);
+    String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
+    Request pdpRequest = JSONRequest.load(payload);
+
+    Response pdpResponse = pdpEngine.decide(pdpRequest);
+    return assertResponse(decision, pdpResponse);
   }
 
   private Result assertResponse(Decision decision, Response pdpResponse) throws Exception {
