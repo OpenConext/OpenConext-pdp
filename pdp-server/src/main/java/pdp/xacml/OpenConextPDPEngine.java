@@ -19,13 +19,8 @@ import static pdp.util.StreamUtils.singletonCollector;
 
 public class OpenConextPDPEngine extends OpenAZPDPEngine {
 
-  private final boolean policyIncludeAggregatedAttributes;
-
-  private static final List<String> includeAggregatedAttributesIdentifiers = Arrays.asList(TeamsPIP.GROUP_URN, SabPIP.SAB_URN);
-
-  public OpenConextPDPEngine(boolean policyIncludeAggregatedAttributes, EvaluationContextFactory evaluationContextFactoryIn, Decision defaultDecisionIn, ScopeResolver scopeResolverIn) {
+  public OpenConextPDPEngine(EvaluationContextFactory evaluationContextFactoryIn, Decision defaultDecisionIn, ScopeResolver scopeResolverIn) {
     super(evaluationContextFactoryIn, defaultDecisionIn, scopeResolverIn);
-    this.policyIncludeAggregatedAttributes = policyIncludeAggregatedAttributes;
   }
 
   @Override
@@ -42,41 +37,5 @@ public class OpenConextPDPEngine extends OpenAZPDPEngine {
     }
     return result;
   }
-
-  @Override
-  public Response decide(Request pepRequest) throws PDPException {
-    Response pdpResponse = super.decide(pepRequest);
-    pdpResponse = includeAggregatedAttributes(pdpResponse);
-    return pdpResponse;
-  }
-
-  //Add the PIP attributes that were aggregated
-  private Response includeAggregatedAttributes(Response pdpResponse) {
-    Result result = pdpResponse.getResults().stream().collect(singletonCollector());
-
-    StdMutableResult newResult = new StdMutableResult(result.getDecision(), result.getStatus());
-    newResult.addObligations(result.getObligations());
-    newResult.addAdvice(result.getAssociatedAdvice());
-    newResult.addPolicyIdentifiers(result.getPolicyIdentifiers());
-    newResult.addPolicySetIdentifiers(result.getPolicySetIdentifiers());
-
-    //feature toggle
-    if (policyIncludeAggregatedAttributes && result.getDecision().equals(Decision.PERMIT)) {
-      /*
-       * We could filter out all the attributes that were already in the request, but for now we hard-code
-       * which attributes we will send back. When new PIPEngine implementations are added then the
-       * attribute getIdentifier(s) need to be added
-       */
-      List<AttributeCategory> attributeCategories = result.getAttributes().stream().filter(attrCat -> isAddedAttributeCategory(attrCat)).distinct().collect(toList());
-      newResult.addAttributeCategories(attributeCategories);
-    }
-
-    return new StdMutableResponse(newResult);
-  }
-
-  private boolean isAddedAttributeCategory(AttributeCategory attributeCategory) {
-    return includeAggregatedAttributesIdentifiers.contains(attributeCategory.getCategory().getUri().toString());
-  }
-
 
 }

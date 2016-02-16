@@ -70,7 +70,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
     OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
-    this.pdpEngine = pdpEngineFactory.newEngine(includeAggregatedAttributesInResponse, pdpPolicyRepository, vootClient, sabClient);
+    this.pdpEngine = pdpEngineFactory.newEngine(true, false, pdpPolicyRepository, vootClient, sabClient);
   }
 
   private PdpPolicy loadPolicy(String policyFile) {
@@ -126,21 +126,9 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
-  public void testTeamsPolicyWithoutAggregatedAttributes() throws Exception {
-    Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, false, "OpenConext.pdp.test.teams.Policy.xml");
-    assertEquals(0, result.getAttributes().size());
-  }
-
-  @Test
   public void testSabPolicyWithAggregatedAttributes() throws Exception {
     Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, true, "OpenConext.pdp.test.sab.Policy.xml");
     assertAggregatedAttribute(result, SabPIP.SAB_URN, "OperationeelBeheerder");
-  }
-
-  @Test
-  public void testSabPolicyWithoutAggregatedAttributes() throws Exception {
-    Result result = doDecideTest("test_request_sab_policy.json", Decision.PERMIT, false, "OpenConext.pdp.test.sab.Policy.xml");
-    assertEquals(0, result.getAttributes().size());
   }
 
   @Test

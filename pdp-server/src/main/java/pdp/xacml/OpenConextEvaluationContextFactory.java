@@ -37,8 +37,6 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
   private boolean includeInactivePolicies;
 
   public OpenConextEvaluationContextFactory() throws IOException {
-    this.cachePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.cachePolicies", "true"));
-    this.includeInactivePolicies = Boolean.valueOf(XACMLProperties.getProperties().getProperty("openconext.pdp.includeInactivePolicies", "false"));
   }
 
   public void injectPolicyFinderDependencies(PdpPolicyRepository pdpPolicyRepository) {
@@ -102,6 +100,14 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
 
   public void injectPIPFinderDependencies(VootClient vootClient, SabClient sabClient) {
     setPIPFinder(loadPIPFinder(vootClient, sabClient));
+  }
+
+  public void setCachePolicies(boolean cachePolicies) {
+    this.cachePolicies = cachePolicies;
+  }
+
+  public void setIncludeInactivePolicies(boolean includeInactivePolicies) {
+    this.includeInactivePolicies = includeInactivePolicies;
   }
 
   private PIPFinder loadPIPFinder(VootClient vootClient, SabClient sabClient) {

@@ -67,23 +67,25 @@ public class PdpController {
   private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
   private final ServiceRegistry serviceRegistry;
   private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
-  private final boolean policyIncludeAggregatedAttributes;
+  private final PDPEngine playgroundPdpEngine;
+  private final boolean cachePolicies;
 
   // Can't be final as we need to swap this to reload policies in production
   private PDPEngine pdpEngine;
 
   @Autowired
   public PdpController(@Value("${period.policies.refresh.minutes}") int period,
-                       @Value("${policy.include.aggregated.attributes}") boolean policyIncludeAggregatedAttributes,
+                       @Value("${policies.cachePolicies}") boolean cachePolicies,
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PdpPolicyRepository pdpPolicyRepository,
                        PDPEngineHolder pdpEngineHolder,
                        ServiceRegistry serviceRegistry) {
+    this.cachePolicies = cachePolicies;
     this.pdpEngineHolder = pdpEngineHolder;
-    this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
+    this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
+    this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
     this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
     this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
-    this.policyIncludeAggregatedAttributes = policyIncludeAggregatedAttributes;
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
@@ -107,7 +109,7 @@ public class PdpController {
 
     Request request = JSONRequest.load(payload);
 
-    Response pdpResponse = pdpEngine.decide(request);
+    Response pdpResponse = isPlayground ? playgroundPdpEngine.decide(request) : pdpEngine.decide(request);
 
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
     LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
@@ -300,7 +302,7 @@ public class PdpController {
   private void refreshPolicies() {
     LOG.info("Starting reloading policies");
     long start = System.currentTimeMillis();
-    this.pdpEngine = pdpEngineHolder.newPdpEngine(policyIncludeAggregatedAttributes);
+    this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
     LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
   }
 

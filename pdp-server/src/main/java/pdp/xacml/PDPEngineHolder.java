@@ -22,13 +22,13 @@ public class PDPEngineHolder {
     this.sabClient = sabClient;
   }
 
-  public PDPEngine newPdpEngine(boolean policyIncludeAggregatedAttributes) {
+  public PDPEngine newPdpEngine(boolean cachePolicies, boolean includeInactivePolicies) {
     try {
       PDPEngineFactory factory = PDPEngineFactory.newInstance();
 
       //We stick to the properties driven design of open-az, but we can't otherwise hook into the needed dependencies
       if (factory instanceof OpenConextPDPEngineFactory) {
-        return ((OpenConextPDPEngineFactory) factory).newEngine(policyIncludeAggregatedAttributes, pdpPolicyRepository, vootClient, sabClient);
+        return ((OpenConextPDPEngineFactory) factory).newEngine(cachePolicies, includeInactivePolicies, pdpPolicyRepository, vootClient, sabClient);
       } else {
         return factory.newEngine();
       }
