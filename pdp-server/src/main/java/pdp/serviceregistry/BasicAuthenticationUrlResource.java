@@ -27,14 +27,12 @@ public class BasicAuthenticationUrlResource extends UrlResource {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    URLConnection con = this.getURL().openConnection();
+    HttpURLConnection con = (HttpURLConnection) this.getURL().openConnection();
     setHeaders(con);
     try {
       return con.getInputStream();
     } catch (IOException ex) {
-      if (con instanceof HttpURLConnection) {
-        ((HttpURLConnection) con).disconnect();
-      }
+      con.disconnect();
       throw ex;
     }
   }
