@@ -5,7 +5,7 @@
 
     <groupId>org.openconext</groupId>
     <artifactId>pdp</artifactId>
-    <version>1.0.4-SNAPSHOT</version>
+    <version>1.0.4</version>
     <packaging>pom</packaging>
 
     <name>pdp</name>
