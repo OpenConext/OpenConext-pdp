@@ -98,6 +98,11 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   @Test
+  public void testMulivaluedAttributePolicyWithPermit() throws Exception {
+    doDecideTest("test_request_multivalued_attribute.json", Decision.PERMIT, "OpenConext.pdp.test.multivalued.attribute.Policy.xml");
+  }
+
+  @Test
   public void testDenyPolicyWithDeny() throws Exception {
     doDecideTest("test_request_deny_policy_deny.json", Decision.DENY, "OpenConext.pdp.test.deny.Policy.xml");
   }

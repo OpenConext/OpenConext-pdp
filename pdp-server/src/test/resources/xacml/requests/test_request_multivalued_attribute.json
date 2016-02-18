@@ -1,0 +1,34 @@
+{
+  "Request": {
+    "ReturnPolicyIdList": true,
+    "CombinedDecision": false,
+    "AccessSubject": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "employee"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "student"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "teacher"
+        }
+      ]
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "SPentityID",
+          "Value": "avans_sp"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "avans_idp"
+        }
+      ]
+    }
+  }
+}
