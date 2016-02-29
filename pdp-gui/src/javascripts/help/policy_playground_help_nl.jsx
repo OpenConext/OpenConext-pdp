@@ -7,25 +7,25 @@ App.Help.PolicyPlaygroundHelpNl = React.createClass({
           <h1>Hoe kan je Playground gebruiken?</h1>
 
           <p>Met de SURFconext Policy Administration Point (PAP) kan je <a href="https://en.wikipedia.org/wiki/XACML"
-                                                                           target="_blank">XACML</a> autorisatie regels
-            beheren. Autorisatie regels definiëren wie wordt geautoriseerd voor welke combinatie van instelling en
+                                                                           target="_blank">XACML</a> autorisatieregels
+            beheren. Autorisatieregels definiëren wie wordt geautoriseerd voor welke combinatie van instelling en
             dienst op basis
             van de attributen van de gebruiker.</p>
 
-          <p>Deze playground kan worden gebruikt om je autorisatie regels te testen. Nieuwe en / of bewerkte autorisatie
+          <p>Deze playground kan worden gebruikt om je autorisatieregels te testen. Nieuwe en / of bewerkte autorisatie
             regels kunnen
             direct worden getest.</p>
 
-          <p>Door een autorisatie regel te selecteren kan je direct deze regel testen zonder alle juiste input
+          <p>Door een autorisatieregel te selecteren kan je direct deze regel testen zonder alle juiste input
             parameters te kiezen.</p>
 
           <h2>Dienst (SP) en instelling (IdP)</h2>
 
-          <p>Kies de dienst die je hebt gedefinieerd in je autorisatie regel. Mocht je de autorisatie regel hebben
+          <p>Kies de dienst die je hebt gedefinieerd in je autorisatieregel. Mocht je de autorisatieregel hebben
             gedefinieerd zonder instelling, dan moet je toch een instelling
             hier kiezen om een geldig autorisatie verzoek te doen. De gekozen instelling zal worden genegeerd als er
             geen
-            instelling is gekozen in je autorisatie regel.</p>
+            instelling is gekozen in je autorisatieregel.</p>
 
           <h2>Attributen</h2>
 
@@ -45,16 +45,16 @@ App.Help.PolicyPlaygroundHelpNl = React.createClass({
 
           <p>Er zijn 4 mogelijke resultaten van een autorisatie verzoek:</p>
           <ul>
-            <li><span>'Permit'</span> - Minstens één autorisatie regel was van toepassing en de 'Permit' regel was een
+            <li><span>'Permit'</span> - Minstens één autorisatieregel was van toepassing en de 'Permit' regel was een
               match met de attributen
             </li>
-            <li><span>'Deny'</span> - Minstens één autorisatie regel was van toepassing en er was geen match met de
+            <li><span>'Deny'</span> - Minstens één autorisatieregel was van toepassing en er was geen match met de
               attributen
             </li>
-            <li><span>'Not Applicable'</span> - Niet één autorisatie regel was van toepassing op basis van de
+            <li><span>'Not Applicable'</span> - Niet één autorisatieregel was van toepassing op basis van de
               geselecteerde dienst en instelling
             </li>
-            <li><span>'Indeterminate'</span> - Een verplicht attribuut voor de autorisatie regel is niet meegestuurd.
+            <li><span>'Indeterminate'</span> - Een verplicht attribuut voor de autorisatieregel is niet meegestuurd.
               Dit kan alleen gebeuren bij 'Deny' regels.
             </li>
           </ul>

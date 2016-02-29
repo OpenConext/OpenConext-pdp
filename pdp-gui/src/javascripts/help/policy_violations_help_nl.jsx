@@ -20,7 +20,7 @@ App.Help.PolicyViotaltionsHelpNl = React.createClass({
           <ul>
             <li>Het originele JSON verzoek van de PEP</li>
             <li>Het JSON antwoord van de PDP</li>
-            <li>Een referentie naar de autorisatie regel verantwoordelijk voor het negatieve besluit</li>
+            <li>Een referentie naar de autorisatieregel verantwoordelijk voor het negatieve besluit</li>
             <li>Het besluit - e.g. Deny of Indeterminate - van de PDP</li>
           </ul>
 

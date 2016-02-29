@@ -29,11 +29,11 @@ I18n.translations.nl = {
   },
 
   navigation: {
-    policies: "Autorisatie regels",
+    policies: "Autorisatieregels",
     violations: "Ongeautoriseerde logins",
     playground: "Playground",
     my_idp: "Mijn instelling",
-    new_policy: "+ Nieuwe autorisatie regel",
+    new_policy: "+ Nieuwe autorisatieregel",
     identity: "Identiteit"
   },
 
@@ -47,12 +47,12 @@ I18n.translations.nl = {
     identityProviderId: "Instelling",
     violations: "Overtredingen",
     revisions: "Revisies",
-    search: "Zoek autorisatie regels...",
-    flash: "Autorisatie regel '{{policyName}}' is succesvol {{action}}",
+    search: "Zoek autorisatieregels...",
+    flash: "Autorisatieregel '{{policyName}}' is succesvol {{action}}",
     flash_updated: "bijgewerkt",
     flash_created: "aangemaakt",
     flash_deleted: "verwijderd",
-    confirmation: "Weet je zeker dat je autorisatie regel {{policyName}} wilt verwijderen?",
+    confirmation: "Weet je zeker dat je autorisatieregel {{policyName}} wilt verwijderen?",
     edit: "Bewerk",
     delete: "Verwijder",
   },
@@ -69,8 +69,8 @@ I18n.translations.nl = {
   },
 
   policy_detail: {
-    update_policy: "Bijwerken autorisatie regel",
-    create_policy: "Nieuwe autorisatie regel",
+    update_policy: "Bijwerken autorisatieregel",
+    create_policy: "Nieuwe autorisatieregel",
     confirmation: "Weet je zeker dat je deze pagina wilt sluiten?",
     name: "Naam",
     description: "Omschrijving",
@@ -86,11 +86,11 @@ I18n.translations.nl = {
     idps_placeholder: "Selecteer de instellingen - 0 of meer",
     rule: "Regel",
     rule_and: "EN",
-    rule_and_info: "Autorisatie regels met een logische EN dwingen af dat alle gedefinieerde attributen moeten matchen.",
+    rule_and_info: "Autorisatieregels met een logische EN dwingen af dat alle gedefinieerde attributen moeten matchen.",
     rule_or: "OF",
-    rule_or_info: "Voor autorisatie regels met een logische OF is het slechts vereist dat 1 attribuut matched.",
+    rule_or_info: "Voor autorisatieregels met een logische OF is het slechts vereist dat 1 attribuut matched.",
     rule_info_add: " Attribuut waardes van hetzelfde attribuut zullen altijd worden geevalueerd met de logische OF.",
-    rule_info_add_2: "Een 'Deny' autorisatie regel wordt altijd geevalueerd met de logische EN voor attribuut waarden van verschillende attributen.",
+    rule_info_add_2: "Een 'Deny' autorisatieregel wordt altijd geevalueerd met de logische EN voor attribuut waarden van verschillende attributen.",
     submit: "Verstuur",
     cancel: "Annuleer",
     sub_title: "Aangemaakt door {{displayName}} op {{created}}",
@@ -113,7 +113,7 @@ I18n.translations.nl = {
   },
 
   playground: {
-    policy: "Autorisatie regel",
+    policy: "Autorisatieregel",
     policy_info: "Optioneel, de geselecteerde regel wordt alleen gebruikt voor het zetten van de default voor de diesnt, instelling en attributen",
     policy_search: "Selecteer een regel",
     idp_placeholder: "Selecteer de instelling - verplicht",
