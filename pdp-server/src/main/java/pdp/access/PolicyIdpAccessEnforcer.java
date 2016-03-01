@@ -251,7 +251,7 @@ public class PolicyIdpAccessEnforcer {
 
     if (!FederatedUser.class.isAssignableFrom(principal.getClass())) {
       LOG.warn("Could not find federated user, but {}", principal);
-      throw new PolicyIdpAccessMissingFederatedUser("Could not find authenticated federated user");
+      throw new PolicyIdpAccessMissingFederatedUserException("Could not find authenticated federated user");
     }
 
     return (FederatedUser) principal;

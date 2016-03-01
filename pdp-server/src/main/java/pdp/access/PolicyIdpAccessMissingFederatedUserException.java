@@ -6,9 +6,9 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 
 @SuppressWarnings("serial")
 @ResponseStatus(value = FORBIDDEN)
-public class PolicyIdpAccessMissingFederatedUser extends AbstractPolicyIdpAccessException {
+public class PolicyIdpAccessMissingFederatedUserException extends AbstractPolicyIdpAccessException {
 
-  public PolicyIdpAccessMissingFederatedUser(String msg) {
+  public PolicyIdpAccessMissingFederatedUserException(String msg) {
     super(msg);
   }
 
