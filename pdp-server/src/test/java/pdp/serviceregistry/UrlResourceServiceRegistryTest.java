@@ -44,10 +44,18 @@ public class UrlResourceServiceRegistryTest {
   }
 
   @Test
-  public void testInitializeMetaDataNotModifed() throws IOException {
+  public void testInitializeMetaDataNotModifed() throws Exception {
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(500)));
     stubFor(head(urlEqualTo("/idp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(304)));
     stubFor(head(urlEqualTo("/sp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(304)));
     subject.initializeMetadata();
+    testMetaData();
   }
+
+  @Test
+  public void testInitializeMetaDataNoEndpoint() throws IOException {
+    stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(500)));
+    UrlResourceServiceRegistry sr = new UrlResourceServiceRegistry("u", "p", "http://localhost:9999/bogus", "http://localhost:9999/bogus", 10);
+  }
+
 }

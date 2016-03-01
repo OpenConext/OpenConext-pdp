@@ -22,7 +22,6 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry {
 
-  private static final ZoneId GMT = ZoneId.of("GMT");
   private final String idpRemotePath;
   private final String spRemotePath;
 
@@ -49,20 +48,20 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
     requestFactory.setConnectTimeout(5 * 1000);
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshMetaData, period, period, TimeUnit.MINUTES);
+    newScheduledThreadPool(1).scheduleAtFixedRate(this::initializeMetadata, period, period, TimeUnit.MINUTES);
     super.initializeMetadata();
   }
 
   @Override
-  protected List<Resource> getIdpResources() {
+  protected Resource getIdpResource() {
     LOG.debug("Fetching IDP metadata entries from {}", idpRemotePath);
-    return singletonList(idpUrlResource);
+    return idpUrlResource;
   }
 
   @Override
-  protected List<Resource> getSpResources() {
+  protected Resource getSpResource() {
     LOG.debug("Fetching SP metadata entries from {}", spRemotePath);
-    return singletonList(spUrlResource);
+    return spUrlResource;
   }
 
   @Override
@@ -74,13 +73,5 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     }
   }
 
-  private void refreshMetaData() {
-    try {
-      this.initializeMetadata();
-    } catch (RuntimeException e) {
-      LOG.error("Error in refreshing metadata", e);
-      //don't rethrow as this will stop the scheduled thread pool
-    }
-  }
 
 }

@@ -2,6 +2,7 @@ package pdp.serviceregistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -38,26 +39,26 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   protected void initializeMetadata() {
     entityMetaData = new HashMap<>();
-    entityMetaData.put(IDP_ENTITY_ID, mapResources(getIdpResources()));
-    entityMetaData.put(SP_ENTITY_ID, mapResources(getSpResources()));
-    LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+    try {
+      entityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
+      entityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
+      LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+    } catch (RuntimeException e) {
+      /*
+       * By design we catch the error and not rethrow it.
+       * UrlResourceServiceRegistry has timing issues when the server reboots and required endpoints are not available yet.
+       * ClassPathResourceServiceRegistry is only used in dev mode and any logged errors will end up in Rollbar
+       */
+      LOG.error("Error in refreshing / initializing metadata", e);
+    }
   }
 
-  private List<EntityMetaData> mapResources(List<Resource> resources) {
-    return resources.stream().map(resource -> parseEntities(resource)).flatMap(l -> l.stream()).collect(toList());
+  protected Resource getIdpResource() {
+    return new ClassPathResource("service-registry/identity-providers.json");
   }
 
-  protected List<Resource> getIdpResources() {
-    return doGetResources("service-registry/identity-providers.json");
-  }
-
-  protected List<Resource> getSpResources() {
-    return doGetResources("service-registry/service-providers.json");
-  }
-
-  protected List<Resource> doGetResources(String... paths) {
-    List<Resource> collect = asList(paths).stream().map(path -> new ClassPathResource(path)).collect(toList());
-    return collect;
+  protected Resource getSpResource() {
+    return new ClassPathResource("service-registry/service-providers.json");
   }
 
   @Override
