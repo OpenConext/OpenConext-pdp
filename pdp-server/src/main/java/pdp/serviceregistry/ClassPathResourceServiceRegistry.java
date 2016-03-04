@@ -171,11 +171,11 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   private Comparator<? super EntityMetaData> sortEntityMetaData() {
-    return (e1, e2) -> {
-      String n1 = e1.getNameEn() != null ? e1.getNameEn() : e1.getNameNl();
-      String n2 = e2.getNameEn() != null ? e2.getNameEn() : e2.getNameNl();
-      return n1 == null ? -1 : n2 == null ? -1 : n1.trim().compareTo(n2.trim());
-    };
+    return (e1, e2) -> getEntityMetaDataComparatorId(e1).compareTo(getEntityMetaDataComparatorId(e2));
+  }
+
+  private String getEntityMetaDataComparatorId(EntityMetaData metaData) {
+    return metaData.getNameEn() != null ? metaData.getNameEn() : metaData.getNameNl() != null ? metaData.getNameNl() : metaData.getEntityId();
   }
 
   private String getMetaDateEntry(Map<String, Object> entry, String attributeName) {
