@@ -1,13 +1,16 @@
 package pdp.serviceregistry;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import pdp.domain.EntityMetaData;
 
 import java.io.IOException;
+import java.util.List;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static junit.framework.TestCase.assertEquals;
@@ -26,10 +29,14 @@ public class UrlResourceServiceRegistryTest {
 
   @Before
   public void before() throws IOException {
-    this.idpResponse = IOUtils.toString(new ClassPathResource("service-registry/identity-providers.json").getInputStream());
+    doBefore("service-registry/identity-providers.json", "service-registry/service-providers.json");
+  }
+
+  private void doBefore(String idpPath, String spPath) throws IOException {
+    this.idpResponse = IOUtils.toString(new ClassPathResource(idpPath).getInputStream());
     stubFor(get(urlEqualTo("/idp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(idpResponse)));
 
-    this.spResponse = IOUtils.toString(new ClassPathResource("service-registry/service-providers.json").getInputStream());
+    this.spResponse = IOUtils.toString(new ClassPathResource(spPath).getInputStream());
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(spResponse)));
 
     stubFor(head(urlEqualTo("/idp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(200)));
@@ -56,6 +63,19 @@ public class UrlResourceServiceRegistryTest {
   public void testInitializeMetaDataNoEndpoint() throws IOException {
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(500)));
     UrlResourceServiceRegistry sr = new UrlResourceServiceRegistry("u", "p", "http://localhost:9999/bogus", "http://localhost:9999/bogus", 10);
+  }
+
+
+  @Test
+  public void testSorting() throws Exception {
+    doBefore("service-registry-test/identity-providers.json", "service-registry-test/service-providers.json");
+    List<EntityMetaData> identityProviders = subject.identityProviders();
+    assertEquals("5", identityProviders.get(0).getNameEn());
+    assertEquals("urn:test:idp:bas", identityProviders.get(identityProviders.size() - 1).getEntityId());
+
+    List<EntityMetaData> serviceProviders = subject.serviceProviders();
+    assertEquals("Bas Test SP | SURFnet", serviceProviders.get(0).getNameEn());
+    assertEquals("tst4", serviceProviders.get(serviceProviders.size() - 1).getEntityId());
   }
 
 }
