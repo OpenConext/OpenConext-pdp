@@ -8,6 +8,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import pdp.domain.EntityMetaData;
+import pdp.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static junit.framework.TestCase.assertEquals;
 import static org.springframework.http.HttpHeaders.IF_MODIFIED_SINCE;
+import static pdp.util.StreamUtils.singletonCollector;
 
 public class UrlResourceServiceRegistryTest {
 
@@ -76,6 +78,16 @@ public class UrlResourceServiceRegistryTest {
     List<EntityMetaData> serviceProviders = subject.serviceProviders();
     assertEquals("Bas Test SP | SURFnet", serviceProviders.get(0).getNameEn());
     assertEquals("tst4", serviceProviders.get(serviceProviders.size() - 1).getEntityId());
+  }
+
+  @Test
+  public void testNoNameFallback() throws Exception {
+    doBefore("service-registry-test/identity-providers.json", "service-registry-test/service-providers.json");
+    List<EntityMetaData> identityProviders = subject.identityProviders();
+    String idpEntityId = "https://beta.surfnet.nl/simplesaml/saml2/idp/metadata.php";
+    EntityMetaData idp = identityProviders.stream().filter(metaData -> metaData.getEntityId().equals(idpEntityId)).collect(singletonCollector());
+    assertEquals(idpEntityId, idp.getNameEn());
+    assertEquals(idpEntityId, idp.getNameNl());
   }
 
 }

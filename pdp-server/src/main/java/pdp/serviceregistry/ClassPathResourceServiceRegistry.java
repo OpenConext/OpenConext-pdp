@@ -180,9 +180,13 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   private String getMetaDateEntry(Map<String, Object> entry, String attributeName) {
     String attribute = (String) entry.get(attributeName + ":en");
-    if (attribute == null) {
+    if (!StringUtils.hasText(attribute)) {
       // try the other language
       attribute = (String) entry.get(attributeName + ":nl");
+      if (!StringUtils.hasText(attribute)) {
+        //fallback to entityId
+        attribute = (String) entry.get("entityid");
+      }
     }
     return attribute;
   }
