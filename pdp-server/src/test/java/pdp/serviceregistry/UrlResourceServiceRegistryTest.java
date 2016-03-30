@@ -1,14 +1,12 @@
 package pdp.serviceregistry;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
-import junit.framework.Assert;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import pdp.domain.EntityMetaData;
-import pdp.util.StreamUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,9 +17,6 @@ import static org.springframework.http.HttpHeaders.IF_MODIFIED_SINCE;
 import static pdp.util.StreamUtils.singletonCollector;
 
 public class UrlResourceServiceRegistryTest {
-
-  private String idpResponse;
-  private String spResponse;
 
   private UrlResourceServiceRegistry subject;
 
@@ -35,10 +30,10 @@ public class UrlResourceServiceRegistryTest {
   }
 
   private void doBefore(String idpPath, String spPath) throws IOException {
-    this.idpResponse = IOUtils.toString(new ClassPathResource(idpPath).getInputStream());
+    String idpResponse = IOUtils.toString(new ClassPathResource(idpPath).getInputStream());
     stubFor(get(urlEqualTo("/idp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(idpResponse)));
 
-    this.spResponse = IOUtils.toString(new ClassPathResource(spPath).getInputStream());
+    String spResponse = IOUtils.toString(new ClassPathResource(spPath).getInputStream());
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(spResponse)));
 
     stubFor(head(urlEqualTo("/idp")).withHeader(IF_MODIFIED_SINCE, notMatching("X")).willReturn(aResponse().withStatus(200)));
@@ -64,7 +59,7 @@ public class UrlResourceServiceRegistryTest {
   @Test
   public void testInitializeMetaDataNoEndpoint() throws IOException {
     stubFor(get(urlEqualTo("/sp")).willReturn(aResponse().withStatus(500)));
-    UrlResourceServiceRegistry sr = new UrlResourceServiceRegistry("u", "p", "http://localhost:9999/bogus", "http://localhost:9999/bogus", 10);
+    new UrlResourceServiceRegistry("u", "p", "http://localhost:9999/bogus", "http://localhost:9999/bogus", 10);
   }
 
 

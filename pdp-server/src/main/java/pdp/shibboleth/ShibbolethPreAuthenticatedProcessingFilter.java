@@ -1,7 +1,6 @@
 package pdp.shibboleth;
 
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import pdp.access.FederatedUser;
@@ -36,7 +35,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
     }
     //Now we are certain a shib admin user is logged in and we can check if there is impersonation requested
     if (hasText(request.getHeader(X_IMPERSONATE))) {
-      federatedUser = federatedUserBuilder.basicAuthUser(request, new UsernamePasswordAuthenticationToken("N/A", "N/A", apiAuthorities));
+      federatedUser = federatedUserBuilder.basicAuthUser(request, apiAuthorities);
     }
     return federatedUser.isPresent() ? federatedUser.get() : null;
   }

@@ -3,6 +3,9 @@ package pdp.web;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import org.apache.openaz.xacml.api.Decision;
+import org.apache.openaz.xacml.std.json.JSONResponse;
+import org.apache.openaz.xacml.std.json.JSONStructureException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -51,6 +54,15 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
     // only one, the policy with no IdP and a SP with allowedAll
     assertEquals(definitions.size(), 5);
+  }
+
+  @Test
+  public void testInternalDecide() throws IOException, JSONStructureException {
+    addShibHeaders();
+
+    ResponseEntity<String> response = post("/internal/decide/policy", getJsonPolicyRequest());
+
+    assertEquals(Decision.NOTAPPLICABLE, JSONResponse.load(response.getBody()).getResults().stream().collect(singletonCollector()).getDecision());
   }
 
   @Test

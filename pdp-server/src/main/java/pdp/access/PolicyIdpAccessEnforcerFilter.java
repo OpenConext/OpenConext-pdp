@@ -22,7 +22,7 @@ public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
 
   @Override
   protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException {
-    Optional<FederatedUser> runAsFederatedUserOptional = federatedUserBuilder.basicAuthUser(request, authResult);
+    Optional<FederatedUser> runAsFederatedUserOptional = federatedUserBuilder.basicAuthUser(request, authResult.getAuthorities());
     if (runAsFederatedUserOptional.isPresent()) {
       SecurityContextHolder.getContext().setAuthentication(new PolicyIdpAccessAwareToken((RunAsFederatedUser) runAsFederatedUserOptional.get()));
     }

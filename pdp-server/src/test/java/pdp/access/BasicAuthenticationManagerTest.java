@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class BasicAuthenticationManagerTest {
 
-  private BasicAuthenticationManager manager = new BasicAuthenticationManager("user", "password");
+  private BasicAuthenticationProvider manager = new BasicAuthenticationProvider("user", "password");
 
   @Test
   public void testAuthenticateHappyFlow() throws Exception {

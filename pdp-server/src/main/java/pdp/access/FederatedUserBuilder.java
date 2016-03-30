@@ -42,7 +42,7 @@ public class FederatedUserBuilder {
     this.serviceRegsitry = serviceRegsitry;
   }
 
-  public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Authentication authResult) {
+  public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
     //check headers for enrichment of the Authentication
     String idpEntityId = request.getHeader(X_IDP_ENTITY_ID);
     String nameId = request.getHeader(X_UNSPECIFIED_NAME_ID);
@@ -58,7 +58,7 @@ public class FederatedUserBuilder {
 
     LOG.debug("Creating RunAsFederatedUser {}", nameId);
 
-    return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authResult.getAuthorities()));
+    return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authorities));
   }
 
   public Optional<FederatedUser> shibUser(HttpServletRequest request) {

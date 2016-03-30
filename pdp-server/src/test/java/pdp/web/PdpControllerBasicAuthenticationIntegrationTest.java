@@ -33,23 +33,14 @@ import static pdp.util.StreamUtils.singletonCollector;
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=no-csrf"})
 public class PdpControllerBasicAuthenticationIntegrationTest extends AbstractPdpIntegrationTest {
 
-  private static final String PASSWORD = "secret";
-  private static final String PDP_USER = "pdp-admin";
+  private String PASSWORD = "secret";
+  private String PDP_USER = "pdp-admin";
 
   private RestTemplate restTemplate;
 
   @After
   public void clear() {
     this.restTemplate = null;
-  }
-
-  @Test
-  public void testInternalDecide() throws IOException, JSONStructureException {
-    basicAuthTemplate();
-
-    ResponseEntity<String> response = post("/internal/decide/policy", getJsonPolicyRequest());
-
-    assertEquals(Decision.NOTAPPLICABLE, JSONResponse.load(response.getBody()).getResults().stream().collect(singletonCollector()).getDecision());
   }
 
   @Test
