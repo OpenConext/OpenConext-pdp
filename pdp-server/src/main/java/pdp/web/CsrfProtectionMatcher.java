@@ -16,7 +16,9 @@ public class CsrfProtectionMatcher implements RequestMatcher {
 
   @Override
   public boolean matches(HttpServletRequest request) {
-    return request.getServletPath().startsWith("/internal")
+    String servletPath = request.getServletPath();
+    return servletPath.startsWith("/internal")
+        && !servletPath.equalsIgnoreCase("/internal/jsError")
         && !isTrustedApiRequest(request)
         && !allowedMethods.matcher(request.getMethod().toUpperCase()).matches();
   }

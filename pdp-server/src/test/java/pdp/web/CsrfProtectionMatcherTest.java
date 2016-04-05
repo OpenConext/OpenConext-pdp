@@ -25,6 +25,7 @@ public class CsrfProtectionMatcherTest {
     assertFalse(subject.matches(getMockHttpServletRequest("ANY_OTHER", "/internal", X_IDP_ENTITY_ID, X_UNSPECIFIED_NAME_ID, X_DISPLAY_NAME)));
 
     assertFalse(subject.matches(getMockHttpServletRequest("GET", "/internal")));
+    assertFalse(subject.matches(getMockHttpServletRequest("POST", "/internal/jsError")));
     assertFalse(subject.matches(getMockHttpServletRequest("HEAD", "/internal")));
     assertFalse(subject.matches(getMockHttpServletRequest("TRACE", "/internal")));
     assertFalse(subject.matches(getMockHttpServletRequest("OPTIONS", "/internal")));
