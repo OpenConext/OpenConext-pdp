@@ -78,6 +78,11 @@ There are (slow) integration tests for PdpApplication where various decisions ar
 
 If you want to test individual Policies with specific Request / Response JSON then use the (much faster) [StandAlonePdpEngineTest](pdp-server/src/test/java/pdp/StandAlonePdpEngineTest.java)
 
+If you want to test policies against a full test system (e.g. the VM) then you can use the Mujina API to add or reset attributes:
+
+    curl -v -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d '{"value": ["hero"]}' "https://mujina-idp.vm.openconext.org/api/attributes/urn:mace:dir:attribute-def:eduPersonAffiliation"
+    curl -v -H "Accept: application/json" -H "Content-type: application/json" -X POST "https://mujina-idp.vm.openconext.org/api/reset"
+
 ## Miscellaneous
 
 ### Design considerations
