@@ -1,24 +1,14 @@
 package pdp.serviceregistry;
 
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.MalformedURLException;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import static java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME;
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.Executors.newScheduledThreadPool;
-import static org.springframework.http.HttpHeaders.IF_MODIFIED_SINCE;
-import static org.springframework.http.HttpStatus.OK;
 
 public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry {
 
@@ -29,6 +19,8 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
   private final int period;
   private final BasicAuthenticationUrlResource idpUrlResource;
   private final BasicAuthenticationUrlResource spUrlResource;
+  private ScheduledFuture<?> scheduledFuture;
+  private boolean lastCallFailed = true;
 
   public UrlResourceServiceRegistry(
       String username,
@@ -48,8 +40,15 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate.getRequestFactory();
     requestFactory.setConnectTimeout(5 * 1000);
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(this::initializeMetadata, period, period, TimeUnit.MINUTES);
-    super.initializeMetadata();
+    schedule(period, TimeUnit.MINUTES);
+    doInitializeMetadata(true);
+  }
+
+  private void schedule(int period, TimeUnit timeUnit) {
+    if (this.scheduledFuture != null) {
+      this.scheduledFuture.cancel(true);
+    }
+    this.scheduledFuture = newScheduledThreadPool(1).scheduleAtFixedRate(this::initializeMetadata, period, period, timeUnit);
   }
 
   @Override
@@ -64,13 +63,34 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     return spUrlResource;
   }
 
+  private void doInitializeMetadata(boolean forceRefresh) {
+    try {
+      if (forceRefresh ||  spUrlResource.isModified(period) || idpUrlResource.isModified(period) ) {
+        super.initializeMetadata();
+      } else {
+        LOG.debug("Not refreshing SP metadata. Not modified");
+      }
+      //now maybe this is the first successful call after a failure, so check and change the period
+      if (lastCallFailed) {
+        schedule(period, TimeUnit.MINUTES);
+      }
+      lastCallFailed = false;
+    } catch (Throwable e) {
+      /*
+       * By design we catch the error and not rethrow it.
+       *
+       * UrlResourceServiceRegistry has timing issues when the server reboots and required MetadataExporter endpoints
+       * are not available yet. We re-schedule the timer to try every 5 seconds until it's succeeds
+       */
+      LOG.error("Error in refreshing / initializing metadata", e);
+      lastCallFailed = true;
+      schedule(5, TimeUnit.SECONDS);
+    }
+  }
+
   @Override
   protected void initializeMetadata() {
-    if (spUrlResource.isModified(period) || idpUrlResource.isModified(period) ) {
-      super.initializeMetadata();
-    } else {
-      LOG.debug("Not refreshing SP metadata. Not modified");
-    }
+    doInitializeMetadata(false);
   }
 
 

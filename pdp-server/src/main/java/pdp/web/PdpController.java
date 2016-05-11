@@ -21,6 +21,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +42,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
@@ -89,7 +91,10 @@ public class PdpController {
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
 
-    newScheduledThreadPool(1).scheduleAtFixedRate(this::refreshPolicies, period, period, TimeUnit.MINUTES);
+
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+        TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
+        period, period, TimeUnit.MINUTES);
   }
 
   @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")

@@ -169,7 +169,7 @@ I18n.translations.nl = {
   },
 
   server_error: {
-    title: "Er is iets misgegaan tijdens het openen van de pagina.",
+    title: "De PDP application is momenteel niet beschikbaar.",
     description_html: "Probeer het later nog eens of neem contract op met <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
   },
 

@@ -72,9 +72,13 @@ public class FederatedUserBuilder {
 
     //By contract we always get at least one Idp and usually two separated by a semi-colon
     authenticatingAuthority = authenticatingAuthority.split(";")[0];
-    Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
+    Set<EntityMetaData> idpEntities;
+    try {
+      idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
+    } catch (PolicyIdpAccessUnknownIdentityProvidersException e) {
+      return Optional.empty();
+    }
 
-    //By contract we have at least one Idp - otherwise an Exception is already raised
     Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
     LOG.debug("Creating FederatedUser {}",uid);

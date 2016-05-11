@@ -20,6 +20,8 @@ var App = {
 
     this.setupAjaxSend();
 
+    this.currentUser = {};
+
     this.fetchUserData(function (user) {
       this.currentUser = user;
       for (controller in App.Controllers) {
@@ -84,6 +86,8 @@ var App = {
         callback(data);
       }
     }).fail(function (data) {
+      //not good
+      self.currentUser = {};
       self.render(App.Pages.NotFound());
     });
   },

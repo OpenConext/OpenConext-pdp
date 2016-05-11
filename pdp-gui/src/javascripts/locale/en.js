@@ -194,12 +194,12 @@ I18n.translations.en = {
   },
 
   not_found: {
-    title: "The requested page could not be found.",
-    description_html: "Please check the spelling of the URL or go to the <a href=\"/\">homepage</a>."
+    title: "The PDP application is currently unavailable.",
+    description_html: "Please try again later or contact <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
   },
 
   server_error: {
-    title: "Something went wrong when opening this page.",
+    title: "The PDP application is currently unavailable.",
     description_html: "Please try again later or contact <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
   },
 

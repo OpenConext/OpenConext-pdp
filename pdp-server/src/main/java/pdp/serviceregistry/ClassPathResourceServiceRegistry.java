@@ -2,7 +2,6 @@ package pdp.serviceregistry;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
-import org.omg.SendingContext.RunTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -16,7 +15,6 @@ import pdp.domain.EntityMetaData;
 import java.io.IOException;
 import java.util.*;
 
-import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
@@ -38,19 +36,11 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
   }
 
   protected void initializeMetadata() {
-    entityMetaData = new HashMap<>();
-    try {
-      entityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
-      entityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
-      LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
-    } catch (RuntimeException e) {
-      /*
-       * By design we catch the error and not rethrow it.
-       * UrlResourceServiceRegistry has timing issues when the server reboots and required endpoints are not available yet.
-       * ClassPathResourceServiceRegistry is only used in dev mode and any logged errors will end up in Rollbar
-       */
-      LOG.error("Error in refreshing / initializing metadata", e);
-    }
+    HashMap<String, List<EntityMetaData>> newEntityMetaData = new HashMap<>();
+    newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
+    newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
+    this.entityMetaData = newEntityMetaData;
+    LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
   }
 
   protected Resource getIdpResource() {
@@ -106,12 +96,12 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
 
   @Override
   public EntityMetaData serviceProviderByEntityId(String entityId) {
-    return getOptionalEntityMetaData(entityId, serviceProviderOptionalByEntityId(entityId));
+    return entityMetaData(entityId, serviceProviderOptionalByEntityId(entityId));
   }
 
   @Override
   public EntityMetaData identityProviderByEntityId(String entityId) {
-    return getOptionalEntityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
+    return entityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
   }
 
   @Override
@@ -119,8 +109,9 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry {
     return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map(EntityMetaData::getNameEn).collect(toList());
   }
 
-  private EntityMetaData getOptionalEntityMetaData(String entityId, Optional<EntityMetaData> optional) {
+  private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> optional) {
     if (!optional.isPresent()) {
+      LOG.error(entityId + " is not a valid or known IdP / SP entityId");
       throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP entityId");
     }
     return optional.get();
