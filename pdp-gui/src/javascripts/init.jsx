@@ -107,8 +107,7 @@ var App = {
   checkSessionExpired: function (event, xhr) {
     //do not handle anything other then 200 and 302 as the others are handled by ajaxError
     if (xhr.getResponseHeader("X-SESSION-ALIVE") !== "true" && (xhr.status === 0 || xhr.status === 200 || xhr.status === 302)) {
-      var newLoc = window.location.protocol + "//" + window.location.host + "/policies";
-      window.location.href = newLoc;
+      window.location.reload(true);
     }
     var csrfToken = xhr.getResponseHeader("X-CSRF-TOKEN");
     if (!_.isEmpty(csrfToken)) {
