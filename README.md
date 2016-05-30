@@ -115,6 +115,12 @@ The policies that can be created are limited in functionality:
 * Rule targets if not empty only can contain the attributes of the category `urn:oasis:names:tc:xacml:1.0:subject-category:access-subject`
 * The combining set of policies has the policy combining algorithm `urn:oasis:names:tc:xacml:3.0:policy-combining-algorithm:deny-overrides`
 
+### Policy access
+
+The Admin GUI has no restrictions in the accessibility of policies. The external API for trusted applications restricts access to policies based on the Identity Provider
+and the possible associated Service Provider(s) of the user and the corresponding Service and Identity Provider(s) of the policy. See
+ [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/pdp-gui/src/images/PdP_policies_access.001.jpeg) for an overview of the logic applied in determining accessibility.
+
 ### Local database content
 
 We don't provide flyway migrations to load initial policies. 
