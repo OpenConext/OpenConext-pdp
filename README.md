@@ -130,17 +130,19 @@ in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are 
 
 ### Service Registry
 
-The pdp-server needs to access the metadata of Identity and Service providers from the Service Registry. In production modus the content is read (and periodically refreshed) from:
+The pdp-server needs to access the metadata of Identity and Service providers from the Service Registry. In production modus the content is read (and periodically refreshed)
+from the API exposed by the [metadata provider](https://github.com/OpenConext/OpenConext-metadata-exporter):
 
-* https://tools.surfconext.nl/export/saml20-idp-remote.json
-* https://tools.surfconext.nl/export/saml20-sp-remote.json
+* https://multidata.surfconext.nl/service-providers.json
+* https://multidata.surfconext.nl/identity-providers.json
 
 In any other modus the content is read from the file system:
 
 * [saml20-idp-remote.json](pdp-server/src/main/resources/service-registry/saml20-idp-remote.json)
 * [saml20-sp-remote.json](pdp-server/src/main/resources/service-registry/saml20-sp-remote.json)
 
-To sync the data of the file system with the actual production data of `https://tools.surfconext.nl` run the [refreshEntityMetadata](pdp-server/scripts/refreshEntityMetadata.sh) script.
+To sync the data of the file system with the test data of `https://multidata.test.surfconext.nl` run the [refreshEntityMetadata](pdp-server/scripts/refreshEntityMetadata.sh)
+script.
 
 ### Configuration and Deployment
 
