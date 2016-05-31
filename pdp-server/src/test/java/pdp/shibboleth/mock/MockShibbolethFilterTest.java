@@ -5,18 +5,11 @@ import org.junit.Test;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.util.CollectionUtils;
-import pdp.access.FederatedUserBuilder;
 
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.Collection;
-import java.util.Collections;
-
 import static java.util.Collections.list;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static pdp.access.FederatedUserBuilder.UID_HEADER_NAME;
 
 public class MockShibbolethFilterTest {
