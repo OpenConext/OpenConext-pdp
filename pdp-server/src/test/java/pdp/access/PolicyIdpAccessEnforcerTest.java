@@ -8,10 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
-import pdp.domain.EntityMetaData;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyViolation;
+import pdp.domain.*;
 import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
 import pdp.serviceregistry.ServiceRegistry;
@@ -23,11 +20,11 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.singletonList;
+import static java.util.Collections.*;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
+import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static pdp.util.StreamUtils.singletonCollector;
 
@@ -144,6 +141,18 @@ public class PolicyIdpAccessEnforcerTest {
     assertEquals(2, stream(filtered.spliterator(), false).count());
   }
 
+
+  @Test
+  public void filterPdpPolicies() throws Exception {
+    PdpPolicyDefinition definition = new PdpPolicyDefinition();
+    definition.setIdentityProviderIds(singletonList("http://idp.nl"));
+    definition.setServiceProviderId("http://sp.nl");
+
+    this.setupSecurityContext(true, emptySet(), entityMetadata("http://sp.nl"));
+
+    List<PdpPolicyDefinition> policies = this.subject.filterPdpPolicies(singletonList(definition));
+    assertTrue(policies.isEmpty());
+  }
 
   @Test
   public void testAuthenticatingAuthority() throws Exception {

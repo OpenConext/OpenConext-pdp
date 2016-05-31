@@ -211,14 +211,16 @@ public class PolicyIdpAccessEnforcer {
    */
   private boolean maySeePolicy(PdpPolicyDefinition pdpPolicyDefinition, FederatedUser user,
                                Set<String> idpsOfUserEntityIds, Set<String> spsOfUserEntityIds) {
-    if (isEmpty(pdpPolicyDefinition.getIdentityProviderIds())
+    List<String> identityProviderIds = pdpPolicyDefinition.getIdentityProviderIds();
+
+    if (isEmpty(identityProviderIds)
         && idpIsAllowed(user, idpsOfUserEntityIds, pdpPolicyDefinition.getServiceProviderId())) {
       return true;
     }
-    if (pdpPolicyDefinition.getIdentityProviderIds().stream().anyMatch(idp -> idpsOfUserEntityIds.contains(idp))) {
+    if (identityProviderIds.stream().anyMatch(idp -> idpsOfUserEntityIds.contains(idp))) {
       return true;
     }
-    if (spsOfUserEntityIds.contains(pdpPolicyDefinition.getServiceProviderId())) {
+    if (isEmpty(identityProviderIds) && spsOfUserEntityIds.contains(pdpPolicyDefinition.getServiceProviderId())) {
       return true;
     }
     return false;
