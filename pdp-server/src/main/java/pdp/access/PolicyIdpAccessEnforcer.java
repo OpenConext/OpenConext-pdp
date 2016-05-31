@@ -39,13 +39,13 @@ public class PolicyIdpAccessEnforcer {
    * AuthenticatingAuthority of the signed in user equals the AuthenticatingAuthority of the PdpPolicy or the
    * AuthenticatingAuthority of the user is linked (through the InstitutionID) to the AuthenticatingAuthority of
    * the PdpPolicy.
-   * <p/>
+   * <p>
    * The CUD actions are also only allowed if all of the Idps of the pdpPolicy equal or are linked to the
    * AuthenticatingAuthority of the signed in user.
-   * <p/>
+   * <p>
    * If the Idp list of the policy is empty then the SP must have the same institutionID as the institutionID of the
    * AuthenticatingAuthority of the signed in user.
-   * <p/>
+   * <p>
    * Violations can only be seen if the IdP of the JSON request is equal or linked to the AuthenticatingAuthority of
    * the signed in user.
    */
@@ -196,31 +196,27 @@ public class PolicyIdpAccessEnforcer {
     }
     Set<String> idpsOfUserEntityIds = getEntityIds(user.getIdpEntities());
     Set<String> spsOfUserEntityIds = getEntityIds(user.getSpEntities());
-
     return policies.stream().filter(policy -> maySeePolicy(policy, user, idpsOfUserEntityIds, spsOfUserEntityIds)).collect(toList());
   }
 
   /**
    * Only PdpPolicyDefinitions are returned where
-   * <p/>
+   * <p>
    * the IdPs of the policy are empty and the SP of the policy is allowed from through the idp of the user
-   * <p/>
+   * <p>
    * or where one of the IdPs of the policy is owned by the user
-   * <p/>
-   * or where the SP is owned of the policy is owned by the user.
+   * <p>
+   * the IdPs of the policy are empty and the SP of the policy is owned by the user
    */
   private boolean maySeePolicy(PdpPolicyDefinition pdpPolicyDefinition, FederatedUser user,
                                Set<String> idpsOfUserEntityIds, Set<String> spsOfUserEntityIds) {
     List<String> identityProviderIds = pdpPolicyDefinition.getIdentityProviderIds();
 
-    if (isEmpty(identityProviderIds)
-        && idpIsAllowed(user, idpsOfUserEntityIds, pdpPolicyDefinition.getServiceProviderId())) {
+    if (isEmpty(identityProviderIds) &&
+        (idpIsAllowed(user, idpsOfUserEntityIds, pdpPolicyDefinition.getServiceProviderId())
+        || spsOfUserEntityIds.contains(pdpPolicyDefinition.getServiceProviderId()))) {
       return true;
-    }
-    if (identityProviderIds.stream().anyMatch(idp -> idpsOfUserEntityIds.contains(idp))) {
-      return true;
-    }
-    if (isEmpty(identityProviderIds) && spsOfUserEntityIds.contains(pdpPolicyDefinition.getServiceProviderId())) {
+    } else if (identityProviderIds.stream().anyMatch(idp -> idpsOfUserEntityIds.contains(idp))) {
       return true;
     }
     return false;

@@ -5,6 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.core.io.ClassPathResource;
 import pdp.domain.EntityMetaData;
 
@@ -83,6 +85,12 @@ public class UrlResourceServiceRegistryTest {
     EntityMetaData idp = identityProviders.stream().filter(metaData -> metaData.getEntityId().equals(idpEntityId)).collect(singletonCollector());
     assertEquals(idpEntityId, idp.getNameEn());
     assertEquals(idpEntityId, idp.getNameNl());
+  }
+
+  @Test
+  public void testHealth() {
+    Health health = subject.health();
+    assertEquals(Status.UP, health.getStatus());
   }
 
 }
