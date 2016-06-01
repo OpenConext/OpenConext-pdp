@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.ServletException;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -17,6 +21,12 @@ public class GitPluginController {
     props.load(new ClassPathResource("git.properties").getInputStream());
     return props;
   }
+
+  @RequestMapping(method = RequestMethod.GET, value = "/internal/health")
+  public void health(HttpServletRequest request, HttpServletResponse respsonse) throws ServletException, IOException {
+    request.getRequestDispatcher("/health").forward(request, respsonse);
+  }
+
 
 
 }
