@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;

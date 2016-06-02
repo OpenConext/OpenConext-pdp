@@ -1,7 +1,6 @@
 package pdp.xacml;
 
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
-import org.apache.openaz.xacml.api.pdp.PDPEngineFactory;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

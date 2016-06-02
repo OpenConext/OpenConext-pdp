@@ -17,7 +17,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import pdp.policies.DevelopmentPrePolicyLoader;
 import pdp.policies.NoopPrePolicyLoader;
 import pdp.policies.PerformancePrePolicyLoader;
@@ -32,8 +31,6 @@ import pdp.teams.VootClient;
 import pdp.web.SessionAliveInterceptor;
 import pdp.xacml.PDPEngineHolder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 

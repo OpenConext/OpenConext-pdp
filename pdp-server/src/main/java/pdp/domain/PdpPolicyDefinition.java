@@ -64,9 +64,6 @@ public class PdpPolicyDefinition {
 
   private boolean actionsAllowed;
 
-  public PdpPolicyDefinition() {
-  }
-
   public Long getId() {
     return id;
   }
