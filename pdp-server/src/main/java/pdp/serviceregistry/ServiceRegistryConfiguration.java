@@ -11,14 +11,14 @@ import java.net.MalformedURLException;
 public class ServiceRegistryConfiguration {
 
   @Bean
-  @Profile({"dev", "no-csrf", "perf"})
+  @Profile({"dev", "no-csrf", "perf", "mail"})
   public ServiceRegistry classPathResourceServiceRegistry() {
     return new ClassPathResourceServiceRegistry(true);
   }
 
 
   @Bean
-  @Profile({"test","acc","prod"})
+  @Profile({"test", "acc", "prod" })
   public ServiceRegistry urlResourceServiceRegistry(
       @Value("${metadata.username}") String username,
       @Value("${metadata.password}") String password,

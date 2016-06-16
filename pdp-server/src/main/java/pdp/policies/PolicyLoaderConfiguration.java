@@ -33,7 +33,7 @@ public class PolicyLoaderConfiguration {
 
   @Bean
   @Autowired
-  @Profile({"test", "acc", "prod"})
+  @Profile({"test", "acc", "prod", "mail"})
   public PolicyLoader noopPolicyLoader() {
     return new NoopPrePolicyLoader();
   }

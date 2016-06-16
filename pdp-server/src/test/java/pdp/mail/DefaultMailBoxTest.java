@@ -25,7 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
-@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=prod"})
+@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=mail"})
 public class DefaultMailBoxTest extends AbstractPdpIntegrationTest {
 
   @Autowired

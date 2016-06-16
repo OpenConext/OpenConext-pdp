@@ -23,7 +23,7 @@ public class SabClientConfig {
   }
 
   @Bean
-  @Profile({"dev", "perf", "no-csrf"})
+  @Profile({"dev", "perf", "no-csrf", "mail"})
   public SabClient mockSabClient(@Value("${sab.userName}") String userName,
                                  @Value("${sab.password}") String password,
                                  @Value("${sab.endpoint}") String endpoint) {
