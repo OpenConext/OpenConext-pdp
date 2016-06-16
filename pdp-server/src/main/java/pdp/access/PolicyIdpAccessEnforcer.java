@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+import pdp.JsonMapper;
 import pdp.domain.*;
 import pdp.serviceregistry.ServiceRegistry;
 
@@ -22,11 +23,9 @@ import static pdp.access.PolicyAccess.VIOLATIONS;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 
-public class PolicyIdpAccessEnforcer {
+public class PolicyIdpAccessEnforcer implements JsonMapper {
 
   private static final Logger LOG = LoggerFactory.getLogger(PolicyIdpAccessEnforcer.class);
-
-  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   private final ServiceRegistry serviceRegistry;
 

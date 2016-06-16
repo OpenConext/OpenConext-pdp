@@ -46,12 +46,10 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = PdpApplication.class)
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=dev"})
-public abstract class AbstractPdpIntegrationTest {
+public abstract class AbstractPdpIntegrationTest implements JsonMapper {
 
   protected static final String policyId = "urn:surfconext:xacml:policy:id:_open_conextpdp_single_attribute";
   protected static final String policyIdToDelete = "urn:surfconext:xacml:policy:id:_open_conextpdp_deny_rule_policy_empty_permit";
-
-  protected static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Autowired
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;

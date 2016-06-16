@@ -283,5 +283,11 @@ public class PdpPolicyDefinition {
         '}';
   }
 
+  public static PdpPolicyDefinition policyDefinition(String serviceProviderId, List<String> identityProvidersIds) {
+    PdpPolicyDefinition definition = new PdpPolicyDefinition();
+    definition.setServiceProviderId(serviceProviderId);
+    definition.setIdentityProviderIds(identityProvidersIds);
+    return definition;
+  }
 
 }

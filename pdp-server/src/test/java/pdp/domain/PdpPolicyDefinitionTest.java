@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import pdp.JsonMapper;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,9 +12,7 @@ import java.util.HashSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class PdpPolicyDefinitionTest {
-
-  private static final ObjectMapper objectMapper = new ObjectMapper();
+public class PdpPolicyDefinitionTest implements JsonMapper {
 
   @Test
   public void testEquals() throws Exception {

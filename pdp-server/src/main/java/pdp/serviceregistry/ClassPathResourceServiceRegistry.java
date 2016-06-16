@@ -8,6 +8,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+import pdp.JsonMapper;
 import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
 
@@ -20,11 +21,10 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
-public class ClassPathResourceServiceRegistry implements ServiceRegistry {
+public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMapper {
 
   protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
-  private final static ObjectMapper objectMapper = new ObjectMapper();
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
 
   public ClassPathResourceServiceRegistry(boolean initialize) {

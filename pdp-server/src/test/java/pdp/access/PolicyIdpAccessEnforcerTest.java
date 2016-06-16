@@ -8,6 +8,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
+import pdp.JsonMapper;
 import pdp.domain.*;
 import pdp.policies.PolicyLoader;
 import pdp.serviceregistry.ClassPathResourceServiceRegistry;
@@ -29,9 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static pdp.util.StreamUtils.singletonCollector;
 
 @SuppressWarnings("unchecked")
-public class PolicyIdpAccessEnforcerTest {
-
-  private final static ObjectMapper objectMapper = new ObjectMapper();
+public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
   private ClassPathResourceServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry(true);
   private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);

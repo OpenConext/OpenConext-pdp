@@ -161,8 +161,8 @@ the mock Shib headers are added automatically.
 
 ```
 curl -ik -H "Content-Type: application/json" http://localhost:8080/pdp/api/internal/policies
-curl -ik --user "pdp-admin:secret" -H "Content-Type: application/json" -H "X-IDP-ENTITY-ID: http://mock-idp" -H "X-UNSPECIFIED-NAME-ID: test" -H "X-DISPLAY-NAME: okke" http://localhost:8080/pdp/api/protected/policies
-curl -ik -X POST --data-binary @./src/test/resources/xacml/requests/test_request_sab_policy.json --user "pdp-admin:secret" -H "Content-Type: application/json" http://localhost:8080/pdp/api/decide/policy
+curl -ik --user "pdp_admin:secret" -H "Content-Type: application/json" -H "X-IDP-ENTITY-ID: http://mock-idp" -H "X-UNSPECIFIED-NAME-ID: test" -H "X-DISPLAY-NAME: okke" http://localhost:8080/pdp/api/protected/policies
+curl -ik -X POST --data-binary @./src/test/resources/xacml/requests/test_request_sab_policy.json --user "pdp_admin:secret" -H "Content-Type: application/json" http://localhost:8080/pdp/api/decide/policy
 ```
 
 ### OpenAZ dependency

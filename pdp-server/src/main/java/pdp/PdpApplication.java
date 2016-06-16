@@ -63,48 +63,6 @@ public class PdpApplication {
     return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
   }
 
-  @Bean
-  @Profile({"dev", "no-csrf"})
-  public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") String policyBaseDir, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
-  }
-
-  @Bean
-  @Profile({"perf"})
-  public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    return new PerformancePrePolicyLoader(count, serviceRegistry, pdpPolicyRepository, pdpPolicyViolationRepository);
-  }
-
-  @Bean
-  @Profile({"test", "acc", "prod"})
-  public PolicyLoader noopPolicyLoader() {
-    return new NoopPrePolicyLoader();
-  }
-
-  @Bean
-  @Profile({"dev", "no-csrf"})
-  public ServiceRegistry classPathResourceServiceRegistry() {
-    return new ClassPathResourceServiceRegistry(true);
-  }
-
-
-  @Bean
-  @Profile({"test","acc","prod"})
-  public ServiceRegistry urlResourceServiceRegistry(
-      @Value("${metadata.username}") String username,
-      @Value("${metadata.password}") String password,
-      @Value("${metadata.idpRemotePath}") String idpRemotePath,
-      @Value("${metadata.spRemotePath}") String spRemotePath,
-      @Value("${period.metadata.refresh.minutes}") int period) throws MalformedURLException {
-    return new UrlResourceServiceRegistry(username, password, idpRemotePath, spRemotePath, period);
-  }
-
-  @Bean
-  public PolicyViolationRetentionPeriodCleaner policyViolationRetentionPeriodCleaner(@Value("${policy.violation.retention.period.days}") int retentionPeriodDays,
-                                                                                     PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository);
-  }
-
   @Configuration
   public static class WebMvcConfig extends WebMvcConfigurerAdapter {
 

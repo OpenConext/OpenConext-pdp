@@ -111,7 +111,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
   }
 
   private void becomeAnApiClientSoWeDontNeedACSRFToken() {
-    restTemplate = new TestRestTemplate("pdp-admin", "secret");
+    restTemplate = new TestRestTemplate("pdp_admin", "secret");
     impersonate(PolicyLoader.authenticatingAuthority, "urn:collab:person:example.com:mary.doe", "Mary Doe");
   }
 

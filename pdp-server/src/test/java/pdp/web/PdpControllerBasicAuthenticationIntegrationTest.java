@@ -34,7 +34,7 @@ import static pdp.util.StreamUtils.singletonCollector;
 public class PdpControllerBasicAuthenticationIntegrationTest extends AbstractPdpIntegrationTest {
 
   private String PASSWORD = "secret";
-  private String PDP_USER = "pdp-admin";
+  private String PDP_USER = "pdp_admin";
 
   private RestTemplate restTemplate;
 

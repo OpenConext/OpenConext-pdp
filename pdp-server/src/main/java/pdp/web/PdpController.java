@@ -24,12 +24,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import pdp.JsonMapper;
 import pdp.PdpPolicyException;
 import pdp.PolicyNotFoundException;
 import pdp.access.FederatedUser;
 import pdp.access.PolicyAccess;
 import pdp.access.PolicyIdpAccessEnforcer;
+import pdp.conflicts.PolicyConflictService;
 import pdp.domain.*;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -44,6 +47,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -56,16 +60,16 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
-public class PdpController {
+public class PdpController implements JsonMapper {
 
   private final static Logger LOG = LoggerFactory.getLogger(PdpController.class);
-  private final static ObjectMapper objectMapper = new ObjectMapper();
 
   private final PDPEngineHolder pdpEngineHolder;
   private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
   private final PdpPolicyRepository pdpPolicyRepository;
   private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
   private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
+  private final PolicyConflictService policyConflictService = new PolicyConflictService();
   private final ServiceRegistry serviceRegistry;
   private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
   private final PDPEngine playgroundPdpEngine;
@@ -125,7 +129,7 @@ public class PdpController {
   @RequestMapping(method = OPTIONS, value = "/protected/policies")
   public ResponseEntity<Void> options(HttpServletResponse response) {
     response.setHeader(HttpHeaders.ALLOW, Joiner.on(",").join(ImmutableList.of(GET, POST, PUT, DELETE)));
-    return new ResponseEntity<Void>(HttpStatus.OK);
+    return new ResponseEntity<>(HttpStatus.OK);
   }
 
   @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
@@ -143,6 +147,13 @@ public class PdpController {
     policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
 
     return policyIdpAccessEnforcer.filterPdpPolicies(policies);
+  }
+
+  @RequestMapping(method = GET, value = {"/internal/conflicts", "/protected/conflicts"})
+  public Map<String, List<PdpPolicyDefinition>> conflicts() {
+    List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
+        .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
+    return policyConflictService.conflicts(policies);
   }
 
   @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "/protected/policies"})
@@ -219,7 +230,7 @@ public class PdpController {
     return policyIdpAccessEnforcer.filterViolations(violations);
   }
 
-  @RequestMapping(method = GET, value = { "/internal/revisions/{id}", "/protected/revisions/{id}" })
+  @RequestMapping(method = GET, value = {"/internal/revisions/{id}", "/protected/revisions/{id}"})
   public List<PdpPolicyDefinition> revisionsByPolicyId(@PathVariable Long id) {
     PdpPolicy policy = findPolicyById(id, PolicyAccess.READ);
     PdpPolicy parent = (policy.getParentPolicy() != null ? policy.getParentPolicy() : policy);
