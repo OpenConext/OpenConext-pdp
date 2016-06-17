@@ -29,7 +29,7 @@ import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.
- * <p/>
+ * <p>
  * If you want to test policies quickly then see StandAlonePdpEngineTest
  */
 public class PdpEngineTest extends AbstractPdpIntegrationTest {
@@ -44,14 +44,15 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     List<PdpPolicy> policies = policyLoader.getPolicies();
 
     //lambda's are poor with error handling as the stacktrace gets lost
-    for (PdpPolicy policy: policies) {
+    for (PdpPolicy policy : policies) {
       doTestPolicy(policyRequest, policy);
     }
   }
 
   @Test
   public void testCrsfConfiguration() throws Exception {
-    Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {});
+    Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {
+    });
 
     assertEquals(403, jsonResponse.get("status"));
     assertEquals("Expected CSRF token not found. Has your session expired?", jsonResponse.get("message"));
@@ -128,7 +129,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
   private void assertViolations(String policyId) throws Exception {
     List<PdpPolicyViolation> violations = stream(pdpPolicyViolationRepository.findAll().spliterator(), false).filter(violation -> violation.getPolicy().getPolicyId().equals(policyId)).collect(toList());
-    assertFalse(CollectionUtils.isEmpty(violations));
+    assertFalse("Policy " + policyId + " must have violations", CollectionUtils.isEmpty(violations));
     violations.forEach(violation -> assertTrue(isValid(violation)));
   }
 
