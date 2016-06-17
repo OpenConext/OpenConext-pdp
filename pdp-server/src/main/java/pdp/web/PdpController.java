@@ -34,6 +34,7 @@ import pdp.access.PolicyAccess;
 import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.conflicts.PolicyConflictService;
 import pdp.domain.*;
+import pdp.mail.MailBox;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
@@ -48,6 +49,7 @@ import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -74,6 +76,7 @@ public class PdpController implements JsonMapper {
   private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
   private final PDPEngine playgroundPdpEngine;
   private final boolean cachePolicies;
+  private final MailBox mailBox;
 
   // Can't be final as we need to swap this to reload policies in production
   private PDPEngine pdpEngine;
@@ -84,7 +87,8 @@ public class PdpController implements JsonMapper {
                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                        PdpPolicyRepository pdpPolicyRepository,
                        PDPEngineHolder pdpEngineHolder,
-                       ServiceRegistry serviceRegistry) {
+                       ServiceRegistry serviceRegistry,
+                       MailBox mailBox) {
     this.cachePolicies = cachePolicies;
     this.pdpEngineHolder = pdpEngineHolder;
     this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
@@ -93,6 +97,7 @@ public class PdpController implements JsonMapper {
     this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
     this.pdpPolicyRepository = pdpPolicyRepository;
     this.serviceRegistry = serviceRegistry;
+    this.mailBox = mailBox;
 
 
     Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
@@ -180,6 +185,7 @@ public class PdpController implements JsonMapper {
     try {
       PdpPolicy saved = pdpPolicyRepository.save(policy);
       LOG.info("{} PdpPolicy {}", policy.getId() != null ? "Updated" : "Created", saved.getPolicyXml());
+      checkConflicts(pdpPolicyDefinition);
       return saved;
     } catch (DataIntegrityViolationException e) {
       if (e.getMessage().contains("pdp_policy_name_revision_unique")) {
@@ -187,6 +193,13 @@ public class PdpController implements JsonMapper {
       } else {
         throw e;
       }
+    }
+  }
+
+  private void checkConflicts(PdpPolicyDefinition pdpPolicyDefinition) {
+    Map<String, List<PdpPolicyDefinition>> conflicts = conflicts();
+    if (conflicts.containsKey(pdpPolicyDefinition.getServiceProviderName())) {
+      this.mailBox.sendConflictsMail(conflicts);
     }
   }
 

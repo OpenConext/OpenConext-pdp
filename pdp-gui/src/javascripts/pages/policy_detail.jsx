@@ -85,6 +85,16 @@ App.Pages.PolicyDetail = React.createClass({
     }
   },
 
+  deletePolicy: function (policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm(I18n.t("policies.confirmation", {policyName: policy.name}))) {
+        App.Controllers.Policies.deletePolicy(policy);
+      }
+    }
+  },
+
   submitForm: function () {
     var self = this;
     App.Controllers.Policies.saveOrUpdatePolicy(this.state, function (jqxhr) {
@@ -99,7 +109,7 @@ App.Pages.PolicyDetail = React.createClass({
       return _.isEmpty(attr.value);
     });
     var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
-        || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
+      || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;
   },
 
@@ -155,47 +165,47 @@ App.Pages.PolicyDetail = React.createClass({
   renderName: function (policy) {
     var workflow = _.isEmpty(policy.name) ? "failure" : "success";
     return (
-        <div>
-          <div className={"form-element "+workflow}>
-            <p className="label">{I18n.t("policy_detail.name")}</p>
-            <input type="text" name="name" className="form-input" value={policy.name}
-                   onChange={this.handleOnChangeName}/>
-          </div>
-          <div className="bottom"></div>
+      <div>
+        <div className={"form-element "+workflow}>
+          <p className="label">{I18n.t("policy_detail.name")}</p>
+          <input type="text" name="name" className="form-input" value={policy.name}
+                 onChange={this.handleOnChangeName}/>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   },
 
   renderDescription: function (policy) {
     var workflow = _.isEmpty(policy.description) ? "failure" : "success";
     return (
-        <div>
-          <div className={"form-element "+workflow}>
-            <p className="label">{I18n.t("policy_detail.description")}</p>
+      <div>
+        <div className={"form-element "+workflow}>
+          <p className="label">{I18n.t("policy_detail.description")}</p>
             <textarea rows="2" name="description" className="form-input" value={policy.description}
                       onChange={this.handleOnChangeDescription}/>
-            <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
-                   onChange={this.handleOnChangeAutoFormat}/>
-            <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
-          </div>
-          <div className="bottom"></div>
+          <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
+                 onChange={this.handleOnChangeAutoFormat}/>
+          <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   },
 
   renderActive: function (policy) {
     if (!App.currentUser.policyIdpAccessEnforcementRequired) {
       return (
-          <div>
-            <div className={"form-element success"}>
-              <p className="label">{I18n.t("policy_detail.isActive")}</p>
-              <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
-                     onChange={this.handleOnChangeIsActive}/>
-              <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
-              <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
-            </div>
-            <div className="bottom"></div>
+        <div>
+          <div className={"form-element success"}>
+            <p className="label">{I18n.t("policy_detail.isActive")}</p>
+            <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
+                   onChange={this.handleOnChangeIsActive}/>
+            <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
+            <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
           </div>
+          <div className="bottom"></div>
+        </div>
       );
     }
   },
@@ -203,18 +213,18 @@ App.Pages.PolicyDetail = React.createClass({
   renderDenyAdvice: function (policy) {
     var workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
     return (
-        <div className={"form-element "+workflow}>
-          <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
-          <em>{I18n.t("policy_detail.deny_message_info")}</em>
-          <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
-                 onChange={this.handleOnDenyAdvice}/>
+      <div className={"form-element "+workflow}>
+        <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
+        <em>{I18n.t("policy_detail.deny_message_info")}</em>
+        <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
+               onChange={this.handleOnDenyAdvice}/>
 
-          <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
-          <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
-                 onChange={this.handleOnDenyAdviceNl}/>
+        <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
+        <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
+               onChange={this.handleOnDenyAdviceNl}/>
 
-          <div className="bottom"></div>
-        </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
   ,
@@ -224,20 +234,20 @@ App.Pages.PolicyDetail = React.createClass({
     var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
     var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
     return (
-        <div>
-          <div className={"form-element " + workflow}>
-            <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-            <App.Components.Select2Selector
-                defaultValue={policy.serviceProviderId}
-                placeholder={I18n.t("policy_detail.sp_placeholder")}
-                select2selectorId={"serviceProvider"}
-                options={serviceProviders}
-                dataChanged={policy.spDataChanged}
-                handleChange={this.handleChangeServiceProvider}/>
-            {this.renderScopedWarning(scopeSPs)}
-          </div>
-          <div className="bottom"></div>
+      <div>
+        <div className={"form-element " + workflow}>
+          <p className="label">{I18n.t("policies.serviceProviderId")}</p>
+          <App.Components.Select2Selector
+            defaultValue={policy.serviceProviderId}
+            placeholder={I18n.t("policy_detail.sp_placeholder")}
+            select2selectorId={"serviceProvider"}
+            options={serviceProviders}
+            dataChanged={policy.spDataChanged}
+            handleChange={this.handleChangeServiceProvider}/>
+          {this.renderScopedWarning(scopeSPs)}
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
   ,
@@ -249,21 +259,21 @@ App.Pages.PolicyDetail = React.createClass({
 
   renderIdentityProvider: function (policy) {
     return (
-        <div>
-          <div className="form-element success">
-            <p className="label">{I18n.t("policies.identityProviderIds")}</p>
+      <div>
+        <div className="form-element success">
+          <p className="label">{I18n.t("policies.identityProviderIds")}</p>
 
-            <App.Components.Select2Selector
-                defaultValue={policy.identityProviderIds}
-                placeholder={I18n.t("policy_detail.idps_placeholder")}
-                select2selectorId={"identityProvider"}
-                options={this.parseEntities(this.props.identityProviders)}
-                dataChanged={false}
-                multiple={true}
-                handleChange={this.handleChangeIdentityProvider}/>
-          </div>
-          <div className="bottom"></div>
+          <App.Components.Select2Selector
+            defaultValue={policy.identityProviderIds}
+            placeholder={I18n.t("policy_detail.idps_placeholder")}
+            select2selectorId={"identityProvider"}
+            options={this.parseEntities(this.props.identityProviders)}
+            dataChanged={false}
+            multiple={true}
+            handleChange={this.handleChangeIdentityProvider}/>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   },
 
@@ -273,27 +283,27 @@ App.Pages.PolicyDetail = React.createClass({
     var classNameDeny = !policy.denyRule ? "not-selected" : "";
     var policyPermit = policy.denyRule ? I18n.t("policy_detail.deny") : I18n.t("policy_detail.permit");
     return (
-        <div>
-          <div className="form-element success">
-            <div className="column-3 first">
-              <p className="label">{I18n.t("policy_detail.access")}</p>
+      <div>
+        <div className="form-element success">
+          <div className="column-3 first">
+            <p className="label">{I18n.t("policy_detail.access")}</p>
 
-              <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
-                <div className="inner"></div>
-                <p>{policyPermit}</p>
-              </div>
-            </div>
-            <div className="column-3 middle">
-              <p className={"info " + classNamePermit}>{I18n.t("policy_detail.permit")}</p>
-              <em className={classNamePermit}>{I18n.t("policy_detail.permit_info")}</em>
-            </div>
-            <div className="column-3">
-              <p className={"info "+classNameDeny}>{I18n.t("policy_detail.deny")}</p>
-              <em className={classNameDeny}>{I18n.t("policy_detail.deny_info")}</em>
+            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
+              <div className="inner"></div>
+              <p>{policyPermit}</p>
             </div>
           </div>
-          <div className="bottom"></div>
+          <div className="column-3 middle">
+            <p className={"info " + classNamePermit}>{I18n.t("policy_detail.permit")}</p>
+            <em className={classNamePermit}>{I18n.t("policy_detail.permit_info")}</em>
+          </div>
+          <div className="column-3">
+            <p className={"info "+classNameDeny}>{I18n.t("policy_detail.deny")}</p>
+            <em className={classNameDeny}>{I18n.t("policy_detail.deny_info")}</em>
+          </div>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
   ,
@@ -313,16 +323,24 @@ App.Pages.PolicyDetail = React.createClass({
     var className = value + " " + (selected ? "selected" : "");
     if (this.state.denyRule) {
       return (
-          <li key={value}>
-            <span className={className}>{value}</span>
-          </li>
+        <li key={value}>
+          <span className={className}>{value}</span>
+        </li>
       );
     } else {
       return (
-          <li key={value}>
-            <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
-          </li>
+        <li key={value}>
+          <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
+        </li>
       );
+    }
+  },
+
+  handleShowRevisions: function (policy) {
+    return function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      page("/revisions/:id", {id: policy.id});
     }
   },
 
@@ -334,9 +352,9 @@ App.Pages.PolicyDetail = React.createClass({
   renderAttributes: function (policy) {
     //we need state changes from the child component
     return (<App.Components.PolicyAttributes
-        policy={this.state}
-        allowedAttributes={this.props.allowedAttributes}
-        setAttributeState={this.setAttributeState}/>);
+      policy={this.state}
+      allowedAttributes={this.props.allowedAttributes}
+      setAttributeState={this.setAttributeState}/>);
   },
 
   renderLogicalRule: function (policy) {
@@ -345,30 +363,30 @@ App.Pages.PolicyDetail = React.createClass({
     var classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
 
     return (
-        <div>
-          <div className="form-element success">
-            <div className="column-3 first">
-              <p className="label">{I18n.t("policy_detail.rule")}</p>
-              <ul className="logical-rule">
-                {[
-                  this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
-                  this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
-                ]}
-              </ul>
-            </div>
-            <div className="column-3 middle">
-              <p className={"info "+classNameAnd}>{I18n.t("policy_detail.rule_and")}</p>
-              <em className={classNameAnd}>{I18n.t("policy_detail.rule_and_info")}</em>
-            </div>
-            <div className="column-3">
-              <p className={"info "+classNameOr}>{I18n.t("policy_detail.rule_or")}</p>
-              <em className={classNameOr}>{I18n.t("policy_detail.rule_or_info")}</em>
-            </div>
-            <em className="note"><sup>*</sup>{I18n.t("policy_detail.rule_info_add")} </em>
-            {this.renderDenyRuleNote()}
+      <div>
+        <div className="form-element success">
+          <div className="column-3 first">
+            <p className="label">{I18n.t("policy_detail.rule")}</p>
+            <ul className="logical-rule">
+              {[
+                this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
+                this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
+              ]}
+            </ul>
           </div>
-          <div className="bottom"></div>
+          <div className="column-3 middle">
+            <p className={"info "+classNameAnd}>{I18n.t("policy_detail.rule_and")}</p>
+            <em className={classNameAnd}>{I18n.t("policy_detail.rule_and_info")}</em>
+          </div>
+          <div className="column-3">
+            <p className={"info "+classNameOr}>{I18n.t("policy_detail.rule_or")}</p>
+            <em className={classNameOr}>{I18n.t("policy_detail.rule_or_info")}</em>
+          </div>
+          <em className="note"><sup>*</sup>{I18n.t("policy_detail.rule_info_add")} </em>
+          {this.renderDenyRuleNote()}
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   },
 
@@ -380,32 +398,47 @@ App.Pages.PolicyDetail = React.createClass({
 
   closeFlash: function () {
     this.setState({flash: undefined});
-  }
-  ,
+  },
 
   renderFlash: function () {
     if (this.state.flash) {
       return (
-          <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
-                                                                                    onClick={this.closeFlash}><i
-              className="fa fa-remove"></i></a>
-          </div>
+        <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
+                                                                                  onClick={this.closeFlash}><i
+          className="fa fa-remove"></i></a>
+        </div>
       );
     }
-  }
-  ,
+  },
 
   renderActions: function (policy) {
     var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
     return (
-        <div className="form-element">
-          <a className={classNameSubmit + " submit c-button"} href="#"
-             onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
-          <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
-        </div>
+      <div className="form-element">
+        <a className={classNameSubmit + " submit c-button"} href="#"
+           onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
+        <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
+        {this.renderDelete(policy)}
+        {this.renderRevisionsLink(policy)}
+      </div>
     );
-  }
-  ,
+  },
+
+  renderDelete: function (policy) {
+    if (policy.id) {
+      return (
+        <a className="c-button delete" href="#" onClick={this.deletePolicy(policy)}>{I18n.t("policies.delete")}</a>);
+    }
+  },
+
+  renderRevisionsLink: function (policy) {
+    var numberOfRevisions = (policy.numberOfRevisions + 1)
+    if (policy.id) {
+      return (<a className="c-button cancel pull-right" href={page.uri("/revisions/:id",{id:policy.id})}
+                 onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
+    }
+  },
+
 
   createdDate: function (policy) {
     var created = moment(policy.created);
@@ -424,26 +457,30 @@ App.Pages.PolicyDetail = React.createClass({
       displayName: policy.userDisplayName,
       created: this.createdDate(policy)
     }) : "";
+    var activatedSR = policy.id ?
+      (policy.activatedSr ? I18n.t("policy_detail.activated_true") : I18n.t("policy_detail.activated_false")) : "";
     return (
-        <div className="l-center mod-policy-detail">
-          {this.renderFlash()}
-          <div className="l-split-left form-element-container box">
-            <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em></p>
-            {this.renderName(policy)}
-            {this.renderDenyPermitRule(policy)}
-            {this.renderServiceProvider(policy)}
-            {this.renderIdentityProvider(policy)}
-            {this.renderLogicalRule(policy)}
-            {this.renderAttributes(policy)}
-            {this.renderDenyAdvice(policy)}
-            {this.renderDescription(policy)}
-            {this.renderActive(policy)}
-            {this.renderActions(policy)}
-          </div>
-          <div className="l-split-right form-element-container box">
-            {this.renderAboutPage()}
-          </div>
+      <div className="l-center mod-policy-detail">
+        {this.renderFlash()}
+        <div className="l-split-left form-element-container box">
+          <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em>
+            <em className="sub-element second">{activatedSR}</em>
+          </p>
+          {this.renderName(policy)}
+          {this.renderDenyPermitRule(policy)}
+          {this.renderServiceProvider(policy)}
+          {this.renderIdentityProvider(policy)}
+          {this.renderLogicalRule(policy)}
+          {this.renderAttributes(policy)}
+          {this.renderDenyAdvice(policy)}
+          {this.renderDescription(policy)}
+          {this.renderActive(policy)}
+          {this.renderActions(policy)}
         </div>
+        <div className="l-split-right form-element-container box">
+          {this.renderAboutPage()}
+        </div>
+      </div>
     )
   },
 

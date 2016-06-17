@@ -16,13 +16,15 @@ public class PolicyConflictService {
 
   public Map<String, List<PdpPolicyDefinition>> conflicts(List<PdpPolicyDefinition> policies) {
     Set<PdpPolicyDefinition> conflicts = new HashSet<>();
-    //we check every policy with every other policy, so we need an outer and inner loop
+    //we check each policy with every other policy, so we need an outer and inner loop
     range(0, policies.size()).forEachOrdered(i -> range(i + 1, policies.size()).forEachOrdered(j -> {
-      if (conflict(policies.get(i), policies.get(j))) {
-        conflicts.addAll(asList(policies.get(i), policies.get(j)));
+      PdpPolicyDefinition one = policies.get(i);
+      PdpPolicyDefinition two = policies.get(j);
+      if (conflict(one, two)) {
+        conflicts.addAll(asList(one, two));
       }
     }));
-    return conflicts.stream().collect(groupingBy(PdpPolicyDefinition::getServiceProviderId));
+    return conflicts.stream().collect(groupingBy(PdpPolicyDefinition::getServiceProviderName));
   }
 
   //if the two SP's are equal and there are overlapping IdP's or one policy has no IdP then there is a conflict

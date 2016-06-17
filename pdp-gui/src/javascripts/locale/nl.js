@@ -31,6 +31,7 @@ I18n.translations.nl = {
   navigation: {
     policies: "Autorisatieregels",
     violations: "Ongeautoriseerde logins",
+    conflicts: "Conflicten",
     playground: "Playground",
     my_idp: "Mijn instelling",
     new_policy: "+ Nieuwe autorisatieregel",
@@ -98,7 +99,9 @@ I18n.translations.nl = {
     isActiveDescription: "Markeer de regel actief",
     isActiveInfo: " Inactieve regels worden niet geevalueerd in access beslissingen",
     isActive: "Actief",
-    spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen"
+    spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen",
+    activated_false: "Niet geactiveerd in Service Registry",
+    activated_true: "Geactiveerd in Service Registry"
   },
 
   violations: {

@@ -55,6 +55,7 @@ I18n.translations.en = {
   navigation: {
     policies: "Policies",
     violations: "Unauthorized logins",
+    conflicts: "Conflicts",
     playground: "Playground",
     about: "About",
     my_idp: "My institute",
@@ -123,7 +124,9 @@ I18n.translations.en = {
     isActiveDescription: "Mark the policy active",
     isActiveInfo: " Inactive policies are not evaluated in enforcement decisions",
     isActive: "Active",
-    spScopeInfo: "The available Services are scoped to your services if you don't select an Institution"
+    spScopeInfo: "The available Services are scoped to your services if you don't select an Institution",
+    activated_false: "Not activated in Service Registry",
+    activated_true: "Activated in Service Registry"
   },
 
   violations: {
@@ -188,6 +191,15 @@ I18n.translations.en = {
     submit: "Impersonate",
     clear: "Reset impersonations",
     cancel: "Cancel"
+  },
+  conflicts: {
+    title: "Conflicts",
+    no_conflicts: "There are no policy conflicts",
+    service_provider: "Service Provider",
+    table: {
+      name: "Policy name",
+      idps: "Identity Providers"
+    },
   },
   contact: {
     email: "Service support email"

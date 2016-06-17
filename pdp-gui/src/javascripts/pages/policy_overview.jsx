@@ -100,7 +100,6 @@ App.Pages.PolicyOverview = React.createClass({
     }
   },
 
-
   closeFlash: function () {
     this.setState({hideFlash: true});
   },
