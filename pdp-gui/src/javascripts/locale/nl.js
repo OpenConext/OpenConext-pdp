@@ -153,7 +153,15 @@ I18n.translations.nl = {
     group_info: " De waarde(s) moeten volledige unieke groep ID zijn e.g. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
     sab_info: " De waarde(s) moet geldige rollen in SAB zijn e.g. 'Instellingsbevoegde'"
   },
-
+  conflicts: {
+    title: "Conflicten",
+    no_conflicts: "Er zijn geen conflicterende autorisatieregels",
+    service_provider: "Dienstverlener",
+    table: {
+      name: "Naam autorisatieregel",
+      idps: "Instituties"
+    }
+  },
   identity: {
     title: "Identiteit impersonatie",
     subTitle: "",

@@ -199,7 +199,7 @@ I18n.translations.en = {
     table: {
       name: "Policy name",
       idps: "Identity Providers"
-    },
+    }
   },
   contact: {
     email: "Service support email"
