@@ -12,27 +12,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-import pdp.policies.DevelopmentPrePolicyLoader;
-import pdp.policies.NoopPrePolicyLoader;
-import pdp.policies.PerformancePrePolicyLoader;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
-import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.sab.SabClient;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
-import pdp.serviceregistry.ServiceRegistry;
-import pdp.serviceregistry.UrlResourceServiceRegistry;
 import pdp.teams.VootClient;
 import pdp.web.SessionAliveInterceptor;
 import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 @SpringBootApplication(exclude = {ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class, TraceWebFilterAutoConfiguration.class, MetricFilterAutoConfiguration.class})
 public class PdpApplication {

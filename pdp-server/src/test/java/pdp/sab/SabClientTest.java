@@ -14,10 +14,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.apache.commons.codec.binary.Base64.encodeBase64String;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 public class SabClientTest {
 
-  private SabClient subject = new SabClient("user", "password", "http://localhost:8889/sab");
+  private SabClient subject = new SabClientConfig().sabClient("user", "password", "http://localhost:8889/sab");
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(8889);
@@ -41,6 +42,13 @@ public class SabClientTest {
       //lambda requires error handling
       assertEmptyRoles(fileName);
     }
+  }
+
+  @Test
+  public void testMockSabClient() throws IOException {
+    SabClient sabClient = new SabClientConfig().mockSabClient("user", "password", "http://localhost");
+    assertEquals(2, sabClient.roles(URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN).size());
+    assertEquals(0, sabClient.roles("Nope").size());
   }
 
   private void assertEmptyRoles(String fileName) throws IOException {
