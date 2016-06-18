@@ -67,8 +67,8 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
   }
 
   private String getXml(File file)  {
-    try (InputStream is = new FileInputStream(file)) {
-      return IOUtils.toString(is);
+    try {
+      return IOUtils.toString(new FileInputStream(file));
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
