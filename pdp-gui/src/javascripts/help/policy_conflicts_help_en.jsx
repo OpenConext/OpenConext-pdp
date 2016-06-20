@@ -15,7 +15,13 @@ App.Help.PolicyConflictsHelpEn = React.createClass({
           <p>Conflicting policies can influence each other because if one of the policies results in
             a negative decision then the user is not allowed access while the user might be allowed access
             based on the other - conflicting - policies.</p>
+
+          <h2>Inactive conflicts</h2>
+
+          <p>If filtering out the inactive - marked PAP inactive OR not activated in SR - policies resolves the conflict then we consider the conflict inactive.</p>
         </div>
+
+
 
     );
   }

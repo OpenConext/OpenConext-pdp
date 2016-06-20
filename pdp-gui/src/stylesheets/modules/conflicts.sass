@@ -4,6 +4,17 @@
     font-size: 20px
     color: darken($blue, 15)
 
+  p.form-element.title
+    padding-bottom: 20px
+
+  div.filters
+    float: right
+    display: inline-block
+    margin-right: 20px
+
+    em
+      display: block
+
   table
     width: 100%
     margin-top: 15px
@@ -12,9 +23,16 @@
       width: 40%
 
     th.conflict_idps
-      width: 55%
+      width: 45%
 
-    th.conflict_controls
+    th.conflict_is_activated_sr, th.conflict_is_active
+      width: 5%
+      text-align: center
+
+    td.conflict_is_activated_sr, td.conflict_is_active
+      text-align: center
+
+    th.conflict_controls, td.conflict_controls
       width: 5%
       text-align: right
 

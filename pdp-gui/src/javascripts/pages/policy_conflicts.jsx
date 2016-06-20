@@ -3,7 +3,14 @@
 App.Pages.PolicyConflicts = React.createClass({
 
   getInitialState: function () {
-    return {data: []}
+    return {
+      conflicts: this.props.conflicts,
+      hideInactive: false
+    }
+  },
+
+  handleOnChangeIsActive: function (e) {
+    this.setState({hideInactive: !this.state.hideInactive});
   },
 
   renderAboutPage: function () {
@@ -12,15 +19,15 @@ App.Pages.PolicyConflicts = React.createClass({
 
   renderOverview: function () {
     return ( <div>
+      <div className="filters">
+        <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
+               onChange={this.handleOnChangeIsActive}/>
+        <label htmlFor="isActive">{I18n.t("conflicts.hide_inactive")}</label>
+        <em className="note"><sup>*</sup>{I18n.t("conflicts.hide_inactive_note")} </em>
+      </div>
       <p className="form-element title">{I18n.t("conflicts.title")}</p>
       {this.renderConflicts()}
     </div>);
-  },
-
-  createdDate: function (policy) {
-    var created = moment(policy.created);
-    created.locale(I18n.locale);
-    return created.format('LLLL');
   },
 
   renderConflicts: function () {
@@ -37,9 +44,14 @@ App.Pages.PolicyConflicts = React.createClass({
 
   renderConflict: function (sp, index) {
     var policies = this.props.conflicts[sp];
+    if (this.state.hideInactive && policies.filter(function(policy){
+        return policy.activatedSr && policy.active;
+      }).length < 2) {
+      return;
+    }
     return (
-      <div>
-        <div className="form-element split sub-container" key={sp}>
+      <div key={sp}>
+        <div className="form-element split sub-container" >
           <h3>{I18n.t("conflicts.service_provider") + " : " + sp}</h3>
           <div>
             {this.renderPolicies(policies, index)}
@@ -48,6 +60,7 @@ App.Pages.PolicyConflicts = React.createClass({
         <div className="bottom"></div>
       </div>
     );
+
   },
 
   handleShowPolicyDetail: function (policy) {
@@ -65,6 +78,8 @@ App.Pages.PolicyConflicts = React.createClass({
         <tr className='success'>
           <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
           <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
+          <th className='conflict_is_active'>{I18n.t('policies.isActive')}</th>
+          <th className='conflict_is_activated_sr'>{I18n.t('policies.activatedSr')}</th>
           <th className='conflict_controls'></th>
         </tr>
         </thead>
@@ -80,7 +95,11 @@ App.Pages.PolicyConflicts = React.createClass({
     return (
       <tr key={policy.id}>
         <td>{policy.name}</td>
-        <td>{policy.identityProviderNames.join()}</td>
+        <td>{policy.identityProviderNames.join(', ')}</td>
+        <td className='conflict_is_active'><input type="checkbox" defaultChecked={policy.active}
+                                                disabled="true"/></td>
+        <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
+                                                      disabled="true"/></td>
         <td className="conflict_controls">
           <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
              data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>

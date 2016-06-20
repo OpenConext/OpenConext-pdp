@@ -5,19 +5,22 @@
   border-bottom: 2px solid $blue
 
   // Main app title
-  .title
+  h1.title
     background: url("/images/logo@2x.png") no-repeat left center
     background-size: 161px 50px
     height: 50px
-    float: left
+    display: inline-block
+    font-size: 24px
+    padding-left: 20px
     @extend %h2
 
     a
-      color: $dark-grey
+      color: $blue
       padding-left: 170px
 
-      &:hover
-        color: $blue
+      &:hover, &:visited
+        text-decoration: none
+
 
   // Meta = right aligned stuff
   .meta

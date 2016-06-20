@@ -160,7 +160,9 @@ I18n.translations.nl = {
     table: {
       name: "Naam autorisatieregel",
       idps: "Instituties"
-    }
+    },
+    hide_inactive: "Verberg inactieve conflicten",
+    hide_inactive_note: "Zie het rechter info blok voor details"
   },
   identity: {
     title: "Identiteit impersonatie",

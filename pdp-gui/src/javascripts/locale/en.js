@@ -199,7 +199,9 @@ I18n.translations.en = {
     table: {
       name: "Policy name",
       idps: "Identity Providers"
-    }
+    },
+    hide_inactive: "Hide inactive conflicts",
+    hide_inactive_note: "See right info box for details"
   },
   contact: {
     email: "Service support email"
