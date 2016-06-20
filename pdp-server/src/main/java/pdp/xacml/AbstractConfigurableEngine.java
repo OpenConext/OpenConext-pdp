@@ -31,6 +31,8 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
   protected PIPResponse empty;
   protected PIPResponse missingNameId;
 
+  //we need to keep track of performance
+
   @Override
   public void configure(String id, Properties properties) throws PIPException {
     IdentifierImpl identifierDataType = new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string");

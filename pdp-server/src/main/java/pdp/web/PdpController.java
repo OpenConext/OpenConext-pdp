@@ -157,7 +157,7 @@ public class PdpController implements JsonMapper {
   @RequestMapping(method = GET, value = {"/internal/conflicts", "/protected/conflicts"})
   public Map<String, List<PdpPolicyDefinition>> conflicts() {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
-        .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
+        .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
     return policyConflictService.conflicts(policies);
   }
 
@@ -198,7 +198,8 @@ public class PdpController implements JsonMapper {
 
   private void checkConflicts(PdpPolicyDefinition pdpPolicyDefinition) {
     Map<String, List<PdpPolicyDefinition>> conflicts = conflicts();
-    if (conflicts.containsKey(pdpPolicyDefinition.getServiceProviderName())) {
+    Optional<EntityMetaData> entityMetaData = serviceRegistry.serviceProviderOptionalByEntityId(pdpPolicyDefinition.getServiceProviderId());
+    if (entityMetaData.isPresent() && conflicts.containsKey(entityMetaData.get().getNameEn())) {
       this.mailBox.sendConflictsMail(conflicts);
     }
   }

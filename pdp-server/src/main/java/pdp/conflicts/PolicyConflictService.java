@@ -17,7 +17,7 @@ public class PolicyConflictService {
   public Map<String, List<PdpPolicyDefinition>> conflicts(List<PdpPolicyDefinition> policies) {
     Set<PdpPolicyDefinition> conflicts = new HashSet<>();
     //we check each policy with every other policy, so we need an outer and inner loop
-    range(0, policies.size()).forEachOrdered(i -> range(i + 1, policies.size()).forEachOrdered(j -> {
+    range(0, policies.size()).forEach(i -> range(i + 1, policies.size()).forEach(j -> {
       PdpPolicyDefinition one = policies.get(i);
       PdpPolicyDefinition two = policies.get(j);
       if (conflict(one, two)) {
