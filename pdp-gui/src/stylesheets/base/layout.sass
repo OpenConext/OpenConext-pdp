@@ -17,6 +17,9 @@
   position: relative
   +clearfix
 
+  @media screen and (max-width: $medium)
+    padding: 0px
+
   .l-left
     width: 200px
     float: left
@@ -32,9 +35,17 @@
     width: 49%
     float: left
 
+    @media screen and (max-width: $medium)
+      width: 100%
+      float: none
+
   .l-split-right
     float: right
     width: 49%
+
+    @media screen and (max-width: $medium)
+      width: 100%
+      float: none
 
   .l-middle
     max-width: 1000px
