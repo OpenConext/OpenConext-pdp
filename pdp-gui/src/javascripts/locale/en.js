@@ -201,7 +201,7 @@ I18n.translations.en = {
       idps: "Identity Providers"
     },
     hide_inactive: "Hide inactive conflicts",
-    hide_inactive_note: "See right info box for details"
+    hide_inactive_note: " See right info box for details"
   },
   contact: {
     email: "Service support email"

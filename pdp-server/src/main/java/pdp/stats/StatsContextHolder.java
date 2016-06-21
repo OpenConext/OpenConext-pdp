@@ -13,18 +13,18 @@ import javax.servlet.ServletRequestListener;
  */
 public class StatsContextHolder implements ServletRequestListener {
 
-  private static final ThreadLocal<StatsContext> contextHolder = new ThreadLocal<StatsContext>();
-
-  @Override
-  public void requestDestroyed(ServletRequestEvent sre) {
-    System.out.println("requestDestroyed");
-  }
+  private static final ThreadLocal<StatsContext> contextHolder = new ThreadLocal<>();
 
   @Override
   public void requestInitialized(ServletRequestEvent sre) {
-    System.out.println("requestInitialized");
-
+    contextHolder.set(new StatsContext());
   }
+
+  @Override
+  public void requestDestroyed(ServletRequestEvent sre) {
+    contextHolder.remove();
+  }
+
 
   public void clearContext() {
     contextHolder.remove();
@@ -33,8 +33,7 @@ public class StatsContextHolder implements ServletRequestListener {
   public StatsContext getContext() {
     StatsContext ctx = contextHolder.get();
     if (ctx == null) {
-      ctx = new StatsContext();
-      contextHolder.set(ctx);
+      contextHolder.set(new StatsContext());
     }
     return ctx;
   }

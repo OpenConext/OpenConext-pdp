@@ -19,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
-import pdp.stats.StatsServletRequestListener;
+import pdp.stats.StatsContextHolder;
 import pdp.teams.VootClient;
 import pdp.web.SessionAliveInterceptor;
 import pdp.xacml.PDPEngineHolder;
@@ -37,8 +37,8 @@ public class PdpApplication {
   }
 
   @Bean
-  public StatsServletRequestListener statsServletRequestListener() {
-    return new StatsServletRequestListener();
+  public StatsContextHolder statsContextHolder() {
+    return new StatsContextHolder();
   }
 
   @Bean
