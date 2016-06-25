@@ -15,6 +15,9 @@ import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+import pdp.stats.PipResponse;
+import pdp.stats.StatsContext;
+import pdp.stats.StatsContextHolder;
 
 import java.util.*;
 
@@ -77,7 +80,13 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
     }
     String userUrn = (String) values.stream().findFirst().get().getValue();
 
+    StatsContext stats = StatsContextHolder.getContext();
+    long start = System.currentTimeMillis();
+
     List<String> result = getAttributes(userUrn);
+
+    stats.addPipResponse(new PipResponse(getName(), System.currentTimeMillis() - start));
+
     if (CollectionUtils.isEmpty(result)) {
       return empty;
     }

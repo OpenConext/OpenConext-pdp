@@ -5,10 +5,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
-import org.apache.openaz.xacml.api.IdReference;
-import org.apache.openaz.xacml.api.Request;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
@@ -38,6 +35,9 @@ import pdp.mail.MailBox;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
+import pdp.stats.StatsContext;
+import pdp.stats.StatsContextHolder;
+import pdp.util.StreamUtils;
 import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
@@ -45,6 +45,7 @@ import pdp.xacml.PolicyTemplateEngine;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -58,6 +59,7 @@ import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static pdp.access.PolicyAccess.*;
+import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
@@ -78,8 +80,8 @@ public class PdpController implements JsonMapper {
   private final boolean cachePolicies;
   private final MailBox mailBox;
 
-  // Can't be final as we need to swap this to reload policies in production
-  private PDPEngine pdpEngine;
+  // Can't be final as we need to swap this reference for reloading policies in production
+  private volatile PDPEngine pdpEngine;
 
   @Autowired
   public PdpController(@Value("${period.policies.refresh.minutes}") int period,
@@ -117,17 +119,24 @@ public class PdpController implements JsonMapper {
   }
 
   private String doDecide(String payload, boolean isPlayground) throws Exception {
+    StatsContext stats = StatsContextHolder.getContext();
+
     long start = System.currentTimeMillis();
     LOG.debug("decide request: {}", payload);
 
     Request request = JSONRequest.load(payload);
+    addStatsDetails(stats, request);
 
     Response pdpResponse = isPlayground ? playgroundPdpEngine.decide(request) : pdpEngine.decide(request);
 
     String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
-    LOG.debug("decide response: {} took: {} ms", response, System.currentTimeMillis() - start);
 
-    reportPolicyViolation(pdpResponse, response, payload, isPlayground);
+    long took = System.currentTimeMillis() - start;
+    stats.setResponseTimeMs(took);
+    LOG.debug("decide response: {} took: {} ms", response, took);
+
+    Decision decision = reportPolicyViolation(pdpResponse, response, payload, isPlayground);
+    stats.setDecision(decision.toString());
     return response;
   }
 
@@ -303,8 +312,25 @@ public class PdpController implements JsonMapper {
     return (FederatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  private void reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
+  private void addStatsDetails(StatsContext stats, Request request) {
+    stats.setWhen(LocalDateTime.now());
+    RequestAttributes req = request.getRequestAttributes().stream()
+        .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
+        .collect(singletonCollector());
+    Collection<Attribute> attributes = req.getAttributes();
+    stats.setIdentityProvider(getAttributeValue(attributes, "IDPentityID"));
+    stats.setServiceProvicer(getAttributeValue(attributes, "SPentityID"));
+  }
+
+  private String getAttributeValue(Collection<Attribute> attributes, String attributeId) {
+    Attribute sp = attributes.stream().filter(attribute -> attribute.getAttributeId().getUri().toString().equals(attributeId)).collect(singletonCollector());
+    return (String) sp.getValues().iterator().next().getValue();
+  }
+
+
+  private Decision reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
     Collection<Result> results = pdpResponse.getResults();
+
     List<Result> deniesOrIndeterminates = results.stream().filter(result ->
         result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).collect(toList());
     if (!CollectionUtils.isEmpty(deniesOrIndeterminates)) {
@@ -317,6 +343,7 @@ public class PdpController implements JsonMapper {
         }
       }
     }
+    return results.iterator().next().getDecision();
   }
 
   private Optional<IdReference> getPolicyId(List<Result> deniesOrIndeterminates) {
