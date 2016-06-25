@@ -11,7 +11,7 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 
 - Java 8
 - Maven 3
-- MySQL 5.5
+- MySQL 5.5+
 - Gruntjs
 
 ### Create database
