@@ -36,7 +36,7 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
   public void requestDestroyed(ServletRequestEvent sre) {
     if (applyForPath(sre)) {
       StatsContext context = contextHolder.get();
-      new Thread(() -> saveContext(context)).run();
+      new Thread(() -> saveContext(context)).start();
       contextHolder.remove();
     }
   }
@@ -56,6 +56,10 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
   }
 
   public static StatsContext getContext() {
+    StatsContext ctx = contextHolder.get();
+    if (ctx == null) {
+      contextHolder.set(new StatsContext());
+    }
     return contextHolder.get();
   }
 }

@@ -318,15 +318,14 @@ public class PdpController implements JsonMapper {
         .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
         .collect(singletonCollector());
     Collection<Attribute> attributes = req.getAttributes();
-    stats.setIdentityProvider(getAttributeValue(attributes, "IDPentityID"));
-    stats.setServiceProvicer(getAttributeValue(attributes, "SPentityID"));
+    stats.setIdentityProvider(getAttributeValue(attributes, "IDPentityID").orElse(""));
+    stats.setServiceProvicer(getAttributeValue(attributes, "SPentityID").orElse(""));
   }
 
-  private String getAttributeValue(Collection<Attribute> attributes, String attributeId) {
-    Attribute sp = attributes.stream().filter(attribute -> attribute.getAttributeId().getUri().toString().equals(attributeId)).collect(singletonCollector());
-    return (String) sp.getValues().iterator().next().getValue();
+  private Optional<String> getAttributeValue(Collection<Attribute> attributes, String attributeId) {
+    Optional<Attribute> attribute = attributes.stream().filter(attr -> attr.getAttributeId().getUri().toString().equals(attributeId)).collect(singletonOptionalCollector());
+    return attribute.map(attr -> (String) attr.getValues().iterator().next().getValue());
   }
-
 
   private Decision reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
     Collection<Result> results = pdpResponse.getResults();

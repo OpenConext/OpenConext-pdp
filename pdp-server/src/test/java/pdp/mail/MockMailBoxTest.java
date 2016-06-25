@@ -6,6 +6,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.web.client.RestTemplate;
+import pdp.AbstractPdpIntegrationTest;
 import pdp.PdpEngineTest;
 import pdp.domain.PdpPolicyDefinition;
 
@@ -19,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
 @WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=dev"})
-public class MockMailBoxTest extends PdpEngineTest {
+public class MockMailBoxTest extends AbstractPdpIntegrationTest {
 
   @Autowired
   private MailBox mailBox ;
@@ -41,5 +43,10 @@ public class MockMailBoxTest extends PdpEngineTest {
     Thread.sleep(1500);
 
     assertEquals(0, greenMail.getReceivedMessages().length);
+  }
+
+  @Override
+  public RestTemplate getRestTemplate() {
+    return null;
   }
 }
