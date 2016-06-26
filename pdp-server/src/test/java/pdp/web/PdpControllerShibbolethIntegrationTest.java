@@ -70,7 +70,6 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     assertEquals(Decision.NOTAPPLICABLE, JSONResponse.load(response.getBody()).getResults().stream().collect(singletonCollector()).getDecision());
   }
 
-
   @Test
   public void testPolicyDefinitionsAdmin() {
     List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);

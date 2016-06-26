@@ -19,6 +19,13 @@ public class PdpDecision {
   @Column
   private Timestamp created;
 
+  public PdpDecision() {
+  }
+
+  public PdpDecision(String decisionJson) {
+    this.decisionJson = decisionJson;
+  }
+
   public Long getId() {
     return id;
   }

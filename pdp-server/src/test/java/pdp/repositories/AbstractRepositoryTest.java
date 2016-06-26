@@ -26,6 +26,9 @@ public abstract class AbstractRepositoryTest {
   @Autowired
   protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
+  @Autowired
+  protected PdpDecisionRepository pdpDecisionRepository;
+
   protected PdpPolicy pdpPolicy(String name) {
     return new PdpPolicy("xml", name, true, userIdentifier, authenticatingAuthority, userDisplayName, true);
   }
