@@ -32,6 +32,7 @@ I18n.translations.nl = {
     policies: "Autorisatieregels",
     violations: "Ongeautoriseerde logins",
     conflicts: "Conflicten",
+    decisions: "Statistieken",
     playground: "Playground",
     my_idp: "Mijn instelling",
     new_policy: "+ Nieuwe autorisatieregel",

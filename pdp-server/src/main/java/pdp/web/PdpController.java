@@ -313,7 +313,6 @@ public class PdpController implements JsonMapper {
   }
 
   private void addStatsDetails(StatsContext stats, Request request) {
-    stats.setWhen(LocalDateTime.now());
     RequestAttributes req = request.getRequestAttributes().stream()
         .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
         .collect(singletonCollector());

@@ -42,6 +42,9 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
   }
 
   private void saveContext(StatsContext context) {
+    if (context.getServiceProvicer() == null) {
+      return;
+    }
     try {
       PdpDecision pdpDecision = new PdpDecision();
       pdpDecision.setDecisionJson(objectMapper.writeValueAsString(context));

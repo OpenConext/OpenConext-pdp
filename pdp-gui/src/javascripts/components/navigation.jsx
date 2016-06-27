@@ -25,6 +25,7 @@ App.Components.Navigation = React.createClass({
           {this.renderItem("/policies", "policies")}
           {this.renderItem("/violations", "violations")}
           {this.renderItem("/conflicts", "conflicts")}
+          {this.renderItem("/decisions", "decisions")}
           {this.renderItem("/playground", "playground")}
           {this.renderItem("/identity", "identity")}
           {this.renderItem("/new-policy", "new_policy", true)}

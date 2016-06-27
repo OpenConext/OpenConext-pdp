@@ -2,6 +2,7 @@ package pdp.teams;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.IOUtils;
+import org.apache.openaz.xacml.std.pip.engines.ConfigurableEngine;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
@@ -20,6 +21,14 @@ public class VootClientTest {
 
   @Rule
   public WireMockRule wireMockRule = new WireMockRule(8889);
+
+  @Test
+  public void testInstanceOf() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    Class<?> classForEngine = Class.forName("pdp.teams.TeamsPIP");
+    ConfigurableEngine teamsPIP = ConfigurableEngine.class.cast(classForEngine.newInstance());
+
+    System.out.println(teamsPIP instanceof VootClientAware);
+  }
 
   @Test
   public void testGroups() throws Exception {
