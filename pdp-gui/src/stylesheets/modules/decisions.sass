@@ -3,10 +3,9 @@
   overflow: hidden
 
   #chart
-    position: relative
-    left: 50px
+    display: inline-block
+    margin: 15px 0px 0px 50px
     width: 100%
-    margin: 0 auto
     overflow: auto
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2)
     background: #fff
@@ -14,12 +13,29 @@
     border: none white
     border-top-style: solid
 
+  .stats
+    padding: 12px 5px
+    float: right
+    width: 420px
+    font-size: 12px
+    line-height: 14px
+
+    section
+      display: inline-block
+      width: 100%
+      span
+        &:first-child
+          float: left
+        &:last-child
+          float: right
+    @extend %box
+
 .graph-container
   position: relative
 
 #y_axis
   position: absolute
-  top: 0
+  top: 18px
   bottom: 0
   width: 50px
 
@@ -202,9 +218,9 @@
   text-shadow: -1px 1px 0 rgba(0, 0, 0, 0.8), 1px -1px 0 rgba(0, 0, 0, 0.8), 1px 1px 0 rgba(0, 0, 0, 0.8), 0px 1px 0 rgba(0, 0, 0, 0.8), 0px -1px 0 rgba(0, 0, 0, 0.8), 1px 0px 0 rgba(0, 0, 0, 0.8), -1px 0px 0 rgba(0, 0, 0, 0.8), -1px -1px 0 rgba(0, 0, 0, 0.8)
 
 .rickshaw_legend
-  padding: 12px 5px
-  position: relative
-  left: 50px
+  padding: 2px
+  display: inline-block
+  margin-left: 50px
   width: 520px
   margin-bottom: 10px
   @extend %box
@@ -233,7 +249,6 @@
 
 .rickshaw_legend li
   padding: 2px 20px
-  display: inline-block
   &:first-child a
     color: $orange
   &:nth-child(2) a

@@ -204,6 +204,12 @@ I18n.translations.en = {
     hide_inactive: "Hide inactive conflicts",
     hide_inactive_note: " See right info box for details"
   },
+  decisions: {
+    avg_total: "Average Total",
+    avg_pdp: "Average PDP internal",
+    avg_teams: "Average Teams",
+    avg_sab: "Average SAB"
+  },
   contact: {
     email: "Service support email"
   },

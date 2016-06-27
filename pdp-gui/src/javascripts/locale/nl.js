@@ -165,6 +165,12 @@ I18n.translations.nl = {
     hide_inactive: "Verberg inactieve conflicten",
     hide_inactive_note: " Zie het rechter info blok voor details"
   },
+  decisions: {
+    avg_total: "Gemiddelde totaal",
+    avg_pdp: "Gemiddelde PDP internal",
+    avg_teams: "Gemiddelde Teams",
+    avg_sab: "Gemiddelde SAB"
+  },
   identity: {
     title: "Identiteit impersonatie",
     subTitle: "",
