@@ -29,6 +29,4 @@ public class StatsController {
     return pdpDecisionRepository.findByCreatedAfter(date);
   }
 
-
-
 }

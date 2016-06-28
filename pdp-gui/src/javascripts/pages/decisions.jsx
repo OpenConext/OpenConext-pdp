@@ -10,8 +10,10 @@ App.Pages.Decisions = React.createClass({
     this.initGraph();
   },
   average: function (arr) {
-    return arr.reduce(function (prev, curr, i, arr) {
-      var total = prev.y + curr.x;
+    return arr.map(function(o){
+      return o.y
+    }).reduce(function (prev, curr, i, arr) {
+      var total = prev + curr;
       return i == arr.length - 1 ? total / arr.length : total;
     }).toFixed(0);
   },
