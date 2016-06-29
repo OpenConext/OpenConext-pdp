@@ -15,7 +15,7 @@ App.Pages.Decisions = React.createClass({
     }).reduce(function (prev, curr, i, arr) {
       var total = prev + curr;
       return i == arr.length - 1 ? total / arr.length : total;
-    }).toFixed(0);
+    }, 0).toFixed(0);
   },
   initGraph: function () {
     var decisions = this.props.decisions;

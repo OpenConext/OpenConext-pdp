@@ -3,8 +3,8 @@
   overflow: hidden
 
   #chart
-    display: inline-block
-    margin: 15px 0px 0px 50px
+    position: relative
+    left: 50px
     width: 100%
     overflow: auto
     box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2)
@@ -14,7 +14,7 @@
     border-top-style: solid
 
   .stats
-    padding: 12px 5px
+    padding: 9px 5px
     float: right
     width: 420px
     font-size: 12px
@@ -220,9 +220,8 @@
 .rickshaw_legend
   padding: 2px
   display: inline-block
-  margin-left: 50px
+  margin: 0px 0px 15px 50px
   width: 520px
-  margin-bottom: 10px
   @extend %box
 
 .rickshaw_legend .line .swatch

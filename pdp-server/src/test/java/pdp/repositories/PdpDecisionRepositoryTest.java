@@ -19,7 +19,7 @@ public class PdpDecisionRepositoryTest extends AbstractRepositoryTest implements
   @Before
   public void setUp() throws Exception {
     pdpDecisionRepository.deleteAll();
-    pdpDecisionRepository.save(new PdpDecision("does not matter here"));
+    pdpDecisionRepository.save(new PdpDecision("{\"serviceProvicer\":\"https://profile.test.surfconext.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp\",\"identityProvider\":\"https://openidp.feide.no\",\"responseTimeMs\":68,\"pipResponses\":{},\"decision\":\"Permit\"}"));
   }
 
   @Test
