@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class PdpAttributeTest {
@@ -28,6 +29,8 @@ public class PdpAttributeTest {
   @Test
   public void testValueTrim() {
     PdpAttribute nullCheck = new PdpAttribute("some_name",null);
+    assertNull(nullCheck.getValue());
+
     PdpAttribute attr = new PdpAttribute("some_name","  123  ");
     assertEquals("123", attr.getValue());
   }
