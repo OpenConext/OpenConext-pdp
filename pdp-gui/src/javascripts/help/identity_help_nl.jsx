@@ -19,13 +19,13 @@ App.Help.IdentityHelpNl = React.createClass({
           <h2>Identiteit-imitatie</h2>
 
           <p>Om de gevolgen van de autorisatieregels te testen kunt u een gebruiker van een bepaalde IdP impersoneren.
-            Op basis van de IdP de volgende beperkingen zijn van toepassing:</p>
+            Op basis van de IdP zijn de volgende beperkingen van toepassing:</p>
           <ul>
 
             <li>Het aanmaken, verwijderen en bijwerken van een policy is alleen toegestaan:
               <ul>
-                <li>Als de IdP (s) van de policy een subset zijn van de IdP(s) van de gebruiker, OF
-                </ li>
+                <li>Als de IdP(s) van de policy een subset zijn van de IdP(s) van de gebruiker, OF
+                </li>
                 <li>als de policy geen IdP heeft en de SP van de policy is gekoppeld aan de IdP van de
                   gebruiker
                 </li>
@@ -39,7 +39,7 @@ App.Help.IdentityHelpNl = React.createClass({
             </li>
             <li>Policy&quot;s kunnen in alleen-lezenmodus bekeken worden als:
               <ul>
-                <li>De verzameling IdP&quot;s van de policy leeg is en de SP van de policy toegang openstelt voor &eacute; van de IdP&quot;s van de gebruiker, OF</li>
+                <li>De verzameling IdP&quot;s van de policy leeg is en de SP van de policy toegang openstelt voor &eacute;&eactute;n van de IdP&quot;s van de gebruiker, OF</li>
                 <li>E&eacute;n van de IdP&quot;s van de policy de IdP van de gebruiker is, OF</li>
                 <li>De SP van de policy verbonden is met &eacute;&eacute;n van de IdP&quot;s van de gebruiker.</li>
               </ul>

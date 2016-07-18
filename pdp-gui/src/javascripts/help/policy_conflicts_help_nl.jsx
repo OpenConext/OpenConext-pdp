@@ -12,13 +12,13 @@ App.Help.PolicyConflictsHelpNl = React.createClass({
 
           <h2>Consequenties</h2>
 
-          <p>Conflicterende autorisatieregels kunnen elkaar beïnvloeden omdat als één van de regels in een negatieve
-            beslissing resulteert, dan wordt de gebruiker toegang tot de desbetreffende dienst geweigerd. Dit terwijl
-            de andere conflicterende regel(s) wellicht een positieve beslissing tot gevolg hadden.</p>
+          <p>Conflicterende autorisatieregels kunnen elkaar beïnvloeden, omdat als één van de regels in een negatieve
+            beslissing resulteert, dan de gebruiker toegang tot de desbetreffende dienst wordt geweigerd. Dit terwijl
+            de andere conflicterende regel(s) wellicht een positieve beslissing tot gevolg gehad hadden.</p>
 
           <h2>Inactieve conflicten</h2>
 
-          <p>Als het conflict is 'opgelost' door alle niet actieve - niet geactiveerd in SR of PAP - regels te filteren dan is een conflict inactief.</p>
+          <p>Als het conflict is 'opgelost' door alle niet-actieve - niet geactiveerd in SR of PAP - regels te filteren dan is een conflict inactief.</p>
 
         </div>
 
