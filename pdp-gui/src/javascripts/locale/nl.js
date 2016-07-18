@@ -24,8 +24,8 @@ I18n.translations.nl = {
   },
 
   profile: {
-    ROLE_PEP: "Instellings beheerder",
-    ROLE_ADMIN: "SURFnet beheerder"
+    ROLE_PEP: "Instellingsbeheerder",
+    ROLE_ADMIN: "SURFnet-beheerder"
   },
 
   navigation: {
@@ -56,12 +56,12 @@ I18n.translations.nl = {
     flash_deleted: "verwijderd",
     confirmation: "Weet je zeker dat je autorisatieregel {{policyName}} wilt verwijderen?",
     edit: "Bewerk",
-    delete: "Verwijder",
+    delete: "Verwijder"
   },
 
   datatable: {
     lengthMenu: "Toon _MENU_ rijen",
-    zeroRecords: "Er is geen data aanwezig",
+    zeroRecords: "Er zijn geen gegevens aanwezig",
     infoEmpty: "",
     info: "_START_ tot _END_ van _TOTAL_ rijen",
     paginate_first: "Eerste",
@@ -78,27 +78,27 @@ I18n.translations.nl = {
     description: "Omschrijving",
     access: "Toegang",
     permit: "Permit",
-    permit_info: "Permit regels dwingen af dat de gebruiker alleen wordt geautoriseerd als de attributen matchen. Als er geen match is dan wordt de gebruiker niet toegelaten tot de dienst.",
+    permit_info: "Permit-regels dwingen af dat de gebruiker alleen wordt geautoriseerd als de attributen matchen. Als er geen match is dan wordt de gebruiker niet toegelaten tot de dienst.",
     deny: "Deny",
     deny_info: "Deny regels zijn minder gebruikelijk. Als de attributen matchen dan mag de gebruiker niet naar de dienst. Als de attributen niet matchen dan wel.",
-    deny_message: "Ongeautoriseerd melding in het Engels",
+    deny_message: "Ongeautoriseerd-melding in het Engels",
     deny_message_info: "Dit is de melding die de gebruiker ziet bij een 'Deny' op basis van deze regel.",
-    deny_message_nl: "Ongeautoriseerd melding",
+    deny_message_nl: "Ongeautoriseerd-melding",
     sp_placeholder: "Selecteer de dienst - verplicht",
     idps_placeholder: "Selecteer de instellingen - 0 of meer",
     rule: "Regel",
     rule_and: "EN",
     rule_and_info: "Autorisatieregels met een logische EN dwingen af dat alle gedefinieerde attributen moeten matchen.",
     rule_or: "OF",
-    rule_or_info: "Voor autorisatieregels met een logische OF is het slechts vereist dat 1 attribuut matched.",
-    rule_info_add: " Attribuut waardes van hetzelfde attribuut zullen altijd worden geevalueerd met de logische OF.",
-    rule_info_add_2: "Een 'Deny' autorisatieregel wordt altijd geevalueerd met de logische EN voor attribuut waarden van verschillende attributen.",
+    rule_or_info: "Voor autorisatieregels met een logische OF is het slechts vereist dat 1 attribuut matcht.",
+    rule_info_add: " Attribuutwaardes van hetzelfde attribuut zullen altijd worden geëvalueerd met de logische OF.",
+    rule_info_add_2: "Een 'Deny' autorisatieregel wordt altijd geëvalueerd met de logische EN voor attribuutwaarden van verschillende attributen.",
     submit: "Verstuur",
     cancel: "Annuleer",
     sub_title: "Aangemaakt door {{displayName}} op {{created}}",
     autoFormat: "AutoFormat regel omschrijving",
     isActiveDescription: "Markeer de regel actief",
-    isActiveInfo: " Inactieve regels worden niet geevalueerd in access beslissingen",
+    isActiveInfo: " Inactieve regels worden niet geëvalueerd in access-beslissingen",
     isActive: "Actief",
     spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen",
     activated_false: "Niet geactiveerd in Service Registry",
@@ -118,12 +118,12 @@ I18n.translations.nl = {
 
   playground: {
     policy: "Autorisatieregel",
-    policy_info: "Optioneel, de geselecteerde regel wordt alleen gebruikt voor het zetten van de default voor de diesnt, instelling en attributen",
+    policy_info: "Optioneel, de geselecteerde regel wordt alleen gebruikt voor het zetten van de default voor de dienst, instelling en attributen",
     policy_search: "Selecteer een regel",
     idp_placeholder: "Selecteer de instelling - verplicht",
     adventurous_title: "Code hacken?",
     adventurous_text: "Je kan direct de code veranderen in het rechter JSON request scherm.",
-    check_policies: "Nieuw autorisatie verzoek",
+    check_policies: "Nieuw autorisatieverzoek",
     clear_policies: "Clear",
     reload_policy: "Voer een nieuwe check uit met onderstaande wijzigingen"
   },
@@ -133,26 +133,26 @@ I18n.translations.nl = {
     revision: "Revisie nummer",
     name: "Naam",
     description: "Omschrijving",
-    denyRule: "Toegang Permit regel?",
+    denyRule: "Toegang Permit-regel?",
     serviceProviderName: "Dienst",
     identityProviderNames: "Instelling(en)",
     allAttributesMustMatch: "Logische OF regel?",
     attributes: "Attributen",
-    denyAdvice: "Ongeautoriseerd melding in het Engels",
-    denyAdviceNl: "Ongeautoriseerd melding",
+    denyAdvice: "Ongeautoriseerd-melding in het Engels",
+    denyAdviceNl: "Ongeautoriseerd-melding",
     active: "Actief",
     changes_info_html: "Veranderingen tussen <span class=\"prev\"> revisie nummer {{prevRevisionNbr}}</span> en <span class=\"curr\">revisie nummer {{currRevisionNbr}}</span> gemaakt door {{userDisplayName}} van {{authenticatingAuthorityName}} op {{createdDate}}.",
     changes_first_html: "Dit is de <span class=\"curr\">eerste revisie {{currRevisionNbr}}</span> aangemaakt door {{userDisplayName}} van {{authenticatingAuthorityName}} op {{createdDate}}."
   },
 
   policy_attributes: {
-    attribute_value_placeholder: "Attribuut waarde...",
+    attribute_value_placeholder: "Attribuutwaarde...",
     attribute: "Attribuut",
     values: "Waarde(s)",
     new_value: "Voeg een nieuwe waarde toe...",
     new_attribute: "Voeg een nieuw attribuut toe...",
-    group_info: " De waarde(s) moeten volledige unieke groep ID zijn e.g. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
-    sab_info: " De waarde(s) moet geldige rollen in SAB zijn e.g. 'Instellingsbevoegde'"
+    group_info: " De waarde(s) moeten volledige unieke groep ID zijn, b.v. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
+    sab_info: " De waarde(s) moet geldige rollen in SAB zijn, b.v. 'Instellingsbevoegde'"
   },
   conflicts: {
     title: "Conflicten",
@@ -163,7 +163,7 @@ I18n.translations.nl = {
       idps: "Instituties"
     },
     hide_inactive: "Verberg inactieve conflicten",
-    hide_inactive_note: " Zie het rechter info blok voor details"
+    hide_inactive_note: " Zie het rechter infoblok voor details"
   },
   decisions: {
     avg_total: "Gemiddelde totaal",
@@ -172,13 +172,13 @@ I18n.translations.nl = {
     avg_sab: "Gemiddelde SAB"
   },
   identity: {
-    title: "Identiteit impersonatie",
+    title: "Identiteitsimpersonatie",
     subTitle: "",
     confirmation: "Verander identiteit",
-    unspecifiedNameId: "Naam ID",
-    unspecifiedNameIdInfo: "De unieke naam ID wordt opgeslagen bij elke regel verandering",
+    unspecifiedNameId: "NameID",
+    unspecifiedNameIdInfo: "De unieke NameID wordt opgeslagen bij elke regel verandering",
     displayName: "Naam",
-    displayNameInfo: "De naam can de gebruiker wordt ook opgeslagen bij elke nieuwe regel revisie",
+    displayNameInfo: "De naam van de gebruiker wordt ook opgeslagen bij elke nieuwe regel-revisie",
     submit: "Verstuur",
     clear: "Stop impersonatie",
     cancel: "Annuleer"
@@ -189,7 +189,7 @@ I18n.translations.nl = {
   },
 
   server_error: {
-    title: "De PDP application is momenteel niet beschikbaar.",
+    title: "De PDP-applicatie is momenteel niet beschikbaar.",
     description_html: "Probeer het later nog eens of neem contract op met <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
   },
 
