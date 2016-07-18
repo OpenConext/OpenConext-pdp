@@ -39,9 +39,9 @@ App.Help.IdentityHelpNl = React.createClass({
             </li>
             <li>Policy&quot;s kunnen in alleen-lezenmodus bekeken worden als:
               <ul>
-                <li>De verzameling IdP&quot;s van de policy leeg is en de SP van de policy toegang openstelt voor &eacute; van de IdP&quot;s van de gebruiker, OF
-                <li>E&eacute;n van de IdP&quot;s van de policy de IdP van de gebruiker is, OF
-                <li>De SP van de policy verbonden is met &eacute;&eacute;n van de IdP&quot;s van de gebruiker.
+                <li>De verzameling IdP&quot;s van de policy leeg is en de SP van de policy toegang openstelt voor &eacute; van de IdP&quot;s van de gebruiker, OF</li>
+                <li>E&eacute;n van de IdP&quot;s van de policy de IdP van de gebruiker is, OF</li>
+                <li>De SP van de policy verbonden is met &eacute;&eacute;n van de IdP&quot;s van de gebruiker.</li>
               </ul>
             </li>
             <li>Schendingen worden gefilterd en alleen getoond als:</ li>
