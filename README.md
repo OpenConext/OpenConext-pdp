@@ -101,6 +101,10 @@ of the cyclic dependencies in the hierarchy (and not desirable because of the co
 
 See [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/pdp-gui/src/images/authz_poc.001.png)
 
+### Security
+
+Read this [section](Security.md) for a in-depth security overview.
+
 ### Policy limitations
 
 The policies that can be created are limited in functionality:
