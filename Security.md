@@ -8,7 +8,7 @@ the PDP application:
 
 1. A [PreAuthenticatedAuthenticationProvider](http://docs.spring.io/spring-security/site/docs/current/reference/html/preauth.html#preauth)
 implementation which protects all the ```/internal/**``` endpoints.
-2. A [BasicAuthenticationFilter](pdp-server/src/main/java/pdp/access/BasicAuthenticationProvider) which protects all the
+2. A [BasicAuthenticationFilter](pdp-server/src/main/java/pdp/access/BasicAuthenticationProvider.java) which protects all the
 `/protected/**` endpoints.
 
 ### Shibboleth
