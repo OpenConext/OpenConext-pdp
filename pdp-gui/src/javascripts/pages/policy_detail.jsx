@@ -15,12 +15,14 @@ class PolicyDetail extends React.Component {
     }
   }
 
-  getInitialState() {
+  constructor() {
+    super();
+
     const state = this.props.policy;
     if (state.id === undefined || state.id === null) {
       state.active = true;
     }
-    return state;
+    this.state = Object.assign({}, state);
   }
 
   toggleDenyRule(e) {

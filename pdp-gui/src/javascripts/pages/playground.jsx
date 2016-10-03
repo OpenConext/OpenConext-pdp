@@ -15,8 +15,10 @@ class Playground extends React.Component {
     }
   }
 
-  getInitialState() {
-    return this.props.pdpRequest;
+  constructor() {
+    super();
+
+    this.state = Object.assign({}, this.props.pdpRequest);
   }
 
   parseEntities(entities) {

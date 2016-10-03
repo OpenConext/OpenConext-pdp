@@ -2,9 +2,11 @@ import React from "react";
 
 class Select2Selector extends React.Component {
 
-  getInitialState() {
+  constructor() {
+    super();
     const initialValue = this.props.defaultValue || (this.props.multiple ? [] : "");
-    return {
+
+    this.state = {
       value: initialValue
     };
   }

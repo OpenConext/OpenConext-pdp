@@ -2,8 +2,10 @@ import React from "react";
 import I18n from "i18n-js";
 
 class Header extends React.Component {
-  getInitialState() {
-    return {
+  constructor() {
+    super();
+
+    this.state = {
       dropDownActive: false
     };
   }

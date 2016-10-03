@@ -15,8 +15,10 @@ class PolicyRevisions extends React.Component {
     }
   }
 
-  getInitialState() {
-    return { data: [] };
+  constructor() {
+    super();
+
+    this.state = { data: [] };
   }
 
   renderAttributesDiff(prev, curr) {

@@ -3,8 +3,10 @@ import I18n from "i18n-js";
 
 class Identity extends React.Component {
 
-  getInitialState() {
-    return this.props.identity;
+  constructor() {
+    super();
+
+    this.state = Object.assign({}, this.props.identity);
   }
 
   parseEntities(entities) {

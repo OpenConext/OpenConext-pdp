@@ -3,8 +3,9 @@ import I18n from "i18n-js";
 
 class Decisions extends React.Component {
 
-  getInitialState() {
-    return { avg: {} };
+  constructor() {
+    super();
+    this.state = { avg: {} };
   }
 
   componentDidMount() {

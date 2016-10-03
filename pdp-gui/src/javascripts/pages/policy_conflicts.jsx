@@ -3,8 +3,10 @@ import I18n from "i18n-js";
 
 class PolicyConflicts extends React.Component {
 
-  getInitialState() {
-    return {
+  constructor() {
+    super();
+
+    this.state = {
       conflicts: this.props.conflicts,
       hideInactive: false
     };

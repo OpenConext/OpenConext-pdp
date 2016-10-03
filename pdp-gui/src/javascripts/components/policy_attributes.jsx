@@ -11,7 +11,7 @@ class PolicyAttributes extends React.Component {
     return policy;
   }
 
-  getInitialState() {
+  componentWillMount() {
     return this.markAttributes(this.props.policy);
   }
 

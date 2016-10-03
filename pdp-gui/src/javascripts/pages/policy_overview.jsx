@@ -3,8 +3,10 @@ import I18n from "i18n-js";
 
 class PolicyOverview extends React.Component {
 
-  getInitialState() {
-    return { data: [] };
+  constructor() {
+    super();
+
+    this.state = { data: [] };
   }
 
   destroyDataTable() {
