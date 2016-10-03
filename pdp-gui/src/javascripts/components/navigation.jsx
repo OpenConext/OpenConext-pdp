@@ -46,7 +46,7 @@ class Navigation extends React.Component {
           {this.renderItem("/decisions", "decisions")}
           {this.renderItem("/playground", "playground")}
           {this.renderItem("/identity", "identity")}
-          {this.renderItem("/new-policy", "new_policy", true)}
+          {this.renderAction("/new-policy", "new_policy")}
         </ul>
 
         {this.renderSpinner()}
@@ -54,15 +54,15 @@ class Navigation extends React.Component {
     );
   }
 
-  renderItem(href, value, right) {
-    let classNameLi = (this.props.active == value ? "active" : "");
-    let classNameA = "";
-    if (right) {
-      classNameLi = classNameLi + " action";
-      classNameA = "action";
-    }
+  renderAction(href, value) {
     return (
-      <li className={classNameLi}><Link to={href} className={classNameA}>{I18n.t("navigation." + value)}</Link></li>
+      <li className="action"><Link to={href} className={"action"} activeClassName="active">{I18n.t("navigation." + value)}</Link></li>
+    );
+  }
+
+  renderItem(href, value) {
+    return (
+      <li><Link to={href} activeClassName="active">{I18n.t("navigation." + value)}</Link></li>
     );
   }
 
