@@ -6,7 +6,7 @@
   "scripts": {
     "webpack": "webpack -p --config webpack.config.prod.js",
     "webpack-dev-server": "webpack-dev-server -d --host 0.0.0.0",
-    "lint": "eslint --ext .js --ext .jsx --ignore-pattern '**/node_modules/**' --ignore-pattern 'dist/**/*.js' '*.js' '**/*.js' '*.jsx' '**/*.jsx'"
+    "lint": "eslint --ext .js --ext .jsx --ignore-pattern '**/node_modules/**' --ignore-pattern 'dist/**/*.js' --ignore-pattern 'lib/**/*.js' '*.js' '**/*.js' '*.jsx' '**/*.jsx'"
   },
   "devDependencies": {
     "babel-core": "6.14.0",
