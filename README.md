@@ -12,7 +12,7 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 - Java 8
 - Maven 3
 - MySQL 5.5+
-- Gruntjs
+- NodeJS 6.2.0 (best managed with `nvm`, current version in [.node-version](dashboard/.node-version)
 
 ### Create database
 
@@ -41,28 +41,24 @@ to set the active profile to dev otherwise the application uses the real VOOT cl
 
 ### The pdp-gui
 
-The client is build with react.js and to get initially started:
+    cd pdp-gui
 
-    brew install rbenv
-    rbenv install
-    gem install bundler
-    bundler install
+Initial setup if you do:
 
-    brew install npm
-    npm install -g grunt-cli
+    nvm install
     npm install
 
-When new grunt dependencies are added:
+Add new dependencies to `devDependencies`:
 
-    npm install
+    npm install --save-dev ${dep}
 
 To build:
 
-    grunt watch
+    npm run webpack
 
 To run locally:
 
-    grunt server
+    npm run webpack-dev-server
 
 Browse to the [application homepage](http://localhost:8001/).
 
