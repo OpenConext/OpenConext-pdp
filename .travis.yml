@@ -6,10 +6,8 @@ node_js:
 services:
   - mysql
 before_install:
-  - gem install bundler
   - pip install --user codecov
 install:
-  - bundle install
   - cd pdp-gui && nvm install $(cat .node-version) && npm install && cd ..
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 before_script:
