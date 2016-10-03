@@ -36,6 +36,7 @@ class Identity extends React.Component {
 
   submitForm() {
     this.context.changeIdentity(this.state.idpEntityId, this.state.unspecifiedNameId, this.state.displayName);
+    this.context.router.transitionTo("/policies");
   }
 
   clearIdentity() {
@@ -141,7 +142,8 @@ class Identity extends React.Component {
 
 Identity.contextTypes = {
   changeIdentity: React.PropTypes.func,
-  clearIdentity: React.PropTypes.func
+  clearIdentity: React.PropTypes.func,
+  router: React.PropTypes.object
 }
 
 export default Identity;
