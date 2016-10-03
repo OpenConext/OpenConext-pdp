@@ -1,4 +1,5 @@
 import { currentIdentity } from "../lib/identity";
+import spinner from "../lib/spin";
 
 const apiPath = "/pdp/api";
 
@@ -7,6 +8,8 @@ function apiUrl(path) {
 }
 
 function validateResponse(res) {
+  spinner.stop();
+
   if (!res.ok) {
     const error = new Error(res.statusText);
     error.response = res;
@@ -38,7 +41,12 @@ function validFetch(path, options) {
 
   const fetchOptions = _.merge({}, { headers: { ...contentHeaders, ...identityHeaders } }, options);
 
+  spinner.start();
   return fetch(apiUrl(path), fetchOptions)
+  .catch(err => {
+    spinner.stop();
+    throw err;
+  })
   .then(validateResponse);
 }
 
