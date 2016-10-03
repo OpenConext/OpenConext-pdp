@@ -114,7 +114,7 @@ class PolicyDetail extends React.Component {
     });
     const inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
       || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
-      return !inValid;
+    return !inValid;
   }
 
   handleOnChangeName(e) {

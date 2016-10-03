@@ -117,7 +117,7 @@ class Playground extends React.Component {
     });
     const inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
       || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
-      return !inValid;
+    return !inValid;
   }
 
   renderPolicies() {

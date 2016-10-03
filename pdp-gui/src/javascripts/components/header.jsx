@@ -101,6 +101,6 @@ class Header extends React.Component {
 
 Header.contextTypes = {
   currentUser: React.PropTypes.object
-}
+};
 
 export default Header;

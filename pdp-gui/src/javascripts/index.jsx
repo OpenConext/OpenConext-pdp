@@ -1,10 +1,11 @@
-require("../stylesheets/application.sass");
-require("es6-promise").polyfill();
-require("isomorphic-fetch");
-require("lodash");
+import "react-select/dist/react-select.css";
+import "../stylesheets/application.sass";
+import { polyfill } from "es6-promise";
+polyfill();
 
-import "./locale/en";
-import "./locale/nl";
+import "isomorphic-fetch";
+import "lodash";
+
 import React from "react";
 import { render } from "react-dom";
 import Router from "react-router/BrowserRouter";
@@ -15,17 +16,45 @@ import I18n from "i18n-js";
 
 import { getUserData } from "./api";
 import QueryParameter from "./utils/query-parameters";
+import { changeIdentity, clearIdentity } from "./lib/identity";
 
+import Identity from "./pages/identity";
 import NotFound from "./pages/not_found";
 import Footer from "./components/footer";
 import Header from "./components/header";
 import Navigation from "./components/navigation";
 
+import "./locale/en";
+import "./locale/nl";
+
 class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      currentUser: null
+    };
+  }
+
+  componentWillMount() {
+    this.setState({ currentUser: this.props.currentUser });
+  }
+
   getChildContext() {
     return {
-      currentUser: this.props.currentUser
+      currentUser: this.state.currentUser,
+      changeIdentity: this.changeIdentity.bind(this),
+      clearIdentity: this.clearIdentity.bind(this)
     };
+  }
+
+  changeIdentity(idpEntityId, unspecifiedNameId, displayName) {
+    changeIdentity({ idpEntityId, unspecifiedNameId, displayName });
+    getUserData().then(currentUser => this.setState({ currentUser }));
+  }
+
+  clearIdentity() {
+    clearIdentity();
+    this.setState({ currentUser: this.props.currentUser });
   }
 
   render() {
@@ -36,10 +65,13 @@ class App extends React.Component {
             <Header />
             {this.renderNavigation()}
           </div>
+
+          <Match exactly pattern="/identity" component={Identity} />
+
           <Footer />
         </div>
       </Router>
-    )
+    );
   }
 
   renderNavigation() {
@@ -49,7 +81,9 @@ class App extends React.Component {
 
 App.childContextTypes = {
   currentUser: React.PropTypes.object,
-  router: React.PropTypes.object
+  router: React.PropTypes.object,
+  changeIdentity: React.PropTypes.func,
+  clearIdentity: React.PropTypes.func
 };
 
 function determineLanguage() {

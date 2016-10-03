@@ -1,57 +1,68 @@
 import React from "react";
 import I18n from "i18n-js";
+import Select2Selector from "../components/select2_selector";
+import IdentityHelpNl from "../help/identity_help_nl";
+import IdentityHelpEn from "../help/identity_help_en";
+
+import { getIdentityProviders } from "../api";
 
 class Identity extends React.Component {
 
   constructor() {
     super();
 
-    this.state = Object.assign({}, this.props.identity);
+    this.state = {
+      identityProviders: [],
+      unspecifiedNameId: "",
+      displayName: ""
+    };
+  }
+
+  componentWillMount() {
+    this.setState(Object.assign({}, this.props.identity));
+    getIdentityProviders()
+    .then(identityProviders => this.setState({ identityProviders }));
   }
 
   parseEntities(entities) {
-    return entities.map(function (entity) {
-      return {value: entity.entityId, display: I18n.entityName(entity)};
+    return entities.map(entity => {
+      return { value: entity.entityId, display: I18n.entityName(entity) };
     });
   }
 
   handleChangeIdentityProvider(newValue) {
-    this.setState({idpEntityId: newValue});
-  }
-
-  cancelForm() {
-    page("/policies");
+    this.setState({ idpEntityId: newValue });
   }
 
   submitForm() {
-    App.changeIdentity(this.state.idpEntityId, this.state.unspecifiedNameId, this.state.displayName);
+    this.context.changeIdentity(this.state.idpEntityId, this.state.unspecifiedNameId, this.state.displayName);
   }
 
   clearIdentity() {
-    App.clearIdentity();
+    this.context.clearIdentity();
   }
 
   isValidState() {
-    var inValid = _.isEmpty(this.state.idpEntityId) || _.isEmpty(this.state.unspecifiedNameId) || _.isEmpty(this.state.displayName);
+    const inValid = _.isEmpty(this.state.idpEntityId) || _.isEmpty(this.state.unspecifiedNameId) || _.isEmpty(this.state.displayName);
     return !inValid;
   }
 
   handleOnChangeUnspecifiedNameId(e) {
-    this.setState({unspecifiedNameId: e.target.value});
+    this.setState({ unspecifiedNameId: e.target.value });
   }
 
   handleOnChangeDisplayName(e) {
-    this.setState({displayName: e.target.value});
+    this.setState({ displayName: e.target.value });
   }
 
   renderUnspecifiedNameId() {
-    var workflow = _.isEmpty(this.state.unspecifiedNameId) ? "failure" : "success";
+    const workflow = _.isEmpty(this.state.unspecifiedNameId) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("identity.unspecifiedNameId")}</p>
           <input type="text" name="name" className="form-input" value={this.state.unspecifiedNameId}
-            onChange={this.handleOnChangeUnspecifiedNameId} placeholder={I18n.t("identity.unspecifiedNameIdPlaceholder")}/>
+            onChange={this.handleOnChangeUnspecifiedNameId.bind(this)} placeholder={I18n.t("identity.unspecifiedNameIdPlaceholder")}/>
           <em className="note"><sup>*</sup>{I18n.t("identity.unspecifiedNameIdInfo")} </em>
         </div>
         <div className="bottom"></div>
@@ -60,13 +71,13 @@ class Identity extends React.Component {
   }
 
   renderDisplayName() {
-    var workflow = _.isEmpty(this.state.displayName) ? "failure" : "success";
+    const workflow = _.isEmpty(this.state.displayName) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("identity.displayName")}</p>
           <input type="text" name="name" className="form-input" value={this.state.displayName}
-            onChange={this.handleOnChangeDisplayName}/>
+            onChange={this.handleOnChangeDisplayName.bind(this)}/>
           <em className="note"><sup>*</sup>{I18n.t("identity.displayNameInfo")} </em>
         </div>
         <div className="bottom"></div>
@@ -75,19 +86,19 @@ class Identity extends React.Component {
   }
 
   renderIdentityProvider() {
-    var workflow = _.isEmpty(this.state.idpEntityId) ? "failure" : "success";
+    const workflow = _.isEmpty(this.state.idpEntityId) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("identity.idpEntityId")}</p>
 
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={this.state.idpEntityId}
             placeholder={I18n.t("identity.idpEntityIdPlaceHolder")}
             select2selectorId={"identityProvider"}
-            options={this.parseEntities(this.props.identityProviders)}
+            options={this.parseEntities(this.state.identityProviders)}
             multiple={false}
-            handleChange={this.handleChangeIdentityProvider}/>
+            handleChange={this.handleChangeIdentityProvider.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -95,14 +106,13 @@ class Identity extends React.Component {
   }
 
   renderActions() {
-    var classNameSubmit = this.isValidState() ? "" : "disabled";
+    const classNameSubmit = this.isValidState() ? "" : "disabled";
     return (
       <div className="form-element">
         <a className={classNameSubmit + " submit c-button"} href="#"
-          onClick={this.submitForm}>{I18n.t("identity.submit")}</a>
-        <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("identity.cancel")}</a>
+          onClick={this.submitForm.bind(this)}>{I18n.t("identity.submit")}</a>
         <a className="c-button white right" href="#"
-          onClick={this.clearIdentity}>{I18n.t("identity.clear")}</a>
+          onClick={this.clearIdentity.bind(this)}>{I18n.t("identity.clear")}</a>
       </div>
     );
   }
@@ -121,15 +131,17 @@ class Identity extends React.Component {
           {this.renderAboutPage()}
         </div>
       </div>
-    )
+    );
   }
 
-  renderAboutPage: function () {
-    return I18n.locale === "en" ? <App.Help.IdentityHelpEn/> : <App.Help.IdentityHelpNl/>;
+  renderAboutPage() {
+    return I18n.locale === "en" ? <IdentityHelpEn/> : <IdentityHelpNl/>;
   }
-
-
 }
 
+Identity.contextTypes = {
+  changeIdentity: React.PropTypes.func,
+  clearIdentity: React.PropTypes.func
+}
 
 export default Identity;
