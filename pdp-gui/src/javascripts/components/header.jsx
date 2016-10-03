@@ -1,9 +1,11 @@
 import React from "react";
 import I18n from "i18n-js";
+import { render, unmountComponentAtNode } from "react-dom";
 
 import githubImage from "../../images/github.png";
 import LanguageSelector from "./language_selector";
 import UserProfile from "./user_profile";
+import Logout from "../pages/logout";
 
 class Header extends React.Component {
   constructor() {
@@ -79,14 +81,15 @@ class Header extends React.Component {
 
   renderExitLogout() {
     return (
-        <li><a href="#" onClick={this.stop}>{I18n.t("header.links.logout")}</a></li>
+        <li><a href="#" onClick={this.stop.bind(this)}>{I18n.t("header.links.logout")}</a></li>
     );
   }
 
-  stop() {
+  stop(e) {
+    e.preventDefault();
     const node = document.getElementById("app");
-    React.unmountComponentAtNode(node);
-    React.renderComponent(App.Pages.Logout(), node);
+    unmountComponentAtNode(node);
+    render(<Logout />, node);
   }
 
   handleToggle(e) {
