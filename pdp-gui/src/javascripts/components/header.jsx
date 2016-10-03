@@ -1,6 +1,10 @@
 import React from "react";
 import I18n from "i18n-js";
 
+import githubImage from "../../images/github.png";
+import LanguageSelector from "./language_selector";
+import UserProfile from "./user_profile";
+
 class Header extends React.Component {
   constructor() {
     super();
@@ -27,27 +31,28 @@ class Header extends React.Component {
             {this.renderProfileLink()}
             {this.renderDropDown()}
           </div>
-          <App.Components.LanguageSelector />
+          <LanguageSelector />
           <ul className="links">
             <li dangerouslySetInnerHTML={{ __html: I18n.t("header.links.help_html") }}></li>
             {this.renderExitLogout()}
             <li>
               <a href="https://github.com/OpenConext/OpenConext-pdp" target="_blank">
-                <img src="/images/github.png"/>
+                <img src={githubImage}/>
               </a>
             </li>
-
           </ul>
         </div>
     );
   }
 
   renderProfileLink() {
+    const { currentUser } = this.context;
+
     return (
         <span>
           {I18n.t("header.welcome")}&nbsp;
-          <a href="#" onClick={this.handleToggle}>
-            {App.currentUser.displayName}
+          <a href="#" onClick={this.handleToggle.bind(this)}>
+            {currentUser.displayName}
             {this.renderDropDownIndicator()}
           </a>
         </span>
@@ -66,7 +71,7 @@ class Header extends React.Component {
     if (this.state.dropDownActive) {
       return (
           <div>
-            <App.Components.UserProfile />
+            <UserProfile />
           </div>
       );
     }
@@ -89,6 +94,10 @@ class Header extends React.Component {
     e.stopPropagation();
     this.setState({ dropDownActive: !this.state.dropDownActive });
   }
+}
+
+Header.contextTypes = {
+  currentUser: React.PropTypes.object
 }
 
 export default Header;

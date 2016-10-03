@@ -1,4 +1,4 @@
-App.Utils.QueryParameter = {
+const QueryParameter = {
 
   //shameless refactor of https://gist.githubusercontent.com/pduey/2764606/raw/e8b9d6099f1e4161f7dd9f81d71c2c7a1fecbd5b/querystring.js
 
@@ -67,3 +67,5 @@ App.Utils.QueryParameter = {
     return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
   }
 };
+
+export default QueryParameter;

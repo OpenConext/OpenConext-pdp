@@ -14,12 +14,14 @@ class UserProfile extends React.Component {
   }
 
   renderRole() {
+    const { currentUser } = this.context;
+
     return (
         <li>
           <h2>{I18n.t("header.role")}</h2>
           <ul>
             <li className="user-profile-entity">
-              {I18n.t("profile." + App.currentUser.authorities[0].authority)}
+              {I18n.t("profile." + currentUser.authorities[0].authority)}
             </li>
           </ul>
         </li>
@@ -27,23 +29,27 @@ class UserProfile extends React.Component {
   }
 
   renderIdps() {
+    const { currentUser } = this.context;
+
     return (
         <li>
           <h2>{I18n.t("header.idps")}</h2>
           <ul>
-            {App.currentUser.idpEntities.map(this.renderItem)}
+            {currentUser.idpEntities.map(this.renderItem)}
           </ul>
         </li>
     );
   }
 
   renderSps() {
-    if (!_.isEmpty(App.currentUser.spEntities)) {
+    const { currentUser } = this.context;
+
+    if (!_.isEmpty(currentUser.spEntities)) {
       return (
           <li>
             <h2>{I18n.t("header.sps")}</h2>
             <ul>
-              {App.currentUser.spEntities.map(this.renderItem)}
+              {currentUser.spEntities.map(this.renderItem)}
             </ul>
           </li>
       );
@@ -57,8 +63,10 @@ class UserProfile extends React.Component {
         </li>
     );
   }
-
-
 }
+
+UserProfile.contextTypes = {
+  currentUser: React.PropTypes.object
+};
 
 export default UserProfile;
