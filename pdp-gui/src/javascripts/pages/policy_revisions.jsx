@@ -78,37 +78,37 @@ class PolicyRevisions extends React.Component {
     }).length === 0 ;
     const attributeNames = Object.keys(attrResult);
     return (
-        <div>
-          <div
-              className={"diff-element " + (attributesUnchanged ? "no-change" : "changed")}>
-            <p className="label">{I18n.t("revisions.attributes")}</p>
-            {
-                attributeNames.map(attributeName => {
-                  return (
-                    <div key={attributeName}>
-                      <div className="attribute-container">
-                        <span className={"diff "+attrResult[attributeName].status}>{attributeName}</span>
-                      </div>
-                      <div className={"attribute-values-container " + (attrResult[attributeName].status === "no-change"
-                                          && attrResult[attributeName].anyValuesChanged ? "diff-element changed" : "")}>
-                        <p className="label">{I18n.t("policy_attributes.values")}</p>
-                        {
-                            attrResult[attributeName].values.map(value => {
-                              return (
-                                <div className="value-container"
-                                     key={attributeName + "-" + attrResult[attributeName].status +"-" + value.value+"-" +value.status}>
-                                  <span className={"diff "+value.status}>{value.value}</span>
-                                </div>
-                                    );
-                            })
-                            }
-                      </div>
-                    </div>);
-                })
-                }
-          </div>
-          <div className="diff-element-seperator"></div>
-        </div>);
+      <div>
+        <div
+          className={"diff-element " + (attributesUnchanged ? "no-change" : "changed")}>
+          <p className="label">{I18n.t("revisions.attributes")}</p>
+          {
+            attributeNames.map(attributeName => {
+              return (
+                <div key={attributeName}>
+                  <div className="attribute-container">
+                    <span className={"diff "+attrResult[attributeName].status}>{attributeName}</span>
+                  </div>
+                  <div className={"attribute-values-container " + (attrResult[attributeName].status === "no-change"
+                                                                   && attrResult[attributeName].anyValuesChanged ? "diff-element changed" : "")}>
+                                                                   <p className="label">{I18n.t("policy_attributes.values")}</p>
+                                                                   {
+                                                                     attrResult[attributeName].values.map(value => {
+                                                                       return (
+                                                                         <div className="value-container"
+                                                                           key={attributeName + "-" + attrResult[attributeName].status +"-" + value.value+"-" +value.status}>
+                                                                           <span className={"diff "+value.status}>{value.value}</span>
+                                                                         </div>
+                                                                         );
+                                                                     })
+                                                                   }
+                                                                 </div>
+                                                               </div>);
+            })
+          }
+        </div>
+        <div className="diff-element-seperator"></div>
+      </div>);
   }
 
   renderDiff(prev, curr) {
@@ -135,39 +135,39 @@ class PolicyRevisions extends React.Component {
     }.bind(this);
 
     return (
-        <section>
-          {this.renderTopDiff(prev,curr)}
-          <div className="form-element about">
-            <div className="diff-panel">
-              {
-                  properties.map(prop => {
-                    return renderPropertyDiff(prev, curr, prop);
-                  })
-                  }
-            </div>
+      <section>
+        {this.renderTopDiff(prev,curr)}
+        <div className="form-element about">
+          <div className="diff-panel">
+            {
+              properties.map(prop => {
+                return renderPropertyDiff(prev, curr, prop);
+              })
+            }
           </div>
-        </section>
+        </div>
+      </section>
     );
   }
 
   renderTopDiff(prev, curr) {
     if (prev.revisionNbr !== undefined && prev.revisionNbr !== curr.revisionNbr) {
       return (
-          <div className="top-diff" dangerouslySetInnerHTML={{ __html:
-            I18n.t("revisions.changes_info_html",
-              { userDisplayName: curr.userDisplayName , authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr, prevRevisionNbr: prev.revisionNbr }
-            )
-          }}>
-          </div>
+        <div className="top-diff" dangerouslySetInnerHTML={{ __html:
+          I18n.t("revisions.changes_info_html",
+                 { userDisplayName: curr.userDisplayName , authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr, prevRevisionNbr: prev.revisionNbr }
+                )
+        }}>
+      </div>
       );
     }
     return (
-        <div className="top-diff" dangerouslySetInnerHTML={{ __html:
-          I18n.t("revisions.changes_first_html",
-            { userDisplayName: curr.userDisplayName ,authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr }
-          )
-        }}>
-        </div>
+      <div className="top-diff" dangerouslySetInnerHTML={{ __html:
+        I18n.t("revisions.changes_first_html",
+               { userDisplayName: curr.userDisplayName ,authenticatingAuthorityName: curr.authenticatingAuthorityName, createdDate: this.createdDate(curr), currRevisionNbr: curr.revisionNbr }
+              )
+      }}>
+    </div>
     );
   }
 
@@ -244,13 +244,13 @@ class PolicyRevisions extends React.Component {
     const className = index === 0 ? "success" : "failure";
     const linkClassName = this.state.curr && this.state.curr.revisionNbr === revision.revisionNbr ? "selected" : "";
     return (
-        <div key={index}>
-          <div className={"form-element split sub-container " + className}>
-            {this.renderRevisionMetadata(revision)}
-            <a className={"c-button white compare "+linkClassName} href="#" onClick={this.handleCompare(revision)}>&lt; &gt;</a>
-          </div>
-          <div className="bottom"></div>
+      <div key={index}>
+        <div className={"form-element split sub-container " + className}>
+          {this.renderRevisionMetadata(revision)}
+          <a className={"c-button white compare "+linkClassName} href="#" onClick={this.handleCompare(revision)}>&lt; &gt;</a>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
 
@@ -263,14 +263,14 @@ class PolicyRevisions extends React.Component {
 
   render() {
     return (
-        <div className="l-center mod-revisions">
-          <div className="l-split-left form-element-container box">
-            {this.renderOverview()}
-          </div>
-          <div className="l-split-right form-element-container box">
-            {this.renderComparePanel()}
-          </div>
+      <div className="l-center mod-revisions">
+        <div className="l-split-left form-element-container box">
+          {this.renderOverview()}
         </div>
+        <div className="l-split-right form-element-container box">
+          {this.renderComparePanel()}
+        </div>
+      </div>
     );
   }
 

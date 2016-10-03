@@ -31,9 +31,9 @@ class CodeMirror extends React.Component {
 
   render() {
     return (
-        <div className="code-mirror">
-          <textarea id={this.props.uniqueId} defaultValue={this.props.value} autoComplete="off"/>
-        </div>
+      <div className="code-mirror">
+        <textarea id={this.props.uniqueId} defaultValue={this.props.value} autoComplete="off"/>
+      </div>
     );
   }
 

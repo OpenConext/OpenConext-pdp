@@ -24,7 +24,7 @@ class PolicyConflicts extends React.Component {
     return (<div>
       <div className="filters">
         <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
-               onChange={this.handleOnChangeIsActive}/>
+          onChange={this.handleOnChangeIsActive}/>
         <label htmlFor="isActive">{I18n.t("conflicts.hide_inactive")}</label>
         <em className="note"><sup>*</sup>{I18n.t("conflicts.hide_inactive_note")} </em>
       </div>
@@ -78,18 +78,18 @@ class PolicyConflicts extends React.Component {
     return (
       <table className='table table-bordered dataTable' id={"conflicts_table_"+index}>
         <thead>
-        <tr className='success'>
-          <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
-          <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
-          <th className='conflict_is_active'>{I18n.t("policies.isActive")}</th>
-          <th className='conflict_is_activated_sr'>{I18n.t("policies.activatedSr")}</th>
-          <th className='conflict_controls'></th>
-        </tr>
+          <tr className='success'>
+            <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
+            <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
+            <th className='conflict_is_active'>{I18n.t("policies.isActive")}</th>
+            <th className='conflict_is_activated_sr'>{I18n.t("policies.activatedSr")}</th>
+            <th className='conflict_controls'></th>
+          </tr>
         </thead>
         <tbody>
-        { policies.map(policy => {
-          return this.renderPolicyRow(policy);
-        })}
+          { policies.map(policy => {
+            return this.renderPolicyRow(policy);
+          })}
         </tbody>
       </table>);
   }
@@ -100,12 +100,12 @@ class PolicyConflicts extends React.Component {
         <td>{policy.name}</td>
         <td>{policy.identityProviderNames.join(", ")}</td>
         <td className='conflict_is_active'><input type="checkbox" defaultChecked={policy.active}
-                                                disabled="true"/></td>
+            disabled="true"/></td>
         <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
-                                                      disabled="true"/></td>
+            disabled="true"/></td>
         <td className="conflict_controls">
           <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
-             data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
+            data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
           </a>
         </td>
       </tr>);

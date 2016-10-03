@@ -43,12 +43,12 @@ class Select2Selector extends React.Component {
     });
     const multiple = this.props.multiple ? { multiple: "multiple" } : {};
     return (
-        <div>
-          <select id="lang" value={initialValue} data-select2selector-id={this.props.select2selectorId} {...multiple}>
-            <option></option>
-            {renderOption}
-          </select>
-        </div>
+      <div>
+        <select id="lang" value={initialValue} data-select2selector-id={this.props.select2selectorId} {...multiple}>
+          <option></option>
+          {renderOption}
+        </select>
+      </div>
     );
   }
 }

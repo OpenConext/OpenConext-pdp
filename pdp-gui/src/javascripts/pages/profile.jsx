@@ -39,7 +39,7 @@ class Profile extends React.Component {
 
         </div>
       </div>
-      );
+    );
   }
 
   renderAttribute(attributeKey) {
@@ -53,7 +53,7 @@ class Profile extends React.Component {
         </td>
         <td>{App.currentUser.attributeMap[attributeKey]}</td>
       </tr>
-      );
+    );
   }
 
   renderRole(role) {
@@ -62,7 +62,7 @@ class Profile extends React.Component {
         <td>{I18n.t("profile.roles." + role.authority + ".name")}</td>
         <td>{I18n.t("profile.roles." + role.authority + ".description")}</td>
       </tr>
-      );
+    );
   }
 
 }

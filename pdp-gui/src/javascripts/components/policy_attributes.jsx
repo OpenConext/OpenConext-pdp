@@ -101,18 +101,18 @@ class PolicyAttributes extends React.Component {
   renderAttributeValue(attrName, attribute, index) {
     const className = this.renderAttributeInfo(attrName, index) === undefined ? "" : "before-em";
     return (
-        <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
-          <input type="text" name="value" className={"form-input " + className}
-                 key={attrName + "-" + attribute.index}
-                 value={attribute.value}
-                 placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
-                 onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
-          {this.renderAttributeInfo(attrName, index)}
-          <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
-            <i className="fa fa-remove"></i>
-          </a>
+      <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
+        <input type="text" name="value" className={"form-input " + className}
+          key={attrName + "-" + attribute.index}
+          value={attribute.value}
+          placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
+          onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
+        {this.renderAttributeInfo(attrName, index)}
+        <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
+          <i className="fa fa-remove"></i>
+        </a>
 
-        </div>
+      </div>
     );
   }
 
@@ -132,47 +132,47 @@ class PolicyAttributes extends React.Component {
     const validClassName = (_.isEmpty(policy.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
     const css = this.props.css || "";
     return (
-        <div className={"form-element "+css+" "+validClassName}>
-          {
-            attrNames.map(attrName => {
-              return (
-                  <div key={attrName}>
-                    <p className="label">{I18n.t("policy_attributes.attribute")}</p>
+      <div className={"form-element "+css+" "+validClassName}>
+        {
+          attrNames.map(attrName => {
+            return (
+              <div key={attrName}>
+                <p className="label">{I18n.t("policy_attributes.attribute")}</p>
 
-                    <div className="attribute-container">
-                      <input type="text" name="attribute" className="form-input disabled" value={attrName}
-                             disabled="disabled"/>
-                      <a href="#" onClick={self.handleRemoveAttribute(attrName)} className="remove">
-                        <i className="fa fa-remove"></i>
-                      </a>
-                    </div>
-                    <div className="attribute-values">
-                      <p className="label">{I18n.t("policy_attributes.values")}</p>
-                      {
-                        grouped[attrName].map((attribute, index) => {
-                          return self.renderAttributeValue(attrName, attribute, index);
-                        })
-                      }
-                      <a href="#" onClick={self.handleNewAttributeValue(attrName)} className="plus">
-                        <i className="fa fa-plus"></i>
-                        {I18n.t("policy_attributes.new_value")}
-                      </a>
-                    </div>
-                  </div>
+                <div className="attribute-container">
+                  <input type="text" name="attribute" className="form-input disabled" value={attrName}
+                    disabled="disabled"/>
+                  <a href="#" onClick={self.handleRemoveAttribute(attrName)} className="remove">
+                    <i className="fa fa-remove"></i>
+                  </a>
+                </div>
+                <div className="attribute-values">
+                  <p className="label">{I18n.t("policy_attributes.values")}</p>
+                  {
+                    grouped[attrName].map((attribute, index) => {
+                      return self.renderAttributeValue(attrName, attribute, index);
+                    })
+                  }
+                  <a href="#" onClick={self.handleNewAttributeValue(attrName)} className="plus">
+                    <i className="fa fa-plus"></i>
+                    {I18n.t("policy_attributes.new_value")}
+                  </a>
+                </div>
+              </div>
               );
+          })
+        }
+        <p className="label">{I18n.t("policy_attributes.attribute")}</p>
+        <select value="" onChange={self.handleNewAttribute}>
+          <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
+          {
+            allowedAttributes.map(allowedAttribute => {
+              return (<option value={allowedAttribute.AttributeId}
+                key={allowedAttribute.AttributeId}>{allowedAttribute.AttributeId}</option>);
             })
           }
-          <p className="label">{I18n.t("policy_attributes.attribute")}</p>
-          <select value="" onChange={self.handleNewAttribute}>
-            <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
-            {
-              allowedAttributes.map(allowedAttribute => {
-                return (<option value={allowedAttribute.AttributeId}
-                                key={allowedAttribute.AttributeId}>{allowedAttribute.AttributeId}</option>);
-              })
-            }
-          </select>
-        </div>);
+        </select>
+      </div>);
 
   }
 

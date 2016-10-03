@@ -111,7 +111,7 @@ class PolicyOverview extends React.Component {
     const flash = this.props.flash;
     if (flash && !this.state.hideFlash) {
       return (
-          <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i
+        <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i
               className="fa fa-remove"></i></a></div>
       );
     }
@@ -122,14 +122,14 @@ class PolicyOverview extends React.Component {
       return (<span>0</span>);
     } else {
       return (<a href={page.uri("/violations/:id",{ id: policy.id })}
-                 onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
+        onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
     }
   }
 
   renderRevisionsLink(policy) {
     const numberOfRevisions = (policy.numberOfRevisions + 1);
     return (<a href={page.uri("/revisions/:id",{ id:policy.id })}
-                 onClick={this.handleShowRevisions(policy)}>{numberOfRevisions}</a>);
+      onClick={this.handleShowRevisions(policy)}>{numberOfRevisions}</a>);
   }
 
   renderIdpNames(identityProviderNames) {
@@ -142,41 +142,41 @@ class PolicyOverview extends React.Component {
 
     if (policy.actionsAllowed) {
       return (
-          <div>
-            <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
-               data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
-            </a>
-            <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
-              <i className="fa fa-remove"></i>
-            </a>
-          </div>);
+        <div>
+          <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
+            data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
+          </a>
+          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
+            <i className="fa fa-remove"></i>
+          </a>
+        </div>);
     }
   }
 
   render() {
     const renderRows = this.props.policies.map((policy, index) => {
       return (
-          <tr key={policy.id}>
-            <td>{policy.name}</td>
-            <td>{policy.description}</td>
-            <td>{policy.serviceProviderName}</td>
-            <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
-                                                          disabled="true"/></td>
-            <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
-            <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
-            <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
-                                                          disabled="true"/></td>
-            <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
-            <td className="policy_controls">{this.renderControls(policy)}</td>
-          </tr>);
+        <tr key={policy.id}>
+          <td>{policy.name}</td>
+          <td>{policy.description}</td>
+          <td>{policy.serviceProviderName}</td>
+          <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
+              disabled="true"/></td>
+          <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
+          <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
+          <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
+              disabled="true"/></td>
+          <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
+          <td className="policy_controls">{this.renderControls(policy)}</td>
+        </tr>);
     });
 
     return (
-        <div className="mod-policy-overview">
-          {this.renderFlash()}
-          <div className='table-responsive'>
-            <table className='table table-bordered box' id='policies_table'>
-              <thead>
+      <div className="mod-policy-overview">
+        {this.renderFlash()}
+        <div className='table-responsive'>
+          <table className='table table-bordered box' id='policies_table'>
+            <thead>
               <tr className='success'>
                 <th className='policy_name_col'>{I18n.t("policies.name")}</th>
                 <th className='policy_description_col'>{I18n.t("policies.description")}</th>
@@ -188,13 +188,13 @@ class PolicyOverview extends React.Component {
                 <th className='policy_revisions'>{I18n.t("policies.revisions")}</th>
                 <th className='policy_controls'></th>
               </tr>
-              </thead>
-              <tbody>
+            </thead>
+            <tbody>
               {renderRows}
-              </tbody>
-            </table>
-          </div>
+            </tbody>
+          </table>
         </div>
+      </div>
     );
   }
 }

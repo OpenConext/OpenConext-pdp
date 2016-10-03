@@ -114,7 +114,7 @@ class PolicyDetail extends React.Component {
     });
     const inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
       || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
-    return !inValid;
+      return !inValid;
   }
 
   handleOnChangeName(e) {
@@ -173,7 +173,7 @@ class PolicyDetail extends React.Component {
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.name")}</p>
           <input type="text" name="name" className="form-input" value={policy.name}
-                 onChange={this.handleOnChangeName}/>
+            onChange={this.handleOnChangeName}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -186,10 +186,10 @@ class PolicyDetail extends React.Component {
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.description")}</p>
-            <textarea rows="2" name="description" className="form-input" value={policy.description}
-                      onChange={this.handleOnChangeDescription}/>
+          <textarea rows="2" name="description" className="form-input" value={policy.description}
+            onChange={this.handleOnChangeDescription}/>
           <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
-                 onChange={this.handleOnChangeAutoFormat}/>
+            onChange={this.handleOnChangeAutoFormat}/>
           <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
         </div>
         <div className="bottom"></div>
@@ -204,7 +204,7 @@ class PolicyDetail extends React.Component {
           <div className={"form-element success"}>
             <p className="label">{I18n.t("policy_detail.isActive")}</p>
             <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
-                   onChange={this.handleOnChangeIsActive}/>
+              onChange={this.handleOnChangeIsActive}/>
             <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
             <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
           </div>
@@ -221,11 +221,11 @@ class PolicyDetail extends React.Component {
         <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
         <em>{I18n.t("policy_detail.deny_message_info")}</em>
         <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
-               onChange={this.handleOnDenyAdvice}/>
+          onChange={this.handleOnDenyAdvice}/>
 
         <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
         <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
-               onChange={this.handleOnDenyAdviceNl}/>
+          onChange={this.handleOnDenyAdviceNl}/>
 
         <div className="bottom"></div>
       </div>
@@ -406,8 +406,8 @@ class PolicyDetail extends React.Component {
     if (this.state.flash) {
       return (
         <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
-                                                                                  onClick={this.closeFlash}><i
-          className="fa fa-remove"></i></a>
+            onClick={this.closeFlash}><i
+              className="fa fa-remove"></i></a>
         </div>
       );
     }
@@ -418,7 +418,7 @@ class PolicyDetail extends React.Component {
     return (
       <div className="form-element">
         <a className={classNameSubmit + " submit c-button"} href="#"
-           onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
+          onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
         <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
         {this.renderDelete(policy)}
         {this.renderRevisionsLink(policy)}
@@ -437,7 +437,7 @@ class PolicyDetail extends React.Component {
     const numberOfRevisions = (policy.numberOfRevisions + 1);
     if (policy.id) {
       return (<a className="c-button cancel pull-right" href={page.uri("/revisions/:id",{ id:policy.id })}
-                 onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
+        onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
     }
   }
 

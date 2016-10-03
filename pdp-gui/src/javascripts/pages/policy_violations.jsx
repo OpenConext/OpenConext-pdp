@@ -117,14 +117,14 @@ class PolicyViolations extends React.Component {
     const decision = response.Response[0].Decision;
     const status = App.Controllers.PolicyViolations.determineStatus(decision);
     return (
-        <div className={"response-status " + status}>
-          <i className={"fa fa-"+status + " " + status}></i>
-          <section>
-            <p className="status">{decision}</p>
+      <div className={"response-status " + status}>
+        <i className={"fa fa-"+status + " " + status}></i>
+        <section>
+          <p className="status">{decision}</p>
 
-            <p className="details">{I18n.t("violations.policyName") + "'" + policyName + "'"}</p>
-          </section>
-        </div>
+          <p className="details">{I18n.t("violations.policyName") + "'" + policyName + "'"}</p>
+        </section>
+      </div>
     );
   }
 
@@ -138,12 +138,12 @@ class PolicyViolations extends React.Component {
       const request = JSON.parse(violation.jsonRequest);
       const response = JSON.parse(violation.response);
       return (
-          <div>
-            {this.renderStatus(response, violation.policyName)}
-            {this.renderTabs()}
-            {this.renderRequestDetails(request)}
-            {this.renderResponseDetails(response)}
-          </div>
+        <div>
+          {this.renderStatus(response, violation.policyName)}
+          {this.renderTabs()}
+          {this.renderRequestDetails(request)}
+          {this.renderResponseDetails(response)}
+        </div>
       );
     } else {
       return this.renderAboutPage();
@@ -155,20 +155,20 @@ class PolicyViolations extends React.Component {
     const request = (selectedTab == "request" ? "selected" : "");
     const response = (selectedTab == "response" ? "selected" : "");
     return (
+      <div>
         <div>
-          <div>
-            <ul className="tabs">
-              <li className={request} onClick={this.handleTabChange("request")}>
-                <i className="fa fa-file-o"></i>
-                <a href="#">request.json</a>
-              </li>
-              <li className={response} onClick={this.handleTabChange("response")}>
-                <i className="fa fa-file-o"></i>
-                <a href="#">response.json</a>
-              </li>
-            </ul>
-          </div>
+          <ul className="tabs">
+            <li className={request} onClick={this.handleTabChange("request")}>
+              <i className="fa fa-file-o"></i>
+              <a href="#">request.json</a>
+            </li>
+            <li className={response} onClick={this.handleTabChange("response")}>
+              <i className="fa fa-file-o"></i>
+              <a href="#">response.json</a>
+            </li>
+          </ul>
         </div>
+      </div>
     );
   }
 
@@ -185,8 +185,8 @@ class PolicyViolations extends React.Component {
         readOnly: true
       };
       return (
-          <App.Components.CodeMirror value={requestJson}
-                                     options={options} uniqueId="code_mirror_textarea_violation_request"/>
+        <App.Components.CodeMirror value={requestJson}
+          options={options} uniqueId="code_mirror_textarea_violation_request"/>
       );
     }
   }
@@ -204,8 +204,8 @@ class PolicyViolations extends React.Component {
         readOnly: true
       };
       return (
-          <App.Components.CodeMirror value={responseJson}
-                                     options={options} uniqueId="code_mirror_textarea_violation_response"/>
+        <App.Components.CodeMirror value={responseJson}
+          options={options} uniqueId="code_mirror_textarea_violation_response"/>
       );
     }
   }
@@ -223,23 +223,23 @@ class PolicyViolations extends React.Component {
       const d = new Date(violation.created);
       const selected = this.state.violation && this.state.violation.id === violation.id ? "selected" : "";
       return (
-          <tr key={violation.id} className={selected}>
-            <td>{idpName}<br/>{spName}</td>
-            <td>{decision}</td>
-            <td className='violation_is_playground'><input type="checkbox" defaultChecked={violation.playground}
-                                                           disabled="true"/></td>
-            <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes()) : d.getMinutes())}</td>
-            <td className="violation_controls">
-              <a href="#" onClick={this.handleShowViolationDetail(violation)}
-                 data-tooltip="Detail">
-                <i className="fa fa-eye"></i>
-              </a>
-            </td>
-          </tr>);
+        <tr key={violation.id} className={selected}>
+          <td>{idpName}<br/>{spName}</td>
+          <td>{decision}</td>
+          <td className='violation_is_playground'><input type="checkbox" defaultChecked={violation.playground}
+              disabled="true"/></td>
+          <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes()) : d.getMinutes())}</td>
+          <td className="violation_controls">
+            <a href="#" onClick={this.handleShowViolationDetail(violation)}
+              data-tooltip="Detail">
+              <i className="fa fa-eye"></i>
+            </a>
+          </td>
+        </tr>);
     });
     return (
-        <table className='table table-bordered box' id='violations_table'>
-          <thead>
+      <table className='table table-bordered box' id='violations_table'>
+        <thead>
           <tr className='success'>
             <th className='violation_providers'>{I18n.t("violations.table.sp_idp")}</th>
             <th className='violation_decision'>{I18n.t("violations.table.decision")}</th>
@@ -247,25 +247,25 @@ class PolicyViolations extends React.Component {
             <th className='violation_policy_created'>{I18n.t("violations.table.created")}</th>
             <th className='violation_controls'></th>
           </tr>
-          </thead>
-          <tbody>
+        </thead>
+        <tbody>
           {renderRows}
-          </tbody>
-        </table>
+        </tbody>
+      </table>
     );
   }
 
   render() {
 
     return (
-        <div className="l-center mod-violations">
-          <div className="l-split-left">
-            {this.renderTable()}
-          </div>
-          <div className="l-split-right form-element-container box">
-            {this.renderViolationsDetail()}
-          </div>
+      <div className="l-center mod-violations">
+        <div className="l-split-left">
+          {this.renderTable()}
         </div>
+        <div className="l-split-right form-element-container box">
+          {this.renderViolationsDetail()}
+        </div>
+      </div>
     );
   }
 

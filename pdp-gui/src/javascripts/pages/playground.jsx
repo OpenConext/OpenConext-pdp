@@ -70,13 +70,13 @@ class Playground extends React.Component {
 
   replayRequest() {
     App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
-        jqxhr => {
-          this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
-        },
-        jqxhr => {
-          jqxhr.isConsumed = true;
-          this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
-        });
+                                              jqxhr => {
+                                                this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
+                                              },
+                                              jqxhr => {
+                                                jqxhr.isConsumed = true;
+                                                this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
+                                              });
   }
 
   submitForm() {
@@ -116,62 +116,62 @@ class Playground extends React.Component {
       return _.isEmpty(attr.value);
     });
     const inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
-        || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
-    return !inValid;
+      || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
+      return !inValid;
   }
 
   renderPolicies() {
     return (
-        <div>
-          <div className="form-element split success">
-            <p className="label before-em">{I18n.t("playground.policy")}</p>
-            <em className="label">{I18n.t("playground.policy_info")}</em>
-            <App.Components.Select2Selector
-                defaultValue=""
-                placeholder={I18n.t("playground.policy_search")}
-                select2selectorId={"policy"}
-                options={this.parsePolicies(this.props.policies)}
-                handleChange={this.handleChangePolicy}/>
-          </div>
-          <div className="bottom"></div>
+      <div>
+        <div className="form-element split success">
+          <p className="label before-em">{I18n.t("playground.policy")}</p>
+          <em className="label">{I18n.t("playground.policy_info")}</em>
+          <App.Components.Select2Selector
+            defaultValue=""
+            placeholder={I18n.t("playground.policy_search")}
+            select2selectorId={"policy"}
+            options={this.parsePolicies(this.props.policies)}
+            handleChange={this.handleChangePolicy}/>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
 
   renderServiceProvider(pdpRequest) {
     const workflow = _.isEmpty(pdpRequest.serviceProviderId) ? "failure" : "success";
     return (
-        <div>
-          <div className={"form-element split " + workflow}>
-            <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-            <App.Components.Select2Selector
-                defaultValue={pdpRequest.serviceProviderId}
-                placeholder={I18n.t("policy_detail.sp_placeholder")}
-                select2selectorId={"serviceProvider"}
-                options={this.parseEntities(this.props.serviceProviders)}
-                handleChange={this.handleChangeServiceProvider}/>
-          </div>
-          <div className="bottom"></div>
+      <div>
+        <div className={"form-element split " + workflow}>
+          <p className="label">{I18n.t("policies.serviceProviderId")}</p>
+          <App.Components.Select2Selector
+            defaultValue={pdpRequest.serviceProviderId}
+            placeholder={I18n.t("policy_detail.sp_placeholder")}
+            select2selectorId={"serviceProvider"}
+            options={this.parseEntities(this.props.serviceProviders)}
+            handleChange={this.handleChangeServiceProvider}/>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
 
   renderIdentityProvider(pdpRequest) {
     const workflow = _.isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
     return (
-        <div>
-          <div className={"form-element split " + workflow}>
-            <p className="label">{I18n.t("policies.identityProviderId")}</p>
+      <div>
+        <div className={"form-element split " + workflow}>
+          <p className="label">{I18n.t("policies.identityProviderId")}</p>
 
-            <App.Components.Select2Selector
-                defaultValue={pdpRequest.identityProviderId}
-                placeholder={I18n.t("playground.idp_placeholder")}
-                select2selectorId={"identityProvider"}
-                options={this.parseEntities(this.props.identityProviders)}
-                handleChange={this.handleChangeIdentityProvider}/>
-          </div>
-          <div className="bottom"></div>
+          <App.Components.Select2Selector
+            defaultValue={pdpRequest.identityProviderId}
+            placeholder={I18n.t("playground.idp_placeholder")}
+            select2selectorId={"identityProvider"}
+            options={this.parseEntities(this.props.identityProviders)}
+            handleChange={this.handleChangeIdentityProvider}/>
         </div>
+        <div className="bottom"></div>
+      </div>
     );
   }
 
@@ -182,10 +182,10 @@ class Playground extends React.Component {
   renderAttributes(pdpRequest) {
     //we need state changes from the child component
     return (<App.Components.PolicyAttributes
-        policy={this.state}
-        allowedAttributes={this.props.allowedSamlAttributes}
-        setAttributeState={this.setAttributeState}
-        css="split"/>);
+      policy={this.state}
+      allowedAttributes={this.props.allowedSamlAttributes}
+      setAttributeState={this.setAttributeState}
+      css="split"/>);
   }
 
   renderStatus(responseJSON) {
@@ -201,14 +201,14 @@ class Playground extends React.Component {
       status = "remove";
     }
     return (
-        <div className={"response-status " + status}>
-          <i className={"fa fa-"+status + " " + status}></i>
-          <section>
-            <p className="status">{decision}</p>
+      <div className={"response-status " + status}>
+        <i className={"fa fa-"+status + " " + status}></i>
+        <section>
+          <p className="status">{decision}</p>
 
-            <p className="details">{"Status code: " + "'" + statusCode + "'"}</p>
-          </section>
-        </div>
+          <p className="details">{"Status code: " + "'" + statusCode + "'"}</p>
+        </section>
+      </div>
     );
   }
 
@@ -228,12 +228,12 @@ class Playground extends React.Component {
   renderActions(pdpRequest) {
     const classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
     return (
-        <div className="form-element split no-pad-right">
-          <a className={classNameSubmit + " large c-button"} href="#"
-             onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>{I18n.t("playground.check_policies")}</a>
-          <a className="c-button cancel" href="#" onClick={this.clearForm}>{I18n.t("playground.clear_policies")}</a>
-          {this.renderAdventurous()}
-        </div>
+      <div className="form-element split no-pad-right">
+        <a className={classNameSubmit + " large c-button"} href="#"
+          onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>{I18n.t("playground.check_policies")}</a>
+        <a className="c-button cancel" href="#" onClick={this.clearForm}>{I18n.t("playground.clear_policies")}</a>
+        {this.renderAdventurous()}
+      </div>
     );
   }
 
@@ -251,14 +251,14 @@ class Playground extends React.Component {
         scrollbarStyle: null
       };
       return (
-          <div>
-            <div className="align-center">
-              <a className="c-button full" href="#" onClick={this.replayRequest}>
-                <i className="fa fa-refresh"></i>{I18n.t("playground.reload_policy")}</a>
-            </div>
-            <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
-                                       options={options} uniqueId="code_mirror_textarea_request"/>
+        <div>
+          <div className="align-center">
+            <a className="c-button full" href="#" onClick={this.replayRequest}>
+              <i className="fa fa-refresh"></i>{I18n.t("playground.reload_policy")}</a>
           </div>
+          <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
+            options={options} uniqueId="code_mirror_textarea_request"/>
+        </div>
       );
     }
   }
@@ -275,8 +275,8 @@ class Playground extends React.Component {
         readOnly: true
       };
       return (
-          <App.Components.CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}
-                                     uniqueId="code_mirror_textarea_response"/>
+        <App.Components.CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}
+          uniqueId="code_mirror_textarea_response"/>
       );
     }
   }
@@ -294,20 +294,20 @@ class Playground extends React.Component {
     const request = (selectedTab == "request" ? "selected" : "");
     const response = (selectedTab == "response" ? "selected" : "");
     return (
+      <div>
         <div>
-          <div>
-            <ul className="tabs">
-              <li className={request} onClick={this.handleTabChange("request")}>
-                <i className="fa fa-file-o"></i>
-                <a href="#">request.json</a>
-              </li>
-              <li className={response} onClick={this.handleTabChange("response")}>
-                <i className="fa fa-file-o"></i>
-                <a href="#">response.json</a>
-              </li>
-            </ul>
-          </div>
+          <ul className="tabs">
+            <li className={request} onClick={this.handleTabChange("request")}>
+              <i className="fa fa-file-o"></i>
+              <a href="#">request.json</a>
+            </li>
+            <li className={response} onClick={this.handleTabChange("response")}>
+              <i className="fa fa-file-o"></i>
+              <a href="#">response.json</a>
+            </li>
+          </ul>
         </div>
+      </div>
     );
   }
 
@@ -316,12 +316,12 @@ class Playground extends React.Component {
     const responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
       return (
-          <div className="l-split-right form-element-container box">
-            {this.renderStatus(responseJSON)}
-            {this.renderTabs()}
-            {this.renderJsonRequest()}
-            {this.renderJsonResponse(responseJSON)}
-          </div>
+        <div className="l-split-right form-element-container box">
+          {this.renderStatus(responseJSON)}
+          {this.renderTabs()}
+          {this.renderJsonRequest()}
+          {this.renderJsonResponse(responseJSON)}
+        </div>
       );
     } else {
       return (<div className="l-split-right form-element-container box">
@@ -337,18 +337,18 @@ class Playground extends React.Component {
   render() {
     const pdpRequest = this.state;
     return (
-        <div className="l-center mod-playground">
-          <div className="l-split-left form-element-container box">
+      <div className="l-center mod-playground">
+        <div className="l-split-left form-element-container box">
 
-            <p className="form-element title">POLICY PLAYGROUND</p>
-            {this.renderPolicies()}
-            {this.renderServiceProvider(pdpRequest)}
-            {this.renderIdentityProvider(pdpRequest)}
-            {this.renderAttributes(pdpRequest)}
-            {this.renderActions(pdpRequest)}
-          </div>
-          {this.renderRequestResponsePanel()}
+          <p className="form-element title">POLICY PLAYGROUND</p>
+          {this.renderPolicies()}
+          {this.renderServiceProvider(pdpRequest)}
+          {this.renderIdentityProvider(pdpRequest)}
+          {this.renderAttributes(pdpRequest)}
+          {this.renderActions(pdpRequest)}
         </div>
+        {this.renderRequestResponsePanel()}
+      </div>
     );
   }
 
