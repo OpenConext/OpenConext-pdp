@@ -3,11 +3,11 @@ import React from "react";
 class CodeMirror extends React.Component {
 
   componentDidMount() {
-    var node = document.getElementById(this.props.uniqueId);
+    const node = document.getElementById(this.props.uniqueId);
     this.codeMirror = CodeMirror.fromTextArea(node, this.props.options);
     this._currentCodemirrorValue = this.props.value;
     if (!this.props.options.readOnly) {
-      this.codeMirror.on('change', this.codeMirrorValueChanged);
+      this.codeMirror.on("change", this.codeMirrorValueChanged);
     }
   }
 
@@ -24,7 +24,7 @@ class CodeMirror extends React.Component {
   }
 
   codeMirrorValueChanged(doc, change) {
-    var newValue = doc.getValue();
+    const newValue = doc.getValue();
     this._currentCodemirrorValue = newValue;
     this.props.onChange && this.props.onChange(newValue);
   }

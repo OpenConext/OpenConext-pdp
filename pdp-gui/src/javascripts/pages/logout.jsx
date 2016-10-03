@@ -6,7 +6,7 @@ class Logout extends React.Component {
     return (
       <div className="mod-logout">
         {I18n.t("logout.title")}<br />
-        <span dangerouslySetInnerHTML={{ __html: I18n.t("logout.description_html")}} />
+        <span dangerouslySetInnerHTML={{ __html: I18n.t("logout.description_html") }} />
       </div>
     );
   }

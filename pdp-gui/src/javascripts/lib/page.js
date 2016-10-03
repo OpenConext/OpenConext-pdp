@@ -1,11 +1,11 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.page=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if ("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if ("function"==typeof define&&define.amd)define([],e);else {let f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.page=e();}}(() => {let define,module,exports;return (function e(t,n,r){function s(o,u){if (!n[o]){if (!t[o]){const a=typeof require=="function"&&require;if (!u&&a) return a(o,!0);if (i) return i(o,!0);throw new Error("Cannot find module '"+o+"'");} const f=n[o]={ exports:{} };t[o][0].call(f.exports,e => {const n=t[o][1][e];return s(n?n:e);},f,f.exports,e,t,n,r);} return n[o].exports;} const i=typeof require=="function"&&require;for (let o=0;o<r.length;o++)s(r[o]);return s;})({ 1:[function(_dereq_,module,exports){
 /**
  * repage.js - tiny client-side router forked from page.js
  * http://github.com/rstacruz/repage.js
  * http://github.com/visionmedia/page.js
  * @license MIT
  */
-;(function() {
+  (function() {
 
   /* jshint browser:true */
 
@@ -13,43 +13,43 @@
    * Module dependencies.
    */
 
-  var pathtoRegexp = _dereq_('path-to-regexp');
+    const pathtoRegexp = _dereq_("path-to-regexp");
 
   /**
    * Module exports.
    */
 
-  module.exports = page;
+    module.exports = page;
 
   /**
    * Perform initial dispatch.
    */
 
-  var dispatch = true;
+    let dispatch = true;
 
   /**
    * Base path.
    */
 
-  var base = '';
+    let base = "";
 
   /**
    * Home.
    */
 
-  var home;
+    let home;
 
   /**
    * Running flag.
    */
 
-  var running;
+    let running;
 
   /**
    * Setimmediate helper
    */
 
-  var setImmediate = this.setImmediate ?
+    const setImmediate = this.setImmediate ?
     this.setImmediate :
     function(fn) { window.setTimeout(fn, 0); };
 
@@ -69,44 +69,44 @@
    * @api public
    */
 
-  function page(path, fn) {
+    function page(path, fn) {
     // <callback>
-    if ('function' == typeof path) {
-      return page('*', path);
-    }
+      if ("function" == typeof path) {
+        return page("*", path);
+      }
 
     // route <path> to <callback ...>
-    if ('function' == typeof fn) {
-      var route = new Route(path);
-      for (var i = 1; i < arguments.length; ++i) {
-        page.callbacks.push(route.middleware(arguments[i]));
-      }
+      if ("function" == typeof fn) {
+        const route = new Route(path);
+        for (let i = 1; i < arguments.length; ++i) {
+          page.callbacks.push(route.middleware(arguments[i]));
+        }
     // show <path> with [options]
-    } else if ('string' == typeof path) {
-      page.show(path, fn);
+      } else if ("string" == typeof path) {
+        page.show(path, fn);
     // start [options]
-    } else {
-      page.start(path);
+      } else {
+        page.start(path);
+      }
     }
-  }
 
   /**
    * History object to use. This defaults to `window.history`.
    */
 
-  page.history = history;
+    page.history = history;
 
   /**
    * Number of pages navigated.
    */
 
-  page.len = 0;
+    page.len = 0;
 
   /**
    * Callback functions.
    */
 
-  page.callbacks = [];
+    page.callbacks = [];
 
   /**
    * Get or set basepath to `path`.
@@ -115,10 +115,10 @@
    * @api public
    */
 
-  page.base = function(path){
-    if (0 == arguments.length) return base;
-    base = path;
-  };
+    page.base = function(path){
+      if (0 == arguments.length) return base;
+      base = path;
+    };
 
   /**
    * Bind with the given `options`.
@@ -133,17 +133,17 @@
    * @api public
    */
 
-  page.start = function(options){
-    options = options || {};
-    if (running) return;
-    running = true;
-    if (false === options.dispatch) dispatch = false;
-    if (false !== options.popstate) window.addEventListener('popstate', onpopstate, false);
-    if (false !== options.click) window.addEventListener('click', onclick, false);
-    if (!dispatch) return;
-    var url = location.pathname + location.search + location.hash;
-    page.replace(url, {}, true, dispatch);
-  };
+    page.start = function(options){
+      options = options || {};
+      if (running) return;
+      running = true;
+      if (false === options.dispatch) dispatch = false;
+      if (false !== options.popstate) window.addEventListener("popstate", onpopstate, false);
+      if (false !== options.click) window.addEventListener("click", onclick, false);
+      if (!dispatch) return;
+      const url = location.pathname + location.search + location.hash;
+      page.replace(url, {}, true, dispatch);
+    };
 
   /**
    * Unbind click and popstate event handlers.
@@ -151,11 +151,11 @@
    * @api public
    */
 
-  page.stop = function(){
-    running = false;
-    window.removeEventListener('click', onclick, false);
-    window.removeEventListener('popstate', onpopstate, false);
-  };
+    page.stop = function(){
+      running = false;
+      window.removeEventListener("click", onclick, false);
+      window.removeEventListener("popstate", onpopstate, false);
+    };
 
   /**
    * Show `path`.
@@ -167,13 +167,13 @@
    * @api public
    */
 
-  page.show = function(path, params, dispatch){
-    var uri = page.uri(path, params);
-    var ctx = new Context(uri, null);
-    if (false !== dispatch) page.dispatch(ctx);
-    if (!ctx.unhandled) ctx.pushState();
-    return ctx;
-  };
+    page.show = function(path, params, dispatch){
+      const uri = page.uri(path, params);
+      const ctx = new Context(uri, null);
+      if (false !== dispatch) page.dispatch(ctx);
+      if (!ctx.unhandled) ctx.pushState();
+      return ctx;
+    };
 
   /**
    * Replace `path`.
@@ -184,15 +184,15 @@
    * @api public
    */
 
-  page.replace = function(path, params, init, dispatch){
-    var uri = page.uri(path, params);
-    var ctx = new Context(uri, null);
-    ctx.init = init;
-    if (null == dispatch) dispatch = true;
-    if (dispatch) page.dispatch(ctx);
-    ctx.save();
-    return ctx;
-  };
+    page.replace = function(path, params, init, dispatch){
+      const uri = page.uri(path, params);
+      const ctx = new Context(uri, null);
+      ctx.init = init;
+      if (null == dispatch) dispatch = true;
+      if (dispatch) page.dispatch(ctx);
+      ctx.save();
+      return ctx;
+    };
 
   /**
    * Dispatch the given path.
@@ -204,21 +204,21 @@
    * @param {Object} ctx a path string or a Context object
    */
 
-  page.dispatch = function(ctx){
-    var i = 0;
+    page.dispatch = function(ctx){
+      let i = 0;
 
     // account for path strings
-    if (typeof ctx === 'string')
-      ctx = new Context(ctx, null);
+      if (typeof ctx === "string")
+        ctx = new Context(ctx, null);
 
-    function next() {
-      var fn = page.callbacks[i++];
-      if (!fn) return unhandled(ctx);
-      fn(ctx, next);
-    }
+      function next() {
+        const fn = page.callbacks[i++];
+        if (!fn) return unhandled(ctx);
+        fn(ctx, next);
+      }
 
-    next();
-  };
+      next();
+    };
 
   /**
    * Builds a URI path with dynamic parameters, mimicking Express's conventions.
@@ -234,19 +234,19 @@
    * Great for using with `req.params` or `req.query`.
    */
 
-  page.uri = function(path, options) {
-    var uri = path.replace(/:([A-Za-z_]+)/g, function(_, spec) {
-      var val = options[spec];
-      delete options[spec];
-      return val;
-    });
+    page.uri = function(path, options) {
+      let uri = path.replace(/:([A-Za-z_]+)/g, (_, spec) => {
+        const val = options[spec];
+        delete options[spec];
+        return val;
+      });
 
-    if (options && Object.keys(options).length > 0) {
-      uri += '?' + page.querystring(options);
-    }
+      if (options && Object.keys(options).length > 0) {
+        uri += "?" + page.querystring(options);
+      }
 
-    return uri;
-  };
+      return uri;
+    };
 
   /**
    * Converts a hash into a query string.
@@ -257,36 +257,36 @@
    * @api public
    */
 
-  page.querystring = function(options, prefix){
-    var pairs = [], val;
+    page.querystring = function(options, prefix){
+      let pairs = [], val;
 
-    if (Array.isArray(options)) {
-      for (var i = 0, len = options.length; i < len; i++) {
-        val = options[i];
-        pairs.push(page.querystring({ '': val }, prefix));
-      }
-    }
-    else if (typeof options === 'object') {
-      for (var key in options) {
-        if (!options.hasOwnProperty(key)) continue;
-
-        val = options[key];
-        if (typeof val === 'undefined') continue;
-
-        if (prefix) key = prefix + '[' + key + ']';
-
-        if (val === null) {
-          pairs.push(key + '=');
-        } else if (typeof val === 'object') {
-          pairs.push(page.querystring(val, key));
-        } else {
-          pairs.push([ key, encodeURIComponent(val) ].join('='));
+      if (Array.isArray(options)) {
+        for (let i = 0, len = options.length; i < len; i++) {
+          val = options[i];
+          pairs.push(page.querystring({ "": val }, prefix));
         }
       }
-    }
+      else if (typeof options === "object") {
+        for (let key in options) {
+          if (!options.hasOwnProperty(key)) continue;
 
-    return pairs.join('&');
-  };
+          val = options[key];
+          if (typeof val === "undefined") continue;
+
+          if (prefix) key = prefix + "[" + key + "]";
+
+          if (val === null) {
+            pairs.push(key + "=");
+          } else if (typeof val === "object") {
+            pairs.push(page.querystring(val, key));
+          } else {
+            pairs.push([key, encodeURIComponent(val)].join("="));
+          }
+        }
+      }
+
+      return pairs.join("&");
+    };
 
   /**
    * Redirect helper.
@@ -296,24 +296,24 @@
    *   });
    */
 
-  page.redirect = function(path, params) {
-    setImmediate(function (){
-      page.replace(path, params);
-    });
-  };
+    page.redirect = function(path, params) {
+      setImmediate(() => {
+        page.replace(path, params);
+      });
+    };
 
   /**
    * Goes back. If `path` is given, it will navigate to that instead when
    * there's no page to go back to.
    */
 
-  page.back = function(path, params) {
-    if (page.len > 0) {
-      page.history.back();
-    } else if (arguments.length > 0) {
-      page(path, params);
-    }
-  };
+    page.back = function(path, params) {
+      if (page.len > 0) {
+        page.history.back();
+      } else if (arguments.length > 0) {
+        page(path, params);
+      }
+    };
 
   /**
    * Unhandled `ctx`. When it's not the initial
@@ -324,13 +324,13 @@
    * @api private
    */
 
-  function unhandled(ctx) {
-    var current = window.location.pathname + window.location.search;
-    if (current == ctx.canonicalPath) return;
-    page.stop();
-    ctx.unhandled = true;
-    window.location = ctx.canonicalPath;
-  }
+    function unhandled(ctx) {
+      const current = window.location.pathname + window.location.search;
+      if (current == ctx.canonicalPath) return;
+      page.stop();
+      ctx.unhandled = true;
+      window.location = ctx.canonicalPath;
+    }
 
   /**
    * Initialize a new "request" `Context`
@@ -341,34 +341,34 @@
    * @api public
    */
 
-  function Context(path, state) {
-    if ('/' == path[0] && 0 != path.indexOf(base)) path = base + path;
-    var i = path.indexOf('?');
+    function Context(path, state) {
+      if ("/" == path[0] && 0 != path.indexOf(base)) path = base + path;
+      const i = path.indexOf("?");
 
-    this.canonicalPath = path;
-    this.path = path.replace(base, '') || '/';
+      this.canonicalPath = path;
+      this.path = path.replace(base, "") || "/";
 
-    this.title = document.title;
-    this.state = state || {};
-    this.state.path = path;
-    this.querystring = ~i ? path.slice(i + 1) : '';
-    this.pathname = ~i ? path.slice(0, i) : path;
-    this.params = [];
+      this.title = document.title;
+      this.state = state || {};
+      this.state.path = path;
+      this.querystring = ~i ? path.slice(i + 1) : "";
+      this.pathname = ~i ? path.slice(0, i) : path;
+      this.params = [];
 
     // fragment
-    this.hash = '';
-    if (!~this.path.indexOf('#')) return;
-    var parts = this.path.split('#');
-    this.path = parts[0];
-    this.hash = parts[1] || '';
-    this.querystring = this.querystring.split('#')[0];
-  }
+      this.hash = "";
+      if (!~this.path.indexOf("#")) return;
+      const parts = this.path.split("#");
+      this.path = parts[0];
+      this.hash = parts[1] || "";
+      this.querystring = this.querystring.split("#")[0];
+    }
 
   /**
    * Expose `Context`.
    */
 
-  page.Context = Context;
+    page.Context = Context;
 
   /**
    * Push state.
@@ -376,10 +376,10 @@
    * @api private
    */
 
-  Context.prototype.pushState = function(){
-    page.len++;
-    page.history.pushState(this.state, this.title, this.canonicalPath);
-  };
+    Context.prototype.pushState = function(){
+      page.len++;
+      page.history.pushState(this.state, this.title, this.canonicalPath);
+    };
 
   /**
    * Save the context state.
@@ -387,9 +387,9 @@
    * @api public
    */
 
-  Context.prototype.save = function(){
-    page.history.replaceState(this.state, this.title, this.canonicalPath);
-  };
+    Context.prototype.save = function(){
+      page.history.replaceState(this.state, this.title, this.canonicalPath);
+    };
 
   /**
    * Initialize `Route` with the given HTTP `path`,
@@ -405,21 +405,21 @@
    * @api private
    */
 
-  function Route(path, options) {
-    options = options || {};
-    this.path = (path === '*') ? '(.*)' : path;
-    this.method = 'GET';
-    this.regexp = pathtoRegexp(this.path
+    function Route(path, options) {
+      options = options || {};
+      this.path = (path === "*") ? "(.*)" : path;
+      this.method = "GET";
+      this.regexp = pathtoRegexp(this.path
       , this.keys = []
       , options.sensitive
       , options.strict);
-  }
+    }
 
   /**
    * Expose `Route`.
    */
 
-  page.Route = Route;
+    page.Route = Route;
 
   /**
    * Return route middleware with
@@ -430,13 +430,13 @@
    * @api public
    */
 
-  Route.prototype.middleware = function(fn){
-    var self = this;
-    return function(ctx, next){
-      if (self.match(ctx.path, ctx.params)) return fn(ctx, next);
-      next();
+    Route.prototype.middleware = function(fn){
+      const self = this;
+      return function(ctx, next){
+        if (self.match(ctx.path, ctx.params)) return fn(ctx, next);
+        next();
+      };
     };
-  };
 
   /**
    * Check if this route matches `path`, if so
@@ -448,141 +448,141 @@
    * @api private
    */
 
-  Route.prototype.match = function(path, params){
-    var keys = this.keys
-      , qsIndex = path.indexOf('?')
+    Route.prototype.match = function(path, params){
+      let keys = this.keys
+      , qsIndex = path.indexOf("?")
       , pathname = ~qsIndex ? path.slice(0, qsIndex) : path
       , m = this.regexp.exec(decodeURIComponent(pathname));
 
-    if (!m) return false;
+      if (!m) return false;
 
-    for (var i = 1, len = m.length; i < len; ++i) {
-      var key = keys[i - 1];
+      for (let i = 1, len = m.length; i < len; ++i) {
+        const key = keys[i - 1];
 
-      var val = 'string' == typeof m[i]
+        const val = "string" == typeof m[i]
         ? decodeURIComponent(m[i])
         : m[i];
 
-      if (key) {
-        params[key.name] = undefined !== params[key.name]
+        if (key) {
+          params[key.name] = undefined !== params[key.name]
           ? params[key.name]
           : val;
-      } else {
-        params.push(val);
+        } else {
+          params.push(val);
+        }
       }
-    }
 
-    return true;
-  };
+      return true;
+    };
 
   /**
    * Handle "populate" events.
    */
 
-  function onpopstate(e) {
-    if (e.state) page.dispatch(e.state.path);
-  }
+    function onpopstate(e) {
+      if (e.state) page.dispatch(e.state.path);
+    }
 
   /**
    * Handle "click" events.
    */
 
-  function onclick(e) {
-    if (1 != which(e)) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey) return;
-    if (e.defaultPrevented) return;
+    function onclick(e) {
+      if (1 != which(e)) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      if (e.defaultPrevented) return;
 
     // ensure link
-    var el = e.target;
-    while (el && 'A' != el.nodeName) el = el.parentNode;
-    if (!el || 'A' != el.nodeName) return;
+      let el = e.target;
+      while (el && "A" != el.nodeName) el = el.parentNode;
+      if (!el || "A" != el.nodeName) return;
 
     // ensure non-hash for the same path
-    var link = el.getAttribute('href');
-    if (el.pathname == location.pathname && (el.hash || '#' == link)) return;
+      const link = el.getAttribute("href");
+      if (el.pathname == location.pathname && (el.hash || "#" == link)) return;
 
     // Check for mailto: in the href
-    if (!link || link.indexOf("mailto:") > -1) return;
+      if (!link || link.indexOf("mailto:") > -1) return;
 
     // check target
-    if (el.target) return;
+      if (el.target) return;
 
     // x-origin
-    if (!sameOrigin(el.href)) return;
+      if (!sameOrigin(el.href)) return;
 
     // rebuild path
-    var path = el.pathname + el.search + (el.hash || '');
+      let path = el.pathname + el.search + (el.hash || "");
 
     // same page
-    var orig = path + el.hash;
+      const orig = path + el.hash;
 
-    path = path.replace(base, '');
-    if (base && orig == path) return;
+      path = path.replace(base, "");
+      if (base && orig == path) return;
 
-    e.preventDefault();
-    page.show(orig);
-  }
+      e.preventDefault();
+      page.show(orig);
+    }
 
   /**
    * Event button.
    */
 
-  function which(e) {
-    e = e || window.event;
-    return null == e.which
+    function which(e) {
+      e = e || window.event;
+      return null == e.which
       ? e.button
       : e.which;
-  }
+    }
 
   /**
    * Check if `href` is the same origin.
    */
 
-  function sameOrigin(href) {
-    var origin = location.protocol + '//' + location.hostname;
-    if (location.port) origin += ':' + location.port;
-    return 0 == href.indexOf(origin);
-  }
+    function sameOrigin(href) {
+      let origin = location.protocol + "//" + location.hostname;
+      if (location.port) origin += ":" + location.port;
+      return 0 == href.indexOf(origin);
+    }
 
   /**
    * Expose `page`.
    */
 
-  if ( 'function' === typeof define && define.amd ) {
-    define( function () { return page; });
-  } else if ('undefined' !== typeof module) {
-    module.exports = page;
-  } else {
-    window.page = page;
-  }
+    if ("function" === typeof define && define.amd) {
+      define(() => { return page; });
+    } else if ("undefined" !== typeof module) {
+      module.exports = page;
+    } else {
+      window.page = page;
+    }
 
-})();
+  })();
 
-},{"path-to-regexp":2}],2:[function(_dereq_,module,exports){
+},{ "path-to-regexp":2 }],2:[function(_dereq_,module,exports){
 /**
  * Expose `pathtoRegexp`.
  */
-module.exports = pathtoRegexp;
+  module.exports = pathtoRegexp;
 
 /**
  * The main path matching regexp utility.
  *
  * @type {RegExp}
  */
-var PATH_REGEXP = new RegExp([
+  const PATH_REGEXP = new RegExp([
   // Match already escaped characters that would otherwise incorrectly appear
   // in future matches. This allows the user to escape special characters that
   // shouldn't be transformed.
-  '(\\\\.)',
+    "(\\\\.)",
   // Match Express-style parameters and un-named parameters with a prefix
   // and optional suffixes. Matches appear as:
   //
   // "/:test(\\d+)?" => ["/", "test", "\d+", undefined, "?"]
   // "/route(\\d+)" => [undefined, undefined, undefined, "\d+", undefined]
-  '([\\/.])?(?:\\:(\\w+)(?:\\(((?:\\\\.|[^)])*)\\))?|\\(((?:\\\\.|[^)])*)\\))([+*?])?',
+    "([\\/.])?(?:\\:(\\w+)(?:\\(((?:\\\\.|[^)])*)\\))?|\\(((?:\\\\.|[^)])*)\\))([+*?])?",
   // Match regexp special characters that should always be escaped.
-  '([.+*?=^!:${}()[\\]|\\/])'
-].join('|'), 'g');
+    "([.+*?=^!:${}()[\\]|\\/])"
+  ].join("|"), "g");
 
 /**
  * Escape the capturing group by escaping special characters and meaning.
@@ -590,9 +590,9 @@ var PATH_REGEXP = new RegExp([
  * @param  {String} group
  * @return {String}
  */
-function escapeGroup (group) {
-  return group.replace(/([=!:$\/()])/g, '\\$1');
-}
+  function escapeGroup(group) {
+    return group.replace(/([=!:$\/()])/g, "\\$1");
+  }
 
 /**
  * Attach the keys as a property of the regexp.
@@ -601,11 +601,11 @@ function escapeGroup (group) {
  * @param  {Array}  keys
  * @return {RegExp}
  */
-var attachKeys = function (re, keys) {
-  re.keys = keys;
+  const attachKeys = function(re, keys) {
+    re.keys = keys;
 
-  return re;
-};
+    return re;
+  };
 
 /**
  * Normalize the given path string, returning a regular expression.
@@ -618,115 +618,115 @@ var attachKeys = function (re, keys) {
  * @param  {Object}                options
  * @return {RegExp}
  */
-function pathtoRegexp (path, keys, options) {
-  if (keys && !Array.isArray(keys)) {
-    options = keys;
-    keys = null;
-  }
+  function pathtoRegexp(path, keys, options) {
+    if (keys && !Array.isArray(keys)) {
+      options = keys;
+      keys = null;
+    }
 
-  keys = keys || [];
-  options = options || {};
+    keys = keys || [];
+    options = options || {};
 
-  var strict = options.strict;
-  var end = options.end !== false;
-  var flags = options.sensitive ? '' : 'i';
-  var index = 0;
+    const strict = options.strict;
+    const end = options.end !== false;
+    const flags = options.sensitive ? "" : "i";
+    let index = 0;
 
-  if (path instanceof RegExp) {
+    if (path instanceof RegExp) {
     // Match all capturing groups of a regexp.
-    var groups = path.source.match(/\((?!\?)/g) || [];
+      const groups = path.source.match(/\((?!\?)/g) || [];
 
     // Map all the matches to their numeric keys and push into the keys.
-    keys.push.apply(keys, groups.map(function (match, index) {
-      return {
-        name:      index,
-        delimiter: null,
-        optional:  false,
-        repeat:    false
-      };
-    }));
+      keys.push.apply(keys, groups.map((match, index) => {
+        return {
+          name:      index,
+          delimiter: null,
+          optional:  false,
+          repeat:    false
+        };
+      }));
 
     // Return the source back to the user.
-    return attachKeys(path, keys);
-  }
+      return attachKeys(path, keys);
+    }
 
-  if (Array.isArray(path)) {
+    if (Array.isArray(path)) {
     // Map array parts into regexps and return their source. We also pass
     // the same keys and options instance into every generation to get
     // consistent matching groups before we join the sources together.
-    path = path.map(function (value) {
-      return pathtoRegexp(value, keys, options).source;
-    });
+      path = path.map(value => {
+        return pathtoRegexp(value, keys, options).source;
+      });
 
     // Generate a new regexp instance by joining all the parts together.
-    return attachKeys(new RegExp('(?:' + path.join('|') + ')', flags), keys);
-  }
+      return attachKeys(new RegExp("(?:" + path.join("|") + ")", flags), keys);
+    }
 
   // Alter the path string into a usable regexp.
-  path = path.replace(PATH_REGEXP, function (match, escaped, prefix, key, capture, group, suffix, escape) {
+    path = path.replace(PATH_REGEXP, (match, escaped, prefix, key, capture, group, suffix, escape) => {
     // Avoiding re-escaping escaped characters.
-    if (escaped) {
-      return escaped;
-    }
+      if (escaped) {
+        return escaped;
+      }
 
     // Escape regexp special characters.
-    if (escape) {
-      return '\\' + escape;
-    }
+      if (escape) {
+        return "\\" + escape;
+      }
 
-    var repeat   = suffix === '+' || suffix === '*';
-    var optional = suffix === '?' || suffix === '*';
+      const repeat   = suffix === "+" || suffix === "*";
+      const optional = suffix === "?" || suffix === "*";
 
-    keys.push({
-      name:      key || index++,
-      delimiter: prefix || '/',
-      optional:  optional,
-      repeat:    repeat
-    });
+      keys.push({
+        name:      key || index++,
+        delimiter: prefix || "/",
+        optional:  optional,
+        repeat:    repeat
+      });
 
     // Escape the prefix character.
-    prefix = prefix ? '\\' + prefix : '';
+      prefix = prefix ? "\\" + prefix : "";
 
     // Match using the custom capturing group, or fallback to capturing
     // everything up to the next slash (or next period if the param was
     // prefixed with a period).
-    capture = escapeGroup(capture || group || '[^' + (prefix || '\\/') + ']+?');
+      capture = escapeGroup(capture || group || "[^" + (prefix || "\\/") + "]+?");
 
     // Allow parameters to be repeated more than once.
-    if (repeat) {
-      capture = capture + '(?:' + prefix + capture + ')*';
-    }
+      if (repeat) {
+        capture = capture + "(?:" + prefix + capture + ")*";
+      }
 
     // Allow a parameter to be optional.
-    if (optional) {
-      return '(?:' + prefix + '(' + capture + '))?';
-    }
+      if (optional) {
+        return "(?:" + prefix + "(" + capture + "))?";
+      }
 
     // Basic parameter support.
-    return prefix + '(' + capture + ')';
-  });
+      return prefix + "(" + capture + ")";
+    });
 
   // Check whether the path ends in a slash as it alters some match behaviour.
-  var endsWithSlash = path[path.length - 1] === '/';
+    const endsWithSlash = path[path.length - 1] === "/";
 
   // In non-strict mode we allow an optional trailing slash in the match. If
   // the path to match already ended with a slash, we need to remove it for
   // consistency. The slash is only valid at the very end of a path match, not
   // anywhere in the middle. This is important for non-ending mode, otherwise
   // "/test/" will match "/test//route".
-  if (!strict) {
-    path = (endsWithSlash ? path.slice(0, -2) : path) + '(?:\\/(?=$))?';
-  }
+    if (!strict) {
+      path = (endsWithSlash ? path.slice(0, -2) : path) + "(?:\\/(?=$))?";
+    }
 
   // In non-ending mode, we need prompt the capturing groups to match as much
   // as possible by using a positive lookahead for the end or next path segment.
-  if (!end) {
-    path += strict && endsWithSlash ? '' : '(?=\\/|$)';
+    if (!end) {
+      path += strict && endsWithSlash ? "" : "(?=\\/|$)";
+    }
+
+    return attachKeys(new RegExp("^" + path + (end ? "$" : ""), flags), keys);
   }
 
-  return attachKeys(new RegExp('^' + path + (end ? '$' : ''), flags), keys);
-};
-
-},{}]},{},[1])
-(1)
+},{}] },{},[1])
+(1);
 });

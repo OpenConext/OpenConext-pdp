@@ -1,21 +1,21 @@
 App.Controllers.Decisions = {
 
-  initialize: function () {
+  initialize: function() {
     page("/decisions",
         this.loadDecisions.bind(this),
         this.decisions.bind(this)
     );
   },
 
-  loadDecisions: function (ctx, next) {
-    var url = App.apiUrl("/internal/decisions?daysAgo=365");
-    $.get(url, function (data) {
+  loadDecisions: function(ctx, next) {
+    const url = App.apiUrl("/internal/decisions?daysAgo=365");
+    $.get(url, data => {
       ctx.decisions = data;
       next();
     });
   },
 
-  decisions: function (ctx) {
+  decisions: function(ctx) {
     App.render(App.Pages.Decisions({
       key: "decisions",
       decisions: ctx.decisions

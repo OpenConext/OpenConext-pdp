@@ -4,26 +4,26 @@ import I18n from "i18n-js";
 class PolicyViolations extends React.Component {
 
   getInitialState() {
-    return {data: []}
+    return { data: [] };
   }
 
   destroyDataTable() {
-    $('#violations_table').DataTable().destroy();
+    $("#violations_table").DataTable().destroy();
   }
 
   initDataTable() {
-    $.fn.dataTable.ext.order['locale-date'] = function (settings, col) {
-      return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
+    $.fn.dataTable.ext.order["locale-date"] = function(settings, col) {
+      return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
         //use the milliseconds to sort
         return moment(td.textContent, "DD-MM-YYYY hh:mm").valueOf();
       });
     };
-    $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
-      return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
-        return $('input', td).prop('checked') ? '1' : '0';
+    $.fn.dataTable.ext.order["dom-checkbox"] = function(settings, col) {
+      return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
+        return $("input", td).prop("checked") ? "1" : "0";
       });
     };
-    $('#violations_table').DataTable({
+    $("#violations_table").DataTable({
       paging: true,
       language: {
         search: "_INPUT_",
@@ -40,9 +40,9 @@ class PolicyViolations extends React.Component {
         }
       },
       columnDefs: [
-        {targets: [3], orderDataType: "locale-date"},
-        {targets: [2], orderDataType: "dom-checkbox"},
-        {targets: [4], orderable: false}
+        { targets: [3], orderDataType: "locale-date" },
+        { targets: [2], orderDataType: "dom-checkbox" },
+        { targets: [4], orderable: false }
       ],
       order: [[3, "desc"]]
     });
@@ -53,7 +53,7 @@ class PolicyViolations extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (!$.fn.DataTable.isDataTable('#violations_table')) {
+    if (!$.fn.DataTable.isDataTable("#violations_table")) {
       this.initDataTable();
     }
     window.scrollTo(0, 0);
@@ -74,46 +74,46 @@ class PolicyViolations extends React.Component {
   }
 
   handleShowViolationDetail(violation) {
-    return function (e) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.setState({violation: violation, tab: "request"});
+      this.setState({ violation: violation, tab: "request" });
     }.bind(this);
   }
 
   getEntityName(id, type) {
-    var name = id;
-    var entities = this.props[type].filter(function (entity) {
+    const name = id;
+    const entities = this.props[type].filter(entity => {
       return entity.entityId === id;
     });
     if (!_.isEmpty(entities)) {
-      var entity = entities[0];
+      const entity = entities[0];
       return I18n.entityName(entity);
     }
     return name;
   }
 
   parseEntityId(attributes, type) {
-    var idpAttr = attributes.filter(function (attr) {
+    const idpAttr = attributes.filter(attr => {
       return attr.AttributeId === type;
     });
-    var idpValues = idpAttr.map(function (attr) {
+    const idpValues = idpAttr.map(attr => {
       return attr.Value;
     });
     return idpValues.length === 1 ? idpValues[0] : undefined;
   }
 
   handleTabChange(tab) {
-    return function (e) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.setState({tab: tab});
+      this.setState({ tab: tab });
     }.bind(this);
   }
 
   renderStatus(response, policyName) {
-    var decision = response.Response[0].Decision;
-    var status = App.Controllers.PolicyViolations.determineStatus(decision);
+    const decision = response.Response[0].Decision;
+    const status = App.Controllers.PolicyViolations.determineStatus(decision);
     return (
         <div className={"response-status " + status}>
           <i className={"fa fa-"+status + " " + status}></i>
@@ -131,10 +131,10 @@ class PolicyViolations extends React.Component {
   }
 
   renderViolationsDetail() {
-    var violation = this.state.violation;
+    const violation = this.state.violation;
     if (violation) {
-      var request = JSON.parse(violation.jsonRequest);
-      var response = JSON.parse(violation.response);
+      const request = JSON.parse(violation.jsonRequest);
+      const response = JSON.parse(violation.response);
       return (
           <div>
             {this.renderStatus(response, violation.policyName)}
@@ -149,9 +149,9 @@ class PolicyViolations extends React.Component {
   }
 
   renderTabs() {
-    var selectedTab = (this.state.tab || "request");
-    var request = (selectedTab == "request" ? "selected" : "");
-    var response = (selectedTab == "response" ? "selected" : "");
+    const selectedTab = (this.state.tab || "request");
+    const request = (selectedTab == "request" ? "selected" : "");
+    const response = (selectedTab == "response" ? "selected" : "");
     return (
         <div>
           <div>
@@ -171,70 +171,70 @@ class PolicyViolations extends React.Component {
   }
 
   renderRequestDetails(request) {
-    var selectedTab = (this.state.tab || "request");
+    const selectedTab = (this.state.tab || "request");
     //request is JSON very poorly formatted
-    var requestJson = JSON.stringify(request, null, 3);
+    const requestJson = JSON.stringify(request, null, 3);
     if (selectedTab === "request") {
-      var options = {
-        mode: {name: "javascript", json: true},
+      const options = {
+        mode: { name: "javascript", json: true },
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null,
         readOnly: true
-      }
+      };
       return (
           <App.Components.CodeMirror value={requestJson}
                                      options={options} uniqueId="code_mirror_textarea_violation_request"/>
-      )
+      );
     }
   }
 
   renderResponseDetails(response) {
-    var selectedTab = (this.state.tab || "request");
-    var responseJson = JSON.stringify(response, null, 3);
+    const selectedTab = (this.state.tab || "request");
+    const responseJson = JSON.stringify(response, null, 3);
 
     if (selectedTab === "response") {
-      var options = {
-        mode: {name: "javascript", json: true},
+      const options = {
+        mode: { name: "javascript", json: true },
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null,
         readOnly: true
-      }
+      };
       return (
           <App.Components.CodeMirror value={responseJson}
                                      options={options} uniqueId="code_mirror_textarea_violation_response"/>
-      )
+      );
     }
   }
 
   renderTable() {
-    var renderRows = this.props.violations.map(function (violation, index) {
-      var request = JSON.parse(violation.jsonRequest).Request;
-      var idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
-      var idpName = this.getEntityName(idp, "identityProviders");
-      var sp = this.parseEntityId(request.Resource.Attribute, "SPentityID");
-      var spName = this.getEntityName(sp, "serviceProviders");
+    const renderRows = this.props.violations.map((violation, index) => {
+      const request = JSON.parse(violation.jsonRequest).Request;
+      const idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
+      const idpName = this.getEntityName(idp, "identityProviders");
+      const sp = this.parseEntityId(request.Resource.Attribute, "SPentityID");
+      const spName = this.getEntityName(sp, "serviceProviders");
 
-      var response = JSON.parse(violation.response).Response[0];
-      var decision = response.Decision;
-      var d = new Date(violation.created);
-      var selected = this.state.violation && this.state.violation.id === violation.id ? "selected" : "";
+      const response = JSON.parse(violation.response).Response[0];
+      const decision = response.Decision;
+      const d = new Date(violation.created);
+      const selected = this.state.violation && this.state.violation.id === violation.id ? "selected" : "";
       return (
           <tr key={violation.id} className={selected}>
             <td>{idpName}<br/>{spName}</td>
             <td>{decision}</td>
             <td className='violation_is_playground'><input type="checkbox" defaultChecked={violation.playground}
                                                            disabled="true"/></td>
-            <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes() ) : d.getMinutes())}</td>
+            <td>{d.getDate() + "-" + (d.getMonth() + 1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + (d.getMinutes() < 10 ? ("0" + d.getMinutes()) : d.getMinutes())}</td>
             <td className="violation_controls">
               <a href="#" onClick={this.handleShowViolationDetail(violation)}
                  data-tooltip="Detail">
                 <i className="fa fa-eye"></i>
               </a>
             </td>
-          </tr>)
-    }.bind(this));
+          </tr>);
+    });
     return (
         <table className='table table-bordered box' id='violations_table'>
           <thead>
@@ -264,7 +264,7 @@ class PolicyViolations extends React.Component {
             {this.renderViolationsDetail()}
           </div>
         </div>
-    )
+    );
   }
 
 }

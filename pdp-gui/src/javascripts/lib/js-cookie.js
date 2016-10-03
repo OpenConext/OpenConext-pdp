@@ -5,45 +5,45 @@
  * Copyright 2006, 2015 Klaus Hartl & Fagner Brack
  * Released under the MIT license
  */
-(function (factory) {
-  if (typeof define === 'function' && define.amd) {
+(function(factory) {
+  if (typeof define === "function" && define.amd) {
     define(factory);
-  } else if (typeof exports === 'object') {
+  } else if (typeof exports === "object") {
     module.exports = factory();
   } else {
-    var _OldCookies = window.Cookies;
-    var api = window.Cookies = factory();
-    api.noConflict = function () {
+    const _OldCookies = window.Cookies;
+    const api = window.Cookies = factory();
+    api.noConflict = function() {
       window.Cookies = _OldCookies;
       return api;
     };
   }
-}(function () {
-  function extend () {
-    var i = 0;
-    var result = {};
+}(() => {
+  function extend() {
+    let i = 0;
+    const result = {};
     for (; i < arguments.length; i++) {
-      var attributes = arguments[ i ];
-      for (var key in attributes) {
+      const attributes = arguments[ i ];
+      for (const key in attributes) {
         result[key] = attributes[key];
       }
     }
     return result;
   }
 
-  function init (converter) {
-    function api (key, value, attributes) {
-      var result;
+  function init(converter) {
+    function api(key, value, attributes) {
+      let result;
 
       // Write
 
       if (arguments.length > 1) {
         attributes = extend({
-          path: '/'
+          path: "/"
         }, api.defaults, attributes);
 
-        if (typeof attributes.expires === 'number') {
-          var expires = new Date();
+        if (typeof attributes.expires === "number") {
+          const expires = new Date();
           expires.setMilliseconds(expires.getMilliseconds() + attributes.expires * 864e+5);
           attributes.expires = expires;
         }
@@ -63,12 +63,12 @@
         key = key.replace(/[\(\)]/g, escape);
 
         return (document.cookie = [
-          key, '=', value,
-          attributes.expires && '; expires=' + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
-          attributes.path    && '; path=' + attributes.path,
-          attributes.domain  && '; domain=' + attributes.domain,
-          attributes.secure ? '; secure' : ''
-        ].join(''));
+          key, "=", value,
+          attributes.expires && "; expires=" + attributes.expires.toUTCString(), // use expires attribute, max-age is not supported by IE
+          attributes.path    && "; path=" + attributes.path,
+          attributes.domain  && "; domain=" + attributes.domain,
+          attributes.secure ? "; secure" : ""
+        ].join(""));
       }
 
       // Read
@@ -80,16 +80,16 @@
       // To prevent the for loop in the first place assign an empty array
       // in case there are no cookies at all. Also prevents odd result when
       // calling "get()"
-      var cookies = document.cookie ? document.cookie.split('; ') : [];
-      var rdecode = /(%[0-9A-Z]{2})+/g;
-      var i = 0;
+      const cookies = document.cookie ? document.cookie.split("; ") : [];
+      const rdecode = /(%[0-9A-Z]{2})+/g;
+      let i = 0;
 
       for (; i < cookies.length; i++) {
-        var parts = cookies[i].split('=');
-        var name = parts[0].replace(rdecode, decodeURIComponent);
-        var cookie = parts.slice(1).join('=');
+        const parts = cookies[i].split("=");
+        const name = parts[0].replace(rdecode, decodeURIComponent);
+        let cookie = parts.slice(1).join("=");
 
-        if (cookie.charAt(0) === '"') {
+        if (cookie.charAt(0) === "\"") {
           cookie = cookie.slice(1, -1);
         }
 
@@ -117,15 +117,15 @@
     }
 
     api.get = api.set = api;
-    api.getJSON = function () {
+    api.getJSON = function() {
       return api.apply({
         json: true
       }, [].slice.call(arguments));
     };
     api.defaults = {};
 
-    api.remove = function (key, attributes) {
-      api(key, '', extend(attributes, {
+    api.remove = function(key, attributes) {
+      api(key, "", extend(attributes, {
         expires: -1
       }));
     };

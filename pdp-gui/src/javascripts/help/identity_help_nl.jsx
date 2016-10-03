@@ -57,4 +57,4 @@ class IdentityHelpNl extends React.Component {
   }
   }
 
-  export default IdentityHelpNl;
+export default IdentityHelpNl;

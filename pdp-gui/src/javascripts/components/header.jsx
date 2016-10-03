@@ -5,7 +5,7 @@ class Header extends React.Component {
   getInitialState() {
     return {
       dropDownActive: false
-    }
+    };
   }
 
   render() {
@@ -27,7 +27,7 @@ class Header extends React.Component {
           </div>
           <App.Components.LanguageSelector />
           <ul className="links">
-            <li dangerouslySetInnerHTML={{__html: I18n.t("header.links.help_html") }}></li>
+            <li dangerouslySetInnerHTML={{ __html: I18n.t("header.links.help_html") }}></li>
             {this.renderExitLogout()}
             <li>
               <a href="https://github.com/OpenConext/OpenConext-pdp" target="_blank">
@@ -77,7 +77,7 @@ class Header extends React.Component {
   }
 
   stop() {
-    var node = document.getElementById("app");
+    const node = document.getElementById("app");
     React.unmountComponentAtNode(node);
     React.renderComponent(App.Pages.Logout(), node);
   }
@@ -85,7 +85,7 @@ class Header extends React.Component {
   handleToggle(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.setState({dropDownActive: !this.state.dropDownActive});
+    this.setState({ dropDownActive: !this.state.dropDownActive });
   }
 }
 

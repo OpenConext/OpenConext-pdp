@@ -1,12 +1,12 @@
 App.Controllers.About = {
 
-  initialize: function () {
+  initialize: function() {
     page("/about",
         this.about.bind(this)
     );
   },
 
-  about: function (ctx) {
+  about: function(ctx) {
     App.render(App.Pages.About());
   }
-}
+};

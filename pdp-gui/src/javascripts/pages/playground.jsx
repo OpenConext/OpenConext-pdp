@@ -4,14 +4,14 @@ import I18n from "i18n-js";
 class Playground extends React.Component {
 
   componentWillUpdate() {
-    var node = this.getDOMNode();
+    const node = this.getDOMNode();
     this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
   }
 
   componentDidUpdate() {
     if (this.shouldScrollBottom) {
-      var node = this.getDOMNode();
-      node.scrollTop = node.scrollHeight
+      const node = this.getDOMNode();
+      node.scrollTop = node.scrollHeight;
     }
   }
 
@@ -20,46 +20,46 @@ class Playground extends React.Component {
   }
 
   parseEntities(entities) {
-    var options = entities.map(function (entity) {
-      return {value: entity.entityId, display: I18n.entityName(entity)};
+    const options = entities.map(entity => {
+      return { value: entity.entityId, display: I18n.entityName(entity) };
     });
     return options;
   }
 
   handleChangePolicy(newValue) {
     if (newValue) {
-      var policy = this.props.policies.filter(function (policy) {
+      const policy = this.props.policies.filter(policy => {
         return policy.id === parseInt(newValue);
       })[0];
 
-      var identityProviderId = _.isEmpty(policy.identityProviderIds) ? App.currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
+      const identityProviderId = _.isEmpty(policy.identityProviderIds) ? App.currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
 
       this.setState({
         attributes: policy.attributes
       });
       //Unfortunately we have to set the visual representation manually as the integration with select2 is done one-way
-      $('[data-select2selector-id="serviceProvider"]').val(policy.serviceProviderId).trigger("change");
-      $('[data-select2selector-id="identityProvider"]').val(identityProviderId).trigger("change");
+      $("[data-select2selector-id=\"serviceProvider\"]").val(policy.serviceProviderId).trigger("change");
+      $("[data-select2selector-id=\"identityProvider\"]").val(identityProviderId).trigger("change");
     }
   }
 
   parsePolicies(policies) {
-    var options = policies.map(function (policy) {
-      return {value: policy.id, display: policy.name.trim()};
+    const options = policies.map(policy => {
+      return { value: policy.id, display: policy.name.trim() };
     });
-    options.sort(function (p1, p2) {
+    options.sort((p1, p2) => {
       return p1.display.localeCompare(p2.display);
     });
     return options;
   }
 
   handleChangeServiceProvider(newValue) {
-    this.setState({serviceProviderId: newValue});
+    this.setState({ serviceProviderId: newValue });
   }
 
 
   handleChangeIdentityProvider(newValue) {
-    this.setState({identityProviderId: newValue});
+    this.setState({ identityProviderId: newValue });
   }
 
   clearForm() {
@@ -68,52 +68,52 @@ class Playground extends React.Component {
 
   replayRequest() {
     App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
-        function (jqxhr) {
-          this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
-        }.bind(this),
-        function (jqxhr) {
+        jqxhr => {
+          this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
+        },
+        jqxhr => {
           jqxhr.isConsumed = true;
-          this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
-        }.bind(this));
+          this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
+        });
   }
 
   submitForm() {
-    return function (e) {
-      var idp = this.state.identityProviderId;
-      var sp = this.state.serviceProviderId;
-      var decisionRequest = {
+    return function(e) {
+      const idp = this.state.identityProviderId;
+      const sp = this.state.serviceProviderId;
+      const decisionRequest = {
         Request: {
           ReturnPolicyIdList: true,
           CombinedDecision: false,
-          AccessSubject: {Attribute: []},
-          Resource: {Attribute: [{AttributeId: "SPentityID", Value: sp}, {AttributeId: "IDPentityID", Value: idp}]}
+          AccessSubject: { Attribute: [] },
+          Resource: { Attribute: [{ AttributeId: "SPentityID", Value: sp }, { AttributeId: "IDPentityID", Value: idp }] }
         }
       };
-      var attributes = this.state.attributes.map(function (attr) {
-        return {AttributeId: attr.name, Value: attr.value};
+      const attributes = this.state.attributes.map(attr => {
+        return { AttributeId: attr.name, Value: attr.value };
       });
       decisionRequest.Request.AccessSubject.Attribute = attributes;
-      var json = JSON.stringify(decisionRequest);
-      App.Controllers.Playground.postPdpRequest(json, function (jqxhr) {
+      const json = JSON.stringify(decisionRequest);
+      App.Controllers.Playground.postPdpRequest(json, jqxhr => {
         this.setState({
           decisionRequest: decisionRequest,
           decisionRequestJson: JSON.stringify(decisionRequest, null, 3),
           responseJSON: jqxhr.responseJSON,
           tab: "response"
-        })
-      }.bind(this), function (jgxhr) {
+        });
+      }, jgxhr => {
         jqxhr.isConsumed = true;
         console.log(jgxhr.responseJSON.details);
-      }.bind(this));
+      });
     }.bind(this);
   }
 
   isValidPdpRequest() {
-    var pdpRequest = this.state;
-    var emptyAttributes = pdpRequest.attributes.filter(function (attr) {
+    const pdpRequest = this.state;
+    const emptyAttributes = pdpRequest.attributes.filter(attr => {
       return _.isEmpty(attr.value);
     });
-    var inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
+    const inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
         || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
     return !inValid;
   }
@@ -137,7 +137,7 @@ class Playground extends React.Component {
   }
 
   renderServiceProvider(pdpRequest) {
-    var workflow = _.isEmpty(pdpRequest.serviceProviderId) ? "failure" : "success";
+    const workflow = _.isEmpty(pdpRequest.serviceProviderId) ? "failure" : "success";
     return (
         <div>
           <div className={"form-element split " + workflow}>
@@ -155,7 +155,7 @@ class Playground extends React.Component {
   }
 
   renderIdentityProvider(pdpRequest) {
-    var workflow = _.isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
+    const workflow = _.isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
     return (
         <div>
           <div className={"form-element split " + workflow}>
@@ -187,9 +187,9 @@ class Playground extends React.Component {
   }
 
   renderStatus(responseJSON) {
-    var decision, statusCode, status;
+    let decision, statusCode, status;
     if (responseJSON.Response) {
-      var response = responseJSON.Response[0];
+      const response = responseJSON.Response[0];
       decision = response.Decision;
       statusCode = response.Status.StatusCode.Value;
       status = App.Controllers.PolicyViolations.determineStatus(decision);
@@ -211,8 +211,8 @@ class Playground extends React.Component {
   }
 
   renderAdventurous() {
-    var decisionRequest = this.state.decisionRequest;
-    var responseJSON = this.state.responseJSON;
+    const decisionRequest = this.state.decisionRequest;
+    const responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
       return (<div className="adventurous">
         <i className="fa fa-location-arrow"></i>
@@ -224,7 +224,7 @@ class Playground extends React.Component {
   }
 
   renderActions(pdpRequest) {
-    var classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
+    const classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
     return (
         <div className="form-element split no-pad-right">
           <a className={classNameSubmit + " large c-button"} href="#"
@@ -236,18 +236,18 @@ class Playground extends React.Component {
   }
 
   updateJsonRequest(newJson) {
-    this.setState({decisionRequestJson: newJson});
+    this.setState({ decisionRequestJson: newJson });
   }
 
   renderJsonRequest(decisionRequest) {
-    var selectedTab = (this.state.tab || "request");
+    const selectedTab = (this.state.tab || "request");
     if (selectedTab === "request") {
-      var options = {
-        mode: {name: "javascript", json: true},
+      const options = {
+        mode: { name: "javascript", json: true },
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null
-      }
+      };
       return (
           <div>
             <div className="align-center">
@@ -257,40 +257,40 @@ class Playground extends React.Component {
             <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
                                        options={options} uniqueId="code_mirror_textarea_request"/>
           </div>
-      )
+      );
     }
   }
 
   renderJsonResponse(responseJSON) {
 
-    var selectedTab = (this.state.tab || "request");
+    const selectedTab = (this.state.tab || "request");
     if (selectedTab === "response") {
-      var options = {
-        mode: {name: "javascript", json: true},
+      const options = {
+        mode: { name: "javascript", json: true },
         lineWrapping: true,
         lineNumbers: true,
         scrollbarStyle: null,
         readOnly: true
-      }
+      };
       return (
           <App.Components.CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}
                                      uniqueId="code_mirror_textarea_response"/>
-      )
+      );
     }
   }
 
   handleTabChange(tab) {
-    return function (e) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      this.setState({tab: tab});
+      this.setState({ tab: tab });
     }.bind(this);
   }
 
   renderTabs() {
-    var selectedTab = (this.state.tab || "request");
-    var request = (selectedTab == "request" ? "selected" : "");
-    var response = (selectedTab == "response" ? "selected" : "");
+    const selectedTab = (this.state.tab || "request");
+    const request = (selectedTab == "request" ? "selected" : "");
+    const response = (selectedTab == "response" ? "selected" : "");
     return (
         <div>
           <div>
@@ -310,8 +310,8 @@ class Playground extends React.Component {
   }
 
   renderRequestResponsePanel() {
-    var decisionRequest = this.state.decisionRequest;
-    var responseJSON = this.state.responseJSON;
+    const decisionRequest = this.state.decisionRequest;
+    const responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
       return (
           <div className="l-split-right form-element-container box">
@@ -324,7 +324,7 @@ class Playground extends React.Component {
     } else {
       return (<div className="l-split-right form-element-container box">
         {this.renderAboutPage()}
-      </div>)
+      </div>);
     }
   }
 
@@ -333,7 +333,7 @@ class Playground extends React.Component {
   }
 
   render() {
-    var pdpRequest = this.state;
+    const pdpRequest = this.state;
     return (
         <div className="l-center mod-playground">
           <div className="l-split-left form-element-container box">
@@ -347,7 +347,7 @@ class Playground extends React.Component {
           </div>
           {this.renderRequestResponsePanel()}
         </div>
-    )
+    );
   }
 
 }

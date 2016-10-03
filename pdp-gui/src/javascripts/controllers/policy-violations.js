@@ -1,6 +1,6 @@
 App.Controllers.PolicyViolations = {
 
-  initialize: function () {
+  initialize: function() {
     page("/violations",
         this.loadViolations.bind(this),
         this.loadIdentityProviders.bind(this),
@@ -16,30 +16,30 @@ App.Controllers.PolicyViolations = {
     );
   },
 
-  loadServiceProviders: function (ctx, next) {
-    $.get(App.apiUrl("/internal/serviceProviders"), function (data) {
+  loadServiceProviders: function(ctx, next) {
+    $.get(App.apiUrl("/internal/serviceProviders"), data => {
       ctx.serviceProviders = data;
       next();
     });
   },
 
-  loadIdentityProviders: function (ctx, next) {
-    $.get(App.apiUrl("/internal/identityProviders"), function (data) {
+  loadIdentityProviders: function(ctx, next) {
+    $.get(App.apiUrl("/internal/identityProviders"), data => {
       ctx.identityProviders = data;
       next();
     });
   },
 
-  loadViolations: function (ctx, next) {
-    var url = ctx.params.id ?
-        App.apiUrl("/internal/violations/:id", {id: ctx.params.id}) : App.apiUrl("/internal/violations");
-    $.get(url, function (data) {
+  loadViolations: function(ctx, next) {
+    const url = ctx.params.id ?
+        App.apiUrl("/internal/violations/:id", { id: ctx.params.id }) : App.apiUrl("/internal/violations");
+    $.get(url, data => {
       ctx.violations = data;
       next();
     });
   },
 
-  violations: function (ctx) {
+  violations: function(ctx) {
     App.render(App.Pages.PolicyViolations({
       key: "violations",
       violations: ctx.violations,
@@ -48,26 +48,26 @@ App.Controllers.PolicyViolations = {
     }));
   },
 
-  determineStatus: function (decision) {
+  determineStatus: function(decision) {
     switch (decision) {
-      case "Permit":
+    case "Permit":
       {
         return "check";
       }
-      case "Indeterminate":
-      case "Deny":
+    case "Indeterminate":
+    case "Deny":
       {
         return "remove";
       }
-      case "NotApplicable":
+    case "NotApplicable":
       {
-        return "question"
+        return "question";
       }
-      default:
+    default:
       {
         throw "Unknown decision" + decision;
       }
     }
   },
 
-}
+};

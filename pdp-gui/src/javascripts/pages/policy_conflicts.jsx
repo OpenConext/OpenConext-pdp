@@ -7,11 +7,11 @@ class PolicyConflicts extends React.Component {
     return {
       conflicts: this.props.conflicts,
       hideInactive: false
-    }
+    };
   }
 
   handleOnChangeIsActive(e) {
-    this.setState({hideInactive: !this.state.hideInactive});
+    this.setState({ hideInactive: !this.state.hideInactive });
   }
 
   renderAboutPage() {
@@ -19,7 +19,7 @@ class PolicyConflicts extends React.Component {
   }
 
   renderOverview() {
-    return ( <div>
+    return (<div>
       <div className="filters">
         <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
                onChange={this.handleOnChangeIsActive}/>
@@ -32,22 +32,22 @@ class PolicyConflicts extends React.Component {
   }
 
   renderConflicts() {
-    var serviceProviderNames = Object.keys(this.props.conflicts);
+    const serviceProviderNames = Object.keys(this.props.conflicts);
     if (_.isEmpty(serviceProviderNames)) {
-      return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>)
+      return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>);
     } else {
-      return serviceProviderNames.map(function (sp, index) {
+      return serviceProviderNames.map((sp, index) => {
         return this.renderConflict(sp, index);
-      }.bind(this));
+      });
 
     }
   }
 
   renderConflict(sp, index) {
-    var policies = this.props.conflicts[sp];
-    if (this.state.hideInactive && policies.filter(function(policy){
-        return policy.activatedSr && policy.active;
-      }).length < 2) {
+    const policies = this.props.conflicts[sp];
+    if (this.state.hideInactive && policies.filter(policy => {
+      return policy.activatedSr && policy.active;
+    }).length < 2) {
       return;
     }
     return (
@@ -65,48 +65,48 @@ class PolicyConflicts extends React.Component {
   }
 
   handleShowPolicyDetail(policy) {
-    return function (e) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      page("/policy/:id", {id: policy.id});
-    }
+      page("/policy/:id", { id: policy.id });
+    };
   }
 
   renderPolicies(policies, index) {
     return (
-      <table className='table table-bordered dataTable' id={'conflicts_table_'+index}>
+      <table className='table table-bordered dataTable' id={"conflicts_table_"+index}>
         <thead>
         <tr className='success'>
           <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
           <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
-          <th className='conflict_is_active'>{I18n.t('policies.isActive')}</th>
-          <th className='conflict_is_activated_sr'>{I18n.t('policies.activatedSr')}</th>
+          <th className='conflict_is_active'>{I18n.t("policies.isActive")}</th>
+          <th className='conflict_is_activated_sr'>{I18n.t("policies.activatedSr")}</th>
           <th className='conflict_controls'></th>
         </tr>
         </thead>
         <tbody>
-        { policies.map(function (policy) {
+        { policies.map(policy => {
           return this.renderPolicyRow(policy);
-        }.bind(this))}
+        })}
         </tbody>
-      </table>)
+      </table>);
   }
 
   renderPolicyRow(policy) {
     return (
       <tr key={policy.id}>
         <td>{policy.name}</td>
-        <td>{policy.identityProviderNames.join(', ')}</td>
+        <td>{policy.identityProviderNames.join(", ")}</td>
         <td className='conflict_is_active'><input type="checkbox" defaultChecked={policy.active}
                                                 disabled="true"/></td>
         <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
                                                       disabled="true"/></td>
         <td className="conflict_controls">
-          <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
+          <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
              data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
           </a>
         </td>
-      </tr>)
+      </tr>);
   }
 
   render() {

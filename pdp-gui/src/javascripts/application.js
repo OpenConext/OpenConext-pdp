@@ -1,3 +1,3 @@
-var BASE_URL = "/pdp/api";
+const BASE_URL = "/pdp/api";
 
 App.initialize();

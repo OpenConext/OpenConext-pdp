@@ -1,6 +1,6 @@
 App.Controllers.Policies = {
 
-  initialize: function () {
+  initialize: function() {
     page("/policies",
         this.loadPolicies.bind(this),
         this.overview.bind(this)
@@ -23,87 +23,87 @@ App.Controllers.Policies = {
     );
   },
 
-  loadPolicies: function (ctx, next) {
-    $.get(App.apiUrl("/internal/policies"), function (data) {
+  loadPolicies: function(ctx, next) {
+    $.get(App.apiUrl("/internal/policies"), data => {
       ctx.policies = data;
       next();
     });
   },
 
-  loadServiceProviders: function (ctx, next) {
-    $.get(App.apiUrl("/internal/serviceProviders"), function (data) {
+  loadServiceProviders: function(ctx, next) {
+    $.get(App.apiUrl("/internal/serviceProviders"), data => {
       ctx.serviceProviders = data;
       next();
     });
   },
 
-  loadIdentityProviders: function (ctx, next) {
-    $.get(App.apiUrl("/internal/identityProviders"), function (data) {
+  loadIdentityProviders: function(ctx, next) {
+    $.get(App.apiUrl("/internal/identityProviders"), data => {
       ctx.identityProviders = data;
       next();
     });
   },
 
-  loadIdentityProvidersScoped: function (ctx, next) {
-    $.get(App.apiUrl("/internal/identityProviders/scoped"), function (data) {
+  loadIdentityProvidersScoped: function(ctx, next) {
+    $.get(App.apiUrl("/internal/identityProviders/scoped"), data => {
       ctx.identityProviders = data;
       next();
     });
   },
 
-  loadAllowedAttributes: function (ctx, next) {
-    $.get(App.apiUrl("/internal/attributes"), function (data) {
+  loadAllowedAttributes: function(ctx, next) {
+    $.get(App.apiUrl("/internal/attributes"), data => {
       ctx.allowedAttributes = data;
       next();
     });
   },
 
-  loadPolicy: function (ctx, next) {
-    var url = ctx.params.id ?
-        App.apiUrl("/internal/policies/:id", {id: ctx.params.id}) : App.apiUrl("/internal/default-policy");
-    $.get(url, function (data) {
+  loadPolicy: function(ctx, next) {
+    const url = ctx.params.id ?
+        App.apiUrl("/internal/policies/:id", { id: ctx.params.id }) : App.apiUrl("/internal/default-policy");
+    $.get(url, data => {
       ctx.policy = data;
       next();
     });
   },
 
-  overview: function (ctx) {
-    App.render(App.Pages.PolicyOverview({key: "policies", policies: ctx.policies, flash: App.getFlash()}));
+  overview: function(ctx) {
+    App.render(App.Pages.PolicyOverview({ key: "policies", policies: ctx.policies, flash: App.getFlash() }));
   },
 
-  detail: function (ctx) {
-      App.render(App.Pages.PolicyDetail({
-            key: "policy",
-            policy: ctx.policy,
-            identityProviders: ctx.identityProviders,
-            serviceProviders: ctx.serviceProviders,
-            allowedAttributes: ctx.allowedAttributes
-          }
+  detail: function(ctx) {
+    App.render(App.Pages.PolicyDetail({
+      key: "policy",
+      policy: ctx.policy,
+      identityProviders: ctx.identityProviders,
+      serviceProviders: ctx.serviceProviders,
+      allowedAttributes: ctx.allowedAttributes
+    }
       ));
   },
 
-  saveOrUpdatePolicy: function (policy, failureCallback) {
-    var type = policy.id ? "PUT" : "POST";
-    var json = JSON.stringify(policy);
-    var action = policy.id ? I18n.t("policies.flash_updated") : I18n.t("policies.flash_created");
-    var jqxhr = $.ajax({
+  saveOrUpdatePolicy: function(policy, failureCallback) {
+    const type = policy.id ? "PUT" : "POST";
+    const json = JSON.stringify(policy);
+    const action = policy.id ? I18n.t("policies.flash_updated") : I18n.t("policies.flash_created");
+    const jqxhr = $.ajax({
       url: App.apiUrl("/internal/policies"),
       type: type,
       data: json
-    }).done(function () {
-      App.setFlash(I18n.t("policies.flash", {policyName: policy.name, action:action}));
+    }).done(() => {
+      App.setFlash(I18n.t("policies.flash", { policyName: policy.name, action:action }));
       page("/policies");
-    }).fail(function () {
+    }).fail(() => {
       failureCallback(jqxhr);
     });
   },
 
-  deletePolicy: function (policy) {
+  deletePolicy: function(policy) {
     $.ajax({
-      url: App.apiUrl("/internal/policies/:id", {id: policy.id}),
-      type: 'DELETE'
-    }).done(function () {
-      App.setFlash(I18n.t("policies.flash", {policyName: policy.name, action: I18n.t("policies.flash_deleted")}));
+      url: App.apiUrl("/internal/policies/:id", { id: policy.id }),
+      type: "DELETE"
+    }).done(() => {
+      App.setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
       page("/policies");
     });
   }

@@ -11,7 +11,7 @@ class About extends React.Component {
           <p>With the PAP you can maintain XACML policies to configure fine-grained access rules for your Institution and the connected Service Providers.</p>
         </div>
       </div>
-    )
+    );
   }
 }
 
