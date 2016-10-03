@@ -1,5 +1,6 @@
 import "react-select/dist/react-select.css";
 import "../stylesheets/application.sass";
+import "datatables/media/css/jquery.dataTables.css";
 import { polyfill } from "es6-promise";
 polyfill();
 
@@ -23,6 +24,7 @@ import NotFound from "./pages/not_found";
 import Footer from "./components/footer";
 import Header from "./components/header";
 import Navigation from "./components/navigation";
+import PolicyOverview from "./pages/policy_overview";
 
 import "./locale/en";
 import "./locale/nl";
@@ -67,7 +69,8 @@ class App extends React.Component {
           </div>
 
           <Match exactly pattern="/identity" component={Identity} />
-
+          <Match exactly pattern="/policies" component={PolicyOverview} />
+          <Miss component={NotFound} />
           <Footer />
         </div>
       </Router>

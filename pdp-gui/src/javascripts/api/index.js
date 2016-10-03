@@ -2,6 +2,7 @@ import { currentIdentity } from "../lib/identity";
 import spinner from "../lib/spin";
 
 const apiPath = "/pdp/api";
+let csrfToken = null;
 
 function apiUrl(path) {
   return apiPath + path;
@@ -16,6 +17,8 @@ function validateResponse(res) {
     throw error;
   }
 
+  csrfToken = res.headers.get('x-csrf-token');
+
   return res;
 }
 
@@ -26,7 +29,8 @@ export function parseJson(res) {
 function validFetch(path, options) {
   const contentHeaders = {
     "Accept": "application/json",
-    "Content-Type": "application/json"
+    "Content-Type": "application/json",
+    "X-CSRF-TOKEN": csrfToken
   };
 
   let identityHeaders = {};
@@ -39,7 +43,9 @@ function validFetch(path, options) {
     };
   }
 
-  const fetchOptions = _.merge({}, { headers: { ...contentHeaders, ...identityHeaders } }, options);
+  const fetchOptions = _.merge({}, { headers: { ...contentHeaders, ...identityHeaders } }, options, {
+    credentials: "same-origin"
+  });
 
   spinner.start();
   return fetch(apiUrl(path), fetchOptions)
@@ -55,10 +61,22 @@ export function fetchJson(path, options = {}) {
   .then(parseJson);
 }
 
+export function fetchDelete(path) {
+  return validFetch(path, { method: "delete" });
+}
+
 export function getUserData() {
   return fetchJson("/internal/users/me");
 }
 
 export function getIdentityProviders() {
   return fetchJson("/internal/identityProviders");
+}
+
+export function getPolicies() {
+  return fetchJson("/internal/policies");
+}
+
+export function deletePolicy(policyId) {
+  return fetchDelete(`/internal/policies/${ policyId }`);
 }

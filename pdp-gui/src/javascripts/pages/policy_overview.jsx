@@ -1,12 +1,24 @@
 import React from "react";
 import I18n from "i18n-js";
+import $ from "jquery";
+import Link from "react-router/Link";
+import "datatables";
+
+import { deletePolicy, getPolicies } from "../api";
 
 class PolicyOverview extends React.Component {
 
   constructor() {
     super();
 
-    this.state = { data: [] };
+    this.state = {
+      data: [],
+      policies: []
+    };
+  }
+
+  componentWillMount() {
+    getPolicies().then(policies => this.setState({ policies }));
   }
 
   destroyDataTable() {
@@ -54,7 +66,7 @@ class PolicyOverview extends React.Component {
       this.initDataTable();
     }
     // not the react way, but we don't control datatables as we should
-    if (this.props.policies.length === 0) {
+    if (this.state.policies.length === 0) {
       $("#policies_table_paginate").hide();
     } else {
       $("#policies_table_paginate").show();
@@ -74,7 +86,10 @@ class PolicyOverview extends React.Component {
       e.preventDefault();
       e.stopPropagation();
       if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
-        App.Controllers.Policies.deletePolicy(policy);
+        deletePolicy(policy.id).then(() => {
+          //FIXME: flash
+          App.setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+        });
       }
     };
   }
@@ -92,14 +107,6 @@ class PolicyOverview extends React.Component {
       e.preventDefault();
       e.stopPropagation();
       page("/violations/:id", { id: policy.id });
-    };
-  }
-
-  handleShowRevisions(policy) {
-    return function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/revisions/:id", { id: policy.id });
     };
   }
 
@@ -128,8 +135,11 @@ class PolicyOverview extends React.Component {
 
   renderRevisionsLink(policy) {
     const numberOfRevisions = (policy.numberOfRevisions + 1);
-    return (<a href={page.uri("/revisions/:id",{ id:policy.id })}
-      onClick={this.handleShowRevisions(policy)}>{numberOfRevisions}</a>);
+    return (
+      <Link to={`/revisions/${policy.id}`}>
+        {numberOfRevisions}
+      </Link>
+    );
   }
 
   renderIdpNames(identityProviderNames) {
@@ -139,22 +149,23 @@ class PolicyOverview extends React.Component {
   }
 
   renderControls(policy) {
-
     if (policy.actionsAllowed) {
       return (
         <div>
-          <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
-            data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
-          </a>
+          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
+            <i className="fa fa-edit"></i>
+          </Link>
           <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
             <i className="fa fa-remove"></i>
           </a>
-        </div>);
+        </div>
+      );
     }
   }
 
   render() {
-    const renderRows = this.props.policies.map((policy, index) => {
+    console.log(this.state.policies)
+    const renderRows = this.state.policies.map((policy, index) => {
       return (
         <tr key={policy.id}>
           <td>{policy.name}</td>

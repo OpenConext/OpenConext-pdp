@@ -1,5 +1,7 @@
 import React from "react";
 import I18n from "i18n-js";
+import Cookies from "js-cookie";
+import QueryParameter from "../utils/query-parameters";
 
 class LanguageSelector extends React.Component {
   render() {
@@ -33,7 +35,7 @@ class LanguageSelector extends React.Component {
       e.stopPropagation();
       Cookies.set("lang", locale, { expires: 356, secure: document.location.protocol.endsWith("https") });
       I18n.locale = locale;
-      const newSearch = App.Utils.QueryParameter.replaceQueryParameter("lang", locale);
+      const newSearch = QueryParameter.replaceQueryParameter("lang", locale);
       window.location.search = newSearch;
     }.bind(this);
   }
