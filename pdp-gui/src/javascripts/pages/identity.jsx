@@ -1,5 +1,6 @@
-/** @jsx React.DOM */
-App.Pages.Identity = React.createClass({
+import React from "react";
+
+class Identity extends React.Component {
 
   getInitialState: function () {
     return this.props.identity;
@@ -126,5 +127,7 @@ App.Pages.Identity = React.createClass({
   }
 
 
-});
+}
 
+
+export default Identity;

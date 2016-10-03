@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.UserProfile = React.createClass({
+class UserProfile extends React.Component {
 
   render: function () {
     return (
@@ -58,4 +58,6 @@ App.Components.UserProfile = React.createClass({
   }
 
 
-});
+}
+
+export default UserProfile;

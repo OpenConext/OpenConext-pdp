@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.CodeMirror = React.createClass({
+class CodeMirror extends React.Component {
 
   componentDidMount: function () {
     var node = document.getElementById(this.props.uniqueId);
@@ -38,4 +38,6 @@ App.Components.CodeMirror = React.createClass({
   }
 
 
-});
+}
+
+export default CodeMirror;

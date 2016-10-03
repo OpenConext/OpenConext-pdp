@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Footer = React.createClass({
+class Footer extends React.Component {
   render: function () {
     return (
       <div className="mod-footer">
@@ -12,4 +12,6 @@ App.Components.Footer = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default Footer;

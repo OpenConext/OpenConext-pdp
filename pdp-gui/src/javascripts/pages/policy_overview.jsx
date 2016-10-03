@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.PolicyOverview = React.createClass({
+class PolicyOverview extends React.Component {
 
   getInitialState: function () {
     return {data: []}
@@ -194,5 +194,6 @@ App.Pages.PolicyOverview = React.createClass({
         </div>
     );
   }
-})
-;
+}
+
+export default PolicyOverview;

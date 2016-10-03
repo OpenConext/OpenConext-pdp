@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Header = React.createClass({
+class Header extends React.Component {
   getInitialState: function () {
     return {
       dropDownActive: false
@@ -86,4 +86,6 @@ App.Components.Header = React.createClass({
     e.stopPropagation();
     this.setState({dropDownActive: !this.state.dropDownActive});
   }
-});
+}
+
+export default Header;

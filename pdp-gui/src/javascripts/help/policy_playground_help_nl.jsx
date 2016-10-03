@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Help.PolicyPlaygroundHelpNl = React.createClass({
+class PolicyPlaygroundHelpNl extends React.Component {
   render: function () {
     return (
         <div className="form-element about">
@@ -62,4 +62,6 @@ App.Help.PolicyPlaygroundHelpNl = React.createClass({
         </div>
     );
   }
-});
+}
+
+export default PolicyPlaygroundHelpNl;

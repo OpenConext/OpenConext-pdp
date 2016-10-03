@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Help.PolicyRevisionsHelpEn = React.createClass({
+class PolicyRevisionsHelpEn extends React.Component {
   render: function () {
     return (
         <div className="form-element about">
@@ -17,4 +17,6 @@ App.Help.PolicyRevisionsHelpEn = React.createClass({
 
     );
   }
-});
+}
+
+export default PolicyRevisionsHelpEn;

@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Contact = React.createClass({
+class Contact extends React.Component {
   render: function() {
     return (
       <div className="contact">
@@ -11,4 +11,6 @@ App.Components.Contact = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default Contact;

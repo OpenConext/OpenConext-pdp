@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.NotFound = React.createClass({
+class NotFound extends React.Component {
   render: function () {
     return (
       <div className="mod-not-found">
@@ -9,4 +9,6 @@ App.Pages.NotFound = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default NotFound;

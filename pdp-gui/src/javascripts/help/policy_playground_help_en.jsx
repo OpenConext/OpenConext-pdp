@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Help.PolicyPlaygroundHelpEn = React.createClass({
+class PolicyPlaygroundHelpEn extends React.Component {
   render: function () {
     return (
 
@@ -51,4 +51,6 @@ App.Help.PolicyPlaygroundHelpEn = React.createClass({
 
     );
   }
-});
+}
+
+export default PolicyPlaygroundHelpEn;

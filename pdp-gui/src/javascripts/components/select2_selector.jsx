@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Select2Selector = React.createClass({
+class Select2Selector extends React.Component {
 
   getInitialState: function () {
     var initialValue = this.props.defaultValue || (this.props.multiple ? [] : '');
@@ -49,4 +49,6 @@ App.Components.Select2Selector = React.createClass({
         </div>
     );
   }
-});
+}
+
+export default Select2Selector;

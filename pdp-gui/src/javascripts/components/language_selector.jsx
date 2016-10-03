@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.LanguageSelector = React.createClass({
+class LanguageSelector extends React.Component {
   render: function () {
     return (
         <ul className="language">
@@ -36,4 +36,6 @@ App.Components.LanguageSelector = React.createClass({
       window.location.search = newSearch;
     }.bind(this);
   }
-});
+}
+
+export default LanguageSelector;

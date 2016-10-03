@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Navigation = React.createClass({
+class Navigation extends React.Component {
 
   componentDidUpdate: function() {
     if (this.props.loading) {
@@ -53,4 +53,6 @@ App.Components.Navigation = React.createClass({
       return <div className="spinner" ref="spinner" />;
     }
   }
-});
+}
+
+export default Navigation;

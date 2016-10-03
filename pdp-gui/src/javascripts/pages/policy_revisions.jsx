@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.PolicyRevisions = React.createClass({
+class PolicyRevisions extends React.Component {
 
   componentWillUpdate: function () {
     var node = this.getDOMNode();
@@ -271,4 +271,6 @@ App.Pages.PolicyRevisions = React.createClass({
     );
   }
 
-});
+}
+
+export default PolicyRevisions;

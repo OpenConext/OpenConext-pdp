@@ -1,9 +1,11 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.Empty = React.createClass({
+class Empty extends React.Component {
   render: function () {
     return (
       <div></div>
     );
   }
-});
+}
+
+export default Empty;

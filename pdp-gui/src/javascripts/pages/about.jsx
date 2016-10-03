@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.About = React.createClass({
+class About extends React.Component {
 
   render: function () {
     return (
@@ -13,4 +13,6 @@ App.Pages.About = React.createClass({
       </div>
     )
   }
-});
+}
+
+export default About;

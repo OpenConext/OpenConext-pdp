@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Help.IdentityHelpEn = React.createClass({
+class IdentityHelpEn extends React.Component {
   render: function () {
     return (
         <div className="form-element about">
@@ -57,4 +57,6 @@ App.Help.IdentityHelpEn = React.createClass({
 
     );
   }
-});
+}
+
+export default IdentityHelpEn;

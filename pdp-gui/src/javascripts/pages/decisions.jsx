@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.Decisions = React.createClass({
+class Decisions extends React.Component {
 
   getInitialState: function () {
     return {avg: {}}
@@ -143,5 +143,6 @@ App.Pages.Decisions = React.createClass({
       </div>
     );
   }
-})
-;
+}
+
+export default Decisions;

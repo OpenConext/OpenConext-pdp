@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.PolicyAttributes = React.createClass({
+class PolicyAttributes extends React.Component {
 
   markAttributes: function (policy) {
     policy.attributes = policy.attributes.map(function (attr, index) {
@@ -176,4 +176,6 @@ App.Components.PolicyAttributes = React.createClass({
   }
 
 
-});
+}
+
+export default PolicyAttributes;

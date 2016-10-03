@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.PolicyViolations = React.createClass({
+class PolicyViolations extends React.Component {
 
   getInitialState: function () {
     return {data: []}
@@ -266,4 +266,6 @@ App.Pages.PolicyViolations = React.createClass({
     )
   }
 
-});
+}
+
+export default PolicyViolations;

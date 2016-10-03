@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.Profile = React.createClass({
+class Profile extends React.Component {
   render: function() {
     var attributeKeys = Object.keys(App.currentUser.attributeMap);
     var roles = App.currentUser.grantedAuthorities;
@@ -64,4 +64,6 @@ App.Pages.Profile = React.createClass({
       );
   }
 
-});
+}
+
+export default Profile;

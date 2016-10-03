@@ -1,5 +1,6 @@
-/** @jsx React.DOM */
-App.Pages.Playground = React.createClass({
+import React from "react";
+
+class Playground extends React.Component {
 
   componentWillUpdate: function () {
     var node = this.getDOMNode();
@@ -349,5 +350,7 @@ App.Pages.Playground = React.createClass({
     )
   }
 
-});
+}
 
+
+export default Playground;

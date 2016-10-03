@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.PolicyConflicts = React.createClass({
+class PolicyConflicts extends React.Component {
 
   getInitialState: function () {
     return {
@@ -121,4 +121,6 @@ App.Pages.PolicyConflicts = React.createClass({
     );
   }
 
-});
+}
+
+export default PolicyConflicts;

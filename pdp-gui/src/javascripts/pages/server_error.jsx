@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.ServerError = React.createClass({
+class ServerError extends React.Component {
   render: function () {
     return (
       <div className="mod-not-found">
@@ -9,4 +9,6 @@ App.Pages.ServerError = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default ServerError;

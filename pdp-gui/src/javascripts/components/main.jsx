@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Components.Main = React.createClass({
+class Main extends React.Component {
   render: function () {
     return (
       <div>
@@ -19,4 +19,6 @@ App.Components.Main = React.createClass({
   renderNavigation: function() {
     return <App.Components.Navigation active={this.props.page.props.key} loading={this.props.loading} />;
   }
-});
+}
+
+export default Main;

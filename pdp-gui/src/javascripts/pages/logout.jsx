@@ -1,6 +1,6 @@
-/** @jsx React.DOM */
+import React from "react";
 
-App.Pages.Logout = React.createClass({
+class Logout extends React.Component {
   render: function () {
     return (
       <div className="mod-logout">
@@ -9,4 +9,6 @@ App.Pages.Logout = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default Logout;
