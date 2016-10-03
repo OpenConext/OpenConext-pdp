@@ -3,6 +3,7 @@ import I18n from "i18n-js";
 import Select2Selector from "../components/select2_selector";
 import IdentityHelpNl from "../help/identity_help_nl";
 import IdentityHelpEn from "../help/identity_help_en";
+import { currentIdentity } from "../lib/identity";
 
 import { getIdentityProviders } from "../api";
 
@@ -19,7 +20,7 @@ class Identity extends React.Component {
   }
 
   componentWillMount() {
-    this.setState(Object.assign({}, this.props.identity));
+    this.setState(Object.assign({}, currentIdentity));
     getIdentityProviders()
     .then(identityProviders => this.setState({ identityProviders }));
   }
@@ -41,6 +42,11 @@ class Identity extends React.Component {
 
   clearIdentity() {
     this.context.clearIdentity();
+    this.setState({
+      identityProviders: [],
+      unspecifiedNameId: "",
+      displayName: ""
+    });
   }
 
   isValidState() {
