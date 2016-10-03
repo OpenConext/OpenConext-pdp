@@ -1,7 +1,7 @@
 import React from "react";
 
 class Main extends React.Component {
-  render: function () {
+  render() {
     return (
       <div>
         <div className="l-header">
@@ -14,9 +14,9 @@ class Main extends React.Component {
         <App.Components.Footer />
       </div>
     );
-  },
+  }
 
-  renderNavigation: function() {
+  renderNavigation() {
     return <App.Components.Navigation active={this.props.page.props.key} loading={this.props.loading} />;
   }
 }

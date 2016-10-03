@@ -2,15 +2,15 @@ import React from "react";
 
 class PolicyViolations extends React.Component {
 
-  getInitialState: function () {
+  getInitialState() {
     return {data: []}
-  },
+  }
 
-  destroyDataTable: function () {
+  destroyDataTable() {
     $('#violations_table').DataTable().destroy();
-  },
+  }
 
-  initDataTable: function () {
+  initDataTable() {
     $.fn.dataTable.ext.order['locale-date'] = function (settings, col) {
       return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
         //use the milliseconds to sort
@@ -45,13 +45,13 @@ class PolicyViolations extends React.Component {
       ],
       order: [[3, "desc"]]
     });
-  },
+  }
 
-  componentWillReceiveProps: function (nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.destroyDataTable();
-  },
+  }
 
-  componentDidUpdate: function (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (!$.fn.DataTable.isDataTable('#violations_table')) {
       this.initDataTable();
     }
@@ -62,25 +62,25 @@ class PolicyViolations extends React.Component {
     } else {
       $("#violations_table_paginate").show();
     }
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.initDataTable();
-  },
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     this.destroyDataTable();
-  },
+  }
 
-  handleShowViolationDetail: function (violation) {
+  handleShowViolationDetail(violation) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       this.setState({violation: violation, tab: "request"});
     }.bind(this);
-  },
+  }
 
-  getEntityName: function (id, type) {
+  getEntityName(id, type) {
     var name = id;
     var entities = this.props[type].filter(function (entity) {
       return entity.entityId === id;
@@ -90,9 +90,9 @@ class PolicyViolations extends React.Component {
       return I18n.entityName(entity);
     }
     return name;
-  },
+  }
 
-  parseEntityId: function (attributes, type) {
+  parseEntityId(attributes, type) {
     var idpAttr = attributes.filter(function (attr) {
       return attr.AttributeId === type;
     });
@@ -100,17 +100,17 @@ class PolicyViolations extends React.Component {
       return attr.Value;
     });
     return idpValues.length === 1 ? idpValues[0] : undefined;
-  },
+  }
 
-  handleTabChange: function (tab) {
+  handleTabChange(tab) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       this.setState({tab: tab});
     }.bind(this);
-  },
+  }
 
-  renderStatus: function (response, policyName) {
+  renderStatus(response, policyName) {
     var decision = response.Response[0].Decision;
     var status = App.Controllers.PolicyViolations.determineStatus(decision);
     return (
@@ -123,13 +123,13 @@ class PolicyViolations extends React.Component {
           </section>
         </div>
     );
-  },
+  }
 
-  renderAboutPage: function () {
+  renderAboutPage() {
     return I18n.locale === "en" ? <App.Help.PolicyViotaltionsHelpEn/> : <App.Help.PolicyViotaltionsHelpNl/>;
-  },
+  }
 
-  renderViolationsDetail: function () {
+  renderViolationsDetail() {
     var violation = this.state.violation;
     if (violation) {
       var request = JSON.parse(violation.jsonRequest);
@@ -145,9 +145,9 @@ class PolicyViolations extends React.Component {
     } else {
       return this.renderAboutPage();
     }
-  },
+  }
 
-  renderTabs: function () {
+  renderTabs() {
     var selectedTab = (this.state.tab || "request");
     var request = (selectedTab == "request" ? "selected" : "");
     var response = (selectedTab == "response" ? "selected" : "");
@@ -167,9 +167,9 @@ class PolicyViolations extends React.Component {
           </div>
         </div>
     );
-  },
+  }
 
-  renderRequestDetails: function (request) {
+  renderRequestDetails(request) {
     var selectedTab = (this.state.tab || "request");
     //request is JSON very poorly formatted
     var requestJson = JSON.stringify(request, null, 3);
@@ -186,9 +186,9 @@ class PolicyViolations extends React.Component {
                                      options={options} uniqueId="code_mirror_textarea_violation_request"/>
       )
     }
-  },
+  }
 
-  renderResponseDetails: function (response) {
+  renderResponseDetails(response) {
     var selectedTab = (this.state.tab || "request");
     var responseJson = JSON.stringify(response, null, 3);
 
@@ -205,9 +205,9 @@ class PolicyViolations extends React.Component {
                                      options={options} uniqueId="code_mirror_textarea_violation_response"/>
       )
     }
-  },
+  }
 
-  renderTable: function () {
+  renderTable() {
     var renderRows = this.props.violations.map(function (violation, index) {
       var request = JSON.parse(violation.jsonRequest).Request;
       var idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
@@ -250,9 +250,9 @@ class PolicyViolations extends React.Component {
           </tbody>
         </table>
     );
-  },
+  }
 
-  render: function () {
+  render() {
 
     return (
         <div className="l-center mod-violations">

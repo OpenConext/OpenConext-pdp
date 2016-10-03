@@ -1,7 +1,7 @@
 import React from "react";
 
 class Footer extends React.Component {
-  render: function () {
+  render() {
     return (
       <div className="mod-footer">
         <ul>

@@ -1,7 +1,7 @@
 import React from "react";
 
 class PolicyDetailHelpEn extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>How to create Policies?</h1>

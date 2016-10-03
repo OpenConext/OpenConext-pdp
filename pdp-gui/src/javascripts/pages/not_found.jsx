@@ -1,7 +1,7 @@
 import React from "react";
 
 class NotFound extends React.Component {
-  render: function () {
+  render() {
     return (
       <div className="mod-not-found">
         <h1>{I18n.t("not_found.title")}</h1>

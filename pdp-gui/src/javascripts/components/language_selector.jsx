@@ -1,7 +1,7 @@
 import React from "react";
 
 class LanguageSelector extends React.Component {
-  render: function () {
+  render() {
     return (
         <ul className="language">
           {[
@@ -10,9 +10,9 @@ class LanguageSelector extends React.Component {
           ]}
         </ul>
     );
-  },
+  }
 
-  renderLocaleChooser: function (locale) {
+  renderLocaleChooser(locale) {
     return (
         <li key={locale}>
           <a
@@ -24,9 +24,9 @@ class LanguageSelector extends React.Component {
           </a>
         </li>
     );
-  },
+  }
 
-  handleChooseLocale: function (locale) {
+  handleChooseLocale(locale) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();

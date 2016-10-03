@@ -2,46 +2,46 @@ import React from "react";
 
 class Identity extends React.Component {
 
-  getInitialState: function () {
+  getInitialState() {
     return this.props.identity;
-  },
+  }
 
-  parseEntities: function (entities) {
+  parseEntities(entities) {
     return entities.map(function (entity) {
       return {value: entity.entityId, display: I18n.entityName(entity)};
     });
-  },
+  }
 
-  handleChangeIdentityProvider: function (newValue) {
+  handleChangeIdentityProvider(newValue) {
     this.setState({idpEntityId: newValue});
-  },
+  }
 
-  cancelForm: function () {
+  cancelForm() {
     page("/policies");
-  },
+  }
 
-  submitForm: function () {
+  submitForm() {
     App.changeIdentity(this.state.idpEntityId, this.state.unspecifiedNameId, this.state.displayName);
-  },
+  }
 
-  clearIdentity:function() {
+  clearIdentity() {
     App.clearIdentity();
-  },
+  }
 
-  isValidState: function () {
+  isValidState() {
     var inValid = _.isEmpty(this.state.idpEntityId) || _.isEmpty(this.state.unspecifiedNameId) || _.isEmpty(this.state.displayName);
     return !inValid;
-  },
+  }
 
-  handleOnChangeUnspecifiedNameId: function (e) {
+  handleOnChangeUnspecifiedNameId(e) {
     this.setState({unspecifiedNameId: e.target.value});
-  },
+  }
 
-  handleOnChangeDisplayName: function (e) {
+  handleOnChangeDisplayName(e) {
     this.setState({displayName: e.target.value});
-  },
+  }
 
-  renderUnspecifiedNameId: function () {
+  renderUnspecifiedNameId() {
     var workflow = _.isEmpty(this.state.unspecifiedNameId) ? "failure" : "success";
     return (
         <div>
@@ -54,9 +54,9 @@ class Identity extends React.Component {
           <div className="bottom"></div>
         </div>
     );
-  },
+  }
 
-  renderDisplayName: function () {
+  renderDisplayName() {
     var workflow = _.isEmpty(this.state.displayName) ? "failure" : "success";
     return (
         <div>
@@ -69,9 +69,9 @@ class Identity extends React.Component {
           <div className="bottom"></div>
         </div>
     );
-  },
+  }
 
-  renderIdentityProvider: function () {
+  renderIdentityProvider() {
     var workflow = _.isEmpty(this.state.idpEntityId) ? "failure" : "success";
     return (
         <div>
@@ -89,9 +89,9 @@ class Identity extends React.Component {
           <div className="bottom"></div>
         </div>
     );
-  },
+  }
 
-  renderActions: function () {
+  renderActions() {
     var classNameSubmit = this.isValidState() ? "" : "disabled";
     return (
         <div className="form-element">
@@ -103,9 +103,8 @@ class Identity extends React.Component {
         </div>
     );
   }
-  ,
 
-  render: function () {
+  render() {
     return (
         <div className="l-center mod-policy-detail">
           <div className="l-split-left form-element-container box">
@@ -120,7 +119,7 @@ class Identity extends React.Component {
           </div>
         </div>
     )
-  },
+  }
 
   renderAboutPage: function () {
     return I18n.locale === "en" ? <App.Help.IdentityHelpEn/> : <App.Help.IdentityHelpNl/>;

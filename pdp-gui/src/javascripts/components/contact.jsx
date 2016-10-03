@@ -1,7 +1,7 @@
 import React from "react";
 
 class Contact extends React.Component {
-  render: function() {
+  render() {
     return (
       <div className="contact">
         <h2>{I18n.t("contact.email")}</h2>

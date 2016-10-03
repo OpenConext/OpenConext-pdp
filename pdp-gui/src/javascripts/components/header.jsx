@@ -1,13 +1,13 @@
 import React from "react";
 
 class Header extends React.Component {
-  getInitialState: function () {
+  getInitialState() {
     return {
       dropDownActive: false
     }
-  },
+  }
 
-  render: function () {
+  render() {
     //renderMeta was removed because this is not implemented yet
     return (
         <div className="mod-header">
@@ -15,9 +15,9 @@ class Header extends React.Component {
           {this.renderMeta()}
         </div>
     );
-  },
+  }
 
-  renderMeta: function () {
+  renderMeta() {
     return (
         <div className="meta">
           <div className="name">
@@ -37,9 +37,9 @@ class Header extends React.Component {
           </ul>
         </div>
     );
-  },
+  }
 
-  renderProfileLink: function () {
+  renderProfileLink() {
     return (
         <span>
           {I18n.t("header.welcome")}&nbsp;
@@ -49,17 +49,17 @@ class Header extends React.Component {
           </a>
         </span>
     );
-  },
+  }
 
-  renderDropDownIndicator: function () {
+  renderDropDownIndicator() {
     if (this.state.dropDownActive) {
       return <i className="fa fa-caret-up"/>;
     } else {
       return <i className="fa fa-caret-down"/>;
     }
-  },
+  }
 
-  renderDropDown: function () {
+  renderDropDown() {
     if (this.state.dropDownActive) {
       return (
           <div>
@@ -67,21 +67,21 @@ class Header extends React.Component {
           </div>
       );
     }
-  },
+  }
 
-  renderExitLogout: function () {
+  renderExitLogout() {
     return (
         <li><a href="#" onClick={this.stop}>{I18n.t("header.links.logout")}</a></li>
     );
-  },
+  }
 
-  stop: function() {
+  stop() {
     var node = document.getElementById("app");
     React.unmountComponentAtNode(node);
     React.renderComponent(App.Pages.Logout(), node);
-  },
+  }
 
-  handleToggle: function (e) {
+  handleToggle(e) {
     e.preventDefault();
     e.stopPropagation();
     this.setState({dropDownActive: !this.state.dropDownActive});

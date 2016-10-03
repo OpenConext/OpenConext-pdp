@@ -2,7 +2,7 @@ import React from "react";
 
 class Navigation extends React.Component {
 
-  componentDidUpdate: function() {
+  componentDidUpdate() {
     if (this.props.loading) {
       if (!this.spinner) {
         this.spinner = new Spinner({
@@ -16,9 +16,9 @@ class Navigation extends React.Component {
     } else {
       this.spinner = null;
     }
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="mod-navigation">
         <ul>
@@ -34,9 +34,9 @@ class Navigation extends React.Component {
         {this.renderSpinner()}
       </div>
     );
-  },
+  }
 
-  renderItem: function(href, value, right) {
+  renderItem(href, value, right) {
     var classNameLi = (this.props.active == value ? "active" : "");
     var classNameA = "";
     if (right) {
@@ -46,9 +46,9 @@ class Navigation extends React.Component {
     return (
       <li className={classNameLi}><a href={href} className={classNameA}>{I18n.t("navigation." + value)}</a></li>
     );
-  },
+  }
 
-  renderSpinner: function() {
+  renderSpinner() {
     if (this.props.loading) {
       return <div className="spinner" ref="spinner" />;
     }

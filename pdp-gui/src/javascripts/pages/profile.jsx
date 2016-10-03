@@ -1,7 +1,7 @@
 import React from "react";
 
 class Profile extends React.Component {
-  render: function() {
+  render() {
     var attributeKeys = Object.keys(App.currentUser.attributeMap);
     var roles = App.currentUser.grantedAuthorities;
     return (
@@ -39,9 +39,9 @@ class Profile extends React.Component {
         </div>
       </div>
       );
-  },
+  }
 
-  renderAttribute: function(attributeKey) {
+  renderAttribute(attributeKey) {
     // Use [] to get the value from I18n because attributeKey can contain (.) dot's.
     var attributeName = I18n.t("profile.attribute_map")[attributeKey]["name"]
     var attributeDescription = I18n.t("profile.attribute_map")[attributeKey]["description"]
@@ -53,9 +53,9 @@ class Profile extends React.Component {
         <td>{App.currentUser.attributeMap[attributeKey]}</td>
       </tr>
       );
-  },
+  }
 
-  renderRole: function(role) {
+  renderRole(role) {
     return (
       <tr key={role.authority}>
         <td>{I18n.t("profile.roles." + role.authority + ".name")}</td>

@@ -2,36 +2,36 @@ import React from "react";
 
 class PolicyDetail extends React.Component {
 
-  componentWillUpdate: function () {
+  componentWillUpdate() {
     var node = this.getDOMNode();
     this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  },
+  }
 
-  componentDidUpdate: function () {
+  componentDidUpdate() {
     if (this.shouldScrollBottom) {
       var node = this.getDOMNode();
       node.scrollTop = node.scrollHeight
     }
-  },
+  }
 
-  getInitialState: function () {
+  getInitialState() {
     var state = this.props.policy;
     if (state.id === undefined || state.id === null) {
       state.active = true;
     }
     return state;
-  },
+  }
 
-  toggleDenyRule: function (e) {
+  toggleDenyRule(e) {
     var partialState = {denyRule: !this.state.denyRule};
     if (!this.state.denyRule) {
       partialState.allAttributesMustMatch = true;
     }
     partialState.description = this.buildAutoFormattedDescription(partialState);
     this.setState(partialState);
-  },
+  }
 
-  provideProviderNames: function (partialState) {
+  provideProviderNames(partialState) {
     var identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.identityProviderIds;
     if (_.isEmpty(identityProvidersIds)) {
       this.state.identityProviderNames = [];
@@ -48,23 +48,23 @@ class PolicyDetail extends React.Component {
     } else {
       this.state.serviceProviderName = I18n.entityName(_.find(this.props.serviceProviders, "entityId", serviceProviderId));
     }
-  },
+  }
 
-  parseEntities: function (entities) {
+  parseEntities(entities) {
     var options = entities.map(function (entity) {
       return {value: entity.entityId, display: I18n.entityName(entity)};
     });
     return options;
-  },
+  }
 
-  handleChangeServiceProvider: function (newValue) {
+  handleChangeServiceProvider(newValue) {
     var partialState = {serviceProviderId: newValue};
     partialState.description = this.buildAutoFormattedDescription(partialState);
     this.setState(partialState);
-  },
+  }
 
 
-  handleChangeIdentityProvider: function (newValue) {
+  handleChangeIdentityProvider(newValue) {
     var partialState = {identityProviderIds: newValue};
     partialState.description = this.buildAutoFormattedDescription(partialState);
     var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
@@ -78,15 +78,15 @@ class PolicyDetail extends React.Component {
       partialState.spDataChanged = true;
     }
     this.setState(partialState);
-  },
+  }
 
-  cancelForm: function () {
+  cancelForm() {
     if (confirm(I18n.t("policy_detail.confirmation"))) {
       page("/policies");
     }
-  },
+  }
 
-  deletePolicy: function (policy) {
+  deletePolicy(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -94,17 +94,17 @@ class PolicyDetail extends React.Component {
         App.Controllers.Policies.deletePolicy(policy);
       }
     }
-  },
+  }
 
-  submitForm: function () {
+  submitForm() {
     var self = this;
     App.Controllers.Policies.saveOrUpdatePolicy(this.state, function (jqxhr) {
       jqxhr.isConsumed = true;
       this.setState({flash: jqxhr.responseJSON.details.name});
     }.bind(this));
-  },
+  }
 
-  isValidPolicy: function () {
+  isValidPolicy() {
     var policy = this.state;
     var emptyAttributes = policy.attributes.filter(function (attr) {
       return _.isEmpty(attr.value);
@@ -112,17 +112,17 @@ class PolicyDetail extends React.Component {
     var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
       || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;
-  },
+  }
 
-  handleOnChangeName: function (e) {
+  handleOnChangeName(e) {
     this.setState({name: e.target.value});
-  },
+  }
 
-  handleOnChangeDescription: function (e) {
+  handleOnChangeDescription(e) {
     this.setState({description: e.target.value});
-  },
+  }
 
-  handleOnChangeAutoFormat: function (e) {
+  handleOnChangeAutoFormat(e) {
     var partialState = {autoFormat: !this.state.autoFormat};
     if (partialState.autoFormat) {
       partialState.savedDescription = this.state.description;
@@ -132,13 +132,13 @@ class PolicyDetail extends React.Component {
       partialState.description = this.state.savedDescription || "";
     }
     this.setState(partialState);
-  },
+  }
 
-  handleOnChangeIsActive: function (e) {
+  handleOnChangeIsActive(e) {
     this.setState({active: !this.state.active});
-  },
+  }
 
-  buildAutoFormattedDescription: function (partialState) {
+  buildAutoFormattedDescription(partialState) {
     if (this.state.autoFormat) {
       this.provideProviderNames(partialState);
       //we don't want to merge the partialState and this.state before the update
@@ -153,17 +153,17 @@ class PolicyDetail extends React.Component {
     } else {
       return this.state.description;
     }
-  },
+  }
 
-  handleOnDenyAdvice: function (e) {
+  handleOnDenyAdvice(e) {
     this.setState({denyAdvice: e.target.value});
-  },
+  }
 
-  handleOnDenyAdviceNl: function (e) {
+  handleOnDenyAdviceNl(e) {
     this.setState({denyAdviceNl: e.target.value});
-  },
+  }
 
-  renderName: function (policy) {
+  renderName(policy) {
     var workflow = _.isEmpty(policy.name) ? "failure" : "success";
     return (
       <div>
@@ -175,9 +175,9 @@ class PolicyDetail extends React.Component {
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDescription: function (policy) {
+  renderDescription(policy) {
     var workflow = _.isEmpty(policy.description) ? "failure" : "success";
     return (
       <div>
@@ -192,9 +192,9 @@ class PolicyDetail extends React.Component {
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderActive: function (policy) {
+  renderActive(policy) {
     if (!App.currentUser.policyIdpAccessEnforcementRequired) {
       return (
         <div>
@@ -209,9 +209,9 @@ class PolicyDetail extends React.Component {
         </div>
       );
     }
-  },
+  }
 
-  renderDenyAdvice: function (policy) {
+  renderDenyAdvice(policy) {
     var workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
     return (
       <div className={"form-element "+workflow}>
@@ -228,9 +228,8 @@ class PolicyDetail extends React.Component {
       </div>
     );
   }
-  ,
 
-  renderServiceProvider: function (policy) {
+  renderServiceProvider(policy) {
     var workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
     var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
     var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
@@ -251,14 +250,14 @@ class PolicyDetail extends React.Component {
       </div>
     );
   }
-  ,
-  renderScopedWarning: function (scopedSPs) {
+
+  renderScopedWarning(scopedSPs) {
     if (scopedSPs) {
       return (<em className="note"><sup>*</sup>{I18n.t("policy_detail.spScopeInfo")} </em>);
     }
-  },
+  }
 
-  renderIdentityProvider: function (policy) {
+  renderIdentityProvider(policy) {
     return (
       <div>
         <div className="form-element success">
@@ -276,9 +275,9 @@ class PolicyDetail extends React.Component {
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDenyPermitRule: function (policy) {
+  renderDenyPermitRule(policy) {
     var classNameSelected = policy.denyRule ? "checked" : "";
     var classNamePermit = policy.denyRule ? "not-selected" : "";
     var classNameDeny = !policy.denyRule ? "not-selected" : "";
@@ -307,9 +306,8 @@ class PolicyDetail extends React.Component {
       </div>
     );
   }
-  ,
 
-  handleChooseRule: function (value) {
+  handleChooseRule(value) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -318,9 +316,9 @@ class PolicyDetail extends React.Component {
       partialState.description = this.buildAutoFormattedDescription(partialState);
       this.setState(partialState);
     }.bind(this);
-  },
+  }
 
-  renderRule: function (value, selected) {
+  renderRule(value, selected) {
     var className = value + " " + (selected ? "selected" : "");
     if (this.state.denyRule) {
       return (
@@ -335,30 +333,30 @@ class PolicyDetail extends React.Component {
         </li>
       );
     }
-  },
+  }
 
-  handleShowRevisions: function (policy) {
+  handleShowRevisions(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       page("/revisions/:id", {id: policy.id});
     }
-  },
+  }
 
-  setAttributeState: function (newAttributeState) {
+  setAttributeState(newAttributeState) {
     newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
     this.setState(newAttributeState);
-  },
+  }
 
-  renderAttributes: function (policy) {
+  renderAttributes(policy) {
     //we need state changes from the child component
     return (<App.Components.PolicyAttributes
       policy={this.state}
       allowedAttributes={this.props.allowedAttributes}
       setAttributeState={this.setAttributeState}/>);
-  },
+  }
 
-  renderLogicalRule: function (policy) {
+  renderLogicalRule(policy) {
     var allAttributesMustMatch = policy.allAttributesMustMatch;
     var classNameAnd = !policy.allAttributesMustMatch ? "not-selected" : "";
     var classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
@@ -389,19 +387,19 @@ class PolicyDetail extends React.Component {
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDenyRuleNote: function () {
+  renderDenyRuleNote() {
     if (this.state.denyRule) {
       return (<em><sup>*</sup> {I18n.t("policy_detail.rule_info_add_2")}</em>);
     }
-  },
+  }
 
-  closeFlash: function () {
+  closeFlash() {
     this.setState({flash: undefined});
-  },
+  }
 
-  renderFlash: function () {
+  renderFlash() {
     if (this.state.flash) {
       return (
         <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
@@ -410,9 +408,9 @@ class PolicyDetail extends React.Component {
         </div>
       );
     }
-  },
+  }
 
-  renderActions: function (policy) {
+  renderActions(policy) {
     var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
     return (
       <div className="form-element">
@@ -423,31 +421,31 @@ class PolicyDetail extends React.Component {
         {this.renderRevisionsLink(policy)}
       </div>
     );
-  },
+  }
 
-  renderDelete: function (policy) {
+  renderDelete(policy) {
     if (policy.id) {
       return (
         <a className="c-button delete" href="#" onClick={this.deletePolicy(policy)}>{I18n.t("policies.delete")}</a>);
     }
-  },
+  }
 
-  renderRevisionsLink: function (policy) {
+  renderRevisionsLink(policy) {
     var numberOfRevisions = (policy.numberOfRevisions + 1)
     if (policy.id) {
       return (<a className="c-button cancel pull-right" href={page.uri("/revisions/:id",{id:policy.id})}
                  onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
     }
-  },
+  }
 
 
-  createdDate: function (policy) {
+  createdDate(policy) {
     var created = moment(policy.created);
     created.locale(I18n.locale);
     return created.format('LL');
-  },
+  }
 
-  render: function () {
+  render() {
     var policy = this.state;
     var title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
     //var classTitle = policy.id
@@ -483,9 +481,9 @@ class PolicyDetail extends React.Component {
         </div>
       </div>
     )
-  },
+  }
 
-  renderAboutPage: function () {
+  renderAboutPage() {
     return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
   }
 

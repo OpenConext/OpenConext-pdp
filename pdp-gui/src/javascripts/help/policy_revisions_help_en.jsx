@@ -1,7 +1,7 @@
 import React from "react";
 
 class PolicyRevisionsHelpEn extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>What are policy revisions?</h1>

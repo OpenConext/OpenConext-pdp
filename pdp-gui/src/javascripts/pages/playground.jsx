@@ -2,30 +2,30 @@ import React from "react";
 
 class Playground extends React.Component {
 
-  componentWillUpdate: function () {
+  componentWillUpdate() {
     var node = this.getDOMNode();
     this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  },
+  }
 
-  componentDidUpdate: function () {
+  componentDidUpdate() {
     if (this.shouldScrollBottom) {
       var node = this.getDOMNode();
       node.scrollTop = node.scrollHeight
     }
-  },
+  }
 
-  getInitialState: function () {
+  getInitialState() {
     return this.props.pdpRequest;
-  },
+  }
 
-  parseEntities: function (entities) {
+  parseEntities(entities) {
     var options = entities.map(function (entity) {
       return {value: entity.entityId, display: I18n.entityName(entity)};
     });
     return options;
-  },
+  }
 
-  handleChangePolicy: function (newValue) {
+  handleChangePolicy(newValue) {
     if (newValue) {
       var policy = this.props.policies.filter(function (policy) {
         return policy.id === parseInt(newValue);
@@ -40,9 +40,9 @@ class Playground extends React.Component {
       $('[data-select2selector-id="serviceProvider"]').val(policy.serviceProviderId).trigger("change");
       $('[data-select2selector-id="identityProvider"]').val(identityProviderId).trigger("change");
     }
-  },
+  }
 
-  parsePolicies: function (policies) {
+  parsePolicies(policies) {
     var options = policies.map(function (policy) {
       return {value: policy.id, display: policy.name.trim()};
     });
@@ -50,22 +50,22 @@ class Playground extends React.Component {
       return p1.display.localeCompare(p2.display);
     });
     return options;
-  },
+  }
 
-  handleChangeServiceProvider: function (newValue) {
+  handleChangeServiceProvider(newValue) {
     this.setState({serviceProviderId: newValue});
-  },
+  }
 
 
-  handleChangeIdentityProvider: function (newValue) {
+  handleChangeIdentityProvider(newValue) {
     this.setState({identityProviderId: newValue});
-  },
+  }
 
-  clearForm: function () {
+  clearForm() {
     page("/playground");
-  },
+  }
 
-  replayRequest: function () {
+  replayRequest() {
     App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
         function (jqxhr) {
           this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
@@ -74,9 +74,9 @@ class Playground extends React.Component {
           jqxhr.isConsumed = true;
           this.setState({responseJSON: jqxhr.responseJSON, tab: "response"});
         }.bind(this));
-  },
+  }
 
-  submitForm: function () {
+  submitForm() {
     return function (e) {
       var idp = this.state.identityProviderId;
       var sp = this.state.serviceProviderId;
@@ -105,9 +105,9 @@ class Playground extends React.Component {
         console.log(jgxhr.responseJSON.details);
       }.bind(this));
     }.bind(this);
-  },
+  }
 
-  isValidPdpRequest: function () {
+  isValidPdpRequest() {
     var pdpRequest = this.state;
     var emptyAttributes = pdpRequest.attributes.filter(function (attr) {
       return _.isEmpty(attr.value);
@@ -115,9 +115,9 @@ class Playground extends React.Component {
     var inValid = _.isEmpty(pdpRequest.serviceProviderId) || _.isEmpty(pdpRequest.identityProviderId)
         || _.isEmpty(pdpRequest.attributes) || emptyAttributes.length > 0;
     return !inValid;
-  },
+  }
 
-  renderPolicies: function () {
+  renderPolicies() {
     return (
         <div>
           <div className="form-element split success">
@@ -133,9 +133,9 @@ class Playground extends React.Component {
           <div className="bottom"></div>
         </div>
     );
-  },
+  }
 
-  renderServiceProvider: function (pdpRequest) {
+  renderServiceProvider(pdpRequest) {
     var workflow = _.isEmpty(pdpRequest.serviceProviderId) ? "failure" : "success";
     return (
         <div>
@@ -152,9 +152,8 @@ class Playground extends React.Component {
         </div>
     );
   }
-  ,
 
-  renderIdentityProvider: function (pdpRequest) {
+  renderIdentityProvider(pdpRequest) {
     var workflow = _.isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
     return (
         <div>
@@ -171,22 +170,22 @@ class Playground extends React.Component {
           <div className="bottom"></div>
         </div>
     );
-  },
+  }
 
-  setAttributeState: function (newAttributeState) {
+  setAttributeState(newAttributeState) {
     this.setState(newAttributeState);
-  },
+  }
 
-  renderAttributes: function (pdpRequest) {
+  renderAttributes(pdpRequest) {
     //we need state changes from the child component
     return (<App.Components.PolicyAttributes
         policy={this.state}
         allowedAttributes={this.props.allowedSamlAttributes}
         setAttributeState={this.setAttributeState}
         css="split"/>);
-  },
+  }
 
-  renderStatus: function (responseJSON) {
+  renderStatus(responseJSON) {
     var decision, statusCode, status;
     if (responseJSON.Response) {
       var response = responseJSON.Response[0];
@@ -208,9 +207,9 @@ class Playground extends React.Component {
           </section>
         </div>
     );
-  },
+  }
 
-  renderAdventurous: function () {
+  renderAdventurous() {
     var decisionRequest = this.state.decisionRequest;
     var responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
@@ -221,9 +220,9 @@ class Playground extends React.Component {
         <em>{I18n.t("playground.adventurous_text")}</em>
       </div>);
     }
-  },
+  }
 
-  renderActions: function (pdpRequest) {
+  renderActions(pdpRequest) {
     var classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
     return (
         <div className="form-element split no-pad-right">
@@ -233,13 +232,13 @@ class Playground extends React.Component {
           {this.renderAdventurous()}
         </div>
     );
-  },
+  }
 
-  updateJsonRequest: function (newJson) {
+  updateJsonRequest(newJson) {
     this.setState({decisionRequestJson: newJson});
-  },
+  }
 
-  renderJsonRequest: function (decisionRequest) {
+  renderJsonRequest(decisionRequest) {
     var selectedTab = (this.state.tab || "request");
     if (selectedTab === "request") {
       var options = {
@@ -259,9 +258,9 @@ class Playground extends React.Component {
           </div>
       )
     }
-  },
+  }
 
-  renderJsonResponse: function (responseJSON) {
+  renderJsonResponse(responseJSON) {
 
     var selectedTab = (this.state.tab || "request");
     if (selectedTab === "response") {
@@ -277,17 +276,17 @@ class Playground extends React.Component {
                                      uniqueId="code_mirror_textarea_response"/>
       )
     }
-  },
+  }
 
-  handleTabChange: function (tab) {
+  handleTabChange(tab) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       this.setState({tab: tab});
     }.bind(this);
-  },
+  }
 
-  renderTabs: function () {
+  renderTabs() {
     var selectedTab = (this.state.tab || "request");
     var request = (selectedTab == "request" ? "selected" : "");
     var response = (selectedTab == "response" ? "selected" : "");
@@ -307,9 +306,9 @@ class Playground extends React.Component {
           </div>
         </div>
     );
-  },
+  }
 
-  renderRequestResponsePanel: function () {
+  renderRequestResponsePanel() {
     var decisionRequest = this.state.decisionRequest;
     var responseJSON = this.state.responseJSON;
     if (decisionRequest && responseJSON) {
@@ -326,13 +325,13 @@ class Playground extends React.Component {
         {this.renderAboutPage()}
       </div>)
     }
-  },
+  }
 
-  renderAboutPage: function () {
+  renderAboutPage() {
     return I18n.locale === "en" ? <App.Help.PolicyPlaygroundHelpEn/> : <App.Help.PolicyPlaygroundHelpNl/>;
-  },
+  }
 
-  render: function () {
+  render() {
     var pdpRequest = this.state;
     return (
         <div className="l-center mod-playground">

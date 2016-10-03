@@ -1,7 +1,7 @@
 import React from "react";
 
 class IdentityHelpEn extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>Identity</h1>

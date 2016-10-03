@@ -2,43 +2,43 @@ import React from "react";
 
 class PolicyAttributes extends React.Component {
 
-  markAttributes: function (policy) {
+  markAttributes(policy) {
     policy.attributes = policy.attributes.map(function (attr, index) {
       attr.index = index;
       return attr;
     });
     return policy;
-  },
+  }
 
-  getInitialState: function () {
+  getInitialState() {
     return this.markAttributes(this.props.policy);
-  },
+  }
 
-  componentWillReceiveProps: function (nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.state = this.markAttributes(nextProps.policy);
-  },
+  }
 
-  addAttribute: function (attrName) {
+  addAttribute(attrName) {
     var attributes = this.state.attributes || [];
     var index = attributes.length + 1;
     attributes.push({name: attrName, value: "", index: index});
     this.props.setAttributeState({attributes: attributes});
-  },
+  }
 
-  removeAttribute: function (name) {
+  removeAttribute(name) {
     var attributes = this.state.attributes || [];
     attributes = this.state.attributes.filter(function (attribute) {
       return attribute.name !== name;
     });
     this.props.setAttributeState({attributes: attributes});
-  },
+  }
 
-  preventProp: function preventProp(e) {
+  preventProp(e) {
     e.preventDefault();
     e.stopPropagation();
-  },
+  }
 
-  handleAttributeValueChanged: function (attrName, index) {
+  handleAttributeValueChanged(attrName, index) {
     return function (e) {
       this.preventProp(e);
       //change attribute value
@@ -50,9 +50,9 @@ class PolicyAttributes extends React.Component {
       });
       this.props.setAttributeState({attributes: attributes});
     }.bind(this);
-  },
+  }
 
-  handleRemoveAttributeValue: function (attrName, index) {
+  handleRemoveAttributeValue(attrName, index) {
     return function (e) {
       this.preventProp(e);
       //remove attribute value
@@ -61,32 +61,32 @@ class PolicyAttributes extends React.Component {
       });
       this.props.setAttributeState({attributes: attributes});
     }.bind(this);
-  },
+  }
 
-  handleNewAttributeValue: function (attrName) {
+  handleNewAttributeValue(attrName) {
     return function (e) {
       this.preventProp(e);
       //change attribute value
       this.addAttribute(attrName);
     }.bind(this);
-  },
+  }
 
-  handleNewAttribute: function (e) {
+  handleNewAttribute(e) {
     this.preventProp(e);
     //change attribute value
     var attrName = e.target.value;
     this.addAttribute(attrName);
-  },
+  }
 
-  handleRemoveAttribute: function (attrName) {
+  handleRemoveAttribute(attrName) {
     return function (e) {
       this.preventProp(e);
       //change attribute value
       this.removeAttribute(attrName);
     }.bind(this);
-  },
+  }
 
-  renderAttributeInfo: function(attrName, index) {
+  renderAttributeInfo(attrName, index) {
     if (index !== 0) {
       return;
     }
@@ -95,9 +95,9 @@ class PolicyAttributes extends React.Component {
     } else if ("urn:collab:group:surfteams.nl" === attrName) {
       return (<em className="attribute-value"><sup>*</sup>{I18n.t("policy_attributes.group_info")}</em>);
     }
-  },
+  }
 
-  renderAttributeValue: function (attrName, attribute, index) {
+  renderAttributeValue(attrName, attribute, index) {
     var className = this.renderAttributeInfo(attrName, index) === undefined ? "" : "before-em";
     return (
         <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
@@ -113,9 +113,9 @@ class PolicyAttributes extends React.Component {
 
         </div>
     )
-  },
+  }
 
-  render: function () {
+  render() {
     var policy = this.state;
     var grouped = _.groupBy(policy.attributes, function (attr) {
       return attr.name;

@@ -2,7 +2,7 @@ import React from "react";
 
 class UserProfile extends React.Component {
 
-  render: function () {
+  render() {
     return (
         <ul className="user-profile">
           {this.renderRole()}
@@ -10,9 +10,9 @@ class UserProfile extends React.Component {
           {this.renderSps()}
         </ul>
     );
-  },
+  }
 
-  renderRole: function () {
+  renderRole() {
     return (
         <li>
           <h2>{I18n.t("header.role")}</h2>
@@ -23,9 +23,9 @@ class UserProfile extends React.Component {
           </ul>
         </li>
     );
-  },
+  }
 
-  renderIdps: function () {
+  renderIdps() {
     return (
         <li>
           <h2>{I18n.t("header.idps")}</h2>
@@ -34,9 +34,9 @@ class UserProfile extends React.Component {
           </ul>
         </li>
     );
-  },
+  }
 
-  renderSps: function () {
+  renderSps() {
     if (!_.isEmpty(App.currentUser.spEntities)) {
       return (
           <li>
@@ -47,9 +47,9 @@ class UserProfile extends React.Component {
           </li>
       );
     }
-  },
+  }
 
-  renderItem: function (entity) {
+  renderItem(entity) {
     return (
         <li key={entity.entityId} className="user-profile-entity">
           <span>{I18n.entityName(entity)}</span>

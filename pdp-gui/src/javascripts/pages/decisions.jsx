@@ -2,14 +2,14 @@ import React from "react";
 
 class Decisions extends React.Component {
 
-  getInitialState: function () {
+  getInitialState() {
     return {avg: {}}
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.initGraph();
-  },
-  average: function (arr) {
+  }
+  average(arr) {
     return arr.map(function (o) {
       return o.y
     }).filter(function (n) {
@@ -18,8 +18,8 @@ class Decisions extends React.Component {
       var total = prev + curr;
       return i == arr.length - 1 ? total / arr.length : total;
     }, 0).toFixed(0);
-  },
-  initGraph: function () {
+  }
+  initGraph() {
     var decisions = this.props.decisions;
     var total = [];
     var pdp = [];
@@ -111,9 +111,9 @@ class Decisions extends React.Component {
       legend: legend
     });
 
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="mod-decisions">
         <div id="legend"></div>

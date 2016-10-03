@@ -1,7 +1,7 @@
 import React from "react";
 
 class PolicyViotaltionsHelpEn extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>What are unauthorized logins?</h1>

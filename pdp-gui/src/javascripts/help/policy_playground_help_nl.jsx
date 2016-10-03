@@ -1,7 +1,7 @@
 import React from "react";
 
 class PolicyPlaygroundHelpNl extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>Hoe kun je Playground gebruiken?</h1>

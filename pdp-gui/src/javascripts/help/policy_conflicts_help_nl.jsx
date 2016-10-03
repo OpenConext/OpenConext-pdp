@@ -1,7 +1,7 @@
 import React from "react";
 
 class PolicyConflictsHelpNl extends React.Component {
-  render: function () {
+  render() {
     return (
         <div className="form-element about">
           <h1>Wat zijn autorisatieregelconflicten?</h1>

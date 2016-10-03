@@ -2,15 +2,15 @@ import React from "react";
 
 class PolicyOverview extends React.Component {
 
-  getInitialState: function () {
+  getInitialState() {
     return {data: []}
-  },
+  }
 
-  destroyDataTable: function () {
+  destroyDataTable() {
     $('#policies_table').DataTable().destroy();
-  },
+  }
 
-  initDataTable: function () {
+  initDataTable() {
     $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
       return this.api().column(col, {order: 'index'}).nodes().map(function (td, i) {
         return $('input', td).prop('checked') ? '1' : '0';
@@ -37,16 +37,16 @@ class PolicyOverview extends React.Component {
         { targets: [8], orderable: false}
       ]
     });
-  },
+  }
 
-  componentWillReceiveProps: function (nextProps) {
+  componentWillReceiveProps(nextProps) {
     this.destroyDataTable();
     if (!_.isEmpty(this.props) && this.props.flash !== nextProps.flash) {
       this.setState({hideFlash: false});
     }
-  },
+  }
 
-  componentDidUpdate: function (prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (!$.fn.DataTable.isDataTable('#policies_table')) {
       this.initDataTable();
     }
@@ -56,17 +56,17 @@ class PolicyOverview extends React.Component {
     } else {
       $("#policies_table_paginate").show();
     }
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.initDataTable();
-  },
+  }
 
-  componentWillUnmount: function () {
+  componentWillUnmount() {
     this.destroyDataTable();
-  },
+  }
 
-  handleDeletePolicyDetail: function (policy) {
+  handleDeletePolicyDetail(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
@@ -74,37 +74,37 @@ class PolicyOverview extends React.Component {
         App.Controllers.Policies.deletePolicy(policy);
       }
     }
-  },
+  }
 
-  handleShowPolicyDetail: function (policy) {
+  handleShowPolicyDetail(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       page("/policy/:id", {id: policy.id});
     }
-  },
+  }
 
-  handleShowViolations: function (policy) {
+  handleShowViolations(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       page("/violations/:id", {id: policy.id});
     }
-  },
+  }
 
-  handleShowRevisions: function (policy) {
+  handleShowRevisions(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       page("/revisions/:id", {id: policy.id});
     }
-  },
+  }
 
-  closeFlash: function () {
+  closeFlash() {
     this.setState({hideFlash: true});
-  },
+  }
 
-  renderFlash: function () {
+  renderFlash() {
     var flash = this.props.flash;
     if (flash && !this.state.hideFlash) {
       return (
@@ -113,29 +113,29 @@ class PolicyOverview extends React.Component {
       );
     }
   }
-  ,
-  renderViolationsLink: function (policy) {
+
+  renderViolationsLink(policy) {
     if (policy.numberOfViolations === 0) {
       return (<span>0</span>);
     } else {
       return (<a href={page.uri("/violations/:id",{id: policy.id})}
                  onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
     }
-  },
+  }
 
-  renderRevisionsLink: function (policy) {
+  renderRevisionsLink(policy) {
     var numberOfRevisions = (policy.numberOfRevisions + 1)
     return (<a href={page.uri("/revisions/:id",{id:policy.id})}
                  onClick={this.handleShowRevisions(policy)}>{numberOfRevisions}</a>);
-  },
+  }
 
-  renderIdpNames: function (identityProviderNames) {
+  renderIdpNames(identityProviderNames) {
     return identityProviderNames.map(function (name) {
       return (<p key={name}>{name}</p>)
     });
-  },
+  }
 
-  renderControls: function(policy) {
+  renderControls(policy) {
 
     if (policy.actionsAllowed) {
       return (
@@ -148,9 +148,9 @@ class PolicyOverview extends React.Component {
             </a>
           </div>);
     }
-  },
+  }
 
-  render: function () {
+  render() {
     var renderRows = this.props.policies.map(function (policy, index) {
       return (
           <tr key={policy.id}>

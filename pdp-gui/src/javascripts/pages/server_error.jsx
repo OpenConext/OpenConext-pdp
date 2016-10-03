@@ -1,7 +1,7 @@
 import React from "react";
 
 class ServerError extends React.Component {
-  render: function () {
+  render() {
     return (
       <div className="mod-not-found">
         <h1>{I18n.t("server_error.title")}</h1>

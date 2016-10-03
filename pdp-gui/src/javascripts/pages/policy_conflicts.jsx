@@ -2,22 +2,22 @@ import React from "react";
 
 class PolicyConflicts extends React.Component {
 
-  getInitialState: function () {
+  getInitialState() {
     return {
       conflicts: this.props.conflicts,
       hideInactive: false
     }
-  },
+  }
 
-  handleOnChangeIsActive: function (e) {
+  handleOnChangeIsActive(e) {
     this.setState({hideInactive: !this.state.hideInactive});
-  },
+  }
 
-  renderAboutPage: function () {
+  renderAboutPage() {
     return I18n.locale === "en" ? <App.Help.PolicyConflictsHelpEn/> : <App.Help.PolicyConflictsHelpNl/>;
-  },
+  }
 
-  renderOverview: function () {
+  renderOverview() {
     return ( <div>
       <div className="filters">
         <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
@@ -28,9 +28,9 @@ class PolicyConflicts extends React.Component {
       <p className="form-element title">{I18n.t("conflicts.title")}</p>
       {this.renderConflicts()}
     </div>);
-  },
+  }
 
-  renderConflicts: function () {
+  renderConflicts() {
     var serviceProviderNames = Object.keys(this.props.conflicts);
     if (_.isEmpty(serviceProviderNames)) {
       return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>)
@@ -40,9 +40,9 @@ class PolicyConflicts extends React.Component {
       }.bind(this));
 
     }
-  },
+  }
 
-  renderConflict: function (sp, index) {
+  renderConflict(sp, index) {
     var policies = this.props.conflicts[sp];
     if (this.state.hideInactive && policies.filter(function(policy){
         return policy.activatedSr && policy.active;
@@ -61,17 +61,17 @@ class PolicyConflicts extends React.Component {
       </div>
     );
 
-  },
+  }
 
-  handleShowPolicyDetail: function (policy) {
+  handleShowPolicyDetail(policy) {
     return function (e) {
       e.preventDefault();
       e.stopPropagation();
       page("/policy/:id", {id: policy.id});
     }
-  },
+  }
 
-  renderPolicies: function (policies, index) {
+  renderPolicies(policies, index) {
     return (
       <table className='table table-bordered dataTable' id={'conflicts_table_'+index}>
         <thead>
@@ -89,9 +89,9 @@ class PolicyConflicts extends React.Component {
         }.bind(this))}
         </tbody>
       </table>)
-  },
+  }
 
-  renderPolicyRow: function (policy) {
+  renderPolicyRow(policy) {
     return (
       <tr key={policy.id}>
         <td>{policy.name}</td>
@@ -106,9 +106,9 @@ class PolicyConflicts extends React.Component {
           </a>
         </td>
       </tr>)
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="l-center mod-conflicts">
         <div className="l-split-left form-element-container box">

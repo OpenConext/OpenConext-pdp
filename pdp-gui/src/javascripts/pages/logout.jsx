@@ -1,7 +1,7 @@
 import React from "react";
 
 class Logout extends React.Component {
-  render: function () {
+  render() {
     return (
       <div className="mod-logout">
         {I18n.t("logout.title")}<br />

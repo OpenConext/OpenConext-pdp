@@ -2,7 +2,7 @@ import React from "react";
 
 class About extends React.Component {
 
-  render: function () {
+  render() {
     return (
         <div className="l-center">
           <div className="l-middle mod-about no-left box">

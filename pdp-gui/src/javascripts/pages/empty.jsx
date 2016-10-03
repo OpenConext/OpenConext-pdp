@@ -1,7 +1,7 @@
 import React from "react";
 
 class Empty extends React.Component {
-  render: function () {
+  render() {
     return (
       <div></div>
     );
