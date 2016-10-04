@@ -17,11 +17,7 @@ class Decisions extends React.Component {
   }
 
   componentWillMount() {
-    getDecisions().then(decisions => this.setState({ decisions }));
-  }
-
-  componentDidMount() {
-    this.initGraph();
+    getDecisions().then(decisions => this.setState({ decisions }, () => this.initGraph()));
   }
 
   average(arr) {

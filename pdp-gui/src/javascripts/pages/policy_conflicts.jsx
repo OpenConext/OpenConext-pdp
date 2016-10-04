@@ -34,7 +34,7 @@ class PolicyConflicts extends React.Component {
     return (<div>
       <div className="filters">
         <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
-          onChange={this.handleOnChangeIsActive}/>
+          onChange={this.handleOnChangeIsActive.bind(this)}/>
         <label htmlFor="isActive">{I18n.t("conflicts.hide_inactive")}</label>
         <em className="note"><sup>*</sup>{I18n.t("conflicts.hide_inactive_note")} </em>
       </div>

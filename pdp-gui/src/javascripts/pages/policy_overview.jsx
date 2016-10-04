@@ -47,7 +47,6 @@ class PolicyOverview extends React.Component {
       ]
     });
 
-    // not the react way, but we don't control datatables as we should
     if (this.state.policies.length === 0) {
       $("#policies_table_paginate").hide();
     } else {
@@ -76,28 +75,15 @@ class PolicyOverview extends React.Component {
     };
   }
 
-  handleShowPolicyDetail(policy) {
-    return function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/policy/:id", { id: policy.id });
-    };
-  }
-
-  handleShowViolations(policy) {
-    return function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/violations/:id", { id: policy.id });
-    };
-  }
-
   renderViolationsLink(policy) {
     if (policy.numberOfViolations === 0) {
       return (<span>0</span>);
     } else {
-      return (<a href={page.uri("/violations/:id",{ id: policy.id })}
-        onClick={this.handleShowViolations(policy)}>{policy.numberOfViolations}</a>);
+      return (
+        <Link to={`/violations/${policy.id}`}>
+          {policy.numberOfViolations}
+        </Link>
+      );
     }
   }
 

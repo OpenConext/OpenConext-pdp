@@ -3,7 +3,7 @@ import I18n from "i18n-js";
 import $ from "jquery";
 import moment from "moment";
 
-import { getIdentityProviders, getServiceProviders, getViolations } from "../api";
+import { getIdentityProviders, getServiceProviders, getViolations, getPolicyViolations } from "../api";
 import { determineStatus } from "../utils/status";
 
 import CodeMirror from "../components/code_mirror";
@@ -72,12 +72,12 @@ class PolicyViolations extends React.Component {
   }
 
   componentDidMount() {
-    getViolations()
-      .then(violations => this.setState({ violations }, () => this.initDataTable()));
+    const promise = this.props.params.id ? getPolicyViolations(this.props.params.id) : getViolations();
+    promise.then(violations => this.setState({ violations }, () => this.initDataTable()));
   }
 
   componentWillUnmount() {
-    this.destroyDataTable();
+    $("#violations_table").DataTable().destroy();
   }
 
   handleShowViolationDetail(violation) {

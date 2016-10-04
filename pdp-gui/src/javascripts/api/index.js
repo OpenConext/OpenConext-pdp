@@ -133,6 +133,10 @@ export function getViolations() {
   return fetchJson('/internal/violations');
 }
 
+export function getPolicyViolations(policyId) {
+  return fetchJson(`/internal/violations/${policyId}`);
+}
+
 export function getConflicts() {
   return fetchJson('/internal/conflicts');
 }
