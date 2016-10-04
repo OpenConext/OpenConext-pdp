@@ -54,6 +54,8 @@ class UserProfile extends React.Component {
         </li>
       );
     }
+
+    return null;
   }
 
   renderItem(entity) {

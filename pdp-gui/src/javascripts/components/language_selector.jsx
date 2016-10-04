@@ -20,7 +20,7 @@ class LanguageSelector extends React.Component {
       <li key={locale}>
         <a
           href="#"
-          className={I18n.currentLocale() == locale ? "selected" : ""}
+          className={I18n.currentLocale() === locale ? "selected" : ""}
           title={I18n.t("select_locale", { locale: locale })}
           onClick={this.handleChooseLocale(locale)}>
           {I18n.t("code", { locale: locale })}

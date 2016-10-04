@@ -103,6 +103,11 @@ App.childContextTypes = {
   clearIdentity: React.PropTypes.func
 };
 
+App.propTypes = {
+  currentUser: React.PropTypes.shape({
+  })
+};
+
 function determineLanguage() {
   let parameterByName = QueryParameter.getParameterByName("lang");
 

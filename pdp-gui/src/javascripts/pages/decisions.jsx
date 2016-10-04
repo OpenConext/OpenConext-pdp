@@ -27,7 +27,7 @@ class Decisions extends React.Component {
       return n !== 0;
     }).reduce((prev, curr, i, arr) => {
       const total = prev + curr;
-      return i == arr.length - 1 ? total / arr.length : total;
+      return i === arr.length - 1 ? total / arr.length : total;
     }, 0).toFixed(0);
   }
 

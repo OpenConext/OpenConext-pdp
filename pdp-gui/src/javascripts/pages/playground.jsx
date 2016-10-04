@@ -11,18 +11,6 @@ import PolicyPlaygroundHelpNl from "../help/policy_playground_help_nl";
 import CodeMirror from "../components/code_mirror";
 
 class Playground extends React.Component {
-  //
-  // componentWillUpdate() {
-  //   const node = this.getDOMNode();
-  //   this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  // }
-  //
-  // componentDidUpdate() {
-  //   if (this.shouldScrollBottom) {
-  //     const node = this.getDOMNode();
-  //     node.scrollTop = node.scrollHeight;
-  //   }
-  // }
 
   constructor() {
     super();
@@ -54,12 +42,9 @@ class Playground extends React.Component {
 
   handleChangePolicy(newValue) {
     if (newValue) {
-      const { currentUser } = this.context;
       const policy = this.state.policies.filter(policy => {
         return policy.id === parseInt(newValue);
       })[0];
-
-      const identityProviderId = _.isEmpty(policy.identityProviderIds) ? currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
 
       this.setState({ pdpRequest: { ...this.state.pdpRequest, selectedPolicy: newValue, attributes: policy.attributes } });
     }
@@ -95,7 +80,7 @@ class Playground extends React.Component {
   }
 
   submitForm() {
-    return function(e) {
+    return function() {
       const idp = this.state.pdpRequest.identityProviderId;
       const sp = this.state.pdpRequest.serviceProviderId;
       const decisionRequest = {
@@ -193,7 +178,7 @@ class Playground extends React.Component {
   renderAttributes(pdpRequest) {
     //we need state changes from the child component
     return (<PolicyAttributes
-      policy={this.state.pdpRequest}
+      policy={pdpRequest}
       allowedAttributes={this.state.allowedSamlAttributes}
       setAttributeState={this.setAttributeState.bind(this)}
       css="split"/>);
@@ -234,9 +219,11 @@ class Playground extends React.Component {
         <em>{I18n.t("playground.adventurous_text")}</em>
       </div>);
     }
+
+    return null;
   }
 
-  renderActions(pdpRequest) {
+  renderActions() {
     const classNameSubmit = this.isValidPdpRequest() ? "" : "disabled";
     return (
       <div className="form-element split no-pad-right">
@@ -252,7 +239,7 @@ class Playground extends React.Component {
     this.setState({ decisionRequestJson: newJson });
   }
 
-  renderJsonRequest(decisionRequest) {
+  renderJsonRequest() {
     const selectedTab = (this.state.tab || "request");
     if (selectedTab === "request") {
       const options = {
@@ -272,10 +259,11 @@ class Playground extends React.Component {
         </div>
       );
     }
+
+    return null;
   }
 
   renderJsonResponse(responseJSON) {
-
     const selectedTab = (this.state.tab || "request");
     if (selectedTab === "response") {
       const options = {
@@ -290,6 +278,8 @@ class Playground extends React.Component {
           uniqueId="code_mirror_textarea_response"/>
       );
     }
+
+    return null;
   }
 
   handleTabChange(tab) {
@@ -302,8 +292,8 @@ class Playground extends React.Component {
 
   renderTabs() {
     const selectedTab = (this.state.tab || "request");
-    const request = (selectedTab == "request" ? "selected" : "");
-    const response = (selectedTab == "response" ? "selected" : "");
+    const request = (selectedTab === "request" ? "selected" : "");
+    const response = (selectedTab === "response" ? "selected" : "");
     return (
       <div>
         <div>
@@ -334,11 +324,13 @@ class Playground extends React.Component {
           {this.renderJsonResponse(responseJSON)}
         </div>
       );
-    } else {
-      return (<div className="l-split-right form-element-container box">
-        {this.renderAboutPage()}
-      </div>);
     }
+
+    return (
+      <div className="l-split-right form-element-container box">
+        {this.renderAboutPage()}
+      </div>
+    );
   }
 
   renderAboutPage() {

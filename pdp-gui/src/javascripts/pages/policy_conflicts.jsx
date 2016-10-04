@@ -22,7 +22,7 @@ class PolicyConflicts extends React.Component {
     getConflicts().then(conflicts => this.setState({ conflicts }));
   }
 
-  handleOnChangeIsActive(e) {
+  handleOnChangeIsActive() {
     this.setState({ hideInactive: !this.state.hideInactive });
   }
 
@@ -47,12 +47,11 @@ class PolicyConflicts extends React.Component {
     const serviceProviderNames = Object.keys(this.state.conflicts);
     if (_.isEmpty(serviceProviderNames)) {
       return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>);
-    } else {
-      return serviceProviderNames.map((sp, index) => {
-        return this.renderConflict(sp, index);
-      });
-
     }
+
+    return serviceProviderNames.map((sp, index) => {
+      return this.renderConflict(sp, index);
+    });
   }
 
   renderConflict(sp, index) {
@@ -60,7 +59,7 @@ class PolicyConflicts extends React.Component {
     if (this.state.hideInactive && policies.filter(policy => {
       return policy.activatedSr && policy.active;
     }).length < 2) {
-      return;
+      return null;
     }
     return (
       <div key={sp}>

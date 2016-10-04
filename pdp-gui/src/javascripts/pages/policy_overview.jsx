@@ -21,7 +21,7 @@ class PolicyOverview extends React.Component {
 
   initDataTable() {
     $.fn.dataTable.ext.order["dom-checkbox"] = function(settings, col) {
-      return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
+      return this.api().column(col, { order: "index" }).nodes().map(td => {
         return $("input", td).prop("checked") ? "1" : "0";
       });
     };
@@ -78,13 +78,13 @@ class PolicyOverview extends React.Component {
   renderViolationsLink(policy) {
     if (policy.numberOfViolations === 0) {
       return (<span>0</span>);
-    } else {
-      return (
-        <Link to={`/violations/${policy.id}`}>
-          {policy.numberOfViolations}
-        </Link>
-      );
     }
+
+    return (
+      <Link to={`/violations/${policy.id}`}>
+        {policy.numberOfViolations}
+      </Link>
+    );
   }
 
   renderRevisionsLink(policy) {
@@ -115,10 +115,12 @@ class PolicyOverview extends React.Component {
         </div>
       );
     }
+
+    return null;
   }
 
   render() {
-    const renderRows = this.state.policies.map((policy, index) => {
+    const renderRows = this.state.policies.map(policy => {
       return (
         <tr key={policy.id}>
           <td>{policy.name}</td>

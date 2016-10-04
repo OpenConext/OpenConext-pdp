@@ -9,16 +9,6 @@ import { getRevisions } from "../api";
 
 class PolicyRevisions extends React.Component {
 
-  componentWillUpdate() {
-    this.shouldScrollBottom = this.node.scrollTop + this.node.offsetHeight === this.node.scrollHeight;
-  }
-
-  componentDidUpdate() {
-    if (this.shouldScrollBottom) {
-      this.node.scrollTop = this.node.scrollHeight;
-    }
-  }
-
   constructor() {
     super();
 
@@ -57,7 +47,7 @@ class PolicyRevisions extends React.Component {
         });
         const newValues = deleted.concat(added).concat(unchanged);
         const anyValuesChanged = newValues.filter(val => {
-          return val.status == "prev" || val.status === "curr";
+          return val.status === "prev" || val.status === "curr";
         }).length > 0;
 
         result[attrName] = { values: newValues, status: "no-change", anyValuesChanged: anyValuesChanged };
@@ -119,7 +109,8 @@ class PolicyRevisions extends React.Component {
       </div>);
   }
 
-  renderDiff(prev, curr) {
+  renderDiff(passedPrev, curr) {
+    let prev = passedPrev;
     const properties = ["name", "description", "denyRule", "serviceProviderName", "identityProviderNames",
       "allAttributesMustMatch", "attributes", "denyAdvice", "denyAdviceNl", "active"
     ];
@@ -131,15 +122,16 @@ class PolicyRevisions extends React.Component {
     const renderPropertyDiff = function(prev, curr, name) {
       if (name === "attributes") {
         return this.renderAttributesDiff(prev, curr);
-      } else {
-        return (<div key={name}>
+      }
+      return (
+        <div key={name}>
           <div className={"diff-element " + this.classNamePropertyDiff(prev[name], curr[name])}>
             <p className="label">{I18n.t("revisions."+name)}</p>
             {this.renderPropertyDiff(prev[name], curr[name])}
           </div>
           <div className="diff-element-seperator"></div>
-        </div>);
-      }
+        </div>
+      );
     }.bind(this);
 
     return (
@@ -186,12 +178,13 @@ class PolicyRevisions extends React.Component {
       return (<span className="diff no-change">{current.toString()}</span>);
     } else if (previous === undefined) {
       return <span className="diff curr">{current.toString()}</span>;
-    } else {
-      return (<div>
+    }
+    return (
+      <div>
         <span className="diff prev">{previous.toString()}</span>
         <span className="diff curr">{current.toString()}</span>
-      </div>);
-    }
+      </div>
+    );
   }
 
   classNamePropertyDiff(prev, curr) {
@@ -215,11 +208,12 @@ class PolicyRevisions extends React.Component {
   renderComparePanel() {
     const prev = this.state.prev;
     const curr = this.state.curr;
+
     if (prev || curr) {
       return this.renderDiff(prev, curr);
-    } else {
-      return this.renderAboutPage();
     }
+
+    return this.renderAboutPage();
   }
 
   renderAboutPage() {
@@ -281,7 +275,12 @@ class PolicyRevisions extends React.Component {
       </div>
     );
   }
-
 }
+
+PolicyRevisions.propTypes = {
+  params: React.PropTypes.shape({
+    id: React.PropTypes.string
+  })
+};
 
 export default PolicyRevisions;

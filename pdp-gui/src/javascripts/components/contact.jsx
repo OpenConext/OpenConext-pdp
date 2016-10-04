@@ -14,4 +14,8 @@ class Contact extends React.Component {
   }
 }
 
+Contact.propTypes = {
+  email: React.PropTypes.string
+};
+
 export default Contact;

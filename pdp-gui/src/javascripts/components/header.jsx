@@ -65,9 +65,9 @@ class Header extends React.Component {
   renderDropDownIndicator() {
     if (this.state.dropDownActive) {
       return <i className="fa fa-caret-up"/>;
-    } else {
-      return <i className="fa fa-caret-down"/>;
     }
+
+    return <i className="fa fa-caret-down"/>;
   }
 
   renderDropDown() {
@@ -78,6 +78,8 @@ class Header extends React.Component {
         </div>
       );
     }
+
+    return null;
   }
 
   renderExitLogout() {

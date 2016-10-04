@@ -4,14 +4,15 @@ const AutoFormat = {
     return (_.isEmpty(str)) ? str : "'" + str + "'";
   },
 
-  attributes: function(attributes, allAttributesMustMatch) {
+  attributes: function(passedAttributes, allAttributesMustMatch) {
+    let attributes = passedAttributes;
     const otherAttr = attributes.filter(attr => {
       return attr.name !== "urn:collab:group:surfteams.nl";
     });
     if (otherAttr.length === 0) {
       return ".";
     }
-    var attributes = _.groupBy(otherAttr, attr => {
+    attributes = _.groupBy(otherAttr, attr => {
       return attr.name;
     });
     const attributeNames = Object.keys(attributes);

@@ -95,13 +95,15 @@ class PolicyAttributes extends React.Component {
 
   renderAttributeInfo(attrName, index) {
     if (index !== 0) {
-      return;
+      return null;
     }
     if ("urn:collab:sab:surfnet.nl" === attrName) {
       return (<em className="attribute-value"><sup>*</sup>{I18n.t("policy_attributes.sab_info")}</em>);
     } else if ("urn:collab:group:surfteams.nl" === attrName) {
       return (<em className="attribute-value"><sup>*</sup>{I18n.t("policy_attributes.group_info")}</em>);
     }
+
+    return null;
   }
 
   renderAttributeValue(attrName, attribute, index) {
@@ -181,8 +183,19 @@ class PolicyAttributes extends React.Component {
       </div>);
 
   }
-
-
 }
+
+PolicyAttributes.propTypes = {
+  css: React.PropTypes.string,
+  setAttributeState: React.PropTypes.func,
+  allowedAttributes: React.PropTypes.arrayOf(React.PropTypes.shape({
+    name: React.PropTypes.string
+  })),
+  policy: React.PropTypes.shape({
+    attributes: React.PropTypes.arrayOf(React.PropTypes.shape({
+
+    }))
+  })
+};
 
 export default PolicyAttributes;

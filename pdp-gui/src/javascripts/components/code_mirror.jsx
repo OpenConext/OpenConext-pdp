@@ -23,7 +23,7 @@ class CodeMirrorComponent extends React.Component {
     }
   }
 
-  codeMirrorValueChanged(doc, change) {
+  codeMirrorValueChanged(doc) {
     const newValue = doc.getValue();
     this._currentCodemirrorValue = newValue;
     this.props.onChange && this.props.onChange(newValue);
@@ -36,8 +36,14 @@ class CodeMirrorComponent extends React.Component {
       </div>
     );
   }
-
-
 }
+
+CodeMirrorComponent.propTypes = {
+  options: React.PropTypes.shape({
+    readOnly: React.PropTypes.boolean
+  }),
+  value: React.PropTypes.string,
+  onChange: React.PropTypes.func
+};
 
 export default CodeMirrorComponent;

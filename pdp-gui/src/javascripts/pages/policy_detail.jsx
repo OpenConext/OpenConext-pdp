@@ -56,7 +56,7 @@ class PolicyDetail extends React.Component {
     getAllowedAttributes().then(allowedAttributes => this.setState({ allowedAttributes }));
   }
 
-  toggleDenyRule(e) {
+  toggleDenyRule() {
     const partialState = { denyRule: !this.state.policy.denyRule };
     if (!this.state.policy.denyRule) {
       partialState.allAttributesMustMatch = true;
@@ -162,7 +162,7 @@ class PolicyDetail extends React.Component {
     this.setState({ description: e.target.value });
   }
 
-  handleOnChangeAutoFormat(e) {
+  handleOnChangeAutoFormat() {
     const partialState = { autoFormat: !this.state.autoFormat };
     if (partialState.autoFormat) {
       partialState.savedDescription = this.state.description;
@@ -174,7 +174,7 @@ class PolicyDetail extends React.Component {
     this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
-  handleOnChangeIsActive(e) {
+  handleOnChangeIsActive() {
     this.setState({ active: !this.state.active });
   }
 
@@ -190,9 +190,9 @@ class PolicyDetail extends React.Component {
         allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.policy.allAttributesMustMatch
       };
       return AutoFormat.description(policy);
-    } else {
-      return this.state.description;
     }
+
+    return this.state.description;
   }
 
   handleOnDenyAdvice(e) {
@@ -251,6 +251,8 @@ class PolicyDetail extends React.Component {
         </div>
       );
     }
+
+    return null;
   }
 
   renderDenyAdvice(policy) {
@@ -299,6 +301,8 @@ class PolicyDetail extends React.Component {
     if (scopedSPs) {
       return (<em className="note"><sup>*</sup>{I18n.t("policy_detail.spScopeInfo")} </em>);
     }
+
+    return null;
   }
 
   renderIdentityProvider(policy) {
@@ -370,13 +374,13 @@ class PolicyDetail extends React.Component {
           <span className={className}>{value}</span>
         </li>
       );
-    } else {
-      return (
-        <li key={value}>
-          <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
-        </li>
-      );
     }
+
+    return (
+      <li key={value}>
+        <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
+      </li>
+    );
   }
 
   setAttributeState(newAttributeState) {
@@ -387,7 +391,7 @@ class PolicyDetail extends React.Component {
   renderAttributes(policy) {
     //we need state changes from the child component
     return (<PolicyAttributes
-      policy={this.state.policy}
+      policy={policy}
       allowedAttributes={this.state.allowedAttributes}
       setAttributeState={this.setAttributeState.bind(this)}/>);
   }
@@ -429,6 +433,8 @@ class PolicyDetail extends React.Component {
     if (this.state.denyRule) {
       return (<em><sup>*</sup> {I18n.t("policy_detail.rule_info_add_2")}</em>);
     }
+
+    return null;
   }
 
   renderActions(policy) {
@@ -449,10 +455,11 @@ class PolicyDetail extends React.Component {
       return (
         <a className="c-button delete" href="#" onClick={this.deletePolicy(policy)}>{I18n.t("policies.delete")}</a>);
     }
+
+    return null;
   }
 
   renderRevisionsLink(policy) {
-    const numberOfRevisions = (policy.numberOfRevisions + 1);
     if (policy.id) {
       return (
         <Link className="c-button cancel pull-right" to={`/revisions/${policy.id}`}>
@@ -460,6 +467,8 @@ class PolicyDetail extends React.Component {
         </Link>
       );
     }
+
+    return null;
   }
 
 
@@ -477,7 +486,6 @@ class PolicyDetail extends React.Component {
       //var classTitle = policy.id
       const created = moment(policy.created);
       created.locale(I18n.locale);
-      const date = created.format("LLLL");
       const subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
         displayName: policy.userDisplayName,
         created: this.createdDate(policy)
@@ -523,5 +531,10 @@ PolicyDetail.contextTypes = {
   router: React.PropTypes.object
 };
 
+PolicyDetail.propTypes = {
+  params: React.PropTypes.shape({
+    id: React.PropTypes.string
+  })
+};
 
 export default PolicyDetail;

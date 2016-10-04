@@ -19,6 +19,12 @@ function validateResponse(res) {
 
   csrfToken = res.headers.get("x-csrf-token");
 
+  const sessionAlive = res.headers.get("x-session-alive");
+
+  if (sessionAlive !== "true") {
+    window.location.reload(true);
+  }
+
   return res;
 }
 

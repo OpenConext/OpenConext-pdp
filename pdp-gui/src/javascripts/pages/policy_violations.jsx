@@ -30,13 +30,13 @@ class PolicyViolations extends React.Component {
 
   initDataTable() {
     $.fn.dataTable.ext.order["locale-date"] = function(settings, col) {
-      return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
+      return this.api().column(col, { order: "index" }).nodes().map(td => {
         //use the milliseconds to sort
         return moment(td.textContent, "DD-MM-YYYY hh:mm").valueOf();
       });
     };
     $.fn.dataTable.ext.order["dom-checkbox"] = function(settings, col) {
-      return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
+      return this.api().column(col, { order: "index" }).nodes().map(td => {
         return $("input", td).prop("checked") ? "1" : "0";
       });
     };
@@ -150,15 +150,15 @@ class PolicyViolations extends React.Component {
           {this.renderResponseDetails(response)}
         </div>
       );
-    } else {
-      return this.renderAboutPage();
     }
+
+    return this.renderAboutPage();
   }
 
   renderTabs() {
     const selectedTab = (this.state.tab || "request");
-    const request = (selectedTab == "request" ? "selected" : "");
-    const response = (selectedTab == "response" ? "selected" : "");
+    const request = (selectedTab === "request" ? "selected" : "");
+    const response = (selectedTab === "response" ? "selected" : "");
     return (
       <div>
         <div>
@@ -194,6 +194,8 @@ class PolicyViolations extends React.Component {
           options={options} uniqueId="code_mirror_textarea_violation_request"/>
       );
     }
+
+    return null;
   }
 
   renderResponseDetails(response) {
@@ -213,10 +215,12 @@ class PolicyViolations extends React.Component {
           options={options} uniqueId="code_mirror_textarea_violation_response"/>
       );
     }
+
+    return null;
   }
 
   renderTable() {
-    const renderRows = this.state.violations.map((violation, index) => {
+    const renderRows = this.state.violations.map(violation => {
       const request = JSON.parse(violation.jsonRequest).Request;
       const idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
       const idpName = this.getEntityName(idp, "identityProviders");
@@ -273,7 +277,12 @@ class PolicyViolations extends React.Component {
       </div>
     );
   }
-
 }
+
+PolicyViolations.propTypes = {
+  params: React.PropTypes.shape({
+    id: React.PropTypes.string
+  })
+};
 
 export default PolicyViolations;
