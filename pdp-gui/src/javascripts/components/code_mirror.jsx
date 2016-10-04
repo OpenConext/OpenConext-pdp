@@ -1,5 +1,6 @@
 import React from "react";
 import CodeMirror from "codemirror";
+import "codemirror/mode/javascript/javascript";
 
 class CodeMirrorComponent extends React.Component {
 
