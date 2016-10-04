@@ -140,3 +140,11 @@ export function getConflicts() {
 export function getDecisions() {
   return fetchJson('/internal/decisions?daysAgo=365');
 }
+
+export function getSamlAllowedAttributes() {
+  return fetchJson('/internal/saml-attributes');
+}
+
+export function postPdpRequest(pdpRequest) {
+  return postJson("/internal/decide/policy", pdpRequest).then(parseJson);
+}

@@ -35,12 +35,16 @@ Select2Selector.propTypes = {
   handleChange: React.PropTypes.func.isRequired,
   defaultValue: React.PropTypes.oneOfType([
     React.PropTypes.string,
-    React.PropTypes.arrayOf(React.PropTypes.string)
+    React.PropTypes.arrayOf(React.PropTypes.string),
+    React.PropTypes.number
   ]),
   multiple: React.PropTypes.bool,
   options: React.PropTypes.arrayOf(React.PropTypes.shape({
     display: React.PropTypes.string,
-    value: React.PropTypes.string
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.number
+    ])
   })),
   placeholder: React.PropTypes.string,
   minimumResultsForSearch: React.PropTypes.number

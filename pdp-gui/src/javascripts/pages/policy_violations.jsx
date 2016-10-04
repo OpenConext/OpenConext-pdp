@@ -1,9 +1,12 @@
 import React from "react";
 import I18n from "i18n-js";
 import $ from "jquery";
+import moment from "moment";
 
 import { getIdentityProviders, getServiceProviders, getViolations } from "../api";
+import { determineStatus } from "../utils/status";
 
+import CodeMirror from "../components/code_mirror";
 import PolicyViolationsHelpEn from "../help/policy_violations_help_en";
 import PolicyViolationsHelpNl from "../help/policy_violations_help_nl";
 
@@ -21,13 +24,8 @@ class PolicyViolations extends React.Component {
   }
 
   componentWillMount() {
-    getViolations().then(violations => this.setState({ violations }));
     getIdentityProviders().then(identityProviders => this.setState({ identityProviders }));
     getServiceProviders().then(serviceProviders => this.setState({ serviceProviders }));
-  }
-
-  destroyDataTable() {
-    $("#violations_table").DataTable().destroy();
   }
 
   initDataTable() {
@@ -65,18 +63,7 @@ class PolicyViolations extends React.Component {
       ],
       order: [[3, "desc"]]
     });
-  }
 
-  componentWillReceiveProps(nextProps) {
-    this.destroyDataTable();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (!$.fn.DataTable.isDataTable("#violations_table")) {
-      this.initDataTable();
-    }
-    window.scrollTo(0, 0);
-    // not the react way, but we don't control datatables as we should
     if (this.state.violations.length === 0) {
       $("#violations_table_paginate").hide();
     } else {
@@ -85,7 +72,8 @@ class PolicyViolations extends React.Component {
   }
 
   componentDidMount() {
-    this.initDataTable();
+    getViolations()
+      .then(violations => this.setState({ violations }, () => this.initDataTable()));
   }
 
   componentWillUnmount() {
@@ -132,7 +120,7 @@ class PolicyViolations extends React.Component {
 
   renderStatus(response, policyName) {
     const decision = response.Response[0].Decision;
-    const status = App.Controllers.PolicyViolations.determineStatus(decision);
+    const status = determineStatus(decision);
     return (
       <div className={"response-status " + status}>
         <i className={"fa fa-"+status + " " + status}></i>
@@ -202,7 +190,7 @@ class PolicyViolations extends React.Component {
         readOnly: true
       };
       return (
-        <App.Components.CodeMirror value={requestJson}
+        <CodeMirror value={requestJson}
           options={options} uniqueId="code_mirror_textarea_violation_request"/>
       );
     }
@@ -221,7 +209,7 @@ class PolicyViolations extends React.Component {
         readOnly: true
       };
       return (
-        <App.Components.CodeMirror value={responseJson}
+        <CodeMirror value={responseJson}
           options={options} uniqueId="code_mirror_textarea_violation_response"/>
       );
     }

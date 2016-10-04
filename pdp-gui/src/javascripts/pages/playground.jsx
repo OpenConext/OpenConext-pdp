@@ -1,24 +1,48 @@
 import React from "react";
 import I18n from "i18n-js";
 
+import { getIdentityProviders, getServiceProviders, getPolicies, getSamlAllowedAttributes, postPdpRequest } from "../api";
+import { determineStatus } from "../utils/status";
+
+import Select2Selector from "../components/select2_selector";
+import PolicyAttributes from "../components/policy_attributes";
+import PolicyPlaygroundHelpEn from "../help/policy_playground_help_en";
+import PolicyPlaygroundHelpNl from "../help/policy_playground_help_nl";
+import CodeMirror from "../components/code_mirror";
+
 class Playground extends React.Component {
-
-  componentWillUpdate() {
-    const node = this.getDOMNode();
-    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  }
-
-  componentDidUpdate() {
-    if (this.shouldScrollBottom) {
-      const node = this.getDOMNode();
-      node.scrollTop = node.scrollHeight;
-    }
-  }
+  //
+  // componentWillUpdate() {
+  //   const node = this.getDOMNode();
+  //   this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+  // }
+  //
+  // componentDidUpdate() {
+  //   if (this.shouldScrollBottom) {
+  //     const node = this.getDOMNode();
+  //     node.scrollTop = node.scrollHeight;
+  //   }
+  // }
 
   constructor() {
     super();
 
-    this.state = Object.assign({}, this.props.pdpRequest);
+    this.state = {
+      identityProviders: [],
+      serviceProviders: [],
+      allowedSamlAttributes: [],
+      policies: [],
+      pdpRequest: {
+        attributes: []
+      }
+    };
+  }
+
+  componentWillMount() {
+    getIdentityProviders().then(identityProviders => this.setState({ identityProviders }));
+    getServiceProviders().then(serviceProviders => this.setState({ serviceProviders }));
+    getPolicies().then(policies => this.setState({ policies }));
+    getSamlAllowedAttributes().then(allowedSamlAttributes => this.setState({ allowedSamlAttributes }));
   }
 
   parseEntities(entities) {
@@ -30,18 +54,14 @@ class Playground extends React.Component {
 
   handleChangePolicy(newValue) {
     if (newValue) {
-      const policy = this.props.policies.filter(policy => {
+      const { currentUser } = this.context;
+      const policy = this.state.policies.filter(policy => {
         return policy.id === parseInt(newValue);
       })[0];
 
-      const identityProviderId = _.isEmpty(policy.identityProviderIds) ? App.currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
+      const identityProviderId = _.isEmpty(policy.identityProviderIds) ? currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
 
-      this.setState({
-        attributes: policy.attributes
-      });
-      //Unfortunately we have to set the visual representation manually as the integration with select2 is done one-way
-      $("[data-select2selector-id=\"serviceProvider\"]").val(policy.serviceProviderId).trigger("change");
-      $("[data-select2selector-id=\"identityProvider\"]").val(identityProviderId).trigger("change");
+      this.setState({ pdpRequest: { ...this.state.pdpRequest, selectedPolicy: newValue, attributes: policy.attributes }});
     }
   }
 
@@ -56,33 +76,28 @@ class Playground extends React.Component {
   }
 
   handleChangeServiceProvider(newValue) {
-    this.setState({ serviceProviderId: newValue });
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, serviceProviderId: newValue }});
   }
 
 
   handleChangeIdentityProvider(newValue) {
-    this.setState({ identityProviderId: newValue });
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, identityProviderId: newValue }});
   }
 
   clearForm() {
-    page("/playground");
+    this.setState({ pdpRequest: { attributes: [] }});
   }
 
   replayRequest() {
-    App.Controllers.Playground.postPdpRequest(this.state.decisionRequestJson,
-                                              jqxhr => {
-                                                this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
-                                              },
-                                              jqxhr => {
-                                                jqxhr.isConsumed = true;
-                                                this.setState({ responseJSON: jqxhr.responseJSON, tab: "response" });
-                                              });
+    postPdpRequest(JSON.parse(this.state.decisionRequestJson))
+      .then(response => this.setState({ responseJSON: response, tab: "response" }))
+      .catch(response => this.setState({ responseJSON: response, tab: "response" }));
   }
 
   submitForm() {
     return function(e) {
-      const idp = this.state.identityProviderId;
-      const sp = this.state.serviceProviderId;
+      const idp = this.state.pdpRequest.identityProviderId;
+      const sp = this.state.pdpRequest.serviceProviderId;
       const decisionRequest = {
         Request: {
           ReturnPolicyIdList: true,
@@ -91,27 +106,23 @@ class Playground extends React.Component {
           Resource: { Attribute: [{ AttributeId: "SPentityID", Value: sp }, { AttributeId: "IDPentityID", Value: idp }] }
         }
       };
-      const attributes = this.state.attributes.map(attr => {
+      const attributes = this.state.pdpRequest.attributes.map(attr => {
         return { AttributeId: attr.name, Value: attr.value };
       });
       decisionRequest.Request.AccessSubject.Attribute = attributes;
-      const json = JSON.stringify(decisionRequest);
-      App.Controllers.Playground.postPdpRequest(json, jqxhr => {
+      postPdpRequest(decisionRequest).then(response => {
         this.setState({
           decisionRequest: decisionRequest,
           decisionRequestJson: JSON.stringify(decisionRequest, null, 3),
-          responseJSON: jqxhr.responseJSON,
+          responseJSON: response,
           tab: "response"
         });
-      }, jgxhr => {
-        jqxhr.isConsumed = true;
-        console.log(jgxhr.responseJSON.details);
       });
     }.bind(this);
   }
 
   isValidPdpRequest() {
-    const pdpRequest = this.state;
+    const { pdpRequest } = this.state;
     const emptyAttributes = pdpRequest.attributes.filter(attr => {
       return _.isEmpty(attr.value);
     });
@@ -126,12 +137,12 @@ class Playground extends React.Component {
         <div className="form-element split success">
           <p className="label before-em">{I18n.t("playground.policy")}</p>
           <em className="label">{I18n.t("playground.policy_info")}</em>
-          <App.Components.Select2Selector
-            defaultValue=""
+          <Select2Selector
+            defaultValue={ this.state.pdpRequest.selectedPolicy}
             placeholder={I18n.t("playground.policy_search")}
             select2selectorId={"policy"}
-            options={this.parsePolicies(this.props.policies)}
-            handleChange={this.handleChangePolicy}/>
+            options={this.parsePolicies(this.state.policies)}
+            handleChange={this.handleChangePolicy.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -144,12 +155,12 @@ class Playground extends React.Component {
       <div>
         <div className={"form-element split " + workflow}>
           <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={pdpRequest.serviceProviderId}
             placeholder={I18n.t("policy_detail.sp_placeholder")}
             select2selectorId={"serviceProvider"}
-            options={this.parseEntities(this.props.serviceProviders)}
-            handleChange={this.handleChangeServiceProvider}/>
+            options={this.parseEntities(this.state.serviceProviders)}
+            handleChange={this.handleChangeServiceProvider.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -163,12 +174,12 @@ class Playground extends React.Component {
         <div className={"form-element split " + workflow}>
           <p className="label">{I18n.t("policies.identityProviderId")}</p>
 
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={pdpRequest.identityProviderId}
             placeholder={I18n.t("playground.idp_placeholder")}
             select2selectorId={"identityProvider"}
-            options={this.parseEntities(this.props.identityProviders)}
-            handleChange={this.handleChangeIdentityProvider}/>
+            options={this.parseEntities(this.state.identityProviders)}
+            handleChange={this.handleChangeIdentityProvider.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -176,15 +187,15 @@ class Playground extends React.Component {
   }
 
   setAttributeState(newAttributeState) {
-    this.setState(newAttributeState);
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, ...newAttributeState }});
   }
 
   renderAttributes(pdpRequest) {
     //we need state changes from the child component
-    return (<App.Components.PolicyAttributes
-      policy={this.state}
-      allowedAttributes={this.props.allowedSamlAttributes}
-      setAttributeState={this.setAttributeState}
+    return (<PolicyAttributes
+      policy={this.state.pdpRequest}
+      allowedAttributes={this.state.allowedSamlAttributes}
+      setAttributeState={this.setAttributeState.bind(this)}
       css="split"/>);
   }
 
@@ -194,7 +205,7 @@ class Playground extends React.Component {
       const response = responseJSON.Response[0];
       decision = response.Decision;
       statusCode = response.Status.StatusCode.Value;
-      status = App.Controllers.PolicyViolations.determineStatus(decision);
+      status = determineStatus(decision);
     } else {
       decision = "Error";
       statusCode = "Unexpected error occured";
@@ -231,7 +242,7 @@ class Playground extends React.Component {
       <div className="form-element split no-pad-right">
         <a className={classNameSubmit + " large c-button"} href="#"
           onClick={this.submitForm(this)}><i className="fa fa-refresh"></i>{I18n.t("playground.check_policies")}</a>
-        <a className="c-button cancel" href="#" onClick={this.clearForm}>{I18n.t("playground.clear_policies")}</a>
+        <a className="c-button cancel" href="#" onClick={this.clearForm.bind(this)}>{I18n.t("playground.clear_policies")}</a>
         {this.renderAdventurous()}
       </div>
     );
@@ -253,10 +264,10 @@ class Playground extends React.Component {
       return (
         <div>
           <div className="align-center">
-            <a className="c-button full" href="#" onClick={this.replayRequest}>
+            <a className="c-button full" href="#" onClick={this.replayRequest.bind(this)}>
               <i className="fa fa-refresh"></i>{I18n.t("playground.reload_policy")}</a>
           </div>
-          <App.Components.CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest}
+          <CodeMirror value={this.state.decisionRequestJson} onChange={this.updateJsonRequest.bind(this)}
             options={options} uniqueId="code_mirror_textarea_request"/>
         </div>
       );
@@ -275,7 +286,7 @@ class Playground extends React.Component {
         readOnly: true
       };
       return (
-        <App.Components.CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}
+        <CodeMirror value={JSON.stringify(responseJSON, null, 3)} options={options}
           uniqueId="code_mirror_textarea_response"/>
       );
     }
@@ -331,11 +342,11 @@ class Playground extends React.Component {
   }
 
   renderAboutPage() {
-    return I18n.locale === "en" ? <App.Help.PolicyPlaygroundHelpEn/> : <App.Help.PolicyPlaygroundHelpNl/>;
+    return I18n.locale === "en" ? <PolicyPlaygroundHelpEn/> : <PolicyPlaygroundHelpNl/>;
   }
 
   render() {
-    const pdpRequest = this.state;
+    const { pdpRequest } = this.state;
     return (
       <div className="l-center mod-playground">
         <div className="l-split-left form-element-container box">
@@ -351,8 +362,11 @@ class Playground extends React.Component {
       </div>
     );
   }
-
 }
 
+Playground.contextTypes = {
+  currentUser: React.PropTypes.object,
+  router: React.PropTypes.object
+};
 
 export default Playground;

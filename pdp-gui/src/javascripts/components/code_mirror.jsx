@@ -1,13 +1,13 @@
 import React from "react";
+import CodeMirror from "codemirror";
 
-class CodeMirror extends React.Component {
+class CodeMirrorComponent extends React.Component {
 
   componentDidMount() {
-    const node = document.getElementById(this.props.uniqueId);
-    this.codeMirror = CodeMirror.fromTextArea(node, this.props.options);
+    this.codeMirror = CodeMirror.fromTextArea(this.node, this.props.options);
     this._currentCodemirrorValue = this.props.value;
     if (!this.props.options.readOnly) {
-      this.codeMirror.on("change", this.codeMirrorValueChanged);
+      this.codeMirror.on("change", this.codeMirrorValueChanged.bind(this));
     }
   }
 
@@ -32,7 +32,7 @@ class CodeMirror extends React.Component {
   render() {
     return (
       <div className="code-mirror">
-        <textarea id={this.props.uniqueId} defaultValue={this.props.value} autoComplete="off"/>
+        <textarea ref={node => this.node = node} defaultValue={this.props.value} autoComplete="off"/>
       </div>
     );
   }
@@ -40,4 +40,4 @@ class CodeMirror extends React.Component {
 
 }
 
-export default CodeMirror;
+export default CodeMirrorComponent;

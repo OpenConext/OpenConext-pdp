@@ -1,5 +1,7 @@
 import React from "react";
 import I18n from "i18n-js";
+// This fixes a bug in Rickshaw
+window.jQuery = undefined;
 import Rickshaw from "rickshaw";
 
 import { getDecisions } from "../api";
