@@ -25,6 +25,8 @@ import Footer from "./components/footer";
 import Header from "./components/header";
 import Navigation from "./components/navigation";
 import PolicyOverview from "./pages/policy_overview";
+import PolicyRevisions from "./pages/policy_revisions";
+import PolicyDetail from "./pages/policy_detail";
 
 import "./locale/en";
 import "./locale/nl";
@@ -70,6 +72,9 @@ class App extends React.Component {
 
           <Match exactly pattern="/identity" component={Identity} />
           <Match exactly pattern="/policies" component={PolicyOverview} />
+          <Match exactly pattern="/revisions/:id" component={PolicyRevisions} />
+          <Match exactly pattern="/new-policy" component={PolicyDetail} />
+          <Match exactly pattern="/policy/:id" component={PolicyDetail} />
           <Miss component={NotFound} />
           <Footer />
         </div>

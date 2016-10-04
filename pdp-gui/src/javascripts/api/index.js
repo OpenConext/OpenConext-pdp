@@ -61,6 +61,14 @@ export function fetchJson(path, options = {}) {
   .then(parseJson);
 }
 
+function postJson(path, body, options = {}) {
+  return validFetch(path, Object.assign({}, { method: "post", body: JSON.stringify(body) }, options));
+}
+
+function putJson(path, body, options = {}) {
+  return validFetch(path, Object.assign({}, { method: "put", body: JSON.stringify(body) }, options));
+}
+
 export function fetchDelete(path) {
   return validFetch(path, { method: "delete" });
 }
@@ -73,10 +81,50 @@ export function getIdentityProviders() {
   return fetchJson("/internal/identityProviders");
 }
 
+export function getScopedIdentityProviders() {
+  return fetchJson("/internal/identityProviders/scoped");
+}
+
+export function getServiceProviders() {
+  return fetchJson("/internal/serviceProviders");
+}
+
+export function getAllowedAttributes() {
+  return fetchJson("/internal/attributes");
+}
+
 export function getPolicies() {
   return fetchJson("/internal/policies");
 }
 
 export function deletePolicy(policyId) {
   return fetchDelete(`/internal/policies/${ policyId }`);
+}
+
+export function getRevisions(policyId) {
+  return fetchJson(`/internal/revisions/${policyId}`);
+}
+
+export function getNewPolicy() {
+  return fetchJson(`/internal/default-policy`);
+}
+
+export function getPolicy(policyId) {
+  return fetchJson(`/internal/policies/${policyId}`);
+}
+
+export function createPolicy(policy) {
+  return postJson("/internal/policies", policy, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+export function updatePolicy(policy) {
+  return putJson("/internal/policies", policy, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  });
 }

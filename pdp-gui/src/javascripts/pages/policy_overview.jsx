@@ -5,6 +5,8 @@ import Link from "react-router/Link";
 import "datatables";
 
 import { deletePolicy, getPolicies } from "../api";
+import Flash from "../components/flash";
+import { setFlash } from "../utils/flash";
 
 class PolicyOverview extends React.Component {
 
@@ -56,9 +58,6 @@ class PolicyOverview extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     this.destroyDataTable();
-    if (!_.isEmpty(this.props) && this.props.flash !== nextProps.flash) {
-      this.setState({ hideFlash: false });
-    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -87,8 +86,7 @@ class PolicyOverview extends React.Component {
       e.stopPropagation();
       if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
         deletePolicy(policy.id).then(() => {
-          //FIXME: flash
-          App.setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+          setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
         });
       }
     };
@@ -164,7 +162,6 @@ class PolicyOverview extends React.Component {
   }
 
   render() {
-    console.log(this.state.policies)
     const renderRows = this.state.policies.map((policy, index) => {
       return (
         <tr key={policy.id}>
@@ -184,7 +181,7 @@ class PolicyOverview extends React.Component {
 
     return (
       <div className="mod-policy-overview">
-        {this.renderFlash()}
+        <Flash />
         <div className='table-responsive'>
           <table className='table table-bordered box' id='policies_table'>
             <thead>

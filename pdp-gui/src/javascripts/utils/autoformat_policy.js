@@ -1,4 +1,4 @@
-App.Utils.AutoFormat = {
+const AutoFormat = {
 
   addQuotes: function(str) {
     return (_.isEmpty(str)) ? str : "'" + str + "'";
@@ -48,6 +48,6 @@ App.Utils.AutoFormat = {
 
     return description;
   }
-
-
 };
+
+export default AutoFormat;

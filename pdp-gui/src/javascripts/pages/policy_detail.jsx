@@ -1,56 +1,88 @@
 import React from "react";
 import I18n from "i18n-js";
+import moment from "moment";
+import Link from "react-router/Link";
+
+import { createPolicy, deletePolicy, updatePolicy, getPolicy, getAllowedAttributes, getScopedIdentityProviders, getNewPolicy, getServiceProviders } from "../api";
+import { setFlash } from "../utils/flash";
+
+import AutoFormat from "../utils/autoformat_policy";
+import Flash from "../components/flash";
+import PolicyAttributes from "../components/policy_attributes";
+import PolicyDetailHelpEn from "../help/policy_detail_help_en";
+import PolicyDetailHelpNl from "../help/policy_detail_help_nl";
+import Select2Selector from "../components/select2_selector";
 
 class PolicyDetail extends React.Component {
 
-  componentWillUpdate() {
-    const node = this.getDOMNode();
-    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  }
-
-  componentDidUpdate() {
-    if (this.shouldScrollBottom) {
-      const node = this.getDOMNode();
-      node.scrollTop = node.scrollHeight;
-    }
-  }
+  // componentWillUpdate() {
+  //   const node = this.getDOMNode();
+  //   this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+  // }
+  //
+  // componentDidUpdate() {
+  //   if (this.shouldScrollBottom) {
+  //     const node = this.getDOMNode();
+  //     node.scrollTop = node.scrollHeight;
+  //   }
+  // }
 
   constructor() {
     super();
 
-    const state = this.props.policy;
-    if (state.id === undefined || state.id === null) {
-      state.active = true;
+    this.state = {
+      policy: null,
+      identityProviders: [],
+      serviceProviders: [],
+      allowedAttributes: []
     }
-    this.state = Object.assign({}, state);
+  }
+
+  componentWillMount() {
+    if (!this.props.params.id) {
+      getNewPolicy().then(policy => {
+        if (!this.props.params.id) {
+          policy.active = true;
+        }
+
+        this.setState({ policy })
+      });
+    } else {
+      getPolicy(this.props.params.id).then(policy => this.setState({ policy }));
+    }
+
+    getScopedIdentityProviders().then(identityProviders => this.setState({ identityProviders }));
+    getServiceProviders().then(serviceProviders => this.setState({ serviceProviders }));
+    getAllowedAttributes().then(allowedAttributes => this.setState({ allowedAttributes }));
   }
 
   toggleDenyRule(e) {
-    const partialState = { denyRule: !this.state.denyRule };
-    if (!this.state.denyRule) {
+    const partialState = { denyRule: !this.state.policy.denyRule };
+    if (!this.state.policy.denyRule) {
       partialState.allAttributesMustMatch = true;
     }
     partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState(partialState);
+    this.setState({ policy: { ...this.state.policy, ...partialState }});
   }
 
   provideProviderNames(partialState) {
-    const identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.identityProviderIds;
-    if (_.isEmpty(identityProvidersIds)) {
-      this.state.identityProviderNames = [];
-    } else {
-      //we can safely do it like this - as nothing should be updated
-      this.state.identityProviderNames = identityProvidersIds.map(idp => {
-        return I18n.entityName(_.find(this.props.identityProviders, "entityId", idp));
-      });
+    const identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.policy.identityProviderIds;
+    let identityProviderNames = [];
 
+    if (!_.isEmpty(identityProvidersIds)) {
+      identityProviderNames = identityProvidersIds.map(idp => {
+        return I18n.entityName(_.find(this.state.identityProviders, "entityId", idp));
+      });
     }
-    const serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.serviceProviderId;
-    if (_.isEmpty(serviceProviderId)) {
-      this.state.serviceProviderName = null;
-    } else {
-      this.state.serviceProviderName = I18n.entityName(_.find(this.props.serviceProviders, "entityId", serviceProviderId));
+
+    const serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.policy.serviceProviderId;
+    let serviceProviderName = null;
+
+    if (!_.isEmpty(serviceProviderId)) {
+      serviceProviderName = I18n.entityName(_.find(this.state.serviceProviders, "entityId", serviceProviderId));
     }
+
+    this.setState({ policy: { ...this.state.policy, identityProviderNames, serviceProviderName }});
   }
 
   parseEntities(entities) {
@@ -63,29 +95,24 @@ class PolicyDetail extends React.Component {
   handleChangeServiceProvider(newValue) {
     const partialState = { serviceProviderId: newValue };
     partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState(partialState);
+    this.setState({ policy: { ...this.state.policy, ...partialState }});
   }
 
 
   handleChangeIdentityProvider(newValue) {
+    const { currentUser } = this.context;
     const partialState = { identityProviderIds: newValue };
     partialState.description = this.buildAutoFormattedDescription(partialState);
-    const scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
-    const serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+    const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
     if (scopeSPs) {
-      if (this.state.serviceProviderId && !_.any(serviceProviders, "value", this.state.serviceProviderId)) {
-        //Unfortunately we have to set the current value manually as the integration with select2 is done one-way
-        const select2ServiceProvider = $("[data-select2selector-id=\"serviceProvider\"]");
-        select2ServiceProvider.val("").trigger("change");
-      }
       partialState.spDataChanged = true;
     }
-    this.setState(partialState);
+    this.setState({ policy: { ...this.state.policy, ...partialState }});
   }
 
   cancelForm() {
     if (confirm(I18n.t("policy_detail.confirmation"))) {
-      page("/policies");
+      this.context.router.transitionTo("/policies");
     }
   }
 
@@ -94,21 +121,31 @@ class PolicyDetail extends React.Component {
       e.preventDefault();
       e.stopPropagation();
       if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
-        App.Controllers.Policies.deletePolicy(policy);
+        deletePolicy(policy.id).then(() => {
+          setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+          this.context.router.transitionTo("/policies");
+        });
       }
-    };
+    }.bind(this);
   }
 
   submitForm() {
-    const self = this;
-    App.Controllers.Policies.saveOrUpdatePolicy(this.state, jqxhr => {
-      jqxhr.isConsumed = true;
-      this.setState({ flash: jqxhr.responseJSON.details.name });
+    const { policy } = this.state;
+
+    const apiCall = policy.id ? updatePolicy : createPolicy;
+    const action = policy.id ? I18n.t("policies.flash_updates") : I18n.t("policies.flash_created");
+
+    apiCall(policy).then(() => {
+      setFlash(I18n.t("policies.flash", { policyName: policy.name, action }));
+      this.context.router.transitionTo("/policies");
+    })
+    .catch(e => {
+      setFlash(e, "error");
     });
   }
 
   isValidPolicy() {
-    const policy = this.state;
+    const { policy } = this.state;
     const emptyAttributes = policy.attributes.filter(attr => {
       return _.isEmpty(attr.value);
     });
@@ -118,7 +155,7 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnChangeName(e) {
-    this.setState({ name: e.target.value });
+    this.setState({ policy: { ...this.state.policy, name: e.target.value }});
   }
 
   handleOnChangeDescription(e) {
@@ -130,11 +167,11 @@ class PolicyDetail extends React.Component {
     if (partialState.autoFormat) {
       partialState.savedDescription = this.state.description;
       this.provideProviderNames(partialState);
-      partialState.description = App.Utils.AutoFormat.description(this.state);
+      partialState.description = AutoFormat.description(this.state);
     } else {
       partialState.description = this.state.savedDescription || "";
     }
-    this.setState(partialState);
+    this.setState({ policy: { ...this.state.policy, ...partialState }});
   }
 
   handleOnChangeIsActive(e) {
@@ -142,28 +179,28 @@ class PolicyDetail extends React.Component {
   }
 
   buildAutoFormattedDescription(partialState) {
-    if (this.state.autoFormat) {
+    if (this.state.policy.autoFormat) {
       this.provideProviderNames(partialState);
       //we don't want to merge the partialState and this.state before the update
       const policy = {
         identityProviderNames: this.state.identityProviderNames,
         serviceProviderName: this.state.serviceProviderName,
-        attributes: partialState.attributes || this.state.attributes,
-        denyRule: partialState.denyRule !== undefined ? partialState.denyRule : this.state.denyRule,
-        allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.allAttributesMustMatch
+        attributes: partialState.attributes || this.state.policyattributes,
+        denyRule: partialState.denyRule !== undefined ? partialState.denyRule : this.state.policy.denyRule,
+        allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.policy.allAttributesMustMatch
       };
-      return App.Utils.AutoFormat.description(policy);
+      return AutoFormat.description(policy);
     } else {
       return this.state.description;
     }
   }
 
   handleOnDenyAdvice(e) {
-    this.setState({ denyAdvice: e.target.value });
+    this.setState({ policy: { ...this.state.policy, denyAdvice: e.target.value }});
   }
 
   handleOnDenyAdviceNl(e) {
-    this.setState({ denyAdviceNl: e.target.value });
+    this.setState({ policy: { ...this.state.policy, denyAdviceNl: e.target.value }});
   }
 
   renderName(policy) {
@@ -172,8 +209,8 @@ class PolicyDetail extends React.Component {
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.name")}</p>
-          <input type="text" name="name" className="form-input" value={policy.name}
-            onChange={this.handleOnChangeName}/>
+          <input type="text" name="name" className="form-input" value={policy.name || ""}
+            onChange={this.handleOnChangeName.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -186,10 +223,10 @@ class PolicyDetail extends React.Component {
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.description")}</p>
-          <textarea rows="2" name="description" className="form-input" value={policy.description}
-            onChange={this.handleOnChangeDescription}/>
+          <textarea rows="2" name="description" className="form-input" value={policy.description || ""}
+            onChange={this.handleOnChangeDescription.bind(this)}/>
           <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
-            onChange={this.handleOnChangeAutoFormat}/>
+            onChange={this.handleOnChangeAutoFormat.bind(this)}/>
           <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
         </div>
         <div className="bottom"></div>
@@ -198,13 +235,15 @@ class PolicyDetail extends React.Component {
   }
 
   renderActive(policy) {
-    if (!App.currentUser.policyIdpAccessEnforcementRequired) {
+    const { currentUser } = this.context;
+
+    if (!currentUser.policyIdpAccessEnforcementRequired) {
       return (
         <div>
           <div className={"form-element success"}>
             <p className="label">{I18n.t("policy_detail.isActive")}</p>
             <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
-              onChange={this.handleOnChangeIsActive}/>
+              onChange={this.handleOnChangeIsActive.bind(this)}/>
             <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
             <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
           </div>
@@ -220,12 +259,12 @@ class PolicyDetail extends React.Component {
       <div className={"form-element "+workflow}>
         <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
         <em>{I18n.t("policy_detail.deny_message_info")}</em>
-        <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
-          onChange={this.handleOnDenyAdvice}/>
+        <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice || ""}
+          onChange={this.handleOnDenyAdvice.bind(this)}/>
 
         <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
-        <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
-          onChange={this.handleOnDenyAdviceNl}/>
+        <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl || ""}
+          onChange={this.handleOnDenyAdviceNl.bind(this)}/>
 
         <div className="bottom"></div>
       </div>
@@ -233,20 +272,22 @@ class PolicyDetail extends React.Component {
   }
 
   renderServiceProvider(policy) {
+    const { currentUser } = this.context;
     const workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
-    const scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
-    const serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+    const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
+    const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.state.serviceProviders);
+
     return (
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={policy.serviceProviderId}
             placeholder={I18n.t("policy_detail.sp_placeholder")}
             select2selectorId={"serviceProvider"}
             options={serviceProviders}
             dataChanged={policy.spDataChanged}
-            handleChange={this.handleChangeServiceProvider}/>
+            handleChange={this.handleChangeServiceProvider.bind(this)}/>
           {this.renderScopedWarning(scopeSPs)}
         </div>
         <div className="bottom"></div>
@@ -266,14 +307,14 @@ class PolicyDetail extends React.Component {
         <div className="form-element success">
           <p className="label">{I18n.t("policies.identityProviderIds")}</p>
 
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={policy.identityProviderIds}
             placeholder={I18n.t("policy_detail.idps_placeholder")}
             select2selectorId={"identityProvider"}
-            options={this.parseEntities(this.props.identityProviders)}
+            options={this.parseEntities(this.state.identityProviders)}
             dataChanged={false}
             multiple={true}
-            handleChange={this.handleChangeIdentityProvider}/>
+            handleChange={this.handleChangeIdentityProvider.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
@@ -291,7 +332,7 @@ class PolicyDetail extends React.Component {
           <div className="column-3 first">
             <p className="label">{I18n.t("policy_detail.access")}</p>
 
-            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
+            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule.bind(this)}>
               <div className="inner"></div>
               <p>{policyPermit}</p>
             </div>
@@ -317,13 +358,13 @@ class PolicyDetail extends React.Component {
       const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
       const partialState = { allAttributesMustMatch: allAttributesMustMatch };
       partialState.description = this.buildAutoFormattedDescription(partialState);
-      this.setState(partialState);
+      this.setState({ policy: { ...this.state.policy, ...partialState }});
     }.bind(this);
   }
 
   renderRule(value, selected) {
     const className = value + " " + (selected ? "selected" : "");
-    if (this.state.denyRule) {
+    if (this.state.policy.denyRule) {
       return (
         <li key={value}>
           <span className={className}>{value}</span>
@@ -338,25 +379,17 @@ class PolicyDetail extends React.Component {
     }
   }
 
-  handleShowRevisions(policy) {
-    return function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/revisions/:id", { id: policy.id });
-    };
-  }
-
   setAttributeState(newAttributeState) {
     newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
-    this.setState(newAttributeState);
+    this.setState({ policy: { ...this.state.policy, ...newAttributeState }});
   }
 
   renderAttributes(policy) {
     //we need state changes from the child component
-    return (<App.Components.PolicyAttributes
-      policy={this.state}
-      allowedAttributes={this.props.allowedAttributes}
-      setAttributeState={this.setAttributeState}/>);
+    return (<PolicyAttributes
+      policy={this.state.policy}
+      allowedAttributes={this.state.allowedAttributes}
+      setAttributeState={this.setAttributeState.bind(this)}/>);
   }
 
   renderLogicalRule(policy) {
@@ -398,28 +431,13 @@ class PolicyDetail extends React.Component {
     }
   }
 
-  closeFlash() {
-    this.setState({ flash: undefined });
-  }
-
-  renderFlash() {
-    if (this.state.flash) {
-      return (
-        <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
-            onClick={this.closeFlash}><i
-              className="fa fa-remove"></i></a>
-        </div>
-      );
-    }
-  }
-
   renderActions(policy) {
     const classNameSubmit = this.isValidPolicy() ? "" : "disabled";
     return (
       <div className="form-element">
         <a className={classNameSubmit + " submit c-button"} href="#"
-          onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
-        <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
+          onClick={this.submitForm.bind(this)}>{I18n.t("policy_detail.submit")}</a>
+        <a className="c-button cancel" href="#" onClick={this.cancelForm.bind(this)}>{I18n.t("policy_detail.cancel")}</a>
         {this.renderDelete(policy)}
         {this.renderRevisionsLink(policy)}
       </div>
@@ -436,8 +454,11 @@ class PolicyDetail extends React.Component {
   renderRevisionsLink(policy) {
     const numberOfRevisions = (policy.numberOfRevisions + 1);
     if (policy.id) {
-      return (<a className="c-button cancel pull-right" href={page.uri("/revisions/:id",{ id:policy.id })}
-        onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
+      return (
+        <Link className="c-button cancel pull-right" to={`/revisions/${policy.id}`}>
+          {I18n.t("policies.revisions")}
+        </Link>
+      );
     }
   }
 
@@ -449,48 +470,57 @@ class PolicyDetail extends React.Component {
   }
 
   render() {
-    const policy = this.state;
-    const title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
-    //var classTitle = policy.id
-    const created = moment(policy.created);
-    created.locale(I18n.locale);
-    const date = created.format("LLLL");
-    const subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
-      displayName: policy.userDisplayName,
-      created: this.createdDate(policy)
-    }) : "";
-    const activatedSR = policy.id ?
-      (policy.activatedSr ? I18n.t("policy_detail.activated_true") : I18n.t("policy_detail.activated_false")) : "";
-    return (
-      <div className="l-center mod-policy-detail">
-        {this.renderFlash()}
-        <div className="l-split-left form-element-container box">
-          <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em>
-            <em className="sub-element second">{activatedSR}</em>
-          </p>
-          {this.renderName(policy)}
-          {this.renderDenyPermitRule(policy)}
-          {this.renderServiceProvider(policy)}
-          {this.renderIdentityProvider(policy)}
-          {this.renderLogicalRule(policy)}
-          {this.renderAttributes(policy)}
-          {this.renderDenyAdvice(policy)}
-          {this.renderDescription(policy)}
-          {this.renderActive(policy)}
-          {this.renderActions(policy)}
+    const { policy } = this.state;
+
+    if (policy) {
+      const title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
+      //var classTitle = policy.id
+      const created = moment(policy.created);
+      created.locale(I18n.locale);
+      const date = created.format("LLLL");
+      const subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
+        displayName: policy.userDisplayName,
+        created: this.createdDate(policy)
+      }) : "";
+      const activatedSR = policy.id ?
+        (policy.activatedSr ? I18n.t("policy_detail.activated_true") : I18n.t("policy_detail.activated_false")) : "";
+
+      return (
+        <div className="l-center mod-policy-detail">
+          <Flash />
+          <div className="l-split-left form-element-container box">
+            <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em>
+              <em className="sub-element second">{activatedSR}</em>
+            </p>
+            {this.renderName(policy)}
+            {this.renderDenyPermitRule(policy)}
+            {this.renderServiceProvider(policy)}
+            {this.renderIdentityProvider(policy)}
+            {this.renderLogicalRule(policy)}
+            {this.renderAttributes(policy)}
+            {this.renderDenyAdvice(policy)}
+            {this.renderDescription(policy)}
+            {this.renderActive(policy)}
+            {this.renderActions(policy)}
+          </div>
+          <div className="l-split-right form-element-container box">
+            {this.renderAboutPage()}
+          </div>
         </div>
-        <div className="l-split-right form-element-container box">
-          {this.renderAboutPage()}
-        </div>
-      </div>
-    );
+      );
+    }
+
+    return null;
   }
 
   renderAboutPage() {
-    return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
+    return I18n.locale === "en" ? <PolicyDetailHelpEn/> : <PolicyDetailHelpNl/>;
   }
+}
 
-
+PolicyDetail.contextTypes = {
+  currentUser: React.PropTypes.object,
+  router: React.PropTypes.object
 }
 
 

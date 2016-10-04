@@ -1,24 +1,32 @@
 import React from "react";
 import I18n from "i18n-js";
+import moment from "moment";
+
+import PolicyRevisionsHelpNl from "../help/policy_revisions_help_nl";
+import PolicyRevisionsHelpEn from "../help/policy_revisions_help_en";
+
+import { getRevisions } from "../api";
 
 class PolicyRevisions extends React.Component {
 
   componentWillUpdate() {
-    const node = this.getDOMNode();
-    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+    this.shouldScrollBottom = this.node.scrollTop + this.node.offsetHeight === this.node.scrollHeight;
   }
 
   componentDidUpdate() {
     if (this.shouldScrollBottom) {
-      const node = this.getDOMNode();
-      node.scrollTop = node.scrollHeight;
+      this.node.scrollTop = this.node.scrollHeight;
     }
   }
 
   constructor() {
     super();
 
-    this.state = { data: [] };
+    this.state = { data: [], revisions: [] };
+  }
+
+  componentWillMount() {
+    getRevisions(this.props.params.id).then(revisions => this.setState({ revisions }));
   }
 
   renderAttributesDiff(prev, curr) {
@@ -78,7 +86,7 @@ class PolicyRevisions extends React.Component {
     }).length === 0 ;
     const attributeNames = Object.keys(attrResult);
     return (
-      <div>
+      <div key="diff">
         <div
           className={"diff-element " + (attributesUnchanged ? "no-change" : "changed")}>
           <p className="label">{I18n.t("revisions.attributes")}</p>
@@ -124,7 +132,7 @@ class PolicyRevisions extends React.Component {
       if (name === "attributes") {
         return this.renderAttributesDiff(prev, curr);
       } else {
-        return (<div>
+        return (<div key={name}>
           <div className={"diff-element " + this.classNamePropertyDiff(prev[name], curr[name])}>
             <p className="label">{I18n.t("revisions."+name)}</p>
             {this.renderPropertyDiff(prev[name], curr[name])}
@@ -196,7 +204,7 @@ class PolicyRevisions extends React.Component {
     return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      const prev = this.props.revisions.filter(rev => {
+      const prev = this.state.revisions.filter(rev => {
         return rev.revisionNbr === (revision.revisionNbr - 1);
       });
       this.setState({ curr: revision });
@@ -215,7 +223,7 @@ class PolicyRevisions extends React.Component {
   }
 
   renderAboutPage() {
-    return I18n.locale === "en" ? <App.Help.PolicyRevisionsHelpEn/> : <App.Help.PolicyRevisionsHelpNl/>;
+    return I18n.locale === "en" ? <PolicyRevisionsHelpEn/> : <PolicyRevisionsHelpNl/>;
   }
 
   renderOverview() {
@@ -226,10 +234,10 @@ class PolicyRevisions extends React.Component {
   }
 
   renderRevisions() {
-    this.props.revisions.sort((rev1, rev2) => {
+    this.state.revisions.sort((rev1, rev2) => {
       return rev2.created - rev1.created;
     });
-    return this.props.revisions.map((revision, index) => {
+    return this.state.revisions.map((revision, index) => {
       return this.renderRevision(revision, index);
     });
   }
@@ -263,7 +271,7 @@ class PolicyRevisions extends React.Component {
 
   render() {
     return (
-      <div className="l-center mod-revisions">
+      <div className="l-center mod-revisions" ref={node => this.node = node}>
         <div className="l-split-left form-element-container box">
           {this.renderOverview()}
         </div>

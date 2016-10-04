@@ -3,6 +3,12 @@ import I18n from "i18n-js";
 
 class PolicyAttributes extends React.Component {
 
+  constructor() {
+    super();
+
+    this.state = {};
+  }
+
   markAttributes(policy) {
     policy.attributes = policy.attributes.map((attr, index) => {
       attr.index = index;
@@ -12,11 +18,11 @@ class PolicyAttributes extends React.Component {
   }
 
   componentWillMount() {
-    return this.markAttributes(this.props.policy);
+    this.setState(this.markAttributes(this.props.policy));
   }
 
   componentWillReceiveProps(nextProps) {
-    this.state = this.markAttributes(nextProps.policy);
+    this.setState(this.markAttributes(nextProps.policy));
   }
 
   addAttribute(attrName) {
@@ -163,7 +169,7 @@ class PolicyAttributes extends React.Component {
           })
         }
         <p className="label">{I18n.t("policy_attributes.attribute")}</p>
-        <select value="" onChange={self.handleNewAttribute}>
+        <select value="" onChange={self.handleNewAttribute.bind(self)}>
           <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
           {
             allowedAttributes.map(allowedAttribute => {
