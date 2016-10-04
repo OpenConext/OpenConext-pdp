@@ -1,16 +1,27 @@
 import React from "react";
 import I18n from "i18n-js";
+import Rickshaw from "rickshaw";
+
+import { getDecisions } from "../api";
 
 class Decisions extends React.Component {
 
   constructor() {
     super();
-    this.state = { avg: {} };
+    this.state = {
+      avg: {},
+      decisions: []
+    };
+  }
+
+  componentWillMount() {
+    getDecisions().then(decisions => this.setState({ decisions }));
   }
 
   componentDidMount() {
     this.initGraph();
   }
+
   average(arr) {
     return arr.map(o => {
       return o.y;
@@ -21,8 +32,9 @@ class Decisions extends React.Component {
       return i == arr.length - 1 ? total / arr.length : total;
     }, 0).toFixed(0);
   }
+
   initGraph() {
-    const decisions = this.props.decisions;
+    const decisions = this.state.decisions;
     const total = [];
     const pdp = [];
     const teams = [];

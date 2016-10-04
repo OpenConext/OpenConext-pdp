@@ -40,6 +40,7 @@
     "react-dom": "15.3.2",
     "react-router": "4.0.0-alpha.3",
     "react-select": "^1.0.0-rc.2",
+    "rickshaw": "1.6.0-rc.0",
     "sass-loader": "4.0.2",
     "spin.js": "2.3.2",
     "style-loader": "0.13.1",

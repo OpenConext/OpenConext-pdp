@@ -136,3 +136,7 @@ export function getViolations() {
 export function getConflicts() {
   return fetchJson('/internal/conflicts');
 }
+
+export function getDecisions() {
+  return fetchJson('/internal/decisions?daysAgo=365');
+}

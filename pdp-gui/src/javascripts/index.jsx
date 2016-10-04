@@ -29,6 +29,7 @@ import PolicyRevisions from "./pages/policy_revisions";
 import PolicyDetail from "./pages/policy_detail";
 import PolicyViolations from "./pages/policy_violations";
 import PolicyConflicts from "./pages/policy_conflicts";
+import Decisions from "./pages/decisions";
 
 import "./locale/en";
 import "./locale/nl";
@@ -79,6 +80,7 @@ class App extends React.Component {
           <Match exactly pattern="/policy/:id" component={PolicyDetail} />
           <Match exactly pattern="/violations" component={PolicyViolations} />
           <Match exactly pattern="/conflicts" component={PolicyConflicts} />
+          <Match exactly pattern="/decisions" component={Decisions} />
           <Miss component={NotFound} />
           <Footer />
         </div>
