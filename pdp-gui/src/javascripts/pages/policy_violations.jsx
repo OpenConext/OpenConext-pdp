@@ -1,12 +1,29 @@
 import React from "react";
 import I18n from "i18n-js";
+import $ from "jquery";
+
+import { getIdentityProviders, getServiceProviders, getViolations } from "../api";
+
+import PolicyViolationsHelpEn from "../help/policy_violations_help_en";
+import PolicyViolationsHelpNl from "../help/policy_violations_help_nl";
 
 class PolicyViolations extends React.Component {
 
   constructor() {
     super();
 
-    this.state = { data: [] };
+    this.state = {
+      data: [],
+      violations: [],
+      identityProviders: [],
+      serviceProviders: []
+    };
+  }
+
+  componentWillMount() {
+    getViolations().then(violations => this.setState({ violations }));
+    getIdentityProviders().then(identityProviders => this.setState({ identityProviders }));
+    getServiceProviders().then(serviceProviders => this.setState({ serviceProviders }));
   }
 
   destroyDataTable() {
@@ -60,7 +77,7 @@ class PolicyViolations extends React.Component {
     }
     window.scrollTo(0, 0);
     // not the react way, but we don't control datatables as we should
-    if (this.props.violations.length === 0) {
+    if (this.state.violations.length === 0) {
       $("#violations_table_paginate").hide();
     } else {
       $("#violations_table_paginate").show();
@@ -85,7 +102,7 @@ class PolicyViolations extends React.Component {
 
   getEntityName(id, type) {
     const name = id;
-    const entities = this.props[type].filter(entity => {
+    const entities = this.state[type].filter(entity => {
       return entity.entityId === id;
     });
     if (!_.isEmpty(entities)) {
@@ -129,7 +146,7 @@ class PolicyViolations extends React.Component {
   }
 
   renderAboutPage() {
-    return I18n.locale === "en" ? <App.Help.PolicyViotaltionsHelpEn/> : <App.Help.PolicyViotaltionsHelpNl/>;
+    return I18n.locale === "en" ? <PolicyViolationsHelpEn/> : <PolicyViolationsHelpNl/>;
   }
 
   renderViolationsDetail() {
@@ -211,7 +228,7 @@ class PolicyViolations extends React.Component {
   }
 
   renderTable() {
-    const renderRows = this.props.violations.map((violation, index) => {
+    const renderRows = this.state.violations.map((violation, index) => {
       const request = JSON.parse(violation.jsonRequest).Request;
       const idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
       const idpName = this.getEntityName(idp, "identityProviders");

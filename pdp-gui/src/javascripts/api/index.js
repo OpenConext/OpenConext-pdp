@@ -128,3 +128,7 @@ export function updatePolicy(policy) {
     }
   });
 }
+
+export function getViolations() {
+  return fetchJson(`/internal/violations`);
+}

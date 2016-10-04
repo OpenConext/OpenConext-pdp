@@ -27,6 +27,7 @@ import Navigation from "./components/navigation";
 import PolicyOverview from "./pages/policy_overview";
 import PolicyRevisions from "./pages/policy_revisions";
 import PolicyDetail from "./pages/policy_detail";
+import PolicyViolations from "./pages/policy_violations";
 
 import "./locale/en";
 import "./locale/nl";
@@ -75,6 +76,7 @@ class App extends React.Component {
           <Match exactly pattern="/revisions/:id" component={PolicyRevisions} />
           <Match exactly pattern="/new-policy" component={PolicyDetail} />
           <Match exactly pattern="/policy/:id" component={PolicyDetail} />
+          <Match exactly pattern="/violations" component={PolicyViolations} />
           <Miss component={NotFound} />
           <Footer />
         </div>

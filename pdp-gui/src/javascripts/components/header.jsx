@@ -1,6 +1,7 @@
 import React from "react";
 import I18n from "i18n-js";
 import { render, unmountComponentAtNode } from "react-dom";
+import Link from "react-router/Link";
 
 import githubImage from "../../images/github.png";
 import LanguageSelector from "./language_selector";
@@ -20,7 +21,7 @@ class Header extends React.Component {
     //renderMeta was removed because this is not implemented yet
     return (
       <div className="mod-header">
-        <h1 className="title"><a href="/">{I18n.t("header.title")}</a></h1>
+        <h1 className="title"><Link to="/policies">{I18n.t("header.title")}</Link></h1>
         {this.renderMeta()}
       </div>
     );
