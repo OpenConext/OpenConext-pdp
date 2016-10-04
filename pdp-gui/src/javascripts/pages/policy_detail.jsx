@@ -167,7 +167,7 @@ class PolicyDetail extends React.Component {
     if (partialState.autoFormat) {
       partialState.savedDescription = this.state.description;
       this.provideProviderNames(partialState);
-      partialState.description = AutoFormat.description(this.state);
+      partialState.description = AutoFormat.description(this.state.policy);
     } else {
       partialState.description = this.state.savedDescription || "";
     }
