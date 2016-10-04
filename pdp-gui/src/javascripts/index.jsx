@@ -1,6 +1,6 @@
 import "react-select/dist/react-select.css";
-import "../stylesheets/application.sass";
 import "datatables/media/css/jquery.dataTables.css";
+import "../stylesheets/application.sass";
 import { polyfill } from "es6-promise";
 polyfill();
 

@@ -19,14 +19,6 @@ class PolicyOverview extends React.Component {
     };
   }
 
-  componentWillMount() {
-    getPolicies().then(policies => this.setState({ policies }));
-  }
-
-  destroyDataTable() {
-    $("#policies_table").DataTable().destroy();
-  }
-
   initDataTable() {
     $.fn.dataTable.ext.order["dom-checkbox"] = function(settings, col) {
       return this.api().column(col, { order: "index" }).nodes().map((td, i) => {
@@ -54,16 +46,7 @@ class PolicyOverview extends React.Component {
         { targets: [8], orderable: false }
       ]
     });
-  }
 
-  componentWillReceiveProps(nextProps) {
-    this.destroyDataTable();
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (!$.fn.DataTable.isDataTable("#policies_table")) {
-      this.initDataTable();
-    }
     // not the react way, but we don't control datatables as we should
     if (this.state.policies.length === 0) {
       $("#policies_table_paginate").hide();
@@ -73,11 +56,12 @@ class PolicyOverview extends React.Component {
   }
 
   componentDidMount() {
-    this.initDataTable();
+    getPolicies()
+    .then(policies => this.setState({ policies }, () => this.initDataTable()));
   }
 
   componentWillUnmount() {
-    this.destroyDataTable();
+    $("#policies_table").DataTable().destroy();
   }
 
   handleDeletePolicyDetail(policy) {
@@ -106,20 +90,6 @@ class PolicyOverview extends React.Component {
       e.stopPropagation();
       page("/violations/:id", { id: policy.id });
     };
-  }
-
-  closeFlash() {
-    this.setState({ hideFlash: true });
-  }
-
-  renderFlash() {
-    const flash = this.props.flash;
-    if (flash && !this.state.hideFlash) {
-      return (
-        <div className="flash"><p>{flash}</p><a href="#" onClick={this.closeFlash}><i
-              className="fa fa-remove"></i></a></div>
-      );
-    }
   }
 
   renderViolationsLink(policy) {
