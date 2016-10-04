@@ -1,5 +1,11 @@
 import React from "react";
 import I18n from "i18n-js";
+import Link from "react-router/Link";
+
+import { getConflicts } from "../api";
+
+import PolicyConflictsHelpEn from "../help/policy_conflicts_help_en";
+import PolicyConflictsHelpNl from "../help/policy_conflicts_help_nl";
 
 class PolicyConflicts extends React.Component {
 
@@ -7,9 +13,13 @@ class PolicyConflicts extends React.Component {
     super();
 
     this.state = {
-      conflicts: this.props.conflicts,
+      conflicts: {},
       hideInactive: false
     };
+  }
+
+  componentWillMount() {
+    getConflicts().then(conflicts => this.setState({ conflicts }));
   }
 
   handleOnChangeIsActive(e) {
@@ -17,7 +27,7 @@ class PolicyConflicts extends React.Component {
   }
 
   renderAboutPage() {
-    return I18n.locale === "en" ? <App.Help.PolicyConflictsHelpEn/> : <App.Help.PolicyConflictsHelpNl/>;
+    return I18n.locale === "en" ? <PolicyConflictsHelpEn/> : <PolicyConflictsHelpNl/>;
   }
 
   renderOverview() {
@@ -34,7 +44,7 @@ class PolicyConflicts extends React.Component {
   }
 
   renderConflicts() {
-    const serviceProviderNames = Object.keys(this.props.conflicts);
+    const serviceProviderNames = Object.keys(this.state.conflicts);
     if (_.isEmpty(serviceProviderNames)) {
       return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>);
     } else {
@@ -46,7 +56,7 @@ class PolicyConflicts extends React.Component {
   }
 
   renderConflict(sp, index) {
-    const policies = this.props.conflicts[sp];
+    const policies = this.state.conflicts[sp];
     if (this.state.hideInactive && policies.filter(policy => {
       return policy.activatedSr && policy.active;
     }).length < 2) {
@@ -64,14 +74,6 @@ class PolicyConflicts extends React.Component {
       </div>
     );
 
-  }
-
-  handleShowPolicyDetail(policy) {
-    return function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/policy/:id", { id: policy.id });
-    };
   }
 
   renderPolicies(policies, index) {
@@ -104,9 +106,9 @@ class PolicyConflicts extends React.Component {
         <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
             disabled="true"/></td>
         <td className="conflict_controls">
-          <a href={page.uri("/policy/:id", { id: policy.id })} onClick={this.handleShowPolicyDetail(policy)}
-            data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
-          </a>
+          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
+            <i className="fa fa-edit"></i>
+          </Link>
         </td>
       </tr>);
   }

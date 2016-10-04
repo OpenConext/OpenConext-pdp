@@ -130,5 +130,9 @@ export function updatePolicy(policy) {
 }
 
 export function getViolations() {
-  return fetchJson(`/internal/violations`);
+  return fetchJson('/internal/violations');
+}
+
+export function getConflicts() {
+  return fetchJson('/internal/conflicts');
 }
