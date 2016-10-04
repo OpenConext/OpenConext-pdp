@@ -17,7 +17,7 @@ function validateResponse(res) {
     throw error;
   }
 
-  csrfToken = res.headers.get('x-csrf-token');
+  csrfToken = res.headers.get("x-csrf-token");
 
   return res;
 }
@@ -106,7 +106,7 @@ export function getRevisions(policyId) {
 }
 
 export function getNewPolicy() {
-  return fetchJson(`/internal/default-policy`);
+  return fetchJson("/internal/default-policy");
 }
 
 export function getPolicy(policyId) {
@@ -130,7 +130,7 @@ export function updatePolicy(policy) {
 }
 
 export function getViolations() {
-  return fetchJson('/internal/violations');
+  return fetchJson("/internal/violations");
 }
 
 export function getPolicyViolations(policyId) {
@@ -138,15 +138,15 @@ export function getPolicyViolations(policyId) {
 }
 
 export function getConflicts() {
-  return fetchJson('/internal/conflicts');
+  return fetchJson("/internal/conflicts");
 }
 
 export function getDecisions() {
-  return fetchJson('/internal/decisions?daysAgo=365');
+  return fetchJson("/internal/decisions?daysAgo=365");
 }
 
 export function getSamlAllowedAttributes() {
-  return fetchJson('/internal/saml-attributes');
+  return fetchJson("/internal/saml-attributes");
 }
 
 export function postPdpRequest(pdpRequest) {

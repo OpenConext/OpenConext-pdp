@@ -150,6 +150,6 @@ Identity.contextTypes = {
   changeIdentity: React.PropTypes.func,
   clearIdentity: React.PropTypes.func,
   router: React.PropTypes.object
-}
+};
 
 export default Identity;

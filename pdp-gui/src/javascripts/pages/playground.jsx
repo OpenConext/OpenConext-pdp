@@ -61,7 +61,7 @@ class Playground extends React.Component {
 
       const identityProviderId = _.isEmpty(policy.identityProviderIds) ? currentUser.idpEntities[0].entityId : policy.identityProviderIds[0];
 
-      this.setState({ pdpRequest: { ...this.state.pdpRequest, selectedPolicy: newValue, attributes: policy.attributes }});
+      this.setState({ pdpRequest: { ...this.state.pdpRequest, selectedPolicy: newValue, attributes: policy.attributes } });
     }
   }
 
@@ -76,16 +76,16 @@ class Playground extends React.Component {
   }
 
   handleChangeServiceProvider(newValue) {
-    this.setState({ pdpRequest: { ...this.state.pdpRequest, serviceProviderId: newValue }});
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, serviceProviderId: newValue } });
   }
 
 
   handleChangeIdentityProvider(newValue) {
-    this.setState({ pdpRequest: { ...this.state.pdpRequest, identityProviderId: newValue }});
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, identityProviderId: newValue } });
   }
 
   clearForm() {
-    this.setState({ pdpRequest: { attributes: [] }});
+    this.setState({ pdpRequest: { attributes: [] } });
   }
 
   replayRequest() {
@@ -187,7 +187,7 @@ class Playground extends React.Component {
   }
 
   setAttributeState(newAttributeState) {
-    this.setState({ pdpRequest: { ...this.state.pdpRequest, ...newAttributeState }});
+    this.setState({ pdpRequest: { ...this.state.pdpRequest, ...newAttributeState } });
   }
 
   renderAttributes(pdpRequest) {

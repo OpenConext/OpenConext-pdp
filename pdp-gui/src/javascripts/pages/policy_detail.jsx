@@ -35,7 +35,7 @@ class PolicyDetail extends React.Component {
       identityProviders: [],
       serviceProviders: [],
       allowedAttributes: []
-    }
+    };
   }
 
   componentWillMount() {
@@ -45,7 +45,7 @@ class PolicyDetail extends React.Component {
           policy.active = true;
         }
 
-        this.setState({ policy })
+        this.setState({ policy });
       });
     } else {
       getPolicy(this.props.params.id).then(policy => this.setState({ policy }));
@@ -62,7 +62,7 @@ class PolicyDetail extends React.Component {
       partialState.allAttributesMustMatch = true;
     }
     partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState({ policy: { ...this.state.policy, ...partialState }});
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
   provideProviderNames(partialState) {
@@ -82,7 +82,7 @@ class PolicyDetail extends React.Component {
       serviceProviderName = I18n.entityName(_.find(this.state.serviceProviders, "entityId", serviceProviderId));
     }
 
-    this.setState({ policy: { ...this.state.policy, identityProviderNames, serviceProviderName }});
+    this.setState({ policy: { ...this.state.policy, identityProviderNames, serviceProviderName } });
   }
 
   parseEntities(entities) {
@@ -95,7 +95,7 @@ class PolicyDetail extends React.Component {
   handleChangeServiceProvider(newValue) {
     const partialState = { serviceProviderId: newValue };
     partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState({ policy: { ...this.state.policy, ...partialState }});
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
 
@@ -107,7 +107,7 @@ class PolicyDetail extends React.Component {
     if (scopeSPs) {
       partialState.spDataChanged = true;
     }
-    this.setState({ policy: { ...this.state.policy, ...partialState }});
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
   cancelForm() {
@@ -155,7 +155,7 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnChangeName(e) {
-    this.setState({ policy: { ...this.state.policy, name: e.target.value }});
+    this.setState({ policy: { ...this.state.policy, name: e.target.value } });
   }
 
   handleOnChangeDescription(e) {
@@ -171,7 +171,7 @@ class PolicyDetail extends React.Component {
     } else {
       partialState.description = this.state.savedDescription || "";
     }
-    this.setState({ policy: { ...this.state.policy, ...partialState }});
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
   handleOnChangeIsActive(e) {
@@ -196,11 +196,11 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnDenyAdvice(e) {
-    this.setState({ policy: { ...this.state.policy, denyAdvice: e.target.value }});
+    this.setState({ policy: { ...this.state.policy, denyAdvice: e.target.value } });
   }
 
   handleOnDenyAdviceNl(e) {
-    this.setState({ policy: { ...this.state.policy, denyAdviceNl: e.target.value }});
+    this.setState({ policy: { ...this.state.policy, denyAdviceNl: e.target.value } });
   }
 
   renderName(policy) {
@@ -358,7 +358,7 @@ class PolicyDetail extends React.Component {
       const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
       const partialState = { allAttributesMustMatch: allAttributesMustMatch };
       partialState.description = this.buildAutoFormattedDescription(partialState);
-      this.setState({ policy: { ...this.state.policy, ...partialState }});
+      this.setState({ policy: { ...this.state.policy, ...partialState } });
     }.bind(this);
   }
 
@@ -381,7 +381,7 @@ class PolicyDetail extends React.Component {
 
   setAttributeState(newAttributeState) {
     newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
-    this.setState({ policy: { ...this.state.policy, ...newAttributeState }});
+    this.setState({ policy: { ...this.state.policy, ...newAttributeState } });
   }
 
   renderAttributes(policy) {
@@ -521,7 +521,7 @@ class PolicyDetail extends React.Component {
 PolicyDetail.contextTypes = {
   currentUser: React.PropTypes.object,
   router: React.PropTypes.object
-}
+};
 
 
 export default PolicyDetail;
