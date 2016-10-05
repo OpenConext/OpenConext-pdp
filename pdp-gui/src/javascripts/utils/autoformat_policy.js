@@ -22,7 +22,7 @@ const AutoFormat = {
         return this.addQuotes(attribute.value);
       }).join(" or ");
       const logical = index === (length - 1) ? "" : allAttributesMustMatch ? " and " : " or ";
-      const result = "he/ she has the value " + values + " for attribute '" + attributeName + "'" + logical;
+      const result = "he/she has the value " + values + " for attribute '" + attributeName + "'" + logical;
       return result;
     });
     return lines.join("");
@@ -36,7 +36,7 @@ const AutoFormat = {
     const teamMembershipAttr = attrs.filter(attr => {
       return attr.name === "urn:collab:group:surfteams.nl";
     });
-    const teamMembership = teamMembershipAttr.length > 0 ? " he/ she is a member of the team " + teamMembershipAttr.map(attr => {
+    const teamMembership = teamMembershipAttr.length > 0 ? " he/she is a member of the team " + teamMembershipAttr.map(attr => {
       return this.addQuotes(attr.value);
     }).join(" or ") : "";
 
@@ -45,7 +45,7 @@ const AutoFormat = {
 
     const attributes = this.attributes(attrs, policy.allAttributesMustMatch);
     //we can't use JS templates as the backtick breaks the uglification. Will be resolved when we upgrade the build tooling
-    const description = "A user " + idps + "is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
+    const description = "A user" + idps + " is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
 
     return description;
   }

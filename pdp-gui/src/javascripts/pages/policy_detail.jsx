@@ -31,6 +31,7 @@ class PolicyDetail extends React.Component {
     super();
 
     this.state = {
+      autoFormat: false,
       policy: null,
       identityProviders: [],
       serviceProviders: [],
@@ -61,7 +62,6 @@ class PolicyDetail extends React.Component {
     if (!this.state.policy.denyRule) {
       partialState.allAttributesMustMatch = true;
     }
-    partialState.description = this.buildAutoFormattedDescription(partialState);
     this.setState({ policy: { ...this.state.policy, ...partialState } });
   }
 
@@ -92,17 +92,14 @@ class PolicyDetail extends React.Component {
     return options;
   }
 
-  handleChangeServiceProvider(newValue) {
-    const partialState = { serviceProviderId: newValue };
-    partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState({ policy: { ...this.state.policy, ...partialState } });
+  handleChangeServiceProvider(newValue, newLabel) {
+    this.setState({ policy: { ...this.state.policy, serviceProviderId: newValue, serviceProviderName: newLabel } });
   }
 
 
-  handleChangeIdentityProvider(newValue) {
+  handleChangeIdentityProvider(newValue, newLabel) {
     const { currentUser } = this.context;
-    const partialState = { identityProviderIds: newValue };
-    partialState.description = this.buildAutoFormattedDescription(partialState);
+    const partialState = { identityProviderIds: newValue, identityProviderNames: newLabel };
     const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
     if (scopeSPs) {
       partialState.spDataChanged = true;
@@ -135,7 +132,7 @@ class PolicyDetail extends React.Component {
     const apiCall = policy.id ? updatePolicy : createPolicy;
     const action = policy.id ? I18n.t("policies.flash_updates") : I18n.t("policies.flash_created");
 
-    apiCall(policy).then(() => {
+    apiCall({ ...policy, description: this.renderAutoformatDescription(policy) }).then(() => {
       setFlash(I18n.t("policies.flash", { policyName: policy.name, action }));
       this.context.router.transitionTo("/policies");
     })
@@ -149,7 +146,8 @@ class PolicyDetail extends React.Component {
     const emptyAttributes = policy.attributes.filter(attr => {
       return _.isEmpty(attr.value);
     });
-    const inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
+    const description = this.renderAutoformatDescription(policy);
+    const inValid = _.isEmpty(policy.name) || _.isEmpty(description) || _.isEmpty(policy.serviceProviderId)
       || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;
   }
@@ -159,40 +157,15 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnChangeDescription(e) {
-    this.setState({ description: e.target.value });
+    this.setState({ policy: { ...this.state.policy, description: e.target.value }});
   }
 
   handleOnChangeAutoFormat() {
-    const partialState = { autoFormat: !this.state.autoFormat };
-    if (partialState.autoFormat) {
-      partialState.savedDescription = this.state.description;
-      this.provideProviderNames(partialState);
-      partialState.description = AutoFormat.description(this.state.policy);
-    } else {
-      partialState.description = this.state.savedDescription || "";
-    }
-    this.setState({ policy: { ...this.state.policy, ...partialState } });
+    this.setState({ autoFormat: !this.state.autoFormat });
   }
 
   handleOnChangeIsActive() {
-    this.setState({ active: !this.state.active });
-  }
-
-  buildAutoFormattedDescription(partialState) {
-    if (this.state.policy.autoFormat) {
-      this.provideProviderNames(partialState);
-      //we don't want to merge the partialState and this.state before the update
-      const policy = {
-        identityProviderNames: this.state.identityProviderNames,
-        serviceProviderName: this.state.serviceProviderName,
-        attributes: partialState.attributes || this.state.policyattributes,
-        denyRule: partialState.denyRule !== undefined ? partialState.denyRule : this.state.policy.denyRule,
-        allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.policy.allAttributesMustMatch
-      };
-      return AutoFormat.description(policy);
-    }
-
-    return this.state.description;
+    this.setState({ policy: { ...this.state.policy, active: !this.state.policy.active }});
   }
 
   handleOnDenyAdvice(e) {
@@ -218,20 +191,28 @@ class PolicyDetail extends React.Component {
   }
 
   renderDescription(policy) {
-    const workflow = _.isEmpty(policy.description) ? "failure" : "success";
+    const description = this.renderAutoformatDescription(policy);
+    const workflow = _.isEmpty(description) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.description")}</p>
-          <textarea rows="2" name="description" className="form-input" value={policy.description || ""}
+          <textarea rows="2" name="description" className="form-input" value={description}
             onChange={this.handleOnChangeDescription.bind(this)}/>
-          <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
+          <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription" value={this.state.autoFormat}
             onChange={this.handleOnChangeAutoFormat.bind(this)}/>
           <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
         </div>
         <div className="bottom"></div>
       </div>
     );
+  }
+
+  renderAutoformatDescription(policy) {
+    if (this.state.autoFormat) {
+      return AutoFormat.description(policy);
+    }
+    return policy.description || "";
   }
 
   renderActive(policy) {
@@ -360,9 +341,7 @@ class PolicyDetail extends React.Component {
       e.preventDefault();
       e.stopPropagation();
       const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
-      const partialState = { allAttributesMustMatch: allAttributesMustMatch };
-      partialState.description = this.buildAutoFormattedDescription(partialState);
-      this.setState({ policy: { ...this.state.policy, ...partialState } });
+      this.setState({ policy: { ...this.state.policy, allAttributesMustMatch } });
     }.bind(this);
   }
 
@@ -384,7 +363,6 @@ class PolicyDetail extends React.Component {
   }
 
   setAttributeState(newAttributeState) {
-    newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
     this.setState({ policy: { ...this.state.policy, ...newAttributeState } });
   }
 
