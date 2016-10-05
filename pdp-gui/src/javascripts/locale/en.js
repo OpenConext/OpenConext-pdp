@@ -3,16 +3,17 @@
 // Make a key with the translation and enclose the variable with {{}}
 // ie "Hello {{name}}" Do not add any spaces around the variable name.
 // Provide the values as: I18n.t("key", {name: "John Doe"})
+import I18n from "i18n-js";
 
-I18n.entityName = function (entity) {
-  var name = entity["name" + (I18n.locale === "en" ? "En" : "Nl")];
+I18n.entityName = function(entity) {
+  let name = entity["name" + (I18n.locale === "en" ? "En" : "Nl")];
   if (_.isEmpty(name)) {
     name = entity["name" + (I18n.locale === "en" ? "Nl" : "En")];
   }
   return name;
 };
-I18n.entityDescription = function (entity) {
-  var description = entity["description" + (I18n.locale === "en" ? "En" : "Nl")];
+I18n.entityDescription = function(entity) {
+  let description = entity["description" + (I18n.locale === "en" ? "En" : "Nl")];
   if (_.isEmpty(description)) {
     description = entity["description" + (I18n.locale === "en" ? "Nl" : "En")];
   }

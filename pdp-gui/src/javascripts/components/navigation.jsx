@@ -1,24 +1,42 @@
-/** @jsx React.DOM */
+import React from "react";
+import I18n from "i18n-js";
 
-App.Components.Navigation = React.createClass({
+import Spinner from "spin.js";
+import spinner from "../lib/spin";
 
-  componentDidUpdate: function() {
-    if (this.props.loading) {
+import Link from "react-router/Link";
+
+class Navigation extends React.Component {
+  constructor() {
+    super();
+
+    this.state = {
+      loading: false
+    };
+  }
+
+  componentWillMount() {
+    spinner.onStart = () => this.setState({ loading: true });
+    spinner.onStop = () => this.setState({ loading: false });
+  }
+
+  componentDidUpdate() {
+    if (this.state.loading) {
       if (!this.spinner) {
         this.spinner = new Spinner({
           lines: 25, // The number of lines to draw
           length: 25, // The length of each line
           width: 4, // The line thickness
           radius: 20, // The radius of the inner circle
-          color: '#4DB3CF', // #rgb or #rrggbb or array of colors
-        }).spin(this.refs.spinner.getDOMNode());
+          color: "#4DB3CF", // #rgb or #rrggbb or array of colors
+        }).spin(this.spinnerNode);
       }
     } else {
       this.spinner = null;
     }
-  },
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="mod-navigation">
         <ul>
@@ -28,29 +46,33 @@ App.Components.Navigation = React.createClass({
           {this.renderItem("/decisions", "decisions")}
           {this.renderItem("/playground", "playground")}
           {this.renderItem("/identity", "identity")}
-          {this.renderItem("/new-policy", "new_policy", true)}
+          {this.renderAction("/new-policy", "new_policy")}
         </ul>
 
         {this.renderSpinner()}
       </div>
     );
-  },
-
-  renderItem: function(href, value, right) {
-    var classNameLi = (this.props.active == value ? "active" : "");
-    var classNameA = "";
-    if (right) {
-      classNameLi = classNameLi + " action";
-      classNameA = "action";
-    }
-    return (
-      <li className={classNameLi}><a href={href} className={classNameA}>{I18n.t("navigation." + value)}</a></li>
-    );
-  },
-
-  renderSpinner: function() {
-    if (this.props.loading) {
-      return <div className="spinner" ref="spinner" />;
-    }
   }
-});
+
+  renderAction(href, value) {
+    return (
+      <li className="action"><Link to={href} className={"action"} activeClassName="active">{I18n.t("navigation." + value)}</Link></li>
+    );
+  }
+
+  renderItem(href, value) {
+    return (
+      <li><Link to={href} activeClassName="active">{I18n.t("navigation." + value)}</Link></li>
+    );
+  }
+
+  renderSpinner() {
+    if (this.state.loading) {
+      return <div className="spinner" ref={spinner => this.spinnerNode = spinner}/>;
+    }
+
+    return null;
+  }
+}
+
+export default Navigation;

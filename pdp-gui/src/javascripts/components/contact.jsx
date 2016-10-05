@@ -1,7 +1,8 @@
-/** @jsx React.DOM */
+import React from "react";
+import I18n from "i18n-js";
 
-App.Components.Contact = React.createClass({
-  render: function() {
+class Contact extends React.Component {
+  render() {
     return (
       <div className="contact">
         <h2>{I18n.t("contact.email")}</h2>
@@ -11,4 +12,10 @@ App.Components.Contact = React.createClass({
       </div>
     );
   }
-});
+}
+
+Contact.propTypes = {
+  email: React.PropTypes.string
+};
+
+export default Contact;

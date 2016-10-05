@@ -8,9 +8,6 @@
     float: left
     list-style: none
 
-    &.active
-      font-weight: bold
-
     &.action
       float: right
   a
@@ -20,13 +17,15 @@
     text-decoration: none
     @extend %h2
 
+    &.active
+      font-weight: bold
+
     &.action
       padding: 6px 20px
       margin-top: 12px
       margin-right: 10px
       border: solid 1px white
       border-radius: 5px
-
 
   .spinner
     left: 50%

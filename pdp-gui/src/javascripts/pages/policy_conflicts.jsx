@@ -1,53 +1,65 @@
-/** @jsx React.DOM */
+import React from "react";
+import I18n from "i18n-js";
+import Link from "react-router/Link";
 
-App.Pages.PolicyConflicts = React.createClass({
+import { getConflicts } from "../api";
 
-  getInitialState: function () {
-    return {
-      conflicts: this.props.conflicts,
+import PolicyConflictsHelpEn from "../help/policy_conflicts_help_en";
+import PolicyConflictsHelpNl from "../help/policy_conflicts_help_nl";
+
+class PolicyConflicts extends React.Component {
+
+  constructor() {
+    super();
+
+    this.state = {
+      conflicts: {},
       hideInactive: false
-    }
-  },
+    };
+  }
 
-  handleOnChangeIsActive: function (e) {
-    this.setState({hideInactive: !this.state.hideInactive});
-  },
+  componentWillMount() {
+    getConflicts().then(conflicts => this.setState({ conflicts }));
+  }
 
-  renderAboutPage: function () {
-    return I18n.locale === "en" ? <App.Help.PolicyConflictsHelpEn/> : <App.Help.PolicyConflictsHelpNl/>;
-  },
+  handleOnChangeIsActive() {
+    this.setState({ hideInactive: !this.state.hideInactive });
+  }
 
-  renderOverview: function () {
-    return ( <div>
+  renderAboutPage() {
+    return I18n.locale === "en" ? <PolicyConflictsHelpEn/> : <PolicyConflictsHelpNl/>;
+  }
+
+  renderOverview() {
+    return (<div>
       <div className="filters">
         <input type="checkbox" id="hideInactive" name="hideInactive" checked={this.state.hideInactive}
-               onChange={this.handleOnChangeIsActive}/>
+          onChange={this.handleOnChangeIsActive.bind(this)}/>
         <label htmlFor="isActive">{I18n.t("conflicts.hide_inactive")}</label>
         <em className="note"><sup>*</sup>{I18n.t("conflicts.hide_inactive_note")} </em>
       </div>
       <p className="form-element title">{I18n.t("conflicts.title")}</p>
       {this.renderConflicts()}
     </div>);
-  },
+  }
 
-  renderConflicts: function () {
-    var serviceProviderNames = Object.keys(this.props.conflicts);
+  renderConflicts() {
+    const serviceProviderNames = Object.keys(this.state.conflicts);
     if (_.isEmpty(serviceProviderNames)) {
-      return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>)
-    } else {
-      return serviceProviderNames.map(function (sp, index) {
-        return this.renderConflict(sp, index);
-      }.bind(this));
-
+      return (<div className={"form-element split sub-container"}>{I18n.t("conflicts.no_conflicts")}</div>);
     }
-  },
 
-  renderConflict: function (sp, index) {
-    var policies = this.props.conflicts[sp];
-    if (this.state.hideInactive && policies.filter(function(policy){
-        return policy.activatedSr && policy.active;
-      }).length < 2) {
-      return;
+    return serviceProviderNames.map((sp, index) => {
+      return this.renderConflict(sp, index);
+    });
+  }
+
+  renderConflict(sp, index) {
+    const policies = this.state.conflicts[sp];
+    if (this.state.hideInactive && policies.filter(policy => {
+      return policy.activatedSr && policy.active;
+    }).length < 2) {
+      return null;
     }
     return (
       <div key={sp}>
@@ -61,54 +73,46 @@ App.Pages.PolicyConflicts = React.createClass({
       </div>
     );
 
-  },
+  }
 
-  handleShowPolicyDetail: function (policy) {
-    return function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/policy/:id", {id: policy.id});
-    }
-  },
-
-  renderPolicies: function (policies, index) {
+  renderPolicies(policies, index) {
     return (
-      <table className='table table-bordered dataTable' id={'conflicts_table_'+index}>
+      <table className='table table-bordered dataTable' id={"conflicts_table_"+index}>
         <thead>
-        <tr className='success'>
-          <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
-          <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
-          <th className='conflict_is_active'>{I18n.t('policies.isActive')}</th>
-          <th className='conflict_is_activated_sr'>{I18n.t('policies.activatedSr')}</th>
-          <th className='conflict_controls'></th>
-        </tr>
+          <tr className='success'>
+            <th className='conflict_policy_name'>{I18n.t("conflicts.table.name")}</th>
+            <th className='conflict_idps'>{I18n.t("conflicts.table.idps")}</th>
+            <th className='conflict_is_active'>{I18n.t("policies.isActive")}</th>
+            <th className='conflict_is_activated_sr'>{I18n.t("policies.activatedSr")}</th>
+            <th className='conflict_controls'></th>
+          </tr>
         </thead>
         <tbody>
-        { policies.map(function (policy) {
-          return this.renderPolicyRow(policy);
-        }.bind(this))}
+          { policies.map(policy => {
+            return this.renderPolicyRow(policy);
+          })}
         </tbody>
-      </table>)
-  },
+      </table>);
+  }
 
-  renderPolicyRow: function (policy) {
+  renderPolicyRow(policy) {
     return (
       <tr key={policy.id}>
         <td>{policy.name}</td>
-        <td>{policy.identityProviderNames.join(', ')}</td>
+        <td>{policy.identityProviderNames.join(", ")}</td>
         <td className='conflict_is_active'><input type="checkbox" defaultChecked={policy.active}
-                                                disabled="true"/></td>
+            disabled="true"/></td>
         <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
-                                                      disabled="true"/></td>
+            disabled="true"/></td>
         <td className="conflict_controls">
-          <a href={page.uri("/policy/:id", {id: policy.id})} onClick={this.handleShowPolicyDetail(policy)}
-             data-tooltip={I18n.t("policies.edit")}> <i className="fa fa-edit"></i>
-          </a>
+          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
+            <i className="fa fa-edit"></i>
+          </Link>
         </td>
-      </tr>)
-  },
+      </tr>);
+  }
 
-  render: function () {
+  render() {
     return (
       <div className="l-center mod-conflicts">
         <div className="l-split-left form-element-container box">
@@ -121,4 +125,6 @@ App.Pages.PolicyConflicts = React.createClass({
     );
   }
 
-});
+}
+
+export default PolicyConflicts;

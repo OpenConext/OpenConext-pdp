@@ -1,206 +1,230 @@
-/** @jsx React.DOM */
-App.Pages.PolicyDetail = React.createClass({
+import React from "react";
+import I18n from "i18n-js";
+import moment from "moment";
+import Link from "react-router/Link";
 
-  componentWillUpdate: function () {
-    var node = this.getDOMNode();
-    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  },
+import { createPolicy, deletePolicy, updatePolicy, getPolicy, getAllowedAttributes, getScopedIdentityProviders, getNewPolicy, getServiceProviders } from "../api";
+import { setFlash } from "../utils/flash";
 
-  componentDidUpdate: function () {
-    if (this.shouldScrollBottom) {
-      var node = this.getDOMNode();
-      node.scrollTop = node.scrollHeight
+import AutoFormat from "../utils/autoformat_policy";
+import Flash from "../components/flash";
+import PolicyAttributes from "../components/policy_attributes";
+import PolicyDetailHelpEn from "../help/policy_detail_help_en";
+import PolicyDetailHelpNl from "../help/policy_detail_help_nl";
+import Select2Selector from "../components/select2_selector";
+
+class PolicyDetail extends React.Component {
+
+  // componentWillUpdate() {
+  //   const node = this.getDOMNode();
+  //   this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+  // }
+  //
+  // componentDidUpdate() {
+  //   if (this.shouldScrollBottom) {
+  //     const node = this.getDOMNode();
+  //     node.scrollTop = node.scrollHeight;
+  //   }
+  // }
+
+  constructor() {
+    super();
+
+    this.state = {
+      autoFormat: false,
+      policy: null,
+      identityProviders: [],
+      serviceProviders: [],
+      allowedAttributes: []
+    };
+  }
+
+  componentWillMount() {
+    if (!this.props.params.id) {
+      getNewPolicy().then(policy => {
+        if (!this.props.params.id) {
+          policy.active = true;
+        }
+
+        this.setState({ policy });
+      });
+    } else {
+      getPolicy(this.props.params.id).then(policy => this.setState({ policy }));
     }
-  },
 
-  getInitialState: function () {
-    var state = this.props.policy;
-    if (state.id === undefined || state.id === null) {
-      state.active = true;
-    }
-    return state;
-  },
+    getScopedIdentityProviders().then(identityProviders => this.setState({ identityProviders }));
+    getServiceProviders().then(serviceProviders => this.setState({ serviceProviders }));
+    getAllowedAttributes().then(allowedAttributes => this.setState({ allowedAttributes }));
+  }
 
-  toggleDenyRule: function (e) {
-    var partialState = {denyRule: !this.state.denyRule};
-    if (!this.state.denyRule) {
+  toggleDenyRule() {
+    const partialState = { denyRule: !this.state.policy.denyRule };
+    if (!this.state.policy.denyRule) {
       partialState.allAttributesMustMatch = true;
     }
-    partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState(partialState);
-  },
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
+  }
 
-  provideProviderNames: function (partialState) {
-    var identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.identityProviderIds;
-    if (_.isEmpty(identityProvidersIds)) {
-      this.state.identityProviderNames = [];
-    } else {
-      //we can safely do it like this - as nothing should be updated
-      this.state.identityProviderNames = identityProvidersIds.map(function (idp) {
-        return I18n.entityName(_.find(this.props.identityProviders, "entityId", idp));
-      }.bind(this));
+  provideProviderNames(partialState) {
+    const identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.policy.identityProviderIds;
+    let identityProviderNames = [];
 
+    if (!_.isEmpty(identityProvidersIds)) {
+      identityProviderNames = identityProvidersIds.map(idp => {
+        return I18n.entityName(_.find(this.state.identityProviders, "entityId", idp));
+      });
     }
-    var serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.serviceProviderId;
-    if (_.isEmpty(serviceProviderId)) {
-      this.state.serviceProviderName = null;
-    } else {
-      this.state.serviceProviderName = I18n.entityName(_.find(this.props.serviceProviders, "entityId", serviceProviderId));
-    }
-  },
 
-  parseEntities: function (entities) {
-    var options = entities.map(function (entity) {
-      return {value: entity.entityId, display: I18n.entityName(entity)};
+    const serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.policy.serviceProviderId;
+    let serviceProviderName = null;
+
+    if (!_.isEmpty(serviceProviderId)) {
+      serviceProviderName = I18n.entityName(_.find(this.state.serviceProviders, "entityId", serviceProviderId));
+    }
+
+    this.setState({ policy: { ...this.state.policy, identityProviderNames, serviceProviderName } });
+  }
+
+  parseEntities(entities) {
+    const options = entities.map(entity => {
+      return { value: entity.entityId, display: I18n.entityName(entity) };
     });
     return options;
-  },
+  }
 
-  handleChangeServiceProvider: function (newValue) {
-    var partialState = {serviceProviderId: newValue};
-    partialState.description = this.buildAutoFormattedDescription(partialState);
-    this.setState(partialState);
-  },
+  handleChangeServiceProvider(newValue, newLabel) {
+    this.setState({ policy: { ...this.state.policy, serviceProviderId: newValue, serviceProviderName: newLabel } });
+  }
 
 
-  handleChangeIdentityProvider: function (newValue) {
-    var partialState = {identityProviderIds: newValue};
-    partialState.description = this.buildAutoFormattedDescription(partialState);
-    var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
-    var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+  handleChangeIdentityProvider(newValue, newLabel) {
+    const { currentUser } = this.context;
+    const partialState = { identityProviderIds: newValue, identityProviderNames: newLabel };
+    const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(newValue);
     if (scopeSPs) {
-      if (this.state.serviceProviderId && !_.any(serviceProviders, 'value', this.state.serviceProviderId)) {
-        //Unfortunately we have to set the current value manually as the integration with select2 is done one-way
-        var select2ServiceProvider = $('[data-select2selector-id="serviceProvider"]');
-        select2ServiceProvider.val("").trigger("change");
-      }
       partialState.spDataChanged = true;
     }
-    this.setState(partialState);
-  },
+    this.setState({ policy: { ...this.state.policy, ...partialState } });
+  }
 
-  cancelForm: function () {
+  cancelForm() {
     if (confirm(I18n.t("policy_detail.confirmation"))) {
-      page("/policies");
+      this.context.router.transitionTo("/policies");
     }
-  },
+  }
 
-  deletePolicy: function (policy) {
-    return function (e) {
+  deletePolicy(policy) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (confirm(I18n.t("policies.confirmation", {policyName: policy.name}))) {
-        App.Controllers.Policies.deletePolicy(policy);
+      if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
+        deletePolicy(policy.id).then(() => {
+          setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+          this.context.router.transitionTo("/policies");
+        });
       }
-    }
-  },
+    }.bind(this);
+  }
 
-  submitForm: function () {
-    var self = this;
-    App.Controllers.Policies.saveOrUpdatePolicy(this.state, function (jqxhr) {
-      jqxhr.isConsumed = true;
-      this.setState({flash: jqxhr.responseJSON.details.name});
-    }.bind(this));
-  },
+  submitForm() {
+    const { policy } = this.state;
 
-  isValidPolicy: function () {
-    var policy = this.state;
-    var emptyAttributes = policy.attributes.filter(function (attr) {
+    const apiCall = policy.id ? updatePolicy : createPolicy;
+    const action = policy.id ? I18n.t("policies.flash_updated") : I18n.t("policies.flash_created");
+
+    apiCall({ ...policy, description: this.renderAutoformatDescription(policy) }).then(() => {
+      setFlash(I18n.t("policies.flash", { policyName: policy.name, action }));
+      this.context.router.transitionTo("/policies");
+    })
+    .catch(e => {
+      setFlash(e, "error");
+    });
+  }
+
+  isValidPolicy() {
+    const { policy } = this.state;
+    const emptyAttributes = policy.attributes.filter(attr => {
       return _.isEmpty(attr.value);
     });
-    var inValid = _.isEmpty(policy.name) || _.isEmpty(policy.description) || _.isEmpty(policy.serviceProviderId)
+    const description = this.renderAutoformatDescription(policy);
+    const inValid = _.isEmpty(policy.name) || _.isEmpty(description) || _.isEmpty(policy.serviceProviderId)
       || _.isEmpty(policy.attributes) || emptyAttributes.length > 0 || _.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl);
     return !inValid;
-  },
+  }
 
-  handleOnChangeName: function (e) {
-    this.setState({name: e.target.value});
-  },
+  handleOnChangeName(e) {
+    this.setState({ policy: { ...this.state.policy, name: e.target.value } });
+  }
 
-  handleOnChangeDescription: function (e) {
-    this.setState({description: e.target.value});
-  },
+  handleOnChangeDescription(e) {
+    this.setState({ policy: { ...this.state.policy, description: e.target.value } });
+  }
 
-  handleOnChangeAutoFormat: function (e) {
-    var partialState = {autoFormat: !this.state.autoFormat};
-    if (partialState.autoFormat) {
-      partialState.savedDescription = this.state.description;
-      this.provideProviderNames(partialState);
-      partialState.description = App.Utils.AutoFormat.description(this.state);
-    } else {
-      partialState.description = this.state.savedDescription || "";
-    }
-    this.setState(partialState);
-  },
+  handleOnChangeAutoFormat() {
+    this.setState({ autoFormat: !this.state.autoFormat });
+  }
 
-  handleOnChangeIsActive: function (e) {
-    this.setState({active: !this.state.active});
-  },
+  handleOnChangeIsActive() {
+    this.setState({ policy: { ...this.state.policy, active: !this.state.policy.active } });
+  }
 
-  buildAutoFormattedDescription: function (partialState) {
-    if (this.state.autoFormat) {
-      this.provideProviderNames(partialState);
-      //we don't want to merge the partialState and this.state before the update
-      var policy = {
-        identityProviderNames: this.state.identityProviderNames,
-        serviceProviderName: this.state.serviceProviderName,
-        attributes: partialState.attributes || this.state.attributes,
-        denyRule: partialState.denyRule !== undefined ? partialState.denyRule : this.state.denyRule,
-        allAttributesMustMatch: partialState.allAttributesMustMatch !== undefined ? partialState.allAttributesMustMatch : this.state.allAttributesMustMatch
-      }
-      return App.Utils.AutoFormat.description(policy);
-    } else {
-      return this.state.description;
-    }
-  },
+  handleOnDenyAdvice(e) {
+    this.setState({ policy: { ...this.state.policy, denyAdvice: e.target.value } });
+  }
 
-  handleOnDenyAdvice: function (e) {
-    this.setState({denyAdvice: e.target.value});
-  },
+  handleOnDenyAdviceNl(e) {
+    this.setState({ policy: { ...this.state.policy, denyAdviceNl: e.target.value } });
+  }
 
-  handleOnDenyAdviceNl: function (e) {
-    this.setState({denyAdviceNl: e.target.value});
-  },
-
-  renderName: function (policy) {
-    var workflow = _.isEmpty(policy.name) ? "failure" : "success";
+  renderName(policy) {
+    const workflow = _.isEmpty(policy.name) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.name")}</p>
-          <input type="text" name="name" className="form-input" value={policy.name}
-                 onChange={this.handleOnChangeName}/>
+          <input type="text" name="name" className="form-input" value={policy.name || ""}
+            onChange={this.handleOnChangeName.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDescription: function (policy) {
-    var workflow = _.isEmpty(policy.description) ? "failure" : "success";
+  renderDescription(policy) {
+    const description = this.renderAutoformatDescription(policy);
+    const workflow = _.isEmpty(description) ? "failure" : "success";
     return (
       <div>
         <div className={"form-element "+workflow}>
           <p className="label">{I18n.t("policy_detail.description")}</p>
-            <textarea rows="2" name="description" className="form-input" value={policy.description}
-                      onChange={this.handleOnChangeDescription}/>
-          <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription"
-                 onChange={this.handleOnChangeAutoFormat}/>
+          <textarea rows="2" name="description" className="form-input" value={description}
+            onChange={this.handleOnChangeDescription.bind(this)}/>
+          <input type="checkbox" id="autoFormatDescription" name="autoFormatDescription" value={this.state.autoFormat}
+            onChange={this.handleOnChangeAutoFormat.bind(this)}/>
           <label className="note" htmlFor="autoFormatDescription">{I18n.t("policy_detail.autoFormat")}</label>
         </div>
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderActive: function (policy) {
-    if (!App.currentUser.policyIdpAccessEnforcementRequired) {
+  renderAutoformatDescription(policy) {
+    if (this.state.autoFormat) {
+      return AutoFormat.description(policy);
+    }
+    return policy.description || "";
+  }
+
+  renderActive(policy) {
+    const { currentUser } = this.context;
+
+    if (!currentUser.policyIdpAccessEnforcementRequired) {
       return (
         <div>
           <div className={"form-element success"}>
             <p className="label">{I18n.t("policy_detail.isActive")}</p>
             <input type="checkbox" id="isActive" name="isActive" checked={policy.active}
-                   onChange={this.handleOnChangeIsActive}/>
+              onChange={this.handleOnChangeIsActive.bind(this)}/>
             <label htmlFor="isActive">{I18n.t("policy_detail.isActiveDescription")}</label>
             <em className="note"><sup>*</sup>{I18n.t("policy_detail.isActiveInfo")} </em>
           </div>
@@ -208,87 +232,92 @@ App.Pages.PolicyDetail = React.createClass({
         </div>
       );
     }
-  },
 
-  renderDenyAdvice: function (policy) {
-    var workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
+    return null;
+  }
+
+  renderDenyAdvice(policy) {
+    const workflow = (_.isEmpty(policy.denyAdvice) || _.isEmpty(policy.denyAdviceNl)) ? "failure" : "success";
     return (
       <div className={"form-element "+workflow}>
         <p className="label before-em">{I18n.t("policy_detail.deny_message")}</p>
         <em>{I18n.t("policy_detail.deny_message_info")}</em>
-        <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice}
-               onChange={this.handleOnDenyAdvice}/>
+        <input type="text" name="denyMessage" className="form-input" value={policy.denyAdvice || ""}
+          onChange={this.handleOnDenyAdvice.bind(this)}/>
 
         <p className="label">{I18n.t("policy_detail.deny_message_nl")}</p>
-        <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl}
-               onChange={this.handleOnDenyAdviceNl}/>
+        <input type="text" name="denyMessageNl" className="form-input" value={policy.denyAdviceNl || ""}
+          onChange={this.handleOnDenyAdviceNl.bind(this)}/>
 
         <div className="bottom"></div>
       </div>
     );
   }
-  ,
 
-  renderServiceProvider: function (policy) {
-    var workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
-    var scopeSPs = App.currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
-    var serviceProviders = scopeSPs ? this.parseEntities(App.currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+  renderServiceProvider(policy) {
+    const { currentUser } = this.context;
+    const workflow = _.isEmpty(policy.serviceProviderId) ? "failure" : "success";
+    const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && _.isEmpty(policy.identityProviderIds);
+    const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.state.serviceProviders);
+
     return (
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={policy.serviceProviderId}
             placeholder={I18n.t("policy_detail.sp_placeholder")}
             select2selectorId={"serviceProvider"}
             options={serviceProviders}
             dataChanged={policy.spDataChanged}
-            handleChange={this.handleChangeServiceProvider}/>
+            handleChange={this.handleChangeServiceProvider.bind(this)}/>
           {this.renderScopedWarning(scopeSPs)}
         </div>
         <div className="bottom"></div>
       </div>
     );
   }
-  ,
-  renderScopedWarning: function (scopedSPs) {
+
+  renderScopedWarning(scopedSPs) {
     if (scopedSPs) {
       return (<em className="note"><sup>*</sup>{I18n.t("policy_detail.spScopeInfo")} </em>);
     }
-  },
 
-  renderIdentityProvider: function (policy) {
+    return null;
+  }
+
+  renderIdentityProvider(policy) {
     return (
       <div>
         <div className="form-element success">
           <p className="label">{I18n.t("policies.identityProviderIds")}</p>
 
-          <App.Components.Select2Selector
+          <Select2Selector
             defaultValue={policy.identityProviderIds}
             placeholder={I18n.t("policy_detail.idps_placeholder")}
             select2selectorId={"identityProvider"}
-            options={this.parseEntities(this.props.identityProviders)}
+            options={this.parseEntities(this.state.identityProviders)}
             dataChanged={false}
             multiple={true}
-            handleChange={this.handleChangeIdentityProvider}/>
+            handleChange={this.handleChangeIdentityProvider.bind(this)}/>
         </div>
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDenyPermitRule: function (policy) {
-    var classNameSelected = policy.denyRule ? "checked" : "";
-    var classNamePermit = policy.denyRule ? "not-selected" : "";
-    var classNameDeny = !policy.denyRule ? "not-selected" : "";
-    var policyPermit = policy.denyRule ? I18n.t("policy_detail.deny") : I18n.t("policy_detail.permit");
+  renderDenyPermitRule(policy) {
+    const classNameSelected = policy.denyRule ? "checked" : "";
+    const classNamePermit = policy.denyRule ? "not-selected" : "";
+    const classNameDeny = !policy.denyRule ? "not-selected" : "";
+    const policyPermit = policy.denyRule ? I18n.t("policy_detail.deny") : I18n.t("policy_detail.permit");
     return (
       <div>
         <div className="form-element success">
           <div className="column-3 first">
             <p className="label">{I18n.t("policy_detail.access")}</p>
 
-            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule}>
+            <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"} onClick={this.toggleDenyRule.bind(this)}>
               <div className="inner"></div>
               <p>{policyPermit}</p>
             </div>
@@ -306,61 +335,49 @@ App.Pages.PolicyDetail = React.createClass({
       </div>
     );
   }
-  ,
 
-  handleChooseRule: function (value) {
-    return function (e) {
+  handleChooseRule(value) {
+    return function(e) {
       e.preventDefault();
       e.stopPropagation();
-      var allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
-      var partialState = {allAttributesMustMatch: allAttributesMustMatch};
-      partialState.description = this.buildAutoFormattedDescription(partialState);
-      this.setState(partialState);
+      const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
+      this.setState({ policy: { ...this.state.policy, allAttributesMustMatch } });
     }.bind(this);
-  },
+  }
 
-  renderRule: function (value, selected) {
-    var className = value + " " + (selected ? "selected" : "");
-    if (this.state.denyRule) {
+  renderRule(value, selected) {
+    const className = value + " " + (selected ? "selected" : "");
+    if (this.state.policy.denyRule) {
       return (
         <li key={value}>
           <span className={className}>{value}</span>
         </li>
       );
-    } else {
-      return (
-        <li key={value}>
-          <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
-        </li>
-      );
     }
-  },
 
-  handleShowRevisions: function (policy) {
-    return function (e) {
-      e.preventDefault();
-      e.stopPropagation();
-      page("/revisions/:id", {id: policy.id});
-    }
-  },
+    return (
+      <li key={value}>
+        <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
+      </li>
+    );
+  }
 
-  setAttributeState: function (newAttributeState) {
-    newAttributeState.description = this.buildAutoFormattedDescription(newAttributeState);
-    this.setState(newAttributeState);
-  },
+  setAttributeState(newAttributeState) {
+    this.setState({ policy: { ...this.state.policy, ...newAttributeState } });
+  }
 
-  renderAttributes: function (policy) {
+  renderAttributes(policy) {
     //we need state changes from the child component
-    return (<App.Components.PolicyAttributes
-      policy={this.state}
-      allowedAttributes={this.props.allowedAttributes}
-      setAttributeState={this.setAttributeState}/>);
-  },
+    return (<PolicyAttributes
+      policy={policy}
+      allowedAttributes={this.state.allowedAttributes}
+      setAttributeState={this.setAttributeState.bind(this)}/>);
+  }
 
-  renderLogicalRule: function (policy) {
-    var allAttributesMustMatch = policy.allAttributesMustMatch;
-    var classNameAnd = !policy.allAttributesMustMatch ? "not-selected" : "";
-    var classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
+  renderLogicalRule(policy) {
+    const allAttributesMustMatch = policy.allAttributesMustMatch;
+    const classNameAnd = !policy.allAttributesMustMatch ? "not-selected" : "";
+    const classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
 
     return (
       <div>
@@ -388,106 +405,114 @@ App.Pages.PolicyDetail = React.createClass({
         <div className="bottom"></div>
       </div>
     );
-  },
+  }
 
-  renderDenyRuleNote: function () {
+  renderDenyRuleNote() {
     if (this.state.denyRule) {
       return (<em><sup>*</sup> {I18n.t("policy_detail.rule_info_add_2")}</em>);
     }
-  },
 
-  closeFlash: function () {
-    this.setState({flash: undefined});
-  },
+    return null;
+  }
 
-  renderFlash: function () {
-    if (this.state.flash) {
-      return (
-        <div className="flash full"><p className="error">{this.state.flash}</p><a href="#"
-                                                                                  onClick={this.closeFlash}><i
-          className="fa fa-remove"></i></a>
-        </div>
-      );
-    }
-  },
-
-  renderActions: function (policy) {
-    var classNameSubmit = this.isValidPolicy() ? "" : "disabled";
+  renderActions(policy) {
+    const classNameSubmit = this.isValidPolicy() ? "" : "disabled";
     return (
       <div className="form-element">
         <a className={classNameSubmit + " submit c-button"} href="#"
-           onClick={this.submitForm}>{I18n.t("policy_detail.submit")}</a>
-        <a className="c-button cancel" href="#" onClick={this.cancelForm}>{I18n.t("policy_detail.cancel")}</a>
+          onClick={this.submitForm.bind(this)}>{I18n.t("policy_detail.submit")}</a>
+        <a className="c-button cancel" href="#" onClick={this.cancelForm.bind(this)}>{I18n.t("policy_detail.cancel")}</a>
         {this.renderDelete(policy)}
         {this.renderRevisionsLink(policy)}
       </div>
     );
-  },
+  }
 
-  renderDelete: function (policy) {
+  renderDelete(policy) {
     if (policy.id) {
       return (
         <a className="c-button delete" href="#" onClick={this.deletePolicy(policy)}>{I18n.t("policies.delete")}</a>);
     }
-  },
 
-  renderRevisionsLink: function (policy) {
-    var numberOfRevisions = (policy.numberOfRevisions + 1)
+    return null;
+  }
+
+  renderRevisionsLink(policy) {
     if (policy.id) {
-      return (<a className="c-button cancel pull-right" href={page.uri("/revisions/:id",{id:policy.id})}
-                 onClick={this.handleShowRevisions(policy)}>{I18n.t("policies.revisions")}</a>);
+      return (
+        <Link className="c-button cancel pull-right" to={`/revisions/${policy.id}`}>
+          {I18n.t("policies.revisions")}
+        </Link>
+      );
     }
-  },
 
-
-  createdDate: function (policy) {
-    var created = moment(policy.created);
-    created.locale(I18n.locale);
-    return created.format('LL');
-  },
-
-  render: function () {
-    var policy = this.state;
-    var title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
-    //var classTitle = policy.id
-    var created = moment(policy.created);
-    created.locale(I18n.locale);
-    var date = created.format('LLLL');
-    var subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
-      displayName: policy.userDisplayName,
-      created: this.createdDate(policy)
-    }) : "";
-    var activatedSR = policy.id ?
-      (policy.activatedSr ? I18n.t("policy_detail.activated_true") : I18n.t("policy_detail.activated_false")) : "";
-    return (
-      <div className="l-center mod-policy-detail">
-        {this.renderFlash()}
-        <div className="l-split-left form-element-container box">
-          <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em>
-            <em className="sub-element second">{activatedSR}</em>
-          </p>
-          {this.renderName(policy)}
-          {this.renderDenyPermitRule(policy)}
-          {this.renderServiceProvider(policy)}
-          {this.renderIdentityProvider(policy)}
-          {this.renderLogicalRule(policy)}
-          {this.renderAttributes(policy)}
-          {this.renderDenyAdvice(policy)}
-          {this.renderDescription(policy)}
-          {this.renderActive(policy)}
-          {this.renderActions(policy)}
-        </div>
-        <div className="l-split-right form-element-container box">
-          {this.renderAboutPage()}
-        </div>
-      </div>
-    )
-  },
-
-  renderAboutPage: function () {
-    return I18n.locale === "en" ? <App.Help.PolicyDetailHelpEn/> : <App.Help.PolicyDetailHelpNl/>;
+    return null;
   }
 
 
-});
+  createdDate(policy) {
+    const created = moment(policy.created);
+    created.locale(I18n.locale);
+    return created.format("LL");
+  }
 
+  render() {
+    const { policy } = this.state;
+
+    if (policy) {
+      const title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
+      //var classTitle = policy.id
+      const created = moment(policy.created);
+      created.locale(I18n.locale);
+      const subtitle = policy.id ? I18n.t("policy_detail.sub_title", {
+        displayName: policy.userDisplayName,
+        created: this.createdDate(policy)
+      }) : "";
+      const activatedSR = policy.id ?
+        (policy.activatedSr ? I18n.t("policy_detail.activated_true") : I18n.t("policy_detail.activated_false")) : "";
+
+      return (
+        <div className="l-center mod-policy-detail">
+          <Flash />
+          <div className="l-split-left form-element-container box">
+            <p className="form-element form-title sub-container">{title}<em className="sub-element">{subtitle}</em>
+              <em className="sub-element second">{activatedSR}</em>
+            </p>
+            {this.renderName(policy)}
+            {this.renderDenyPermitRule(policy)}
+            {this.renderServiceProvider(policy)}
+            {this.renderIdentityProvider(policy)}
+            {this.renderLogicalRule(policy)}
+            {this.renderAttributes(policy)}
+            {this.renderDenyAdvice(policy)}
+            {this.renderDescription(policy)}
+            {this.renderActive(policy)}
+            {this.renderActions(policy)}
+          </div>
+          <div className="l-split-right form-element-container box">
+            {this.renderAboutPage()}
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  }
+
+  renderAboutPage() {
+    return I18n.locale === "en" ? <PolicyDetailHelpEn/> : <PolicyDetailHelpNl/>;
+  }
+}
+
+PolicyDetail.contextTypes = {
+  currentUser: React.PropTypes.object,
+  router: React.PropTypes.object
+};
+
+PolicyDetail.propTypes = {
+  params: React.PropTypes.shape({
+    id: React.PropTypes.string
+  })
+};
+
+export default PolicyDetail;

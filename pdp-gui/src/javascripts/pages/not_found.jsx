@@ -1,7 +1,8 @@
-/** @jsx React.DOM */
+import React from "react";
+import I18n from "i18n-js";
 
-App.Pages.NotFound = React.createClass({
-  render: function () {
+class NotFound extends React.Component {
+  render() {
     return (
       <div className="mod-not-found">
         <h1>{I18n.t("not_found.title")}</h1>
@@ -9,4 +10,6 @@ App.Pages.NotFound = React.createClass({
       </div>
     );
   }
-});
+}
+
+export default NotFound;
