@@ -157,7 +157,7 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnChangeDescription(e) {
-    this.setState({ policy: { ...this.state.policy, description: e.target.value }});
+    this.setState({ policy: { ...this.state.policy, description: e.target.value } });
   }
 
   handleOnChangeAutoFormat() {
@@ -165,7 +165,7 @@ class PolicyDetail extends React.Component {
   }
 
   handleOnChangeIsActive() {
-    this.setState({ policy: { ...this.state.policy, active: !this.state.policy.active }});
+    this.setState({ policy: { ...this.state.policy, active: !this.state.policy.active } });
   }
 
   handleOnDenyAdvice(e) {
