@@ -11,6 +11,7 @@ import React from "react";
 import { render } from "react-dom";
 import Router from "react-router/BrowserRouter";
 import Match from "react-router/Match";
+import Redirect from "react-router/Redirect";
 import Miss from "react-router/Miss";
 import Cookies from "js-cookie";
 import I18n from "i18n-js";
@@ -74,6 +75,9 @@ class App extends React.Component {
             {this.renderNavigation()}
           </div>
 
+          <Match exactly pattern="/" render={() => {
+            return <Redirect to="/policies" />;
+          }} />
           <Match exactly pattern="/identity" component={Identity} />
           <Match exactly pattern="/policies" component={PolicyOverview} />
           <Match exactly pattern="/revisions/:id" component={PolicyRevisions} />
