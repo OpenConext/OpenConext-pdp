@@ -57,7 +57,7 @@ class PolicyViolations extends React.Component {
         }
       },
       columnDefs: [
-        { targets: [3], orderDataType: "locale-date" },
+        { targets: [3], orderDataType: "locale-date", type: "number" },
         { targets: [2], orderDataType: "dom-checkbox" },
         { targets: [4], orderable: false }
       ],
