@@ -151,6 +151,8 @@ public class PdpController implements JsonMapper {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
 
+    policies = policies.stream().filter(policy -> !policy.isServiceProviderInvalidOrMissing()).collect(toList());
+    
     //can't use Formula - https://issues.jboss.org/browse/JBPAPP-6571
     List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
     Map<Long, Long> countPerPolicyIdMap = countPerPolicyId.stream().collect(toMap((obj) -> (Long) obj[0], (obj) -> (Long) obj[1]));
@@ -167,7 +169,13 @@ public class PdpController implements JsonMapper {
   public Map<String, List<PdpPolicyDefinition>> conflicts() {
     List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
         .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
-    return policyConflictService.conflicts(policies);
+        
+    Map<String, List<PdpPolicyDefinition>> conflicts = policyConflictService.conflicts(policies);
+    List<PdpPolicyDefinition> invalid = policies.stream().filter(policy -> policy.isServiceProviderInvalidOrMissing()).collect(toList());
+    if (!invalid.isEmpty()) {
+    	conflicts.put("Invalid", invalid);
+    }
+    return conflicts;
   }
 
   @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "/protected/policies"})
@@ -300,9 +308,12 @@ public class PdpController implements JsonMapper {
   }
 
   private PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
-    EntityMetaData sp = serviceRegistry.serviceProviderByEntityId(pd.getServiceProviderId());
-    pd.setServiceProviderName(sp.getNameEn());
-    pd.setActivatedSr(sp.isPolicyEnforcementDecisionRequired());
+    Optional<EntityMetaData> sp = serviceRegistry.serviceProviderOptionalByEntityId(pd.getServiceProviderId());
+    pd.setServiceProviderInvalidOrMissing(!sp.isPresent());
+    if (sp.isPresent()) {
+    	pd.setServiceProviderName(sp.get().getNameEn());
+    	pd.setActivatedSr(sp.get().isPolicyEnforcementDecisionRequired());
+    }
     pd.setIdentityProviderNames(serviceRegistry.identityProviderNames(pd.getIdentityProviderIds()));
     return pd;
   }

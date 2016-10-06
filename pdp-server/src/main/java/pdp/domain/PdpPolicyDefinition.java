@@ -27,6 +27,7 @@ public class PdpPolicyDefinition {
   @Size(min = 1)
   private String serviceProviderId;
   private String serviceProviderName;
+  private boolean serviceProviderInvalidOrMissing; 
 
   private List<String> identityProviderIds = new ArrayList<>();
   private List<String> identityProviderNames = new ArrayList<>();
@@ -148,6 +149,14 @@ public class PdpPolicyDefinition {
     this.serviceProviderName = serviceProviderName;
   }
 
+  public boolean isServiceProviderInvalidOrMissing() {
+	return serviceProviderInvalidOrMissing;
+  }
+
+  public void setServiceProviderInvalidOrMissing(boolean serviceProviderInvalidOrMissing) {
+	this.serviceProviderInvalidOrMissing = serviceProviderInvalidOrMissing;
+  }
+  
   public List<String> getIdentityProviderNames() {
     return identityProviderNames;
   }
