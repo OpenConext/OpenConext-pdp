@@ -31,8 +31,8 @@ class PolicyRevisions extends React.Component {
     const attrResult = _.transform(attrCurrGrouped, (result, attributes, attrName) => {
       if (attrPrevGrouped.hasOwnProperty(attrName)) {
         //find out the diff in values
-        const prevValues = _.pluck(attrPrevGrouped[attrName], "value");
-        const currValues = _.pluck(attributes, "value");
+        const prevValues = _.map(attrPrevGrouped[attrName], "value");
+        const currValues = _.map(attributes, "value");
 
         const deleted = _.difference(prevValues, currValues).map(deletedValue => {
           return { value: deletedValue, status: "prev" };
