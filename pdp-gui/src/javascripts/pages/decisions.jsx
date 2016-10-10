@@ -37,14 +37,14 @@ class Decisions extends React.Component {
     const pdp = [];
     const teams = [];
     const sab = [];
-    decisions.forEach((decision, index) => {
+    decisions.forEach(decision => {
       const dec = JSON.parse(decision.decisionJson);
-      total.push({ x: index + 1, y: dec.responseTimeMs });
+      total.push({ x: decision.created / 1000, y: dec.responseTimeMs });
       const yTeams = dec.pipResponses["teams_pip"] || 0;
-      teams.push({ x: index + 1, y: yTeams });
+      teams.push({ x: decision.created / 1000, y: yTeams });
       const ySab = dec.pipResponses["sab_pip"] || 0;
-      sab.push({ x: index + 1, y: ySab });
-      pdp.push({ x: index + 1, y: dec.responseTimeMs - yTeams - ySab });
+      sab.push({ x: decision.created / 1000, y: ySab });
+      pdp.push({ x: decision.created / 1000, y: dec.responseTimeMs - yTeams - ySab });
     });
     this.setState({
       avg: {
@@ -58,7 +58,7 @@ class Decisions extends React.Component {
       element: document.querySelector("#chart"),
       width: document.getElementById("chart").offsetWidth,//* 2,
       height: 400,
-      renderer: "bar",
+      renderer: "area",
       stroke: true,
       preserve: true,
       series: [{
@@ -76,19 +76,16 @@ class Decisions extends React.Component {
       }]
     });
 
-    const formatX = function(n) {
-      return n;
-    };
     const formatY = function(n) {
       return n + "ms";
     };
 
-    new Rickshaw.Graph.Axis.X({
+    new Rickshaw.Graph.Axis.Time({
       graph: graph,
       orientation: "bottom",
       element: document.getElementById("x_axis"),
       pixelsPerTick: 150,
-      tickFormat: formatX
+      timeFixture: new Rickshaw.Fixtures.Time.Local()
     });
     new Rickshaw.Graph.Axis.Y({
       graph: graph,
@@ -102,7 +99,7 @@ class Decisions extends React.Component {
     new Rickshaw.Graph.HoverDetail({
       graph: graph,
       xFormatter: function(x) {
-        return new Date(decisions[x - 1].created).toLocaleDateString();
+        return new Date(x * 1000).toLocaleDateString();
       },
       yFormatter: function(y) {
         return y === null ? y : y.toFixed(0) + "ms";
