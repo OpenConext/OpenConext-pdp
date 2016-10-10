@@ -45,6 +45,8 @@ class PolicyDetailHelpEn extends React.Component {
 
         <p>The attributes and their values actually define if a user is granted access to the service or not.</p>
 
+        <p>The value of an attribute may be a regular expression. Use .* to match any value.</p>
+
         <h2>Group name authorization</h2>
 
         <p>Special care must be taken when you choose <em>urn:collab:group:surfteams.nl</em> as a required attribute.

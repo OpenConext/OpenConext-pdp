@@ -40,6 +40,8 @@ class PolicyDetailHelpNl extends React.Component {
         <p>De attributen en hun respectievelijke waardes bepalen of een gebruiker succesvol wordt geautoriseerd voor de dienst. De attributen
           worden gematcht tegen de attributen van de gebruiker.</p>
 
+        <p>De waarde van een attribute mag een reguliere expressie bevatten. Gebruik .* (any) om iedere waarde te accepteren.</p>
+
         <h2>Autorisatie op teamnaam</h2>
 
         <p>Let op als je het attribuut <em>urn:collab:group:surfteams.nl</em> kiest. De waarde(s) van dit attribuut

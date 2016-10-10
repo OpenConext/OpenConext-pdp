@@ -3,7 +3,7 @@
             <AnyOf>
                 {{#value}}
                 <AllOf>
-                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
                         <AttributeValue
                                 DataType="http://www.w3.org/2001/XMLSchema#string">{{value}}</AttributeValue>
                         <AttributeDesignator
