@@ -7,6 +7,7 @@ import java.util.Map;
 
 public interface MailBox {
 
-  void sendConflictsMail(Map<String, List<PdpPolicyDefinition>> conflicts) ;
+  void sendConflictsMail(Map<String, List<PdpPolicyDefinition>> conflicts);
+  void sendInvalidPoliciesMail(List<PdpPolicyDefinition> invalids);
 
 }

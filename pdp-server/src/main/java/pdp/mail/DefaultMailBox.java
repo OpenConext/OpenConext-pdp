@@ -37,16 +37,29 @@ public class DefaultMailBox implements MailBox, JsonMapper {
     try {
       Map<String, String> variables = new HashMap<>();
       variables.put("@@to@@", to);
-      variables.put("@@conflicts@@", conflictsTable(conflicts));
+      variables.put("@@conflicts@@", objectToTable(conflicts));
       variables.put("@@base_url@@", baseUrl);
       sendMail("mail/conflicts.html", variables);
     } catch (MessagingException | IOException e) {
       throw new RuntimeException(e);
     }
   }
-
-  private String conflictsTable(Map<String, List<PdpPolicyDefinition>> conflicts) throws JsonProcessingException {
-    return "<pre>" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(conflicts) + "</pre>";
+  
+  @Override
+  public void sendInvalidPoliciesMail(List<PdpPolicyDefinition> invalids) {
+    try {
+      Map<String, String> variables = new HashMap<>();
+      variables.put("@@to@@", to);
+      variables.put("@@invalids@@", objectToTable(invalids));
+      variables.put("@@base_url@@", baseUrl);
+      sendMail("mail/invalids.html", variables);
+    } catch (MessagingException | IOException e) {
+      throw new RuntimeException(e);
+    }
+  }
+  
+  private String objectToTable(Object arg) throws JsonProcessingException {
+    return "<pre>" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(arg) + "</pre>";
   }
 
   private void sendMail(String templateName, Map<String, String> variables) throws MessagingException, IOException {

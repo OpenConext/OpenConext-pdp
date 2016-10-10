@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 import pdp.PolicyViolationRetentionPeriodCleaner;
+import pdp.mail.MailBox;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.serviceregistry.ServiceRegistry;
@@ -42,6 +43,14 @@ public class PolicyLoaderConfiguration {
   public PolicyViolationRetentionPeriodCleaner policyViolationRetentionPeriodCleaner(@Value("${policy.violation.retention.period.days}") int retentionPeriodDays,
                                                                                      PdpPolicyViolationRepository pdpPolicyViolationRepository) {
     return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository);
+  }
+  
+  @Bean
+  public PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator(
+		  MailBox mailBox, 
+		  ServiceRegistry serviceRegistry, 
+		  PdpPolicyRepository pdpPolicyRepository) {
+	  return new PolicyMissingServiceProviderValidator(mailBox, serviceRegistry, pdpPolicyRepository);
   }
 
 

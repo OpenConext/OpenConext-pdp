@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.ReflectionUtils;
@@ -11,12 +12,17 @@ import org.springframework.util.StringUtils;
 import pdp.JsonMapper;
 import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
+import pdp.domain.PdpPolicyDefinition;
+import pdp.mail.MailBox;
+import pdp.policies.PolicyMissingServiceProviderValidator;
+import pdp.repositories.PdpPolicyRepository;
 
 import java.io.IOException;
 import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static java.util.stream.StreamSupport.stream;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
@@ -26,6 +32,9 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
   protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
   private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
+  
+  @Autowired
+  private PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
 
   public ClassPathResourceServiceRegistry(boolean initialize) {
     //this provides subclasses a hook to set properties before initializing metadata
@@ -40,6 +49,10 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
     this.entityMetaData = newEntityMetaData;
     LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+    
+    if (this.policyMissingServiceProviderValidator != null) {
+    	this.policyMissingServiceProviderValidator.validate();
+    }
   }
 
   protected Resource getIdpResource() {
