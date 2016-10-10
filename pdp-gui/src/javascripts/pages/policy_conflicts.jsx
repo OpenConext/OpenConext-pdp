@@ -2,7 +2,9 @@ import React from "react";
 import I18n from "i18n-js";
 import Link from "react-router/Link";
 
-import { getConflicts } from "../api";
+import { deletePolicy, getConflicts } from "../api";
+import { setFlash } from "../utils/flash";
+import Flash from "../components/flash";
 
 import PolicyConflictsHelpEn from "../help/policy_conflicts_help_en";
 import PolicyConflictsHelpNl from "../help/policy_conflicts_help_nl";
@@ -108,6 +110,9 @@ class PolicyConflicts extends React.Component {
           <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
             <i className="fa fa-edit"></i>
           </Link>
+          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
+            <i className="fa fa-remove"></i>
+          </a>
         </td>
       </tr>);
   }
@@ -115,6 +120,7 @@ class PolicyConflicts extends React.Component {
   render() {
     return (
       <div className="l-center mod-conflicts">
+        <Flash />
         <div className="l-split-left form-element-container box">
           {this.renderOverview()}
         </div>
@@ -123,6 +129,18 @@ class PolicyConflicts extends React.Component {
         </div>
       </div>
     );
+  }
+
+  handleDeletePolicyDetail(policy) {
+    return function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
+        deletePolicy(policy.id).then(() => {
+          setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+        });
+      }
+    };
   }
 
 }
