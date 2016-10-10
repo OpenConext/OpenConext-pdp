@@ -24,7 +24,6 @@ public class DefaultMailBox implements MailBox, JsonMapper {
   private final String baseUrl;
   private final String to;
   private final String from;
-  private final String subject = "PDP Conflicts";
 
   public DefaultMailBox(String baseUrl, String to, String from) {
     this.baseUrl = baseUrl;
@@ -39,7 +38,7 @@ public class DefaultMailBox implements MailBox, JsonMapper {
       variables.put("@@to@@", to);
       variables.put("@@conflicts@@", objectToTable(conflicts));
       variables.put("@@base_url@@", baseUrl);
-      sendMail("mail/conflicts.html", variables);
+      sendMail("mail/conflicts.html", "PDP Conflicts", variables);
     } catch (MessagingException | IOException e) {
       throw new RuntimeException(e);
     }
@@ -52,7 +51,7 @@ public class DefaultMailBox implements MailBox, JsonMapper {
       variables.put("@@to@@", to);
       variables.put("@@invalids@@", objectToTable(invalids));
       variables.put("@@base_url@@", baseUrl);
-      sendMail("mail/invalids.html", variables);
+      sendMail("mail/invalids.html", "PDP Invalid Policies", variables);
     } catch (MessagingException | IOException e) {
       throw new RuntimeException(e);
     }
@@ -62,7 +61,7 @@ public class DefaultMailBox implements MailBox, JsonMapper {
     return "<pre>" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(arg) + "</pre>";
   }
 
-  private void sendMail(String templateName, Map<String, String> variables) throws MessagingException, IOException {
+  private void sendMail(String templateName, String subject, Map<String, String> variables) throws MessagingException, IOException {
     String html = IOUtils.toString(new ClassPathResource(templateName).getInputStream());
     for (Map.Entry<String, String> var : variables.entrySet()) {
       html = html.replaceAll(var.getKey(), var.getValue());
