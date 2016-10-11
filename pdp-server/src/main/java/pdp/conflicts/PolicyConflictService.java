@@ -24,7 +24,10 @@ public class PolicyConflictService {
         conflicts.addAll(asList(one, two));
       }
     }));
-    return conflicts.stream().collect(groupingBy(PdpPolicyDefinition::getServiceProviderName));
+    return conflicts.stream()
+            .filter(conflict -> !conflict.isServiceProviderInvalidOrMissing())
+            .collect(groupingBy(PdpPolicyDefinition::getServiceProviderName));
+
   }
 
   //if the two SP's are equal and there are overlapping IdP's or one policy has no IdP then there is a conflict
