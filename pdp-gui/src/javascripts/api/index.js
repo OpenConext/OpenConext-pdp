@@ -147,8 +147,8 @@ export function getConflicts() {
   return fetchJson("/internal/conflicts");
 }
 
-export function getDecisions() {
-  return fetchJson("/internal/decisions?daysAgo=365");
+export function getDecisions(period) {
+  return fetchJson(`/internal/decisions?daysAgo=${period}`);
 }
 
 export function getSamlAllowedAttributes() {

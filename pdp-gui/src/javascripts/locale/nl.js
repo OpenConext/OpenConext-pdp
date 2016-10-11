@@ -170,7 +170,11 @@ I18n.translations.nl = {
     avg_total: "Gemiddelde totaal",
     avg_pdp: "Gemiddelde PDP internal",
     avg_teams: "Gemiddelde Teams",
-    avg_sab: "Gemiddelde SAB"
+    avg_sab: "Gemiddelde SAB",
+    days: {
+      "one": "{{count}} dag",
+      "other": "{{count}} dagen"
+    }
   },
   identity: {
     title: "Identiteitsimpersonatie",

@@ -10,116 +10,156 @@ class Decisions extends React.Component {
 
   constructor() {
     super();
+
     this.state = {
       avg: {},
-      decisions: []
+      decisions: [],
+      period: 7
     };
+
+    this.pdp = [];
+    this.sab = [];
+    this.teams = [];
   }
 
   componentWillMount() {
-    getDecisions().then(decisions => this.setState({ decisions }, () => this.initGraph()));
+    getDecisions(this.state.period)
+      .then(decisions => this.setState({ decisions }, () => this.initGraph()));
+  }
+
+  updateGraph(period) {
+    this.setState({ period });
+
+    getDecisions(period)
+      .then(decisions => this.setState({ decisions }, () => this.redrawGraph()));
+  }
+
+  redrawGraph() {
+    this.fillData();
+
+    this.graph.update();
   }
 
   average(arr) {
-    return arr.map(o => {
-      return o.y;
-    }).filter(n => {
-      return n !== 0;
-    }).reduce((prev, curr, i, arr) => {
+    return arr.map(o => o.y)
+    .filter(n => n !== 0)
+    .reduce((prev, curr, i, arr) => {
       const total = prev + curr;
       return i === arr.length - 1 ? total / arr.length : total;
     }, 0).toFixed(0);
   }
 
-  initGraph() {
-    const decisions = this.state.decisions;
+  fillData() {
     const total = [];
-    const pdp = [];
-    const teams = [];
-    const sab = [];
-    decisions.forEach(decision => {
+
+    this.state.decisions.forEach((decision, index) => {
       const dec = JSON.parse(decision.decisionJson);
-      total.push({ x: decision.created / 1000, y: dec.responseTimeMs });
+      total[index] = { x: decision.created / 1000, y: dec.responseTimeMs };
       const yTeams = dec.pipResponses["teams_pip"] || 0;
-      teams.push({ x: decision.created / 1000, y: yTeams });
+      this.teams[index] = { x: decision.created / 1000, y: yTeams };
       const ySab = dec.pipResponses["sab_pip"] || 0;
-      sab.push({ x: decision.created / 1000, y: ySab });
-      pdp.push({ x: decision.created / 1000, y: dec.responseTimeMs - yTeams - ySab });
+      this.sab[index] = { x: decision.created / 1000, y: ySab };
+      this.pdp[index] = { x: decision.created / 1000, y: dec.responseTimeMs - yTeams - ySab };
     });
+
+    while (this.pdp.length > this.state.decisions.length) {
+      this.pdp.pop();
+    }
+
+    while (this.teams.length > this.state.decisions.length) {
+      this.teams.pop();
+    }
+
+    while (this.sab.length > this.state.decisions.length) {
+      this.sab.pop();
+    }
+
     this.setState({
       avg: {
         total: this.average(total),
-        sab: this.average(sab),
-        teams: this.average(teams),
-        pdp: this.average(pdp)
+        sab: this.average(this.sab),
+        teams: this.average(this.teams),
+        pdp: this.average(this.pdp)
       }
     });
-    const graph = new Rickshaw.Graph({
+  }
+
+  initGraph() {
+    this.fillData();
+
+    this.graph = new Rickshaw.Graph({
       element: document.querySelector("#chart"),
       width: document.getElementById("chart").offsetWidth,//* 2,
       height: 400,
       renderer: "area",
-      stroke: true,
-      preserve: true,
+      interpolation: "step-after",
       series: [{
-        data: pdp,
+        data: this.pdp,
         color: "#4DB3CF",//$blue
         name: "PDP internal"
       }, {
-        data: teams,
+        data: this.teams,
         color: "#519B00",//$green
         name: "Teams PIP"
       }, {
-        data: sab,
+        data: this.sab,
         color: "#ec9a0a",//$orange
         name: "SAB PIP"
       }]
     });
 
-    const formatY = function(n) {
-      return n + "ms";
-    };
+    const formatY = n => n + "ms";
 
     new Rickshaw.Graph.Axis.Time({
-      graph: graph,
+      graph: this.graph,
       orientation: "bottom",
       element: document.getElementById("x_axis"),
-      pixelsPerTick: 150,
       timeFixture: new Rickshaw.Fixtures.Time.Local()
     });
+
     new Rickshaw.Graph.Axis.Y({
-      graph: graph,
+      graph: this.graph,
       orientation: "left",
       tickFormat: formatY,
-      pixelsPerTick: 75,
       element: document.getElementById("y_axis")
     });
-    graph.render();
+
+    this.graph.render();
 
     new Rickshaw.Graph.HoverDetail({
-      graph: graph,
-      xFormatter: function(x) {
-        return new Date(x * 1000).toLocaleDateString();
-      },
-      yFormatter: function(y) {
-        return y === null ? y : y.toFixed(0) + "ms";
-      }
+      graph: this.graph,
+      xFormatter: x => new Date(x * 1000).toLocaleDateString(),
+      yFormatter: y => y === null ? y : y.toFixed(0) + "ms"
     });
 
     const legend = new Rickshaw.Graph.Legend({
-      graph: graph,
+      graph: this.graph,
       element: document.getElementById("legend")
     });
 
     new Rickshaw.Graph.Behavior.Series.Toggle({
-      graph: graph,
-      legend: legend
-    });
-    new Rickshaw.Graph.Behavior.Series.Highlight({
-      graph: graph,
+      graph: this.graph,
       legend: legend
     });
 
+    new Rickshaw.Graph.Behavior.Series.Highlight({
+      graph: this.graph,
+      legend: legend
+    });
+  }
+
+  renderPeriodButton(period) {
+    let className = "c-button";
+
+    if (period !== this.state.period) {
+      className += " cancel";
+    }
+
+    return (
+      <button className={className} onClick={() => this.updateGraph(period)}>
+        { I18n.t("decisions.days", { count: period }) }
+      </button>
+    );
   }
 
   render() {
@@ -148,6 +188,12 @@ class Decisions extends React.Component {
           <div id="y_axis"></div>
           <div id="chart" className="rickshaw_graph"></div>
           <div id="x_axis"></div>
+        </div>
+        <div className="period-buttons">
+          { this.renderPeriodButton(1) }
+          { this.renderPeriodButton(7) }
+          { this.renderPeriodButton(30) }
+          { this.renderPeriodButton(365) }
         </div>
       </div>
     );

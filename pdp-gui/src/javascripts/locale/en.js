@@ -209,7 +209,11 @@ I18n.translations.en = {
     avg_total: "Average Total",
     avg_pdp: "Average PDP internal",
     avg_teams: "Average Teams",
-    avg_sab: "Average SAB"
+    avg_sab: "Average SAB",
+    days: {
+      "one": "{{count}} day",
+      "other": "{{count}} days"
+    }
   },
   contact: {
     email: "Service support email"
