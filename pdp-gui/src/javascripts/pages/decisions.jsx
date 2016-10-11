@@ -92,7 +92,7 @@ class Decisions extends React.Component {
       width: document.getElementById("chart").offsetWidth,//* 2,
       height: 400,
       renderer: "area",
-      interpolation: "step-after",
+      interpolation: "linear",
       series: [{
         data: this.pdp,
         color: "#4DB3CF",//$blue
