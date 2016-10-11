@@ -4,7 +4,7 @@ import I18n from "i18n-js";
 import { getIdentityProviders, getServiceProviders, getPolicies, getSamlAllowedAttributes, postPdpRequest } from "../api";
 import { determineStatus } from "../utils/status";
 
-import Select2Selector from "../components/select2_selector";
+import SelectWrapper from "../components/select_wrapper";
 import PolicyAttributes from "../components/policy_attributes";
 import PolicyPlaygroundHelpEn from "../help/policy_playground_help_en";
 import PolicyPlaygroundHelpNl from "../help/policy_playground_help_nl";
@@ -122,10 +122,9 @@ class Playground extends React.Component {
         <div className="form-element split success">
           <p className="label before-em">{I18n.t("playground.policy")}</p>
           <em className="label">{I18n.t("playground.policy_info")}</em>
-          <Select2Selector
+          <SelectWrapper
             defaultValue={ this.state.pdpRequest.selectedPolicy}
             placeholder={I18n.t("playground.policy_search")}
-            select2selectorId={"policy"}
             options={this.parsePolicies(this.state.policies)}
             handleChange={this.handleChangePolicy.bind(this)}/>
         </div>
@@ -140,10 +139,9 @@ class Playground extends React.Component {
       <div>
         <div className={"form-element split " + workflow}>
           <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-          <Select2Selector
+          <SelectWrapper
             defaultValue={pdpRequest.serviceProviderId}
             placeholder={I18n.t("policy_detail.sp_placeholder")}
-            select2selectorId={"serviceProvider"}
             options={this.parseEntities(this.state.serviceProviders)}
             handleChange={this.handleChangeServiceProvider.bind(this)}/>
         </div>
@@ -159,10 +157,9 @@ class Playground extends React.Component {
         <div className={"form-element split " + workflow}>
           <p className="label">{I18n.t("policies.identityProviderId")}</p>
 
-          <Select2Selector
+          <SelectWrapper
             defaultValue={pdpRequest.identityProviderId}
             placeholder={I18n.t("playground.idp_placeholder")}
-            select2selectorId={"identityProvider"}
             options={this.parseEntities(this.state.identityProviders)}
             handleChange={this.handleChangeIdentityProvider.bind(this)}/>
         </div>

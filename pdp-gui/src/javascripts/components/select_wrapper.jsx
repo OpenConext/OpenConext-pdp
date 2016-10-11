@@ -1,8 +1,8 @@
 import React from "react";
 
-import Select2 from "react-select";
+import Select from "react-select";
 
-class Select2Selector extends React.Component {
+class SelectWrapper extends React.Component {
   onChange(val) {
     if (_.isArray(val)) {
       return this.props.handleChange(val.map(v => v.value), val.map(v => v.label));
@@ -17,7 +17,7 @@ class Select2Selector extends React.Component {
     const minimumResultsForSearch = this.props.minimumResultsForSearch || 7;
 
     return (
-      <Select2
+      <Select
         value={defaultValue}
         options={data}
         multi={this.props.multiple}
@@ -31,7 +31,7 @@ class Select2Selector extends React.Component {
   }
 }
 
-Select2Selector.propTypes = {
+SelectWrapper.propTypes = {
   handleChange: React.PropTypes.func.isRequired,
   defaultValue: React.PropTypes.oneOfType([
     React.PropTypes.string,
@@ -50,4 +50,4 @@ Select2Selector.propTypes = {
   minimumResultsForSearch: React.PropTypes.number
 };
 
-export default Select2Selector;
+export default SelectWrapper;

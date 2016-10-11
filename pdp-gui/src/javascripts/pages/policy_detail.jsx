@@ -11,21 +11,9 @@ import Flash from "../components/flash";
 import PolicyAttributes from "../components/policy_attributes";
 import PolicyDetailHelpEn from "../help/policy_detail_help_en";
 import PolicyDetailHelpNl from "../help/policy_detail_help_nl";
-import Select2Selector from "../components/select2_selector";
+import SelectWrapper from "../components/select_wrapper";
 
 class PolicyDetail extends React.Component {
-
-  // componentWillUpdate() {
-  //   const node = this.getDOMNode();
-  //   this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
-  // }
-  //
-  // componentDidUpdate() {
-  //   if (this.shouldScrollBottom) {
-  //     const node = this.getDOMNode();
-  //     node.scrollTop = node.scrollHeight;
-  //   }
-  // }
 
   constructor() {
     super();
@@ -264,10 +252,9 @@ class PolicyDetail extends React.Component {
       <div>
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("policies.serviceProviderId")}</p>
-          <Select2Selector
+          <SelectWrapper
             defaultValue={policy.serviceProviderId}
             placeholder={I18n.t("policy_detail.sp_placeholder")}
-            select2selectorId={"serviceProvider"}
             options={serviceProviders}
             dataChanged={policy.spDataChanged}
             handleChange={this.handleChangeServiceProvider.bind(this)}/>
@@ -292,10 +279,9 @@ class PolicyDetail extends React.Component {
         <div className="form-element success">
           <p className="label">{I18n.t("policies.identityProviderIds")}</p>
 
-          <Select2Selector
+          <SelectWrapper
             defaultValue={policy.identityProviderIds}
             placeholder={I18n.t("policy_detail.idps_placeholder")}
-            select2selectorId={"identityProvider"}
             options={this.parseEntities(this.state.identityProviders)}
             dataChanged={false}
             multiple={true}

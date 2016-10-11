@@ -1,6 +1,6 @@
 import React from "react";
 import I18n from "i18n-js";
-import Select2Selector from "../components/select2_selector";
+import SelectWrapper from "../components/select_wrapper";
 import IdentityHelpNl from "../help/identity_help_nl";
 import IdentityHelpEn from "../help/identity_help_en";
 import { currentIdentity } from "../lib/identity";
@@ -99,10 +99,9 @@ class Identity extends React.Component {
         <div className={"form-element " + workflow}>
           <p className="label">{I18n.t("identity.idpEntityId")}</p>
 
-          <Select2Selector
+          <SelectWrapper
             defaultValue={this.state.idpEntityId}
             placeholder={I18n.t("identity.idpEntityIdPlaceHolder")}
-            select2selectorId={"identityProvider"}
             options={this.parseEntities(this.state.identityProviders)}
             multiple={false}
             handleChange={this.handleChangeIdentityProvider.bind(this)}/>
