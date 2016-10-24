@@ -31,5 +31,10 @@
     "AttributeId": "urn:collab:sab:surfnet.nl",
     "Value": "SAB role"
 
+  },
+  {
+    "AttributeId": "urn:mace:dir:attribute-def:mail",
+    "Value": "Mail address"
+
   }
 ]
