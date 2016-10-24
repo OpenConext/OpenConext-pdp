@@ -170,7 +170,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("/internal/attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {
     });
 
-    assertThat(allowedAttributes, hasSize(8));
+    assertThat(allowedAttributes, hasSize(9));
     assertAttributes(allowedAttributes);
   }
 
@@ -179,7 +179,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     List<JsonPolicyRequest.Attribute> samlAttributes = getForObject("/internal/saml-attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {
     });
 
-    assertThat(samlAttributes, hasSize(9));
+    assertThat(samlAttributes, hasSize(10));
 
     JsonPolicyRequest.Attribute nameId = samlAttributes.get(0);
 
