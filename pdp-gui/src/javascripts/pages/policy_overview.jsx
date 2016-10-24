@@ -70,6 +70,10 @@ class PolicyOverview extends React.Component {
       if (confirm(I18n.t("policies.confirmation", { policyName: policy.name }))) {
         deletePolicy(policy.id).then(() => {
           setFlash(I18n.t("policies.flash", { policyName: policy.name, action: I18n.t("policies.flash_deleted") }));
+          $("#policies_table").DataTable().destroy();
+          getPolicies().then(policies => this.setState({ policies }, () => {
+            this.initDataTable();
+          }));
         });
       }
     };
@@ -109,7 +113,7 @@ class PolicyOverview extends React.Component {
           <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
             <i className="fa fa-edit"></i>
           </Link>
-          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
+          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy).bind(this)}>
             <i className="fa fa-remove"></i>
           </a>
         </div>
