@@ -125,7 +125,15 @@ class PolicyDetail extends React.Component {
       this.context.router.transitionTo("/policies");
     })
     .catch(e => {
-      setFlash(e, "error");
+      if (e.response.status === 400) {
+        e.response.json()
+        .then(body => {
+          const message = body && body.details && body.details.name || "Error";
+          setFlash(message, "error");
+        });
+      } else {
+        setFlash(e, "error");
+      }
     });
   }
 
