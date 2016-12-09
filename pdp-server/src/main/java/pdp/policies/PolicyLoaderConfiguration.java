@@ -41,8 +41,9 @@ public class PolicyLoaderConfiguration {
 
   @Bean
   public PolicyViolationRetentionPeriodCleaner policyViolationRetentionPeriodCleaner(@Value("${policy.violation.retention.period.days}") int retentionPeriodDays,
-                                                                                     PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository);
+                                                                                     PdpPolicyViolationRepository pdpPolicyViolationRepository,
+                                                                                     @Value("${pdpCronJobResponsible}") boolean pdpCronJobResponsible) {
+    return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository, pdpCronJobResponsible);
   }
   
   @Bean
