@@ -3,6 +3,7 @@ package pdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import pdp.repositories.PdpPolicyViolationRepository;
 
 import java.util.concurrent.TimeUnit;
@@ -14,8 +15,10 @@ public class PolicyViolationRetentionPeriodCleaner {
   private final static Logger LOG = LoggerFactory.getLogger(PolicyViolationRetentionPeriodCleaner.class);
 
   @Autowired
-  public PolicyViolationRetentionPeriodCleaner(int retentionPeriodDays, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-    newScheduledThreadPool(1).scheduleAtFixedRate(() -> clean(retentionPeriodDays, pdpPolicyViolationRepository), 0, 1, TimeUnit.DAYS);
+  public PolicyViolationRetentionPeriodCleaner(int retentionPeriodDays, PdpPolicyViolationRepository pdpPolicyViolationRepository, boolean pdpCronJobResponsible) {
+    if (pdpCronJobResponsible) {
+        newScheduledThreadPool(1).scheduleAtFixedRate(() -> clean(retentionPeriodDays, pdpPolicyViolationRepository), 0, 1, TimeUnit.DAYS);
+    }
   }
 
   private void clean(int retentionPeriodDays, PdpPolicyViolationRepository pdpPolicyViolationRepository) {

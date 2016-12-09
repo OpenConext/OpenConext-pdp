@@ -19,6 +19,7 @@ import pdp.repositories.PdpPolicyRepository;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
@@ -31,7 +32,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
 
   protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
-  private Map<String, List<EntityMetaData>> entityMetaData = new HashMap<>();
+  private Map<String, List<EntityMetaData>> entityMetaData = new ConcurrentHashMap<>();
   
   @Autowired
   private PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
@@ -44,7 +45,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
   }
 
   protected void initializeMetadata() {
-    HashMap<String, List<EntityMetaData>> newEntityMetaData = new HashMap<>();
+    Map<String, List<EntityMetaData>> newEntityMetaData = new ConcurrentHashMap<>();
     newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
     newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
     this.entityMetaData = newEntityMetaData;
