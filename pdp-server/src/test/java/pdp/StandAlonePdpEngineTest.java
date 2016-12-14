@@ -168,7 +168,8 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
   }
 
   private Result assertResponse(Decision decision, Response pdpResponse) throws Exception {
-    LOG.debug(JSONResponse.toString(pdpResponse, true));
+    String json = JSONResponse.toString(pdpResponse, true);
+    LOG.debug(json);
 
     assertEquals(1, pdpResponse.getResults().size());
 
