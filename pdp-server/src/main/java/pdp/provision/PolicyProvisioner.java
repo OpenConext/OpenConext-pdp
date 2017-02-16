@@ -33,9 +33,9 @@ public class PolicyProvisioner implements ApplicationListener<ContextStartedEven
 
 
     @Override
-    public void onApplicationEvent(ContextStartedEvent contextRefreshedEvent) {
+    public void onApplicationEvent(ContextStartedEvent contextStartedEvent) {
         policyDefinitions()
-            .filter(definition -> pdpPolicyRepository.findByNameAndLatestRevision(definition.getName(), true).isPresent())
+            .filter(definition -> !pdpPolicyRepository.findByNameAndLatestRevision(definition.getName(), true).isPresent())
             .forEach(definition -> {
                 String policyXml = policyTemplateEngine.createPolicyXml(definition);
                 PdpPolicy pdpPolicy = new PdpPolicy(policyXml, definition.getName(), true, "provisioned",
