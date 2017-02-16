@@ -160,7 +160,7 @@ public abstract class AbstractPdpIntegrationTest implements JsonMapper {
   }
 
   protected PdpPolicy getExistingPolicy(String id) {
-    return pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(id, true).get(0);
+    return pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(id, true).get();
   }
 
   protected PdpPolicy getExistingPolicy() {

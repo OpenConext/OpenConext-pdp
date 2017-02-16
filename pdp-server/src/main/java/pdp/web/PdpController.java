@@ -346,7 +346,7 @@ public class PdpController implements JsonMapper {
       Optional<IdReference> idReferenceOptional = getPolicyId(deniesOrIndeterminates);
       if (idReferenceOptional.isPresent()) {
         String policyId = idReferenceOptional.get().getId().stringValue();
-        Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true).stream().findFirst();
+        Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true);
         if (policyOptional.isPresent()) {
           pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyOptional.get(), payload, response, isPlayground));
         }

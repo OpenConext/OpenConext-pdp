@@ -148,7 +148,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
     PdpPolicy saved = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(
-        PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get(0);
+        PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get();
 
     List<PdpPolicyDefinition> definitions = getForObject("/internal/revisions/" + saved.getId(), pdpPolicyDefinitionsType);
 

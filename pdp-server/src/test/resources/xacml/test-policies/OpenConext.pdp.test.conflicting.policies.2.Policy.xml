@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
-        PolicyId="OpenConext.pdp.test.conflicting.policies.2.Policy.xml"
+        PolicyId="OpenConext.pdp.test.conflicting.default-policies.2.Policy.xml"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable" >
     <Description>Personen van Avans in de groep HRM hebben toegang tot Youforce</Description>

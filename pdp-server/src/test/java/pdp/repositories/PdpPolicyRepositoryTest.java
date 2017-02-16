@@ -24,19 +24,31 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
   }
 
   @Test
-  public void testFindByName() throws JsonProcessingException {
-    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), true).stream().findFirst();
+  public void testFindById() throws JsonProcessingException {
+    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), true);
     assertEquals(NAME_ID + 1, policy.get().getName());
 
-    Optional<PdpPolicy> notLatestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), false).stream().findFirst();
+    Optional<PdpPolicy> notLatestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 1), false);
     assertFalse(notLatestRevision.isPresent());
   }
 
   @Test
-  public void testFindByNameNotFound() throws JsonProcessingException {
-    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision("nope", true).stream().findFirst();
+  public void testFindByIdNotFound() throws JsonProcessingException {
+    Optional<PdpPolicy> policy = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision("nope", true);
     assertFalse(policy.isPresent());
   }
+
+    @Test
+    public void testFindByName() throws JsonProcessingException {
+        Optional<PdpPolicy> policy = pdpPolicyRepository.findByNameAndLatestRevision(NAME_ID + 1, true);
+        assertEquals(NAME_ID + 1, policy.get().getName());
+    }
+
+    @Test
+    public void testFindByNameNotFound() throws JsonProcessingException {
+        Optional<PdpPolicy> policy = pdpPolicyRepository.findByNameAndLatestRevision("nope", true);
+        assertFalse(policy.isPresent());
+    }
 
   @Test
   public void testFindRevisionCountPerId() throws Exception {
@@ -45,7 +57,7 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
     PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
     pdpPolicyRepository.save(policy);
 
-    PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 4), true).get(0);
+    PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 4), true).get();
 
     List<Object[]> revisionCountPerId = pdpPolicyRepository.findRevisionCountPerId();
     Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));

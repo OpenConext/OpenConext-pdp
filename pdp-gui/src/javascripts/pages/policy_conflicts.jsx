@@ -107,10 +107,10 @@ class PolicyConflicts extends React.Component {
         <td className="conflict_is_activated_sr"><input type="checkbox" defaultChecked={policy.activatedSr}
             disabled="true"/></td>
         <td className="conflict_controls">
-          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
+          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("default-policies.edit")}>
             <i className="fa fa-edit"></i>
           </Link>
-          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
+          <a href="#" data-tooltip={I18n.t("default-policies.delete")} onClick={this.handleDeletePolicyDetail(policy)}>
             <i className="fa fa-remove"></i>
           </a>
         </td>
