@@ -8,20 +8,19 @@ import pdp.repositories.PdpPolicyRepository;
 
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 public class PolicyProvisionerTest {
 
     private PdpPolicyRepository pdpPolicyRepository;
-    private PolicyProvisioner subject ;
+    private PolicyProvisioner subject;
 
     @Before
     public void before() {
         pdpPolicyRepository = mock(PdpPolicyRepository.class);
-        subject= new PolicyProvisioner("test-provisioned-policies", pdpPolicyRepository);
+        subject = new PolicyProvisioner("test-provisioned-policies", pdpPolicyRepository);
     }
 
     @Test
@@ -33,7 +32,18 @@ public class PolicyProvisionerTest {
         subject.onApplicationEvent(null);
 
         verify(pdpPolicyRepository).save(argument.capture());
-        assertEquals("urn:surfconext:xacml:policy:id:test_policy", argument.getValue().getPolicyId());
+        PdpPolicy policy = argument.getValue();
+        assertEquals("urn:surfconext:xacml:policy:id:test_policy", policy.getPolicyId());
+        assertTrue(policy.getPolicyXml()
+            .contains("DataType=\"http://www.w3.org/2001/XMLSchema#string\">" +
+                "urn:collab:group:surfteams.nl:nl:surfnet:diensten:team_name" +
+                "</AttributeValue>"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void pathDoesNotExists() throws Exception {
+        subject = new PolicyProvisioner("does-not-exists", pdpPolicyRepository);
+        subject.onApplicationEvent(null);
     }
 
 }
