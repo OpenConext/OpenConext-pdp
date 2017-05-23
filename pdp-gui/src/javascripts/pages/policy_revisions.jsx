@@ -27,13 +27,9 @@ class PolicyRevisions extends React.Component {
     }
 
     renderAttributesDiff(prev, curr) {
-        const attrPrevGrouped = groupBy(prev.attributes, attr => {
-            return attr.name;
-        });
+        const attrPrevGrouped = groupBy(prev.attributes, attr => attr.name);
 
-        const attrCurrGrouped = groupBy(curr.attributes, attr => {
-            return attr.name;
-        });
+        const attrCurrGrouped = groupBy(curr.attributes, attr => attr.name);
 
         const attrResult = transform(attrCurrGrouped, (result, attributes, attrName) => {
             if (attrPrevGrouped.hasOwnProperty(attrName)) {
@@ -47,11 +43,10 @@ class PolicyRevisions extends React.Component {
                 const added = difference(currValues, prevValues).map(addedValue => {
                     return {value: addedValue, status: "curr"};
                 });
-                const unchanged = currValues.filter(value => {
-                    return prevValues.indexOf(value) !== -1;
-                }).map(unchangedValue => {
-                    return {value: unchangedValue, status: "no-change"};
-                });
+                const unchanged = currValues.filter(value => prevValues.indexOf(value) !== -1)
+                    .map(unchangedValue => {
+                        return {value: unchangedValue, status: "no-change"};
+                    });
                 const newValues = deleted.concat(added).concat(unchanged);
                 const anyValuesChanged = newValues.filter(val => val.status === "prev" || val.status === "curr").length > 0;
 
@@ -148,13 +143,7 @@ class PolicyRevisions extends React.Component {
             <section>
                 {this.renderTopDiff(prev, curr)}
                 <div className="form-element about">
-                    <div className="diff-panel">
-                        {
-                            properties.map(prop => {
-                                return renderPropertyDiff(prev, curr, prop);
-                            })
-                        }
-                    </div>
+                    <div className="diff-panel">{ properties.map(prop => renderPropertyDiff(prev, curr, prop)) }</div>
                 </div>
             </section>
         );

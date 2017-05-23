@@ -5,10 +5,8 @@ const glob = require("glob");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
-const BabiliPlugin = require("babili-webpack-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const UglifyJSPlugin = require("uglifyjs-webpack-plugin");
-const LodashModuleReplacementPlugin = require("lodash-webpack-plugin");
+
 const extractCSS = new ExtractTextPlugin("application-[contenthash].css");
 
 const PATHS = {
@@ -53,13 +51,11 @@ module.exports = {
 
     plugins: [
         extractCSS,
-        new webpack.HotModuleReplacementPlugin(),
         new HtmlWebpackPlugin({
             template: "src/index.html.ejs",
             favicon: "src/favicon.ico",
             hash: true
         }),
-        new BabiliPlugin({}, {comments: false, test: /\.js(x?)($|\?)/i}),
         new OptimizeCssAssetsPlugin({
             assetNameRegExp: /\.css$/,
             cssProcessorOptions: { discardComments: { removeAll: true } }
@@ -69,8 +65,6 @@ module.exports = {
                 NODE_ENV: JSON.stringify('production')
             }
         }),
-        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|nl/),
-        new LodashModuleReplacementPlugin(),
-        new UglifyJSPlugin()
+        new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|nl/)
     ]
 };
