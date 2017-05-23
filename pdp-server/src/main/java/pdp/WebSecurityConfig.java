@@ -29,91 +29,91 @@ import pdp.web.CsrfTokenResponseHeaderBindingFilter;
 @Order(1)
 public class WebSecurityConfig {
 
-  @Value("${policy.enforcement.point.user.name}")
-  private String policyEnforcementPointUserName;
+    @Value("${policy.enforcement.point.user.name}")
+    private String policyEnforcementPointUserName;
 
-  @Value("${policy.enforcement.point.user.password}")
-  private String policyEnforcementPointPassword;
-
-  @Autowired
-  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
-    authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
-    auth.authenticationProvider(authenticationProvider);
-
-    BasicAuthenticationProvider basicAuthenticationProvider = new BasicAuthenticationProvider(policyEnforcementPointUserName, policyEnforcementPointPassword);
-    auth.authenticationProvider(basicAuthenticationProvider);
-
-  }
-
-  @Order(2)
-  @Configuration
-  public static class InternalSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    @Value("${policy.enforcement.point.user.password}")
+    private String policyEnforcementPointPassword;
 
     @Autowired
-    private ServiceRegistry serviceRegistry;
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
+        authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
+        auth.authenticationProvider(authenticationProvider);
 
-    @Autowired
-    private Environment environment;
+        BasicAuthenticationProvider basicAuthenticationProvider = new BasicAuthenticationProvider(policyEnforcementPointUserName, policyEnforcementPointPassword);
+        auth.authenticationProvider(basicAuthenticationProvider);
 
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-      web
-          .ignoring()
-          .antMatchers("/health/**", "/info/**", "/public/**");
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http
-          .antMatcher("/internal/**")
-          .sessionManagement()
-          .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-          .and()
-          .csrf()
-          .requireCsrfProtectionMatcher(new CsrfProtectionMatcher()).and()
-          .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
-          .addFilterAfter(
-              new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
-              AbstractPreAuthenticatedProcessingFilter.class
-          )
-          .authorizeRequests()
-          .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN");
+    @Order(2)
+    @Configuration
+    public static class InternalSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-      if (environment.acceptsProfiles("no-csrf")) {
-        http.csrf().disable();
-      }
+        @Autowired
+        private ServiceRegistry serviceRegistry;
 
-      if (environment.acceptsProfiles("dev", "perf")) {
-        //we can't use @Profile, because we need to add it before the real filter
-        http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
-      }
+        @Autowired
+        private Environment environment;
+
+        @Override
+        public void configure(WebSecurity web) throws Exception {
+            web
+                .ignoring()
+                .antMatchers("/health/**", "/info/**", "/public/**");
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http
+                .antMatcher("/internal/**")
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                .and()
+                .csrf()
+                .requireCsrfProtectionMatcher(new CsrfProtectionMatcher()).and()
+                .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
+                .addFilterAfter(
+                    new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
+                    AbstractPreAuthenticatedProcessingFilter.class
+                )
+                .authorizeRequests()
+                .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN");
+
+            if (environment.acceptsProfiles("no-csrf")) {
+                http.csrf().disable();
+            }
+
+            if (environment.acceptsProfiles("dev", "perf")) {
+                //we can't use @Profile, because we need to add it before the real filter
+                http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
+            }
+        }
+
     }
 
-  }
+    @Configuration
+    @Order
+    public static class ApiSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
-  @Configuration
-  @Order
-  public static class ApiSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+        @Autowired
+        private ServiceRegistry serviceRegistry;
 
-    @Autowired
-    private ServiceRegistry serviceRegistry;
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.antMatcher("/**")
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .csrf()
+                .disable()
+                .addFilterBefore(
+                    new PolicyIdpAccessEnforcerFilter(authenticationManager(), serviceRegistry),
+                    BasicAuthenticationFilter.class
+                )
+                .authorizeRequests()
+                .antMatchers("/protected/**", "/decide/policy")
+                .hasAnyRole("PEP", "ADMIN");
+        }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-      http.antMatcher("/**")
-          .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-          .and()
-          .csrf()
-          .disable()
-          .addFilterBefore(
-              new PolicyIdpAccessEnforcerFilter(authenticationManager(), serviceRegistry),
-              BasicAuthenticationFilter.class
-          )
-          .authorizeRequests()
-          .antMatchers("/protected/**", "/decide/policy")
-          .hasAnyRole("PEP", "ADMIN");
     }
-
-  }
 }

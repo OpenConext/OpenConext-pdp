@@ -15,28 +15,28 @@ import java.io.StringWriter;
  */
 public class PolicyTemplateEngine {
 
-  private final static Logger LOG = LoggerFactory.getLogger(PolicyTemplateEngine.class);
+    private final static Logger LOG = LoggerFactory.getLogger(PolicyTemplateEngine.class);
 
-  private final MustacheFactory mf = new DefaultMustacheFactory();
+    private final MustacheFactory mf = new DefaultMustacheFactory();
 
-  public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
-    Mustache mustache = mf.compile("templates/policy-definition.xml");
-    StringWriter writer = new StringWriter();
-    try {
-      mustache.execute(writer, pdpPolicyDefintion).flush();
-      String policyXml = writer.toString();
-      LOG.debug("Returning policyXml {}", policyXml);
-      return policyXml;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
+        Mustache mustache = mf.compile("templates/policy-definition.xml");
+        StringWriter writer = new StringWriter();
+        try {
+            mustache.execute(writer, pdpPolicyDefintion).flush();
+            String policyXml = writer.toString();
+            LOG.debug("Returning policyXml {}", policyXml);
+            return policyXml;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
-  }
 
-  public static String getPolicyId(String name) {
-    if (name == null) {
-      return null;
+    public static String getPolicyId(String name) {
+        if (name == null) {
+            return null;
+        }
+        return "urn:surfconext:xacml:policy:id:" + name.replaceAll("[^\\w]+", "_").toLowerCase();
     }
-    return "urn:surfconext:xacml:policy:id:" + name.replaceAll("[^\\w]+", "_").toLowerCase();
-  }
 
 }

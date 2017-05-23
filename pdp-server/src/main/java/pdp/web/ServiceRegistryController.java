@@ -14,27 +14,27 @@ import java.util.List;
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
 public class ServiceRegistryController {
 
-  private final ServiceRegistry serviceRegistry;
-  private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
+    private final ServiceRegistry serviceRegistry;
+    private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
 
-  @Autowired
-  public ServiceRegistryController(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-    this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
-  }
+    @Autowired
+    public ServiceRegistryController(ServiceRegistry serviceRegistry) {
+        this.serviceRegistry = serviceRegistry;
+        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
+    }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")
-  public List<EntityMetaData> serviceProviders() {
-    return serviceRegistry.serviceProviders();
-  }
+    @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")
+    public List<EntityMetaData> serviceProviders() {
+        return serviceRegistry.serviceProviders();
+    }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders")
-  public List<EntityMetaData> identityProviders() {
-    return serviceRegistry.identityProviders();
-  }
+    @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders")
+    public List<EntityMetaData> identityProviders() {
+        return serviceRegistry.identityProviders();
+    }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders/scoped")
-  public List<EntityMetaData> identityProvidersScoped() {
-    return policyIdpAccessEnforcer.filterIdentityProviders( serviceRegistry.identityProviders());
-  }
+    @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders/scoped")
+    public List<EntityMetaData> identityProvidersScoped() {
+        return policyIdpAccessEnforcer.filterIdentityProviders(serviceRegistry.identityProviders());
+    }
 }

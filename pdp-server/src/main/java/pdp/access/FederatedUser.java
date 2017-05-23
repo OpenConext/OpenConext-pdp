@@ -10,41 +10,41 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class FederatedUser extends User {
 
-  private final String displayName;
-  private final Set<EntityMetaData> idpEntities;
-  private final Set<EntityMetaData> spEntities;
-  private final String authenticatingAuthority;
+    private final String displayName;
+    private final Set<EntityMetaData> idpEntities;
+    private final Set<EntityMetaData> spEntities;
+    private final String authenticatingAuthority;
 
-  public FederatedUser(String uid, String authenticatingAuthority, String displayName, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities, Collection<? extends GrantedAuthority> authorities) {
-    super(uid, "N/A", authorities);
-    this.displayName = displayName;
-    this.authenticatingAuthority = authenticatingAuthority;
-    this.idpEntities = idpEntities;
-    this.spEntities = spEntities;
-  }
+    public FederatedUser(String uid, String authenticatingAuthority, String displayName, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities, Collection<? extends GrantedAuthority> authorities) {
+        super(uid, "N/A", authorities);
+        this.displayName = displayName;
+        this.authenticatingAuthority = authenticatingAuthority;
+        this.idpEntities = idpEntities;
+        this.spEntities = spEntities;
+    }
 
-  public Set<EntityMetaData> getIdpEntities() {
-    return idpEntities;
-  }
+    public Set<EntityMetaData> getIdpEntities() {
+        return idpEntities;
+    }
 
-  public Set<EntityMetaData> getSpEntities() {
-    return spEntities;
-  }
+    public Set<EntityMetaData> getSpEntities() {
+        return spEntities;
+    }
 
-  public boolean isPolicyIdpAccessEnforcementRequired() {
-    return false;
-  }
+    public boolean isPolicyIdpAccessEnforcementRequired() {
+        return false;
+    }
 
-  public String getIdentifier() {
-    return getUsername();
-  }
+    public String getIdentifier() {
+        return getUsername();
+    }
 
-  public String getDisplayName() {
-    return displayName;
-  }
+    public String getDisplayName() {
+        return displayName;
+    }
 
-  public String getAuthenticatingAuthority() {
-    return authenticatingAuthority;
-  }
+    public String getAuthenticatingAuthority() {
+        return authenticatingAuthority;
+    }
 
 }

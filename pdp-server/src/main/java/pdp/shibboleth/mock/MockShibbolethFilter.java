@@ -17,52 +17,54 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
-import static pdp.access.FederatedUserBuilder.*;
+import static pdp.access.FederatedUserBuilder.DISPLAY_NAME_HEADER_NAME;
+import static pdp.access.FederatedUserBuilder.SHIB_AUTHENTICATING_AUTHORITY;
+import static pdp.access.FederatedUserBuilder.UID_HEADER_NAME;
 
 public class MockShibbolethFilter extends GenericFilterBean {
 
-  private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MockShibbolethFilter.class);
 
-  public MockShibbolethFilter() {
-    LOG.info("MockShibbolethFilter initializing...");
-  }
-
-  private static class SetHeader extends HttpServletRequestWrapper {
-
-    private final HashMap<String, String> headers;
-
-    public SetHeader(HttpServletRequest request) {
-      super(request);
-      this.headers = new HashMap<>();
+    public MockShibbolethFilter() {
+        LOG.info("MockShibbolethFilter initializing...");
     }
 
-    public void setHeader(String name, String value) {
-      this.headers.put(name, value);
+    private static class SetHeader extends HttpServletRequestWrapper {
+
+        private final HashMap<String, String> headers;
+
+        public SetHeader(HttpServletRequest request) {
+            super(request);
+            this.headers = new HashMap<>();
+        }
+
+        public void setHeader(String name, String value) {
+            this.headers.put(name, value);
+        }
+
+        @Override
+        public Enumeration<String> getHeaderNames() {
+            List<String> names = Collections.list(super.getHeaderNames());
+            names.addAll(headers.keySet());
+            return Collections.enumeration(names);
+        }
+
+        @Override
+        public String getHeader(String name) {
+            if (headers.containsKey(name)) {
+                return headers.get(name);
+            }
+            return super.getHeader(name);
+        }
     }
 
     @Override
-    public Enumeration<String> getHeaderNames() {
-      List<String> names = Collections.list(super.getHeaderNames());
-      names.addAll(headers.keySet());
-      return Collections.enumeration(names);
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
+        wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
+        wrapper.setHeader(SHIB_AUTHENTICATING_AUTHORITY, PolicyLoader.authenticatingAuthority);
+        wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
+
+        filterChain.doFilter(wrapper, servletResponse);
     }
-
-    @Override
-    public String getHeader(String name) {
-      if (headers.containsKey(name)) {
-        return headers.get(name);
-      }
-      return super.getHeader(name);
-    }
-  }
-
-  @Override
-  public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-    SetHeader wrapper = new SetHeader((HttpServletRequest) servletRequest);
-    wrapper.setHeader(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
-    wrapper.setHeader(SHIB_AUTHENTICATING_AUTHORITY, PolicyLoader.authenticatingAuthority);
-    wrapper.setHeader(DISPLAY_NAME_HEADER_NAME, "John Doe");
-
-    filterChain.doFilter(wrapper, servletResponse);
-  }
 }

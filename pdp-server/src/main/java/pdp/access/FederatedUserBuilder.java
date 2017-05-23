@@ -16,79 +16,79 @@ import static org.springframework.util.StringUtils.isEmpty;
 
 public class FederatedUserBuilder {
 
-  private static final Collection<? extends GrantedAuthority> shibAuthorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");
+    private static final Collection<? extends GrantedAuthority> shibAuthorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");
 
-  public static final Collection<? extends GrantedAuthority> apiAuthorities = createAuthorityList("ROLE_USER", "ROLE_PEP");
+    public static final Collection<? extends GrantedAuthority> apiAuthorities = createAuthorityList("ROLE_USER", "ROLE_PEP");
 
-  //shib headers
-  public static final String UID_HEADER_NAME = "uid";
-  public static final String DISPLAY_NAME_HEADER_NAME = "displayname";
-  public static final String SHIB_AUTHENTICATING_AUTHORITY = "Shib-Authenticating-Authority";
+    //shib headers
+    public static final String UID_HEADER_NAME = "uid";
+    public static final String DISPLAY_NAME_HEADER_NAME = "displayname";
+    public static final String SHIB_AUTHENTICATING_AUTHORITY = "Shib-Authenticating-Authority";
 
-  //trusted API headers
-  public static final String X_IDP_ENTITY_ID = "X-IDP-ENTITY-ID";
-  public static final String X_UNSPECIFIED_NAME_ID = "X-UNSPECIFIED-NAME-ID";
-  public static final String X_DISPLAY_NAME = "X-DISPLAY-NAME";
+    //trusted API headers
+    public static final String X_IDP_ENTITY_ID = "X-IDP-ENTITY-ID";
+    public static final String X_UNSPECIFIED_NAME_ID = "X-UNSPECIFIED-NAME-ID";
+    public static final String X_DISPLAY_NAME = "X-DISPLAY-NAME";
 
-  //impersonate header
-  public static final String X_IMPERSONATE = "X-IMPERSONATE";
+    //impersonate header
+    public static final String X_IMPERSONATE = "X-IMPERSONATE";
 
-  private static final Logger LOG = LoggerFactory.getLogger(FederatedUserBuilder.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FederatedUserBuilder.class);
 
-  private final ServiceRegistry serviceRegsitry;
+    private final ServiceRegistry serviceRegsitry;
 
-  public FederatedUserBuilder(ServiceRegistry serviceRegsitry) {
-    this.serviceRegsitry = serviceRegsitry;
-  }
-
-  public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
-    //check headers for enrichment of the Authentication
-    String idpEntityId = request.getHeader(X_IDP_ENTITY_ID);
-    String nameId = request.getHeader(X_UNSPECIFIED_NAME_ID);
-    String displayName = request.getHeader(X_DISPLAY_NAME);
-
-    if (isEmpty(idpEntityId) || isEmpty(nameId) || isEmpty(displayName)) {
-      //any policy idp access checks will fail, but it might be that this call is not for something that requires access
-      return Optional.empty();
+    public FederatedUserBuilder(ServiceRegistry serviceRegsitry) {
+        this.serviceRegsitry = serviceRegsitry;
     }
 
-    Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(idpEntityId);
-    Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
+    public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
+        //check headers for enrichment of the Authentication
+        String idpEntityId = request.getHeader(X_IDP_ENTITY_ID);
+        String nameId = request.getHeader(X_UNSPECIFIED_NAME_ID);
+        String displayName = request.getHeader(X_DISPLAY_NAME);
 
-    LOG.debug("Creating RunAsFederatedUser {}", nameId);
+        if (isEmpty(idpEntityId) || isEmpty(nameId) || isEmpty(displayName)) {
+            //any policy idp access checks will fail, but it might be that this call is not for something that requires access
+            return Optional.empty();
+        }
 
-    return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authorities));
-  }
+        Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(idpEntityId);
+        Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
-  public Optional<FederatedUser> shibUser(HttpServletRequest request) {
-    String uid = request.getHeader(UID_HEADER_NAME);
-    String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
-    String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
+        LOG.debug("Creating RunAsFederatedUser {}", nameId);
 
-    if (isEmpty(uid) || isEmpty(displayName) || isEmpty(authenticatingAuthority)) {
-      return Optional.empty();
+        return Optional.of(new RunAsFederatedUser(nameId, idpEntityId, displayName, idpEntities, spEntities, authorities));
     }
 
-    //By contract we always get at least one Idp and usually two separated by a semi-colon
-    authenticatingAuthority = authenticatingAuthority.split(";")[0];
-    Set<EntityMetaData> idpEntities;
-    try {
-      idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
-    } catch (PolicyIdpAccessUnknownIdentityProvidersException e) {
-      return Optional.empty();
+    public Optional<FederatedUser> shibUser(HttpServletRequest request) {
+        String uid = request.getHeader(UID_HEADER_NAME);
+        String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
+        String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
+
+        if (isEmpty(uid) || isEmpty(displayName) || isEmpty(authenticatingAuthority)) {
+            return Optional.empty();
+        }
+
+        //By contract we always get at least one Idp and usually two separated by a semi-colon
+        authenticatingAuthority = authenticatingAuthority.split(";")[0];
+        Set<EntityMetaData> idpEntities;
+        try {
+            idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
+        } catch (PolicyIdpAccessUnknownIdentityProvidersException e) {
+            return Optional.empty();
+        }
+
+        Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
+
+        LOG.debug("Creating FederatedUser {}", uid);
+
+        return Optional.of(new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, shibAuthorities));
     }
 
-    Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
-
-    LOG.debug("Creating FederatedUser {}",uid);
-
-    return Optional.of(new FederatedUser(uid, authenticatingAuthority, displayName, idpEntities, spEntities, shibAuthorities));
-  }
-
-  private Set<EntityMetaData> getSpEntities(Set<EntityMetaData> idpEntities) {
-    //By contract we have at least one Idp - otherwise an Exception is already raised
-    String institutionId = idpEntities.iterator().next().getInstitutionId();
-    return serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
-  }
+    private Set<EntityMetaData> getSpEntities(Set<EntityMetaData> idpEntities) {
+        //By contract we have at least one Idp - otherwise an Exception is already raised
+        String institutionId = idpEntities.iterator().next().getInstitutionId();
+        return serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
+    }
 
 }

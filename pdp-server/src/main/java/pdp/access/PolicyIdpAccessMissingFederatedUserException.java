@@ -8,8 +8,8 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 @ResponseStatus(value = FORBIDDEN)
 public class PolicyIdpAccessMissingFederatedUserException extends AbstractPolicyIdpAccessException {
 
-  public PolicyIdpAccessMissingFederatedUserException(String msg) {
-    super(msg);
-  }
+    public PolicyIdpAccessMissingFederatedUserException(String msg) {
+        super(msg);
+    }
 
 }

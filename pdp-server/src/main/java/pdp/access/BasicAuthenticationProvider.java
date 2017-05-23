@@ -16,34 +16,34 @@ import static pdp.access.FederatedUserBuilder.apiAuthorities;
  */
 public class BasicAuthenticationProvider implements AuthenticationProvider {
 
-  private final String userName;
-  private final String password;
+    private final String userName;
+    private final String password;
 
-  public BasicAuthenticationProvider(String userName, String password) {
-    notNull(userName);
-    notNull(password);
+    public BasicAuthenticationProvider(String userName, String password) {
+        notNull(userName, "Username must not be null");
+        notNull(password, "Username must not be null");
 
-    this.userName = userName;
-    this.password = password;
-  }
-
-  @Override
-  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    //the exceptions are for logging and are not propagated to the end user / application
-    if (!userName.equals(authentication.getPrincipal())) {
-      throw new UsernameNotFoundException("Unknown user: " + authentication.getPrincipal());
+        this.userName = userName;
+        this.password = password;
     }
-    if (!password.equals(authentication.getCredentials())) {
-      throw new BadCredentialsException("Bad credentials");
-    }
-    return new UsernamePasswordAuthenticationToken(
-        authentication.getPrincipal(),
-        authentication.getCredentials(),
-        apiAuthorities);
-  }
 
-  @Override
-  public boolean supports(Class<?> authentication) {
-    return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-  }
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        //the exceptions are for logging and are not propagated to the end user / application
+        if (!userName.equals(authentication.getPrincipal())) {
+            throw new UsernameNotFoundException("Unknown user: " + authentication.getPrincipal());
+        }
+        if (!password.equals(authentication.getCredentials())) {
+            throw new BadCredentialsException("Bad credentials");
+        }
+        return new UsernamePasswordAuthenticationToken(
+            authentication.getPrincipal(),
+            authentication.getCredentials(),
+            apiAuthorities);
+    }
+
+    @Override
+    public boolean supports(Class<?> authentication) {
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
+    }
 }

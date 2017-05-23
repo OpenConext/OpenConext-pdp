@@ -8,8 +8,8 @@ import pdp.access.FederatedUser;
 
 public class ShibbolethUserDetailService implements AuthenticationUserDetailsService<PreAuthenticatedAuthenticationToken> {
 
-  @Override
-  public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken authentication) throws UsernameNotFoundException {
-    return (FederatedUser) authentication.getPrincipal();
-  }
+    @Override
+    public UserDetails loadUserDetails(PreAuthenticatedAuthenticationToken authentication) throws UsernameNotFoundException {
+        return (FederatedUser) authentication.getPrincipal();
+    }
 }

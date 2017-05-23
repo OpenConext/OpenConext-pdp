@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface PolicyLoader {
 
-  String authenticatingAuthority = "http://mock-idp";
-  String userIdentifier = "system";
-  String userDisplayName = "system";
+    String authenticatingAuthority = "http://mock-idp";
+    String userIdentifier = "system";
+    String userDisplayName = "system";
 
-  List<PdpPolicy> getPolicies() throws IOException;
+    List<PdpPolicy> getPolicies() throws IOException;
 
-  void loadPolicies() throws IOException;
+    void loadPolicies() throws IOException;
 }

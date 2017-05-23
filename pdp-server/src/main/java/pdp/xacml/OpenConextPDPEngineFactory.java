@@ -12,13 +12,13 @@ import java.io.IOException;
 
 public class OpenConextPDPEngineFactory extends OpenAZPDPEngineFactory {
 
-  public PDPEngine newEngine(boolean cachePolicies,
-                             boolean includeInactivePolicies,
-                             PdpPolicyRepository pdpPolicyRepository,
-                             VootClient vootClient,
-                             SabClient sabClient) throws FactoryException, IOException {
-    EvaluationContextFactory evaluationContextFactory = new OpenConextEvaluationContextFactory(pdpPolicyRepository, vootClient, sabClient, cachePolicies, includeInactivePolicies);
-    return new OpenConextPDPEngine(evaluationContextFactory, this.getDefaultBehavior(), this.getScopeResolver());
-  }
+    public PDPEngine newEngine(boolean cachePolicies,
+                               boolean includeInactivePolicies,
+                               PdpPolicyRepository pdpPolicyRepository,
+                               VootClient vootClient,
+                               SabClient sabClient) throws FactoryException, IOException {
+        EvaluationContextFactory evaluationContextFactory = new OpenConextEvaluationContextFactory(pdpPolicyRepository, vootClient, sabClient, cachePolicies, includeInactivePolicies);
+        return new OpenConextPDPEngine(evaluationContextFactory, this.getDefaultBehavior(), this.getScopeResolver());
+    }
 
 }

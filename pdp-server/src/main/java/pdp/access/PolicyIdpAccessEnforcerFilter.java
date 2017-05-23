@@ -13,19 +13,19 @@ import java.util.Optional;
 
 public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
 
-  private final FederatedUserBuilder federatedUserBuilder;
+    private final FederatedUserBuilder federatedUserBuilder;
 
-  public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegsitry) {
-    super(authenticationManager);
-    this.federatedUserBuilder = new FederatedUserBuilder(serviceRegsitry);
-  }
-
-  @Override
-  protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException {
-    Optional<FederatedUser> runAsFederatedUserOptional = federatedUserBuilder.basicAuthUser(request, authResult.getAuthorities());
-    if (runAsFederatedUserOptional.isPresent()) {
-      SecurityContextHolder.getContext().setAuthentication(new PolicyIdpAccessAwareToken((RunAsFederatedUser) runAsFederatedUserOptional.get()));
+    public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegsitry) {
+        super(authenticationManager);
+        this.federatedUserBuilder = new FederatedUserBuilder(serviceRegsitry);
     }
-  }
+
+    @Override
+    protected void onSuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, Authentication authResult) throws IOException {
+        Optional<FederatedUser> runAsFederatedUserOptional = federatedUserBuilder.basicAuthUser(request, authResult.getAuthorities());
+        if (runAsFederatedUserOptional.isPresent()) {
+            SecurityContextHolder.getContext().setAuthentication(new PolicyIdpAccessAwareToken((RunAsFederatedUser) runAsFederatedUserOptional.get()));
+        }
+    }
 
 }

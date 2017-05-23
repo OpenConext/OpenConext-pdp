@@ -9,25 +9,25 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class MailConfiguration {
 
-  @Value("${email.base_url}")
-  private String baseUrl;
+    @Value("${email.base_url}")
+    private String baseUrl;
 
-  @Value("${email.from}")
-  private String emailFrom;
+    @Value("${email.from}")
+    private String emailFrom;
 
-  @Value("${email.to}")
-  private String emailTo;
+    @Value("${email.to}")
+    private String emailTo;
 
-  @Bean
-  @Profile({"test", "acc", "prod", "mail"})
-  public MailBox mailSenderProd() {
-    return new DefaultMailBox(baseUrl, emailTo, emailFrom );
-  }
+    @Bean
+    @Profile({"test", "acc", "prod", "mail"})
+    public MailBox mailSenderProd() {
+        return new DefaultMailBox(baseUrl, emailTo, emailFrom);
+    }
 
-  @Bean
-  @Profile({"dev", "no-csrf", "perf"})
-  @Primary
-  public MailBox mailSenderDev() {
-    return new MockMailBox(baseUrl, emailTo, emailFrom);
-  }
+    @Bean
+    @Profile({"dev", "no-csrf", "perf"})
+    @Primary
+    public MailBox mailSenderDev() {
+        return new MockMailBox(baseUrl, emailTo, emailFrom);
+    }
 }

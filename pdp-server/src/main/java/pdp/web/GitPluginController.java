@@ -14,18 +14,17 @@ import java.util.Properties;
 @RestController
 public class GitPluginController {
 
-  @RequestMapping(method = RequestMethod.GET, value = "/public/git")
-  public Properties git() throws IOException {
-    Properties props = new Properties();
-    props.load(new ClassPathResource("git.properties").getInputStream());
-    return props;
-  }
+    @RequestMapping(method = RequestMethod.GET, value = "/public/git")
+    public Properties git() throws IOException {
+        Properties props = new Properties();
+        props.load(new ClassPathResource("git.properties").getInputStream());
+        return props;
+    }
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/health")
-  public void health(HttpServletRequest request, HttpServletResponse respsonse) throws ServletException, IOException {
-    request.getRequestDispatcher("/health").forward(request, respsonse);
-  }
-
+    @RequestMapping(method = RequestMethod.GET, value = "/internal/health")
+    public void health(HttpServletRequest request, HttpServletResponse respsonse) throws ServletException, IOException {
+        request.getRequestDispatcher("/health").forward(request, respsonse);
+    }
 
 
 }

@@ -7,13 +7,13 @@ import java.util.List;
 
 public class NoopPrePolicyLoader implements PolicyLoader {
 
-  @Override
-  public List<PdpPolicy> getPolicies() {
-    return Collections.emptyList();
-  }
+    @Override
+    public List<PdpPolicy> getPolicies() {
+        return Collections.emptyList();
+    }
 
-  @Override
-  public void loadPolicies() {
-    //noop
-  }
+    @Override
+    public void loadPolicies() {
+        //noop
+    }
 }

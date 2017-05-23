@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PdpDecisionRepository extends CrudRepository<PdpDecision, Long> {
 
-  List<PdpDecision> findByCreatedAfter(Date date);
+    List<PdpDecision> findByCreatedAfter(Date date);
 
 }

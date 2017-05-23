@@ -8,21 +8,21 @@ import java.util.Set;
 
 public interface ServiceRegistry {
 
-  List<EntityMetaData> serviceProviders();
+    List<EntityMetaData> serviceProviders();
 
-  List<EntityMetaData> identityProviders();
+    List<EntityMetaData> identityProviders();
 
-  Set<EntityMetaData> identityProvidersByAuthenticatingAuthority(String authenticatingAuthority);
+    Set<EntityMetaData> identityProvidersByAuthenticatingAuthority(String authenticatingAuthority);
 
-  Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId);
+    Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId);
 
-  Optional<EntityMetaData> serviceProviderOptionalByEntityId(String entityId);
+    Optional<EntityMetaData> serviceProviderOptionalByEntityId(String entityId);
 
-  Optional<EntityMetaData> identityProviderOptionalByEntityId(String entityId);
+    Optional<EntityMetaData> identityProviderOptionalByEntityId(String entityId);
 
-  EntityMetaData serviceProviderByEntityId(String entityId);
+    EntityMetaData serviceProviderByEntityId(String entityId);
 
-  EntityMetaData identityProviderByEntityId(String entityId);
+    EntityMetaData identityProviderByEntityId(String entityId);
 
-  List<String> identityProviderNames(List<String> entityIds);
+    List<String> identityProviderNames(List<String> entityIds);
 }

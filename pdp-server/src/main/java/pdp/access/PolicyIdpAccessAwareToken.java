@@ -4,21 +4,21 @@ import org.springframework.security.authentication.AbstractAuthenticationToken;
 
 public class PolicyIdpAccessAwareToken extends AbstractAuthenticationToken {
 
-  private RunAsFederatedUser policyIdpAccessAwarePrincipal;
+    private RunAsFederatedUser policyIdpAccessAwarePrincipal;
 
-  public PolicyIdpAccessAwareToken(RunAsFederatedUser policyIdpAccessAwarePrincipal) {
-    super(policyIdpAccessAwarePrincipal.getAuthorities());
-    this.policyIdpAccessAwarePrincipal = policyIdpAccessAwarePrincipal;
-    setAuthenticated(true);
-  }
+    public PolicyIdpAccessAwareToken(RunAsFederatedUser policyIdpAccessAwarePrincipal) {
+        super(policyIdpAccessAwarePrincipal.getAuthorities());
+        this.policyIdpAccessAwarePrincipal = policyIdpAccessAwarePrincipal;
+        setAuthenticated(true);
+    }
 
-  @Override
-  public Object getCredentials() {
-    return "N/A";
-  }
+    @Override
+    public Object getCredentials() {
+        return "N/A";
+    }
 
-  @Override
-  public Object getPrincipal() {
-    return policyIdpAccessAwarePrincipal;
-  }
+    @Override
+    public Object getPrincipal() {
+        return policyIdpAccessAwarePrincipal;
+    }
 }

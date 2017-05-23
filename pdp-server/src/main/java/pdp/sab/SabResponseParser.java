@@ -28,42 +28,42 @@ import static java.util.stream.IntStream.range;
 
 public class SabResponseParser {
 
-  public List<String> parse(InputStream soap) throws XMLStreamException {
-    //despite it's name, the XMLInputFactoryImpl is not thread safe
-    XMLInputFactory factory = XMLInputFactory.newInstance();
+    public List<String> parse(InputStream soap) throws XMLStreamException {
+        //despite it's name, the XMLInputFactoryImpl is not thread safe
+        XMLInputFactory factory = XMLInputFactory.newInstance();
 
-    XMLStreamReader reader = factory.createXMLStreamReader(soap);
+        XMLStreamReader reader = factory.createXMLStreamReader(soap);
 
-    List<String> roles = new ArrayList<>();
-    boolean processRoles = false;
+        List<String> roles = new ArrayList<>();
+        boolean processRoles = false;
 
-    while (reader.hasNext()) {
-      switch (reader.next()) {
-        case XMLStreamConstants.START_ELEMENT:
-          switch (reader.getLocalName()) {
-            case "Attribute":
-              if (hasAttributeValue(reader, "urn:oid:1.3.6.1.4.1.5923.1.1.1.7")) {
-                processRoles = true;
-              }
-              break;
-            case "AttributeValue":
-              if (processRoles) {
-                roles.add(reader.getElementText());
-              }
-              break;
-          }
-          break;
-        case XMLStreamConstants.END_ELEMENT:
-          if (processRoles && reader.getLocalName().equals("Attribute")) {
-            //we got what we wanted
-            return roles;
-          }
-      }
+        while (reader.hasNext()) {
+            switch (reader.next()) {
+                case XMLStreamConstants.START_ELEMENT:
+                    switch (reader.getLocalName()) {
+                        case "Attribute":
+                            if (hasAttributeValue(reader, "urn:oid:1.3.6.1.4.1.5923.1.1.1.7")) {
+                                processRoles = true;
+                            }
+                            break;
+                        case "AttributeValue":
+                            if (processRoles) {
+                                roles.add(reader.getElementText());
+                            }
+                            break;
+                    }
+                    break;
+                case XMLStreamConstants.END_ELEMENT:
+                    if (processRoles && reader.getLocalName().equals("Attribute")) {
+                        //we got what we wanted
+                        return roles;
+                    }
+            }
+        }
+        return roles;
     }
-    return roles;
-  }
 
-  private boolean hasAttributeValue(XMLStreamReader reader, String attributeValue) {
-    return range(0, reader.getAttributeCount()).mapToObj(i -> reader.getAttributeValue(i)).anyMatch(v -> v != null && v.equals(attributeValue));
-  }
+    private boolean hasAttributeValue(XMLStreamReader reader, String attributeValue) {
+        return range(0, reader.getAttributeCount()).mapToObj(i -> reader.getAttributeValue(i)).anyMatch(v -> v != null && v.equals(attributeValue));
+    }
 }

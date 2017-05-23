@@ -21,26 +21,26 @@ import java.net.URL;
  */
 public class PreemptiveAuthenticationHttpComponentsClientHttpRequestFactory extends HttpComponentsClientHttpRequestFactory {
 
-  private HttpContext httpContext;
+    private HttpContext httpContext;
 
-  public PreemptiveAuthenticationHttpComponentsClientHttpRequestFactory(HttpClient httpClient, String url) throws MalformedURLException {
-    super(httpClient);
-    this.httpContext = this.initHttpContext(url);
-  }
+    public PreemptiveAuthenticationHttpComponentsClientHttpRequestFactory(HttpClient httpClient, String url) throws MalformedURLException {
+        super(httpClient);
+        this.httpContext = this.initHttpContext(url);
+    }
 
-  private HttpContext initHttpContext(String url) throws MalformedURLException {
-    URL parsedUrl = new URL(url);
-    HttpHost targetHost = new HttpHost(parsedUrl.getHost(), parsedUrl.getPort(), parsedUrl.getProtocol());
-    AuthCache authCache = new BasicAuthCache();
-    BasicScheme basicAuth = new BasicScheme();
-    authCache.put(targetHost, basicAuth);
-    BasicHttpContext localContext = new BasicHttpContext();
-    localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
-    return localContext;
-  }
+    private HttpContext initHttpContext(String url) throws MalformedURLException {
+        URL parsedUrl = new URL(url);
+        HttpHost targetHost = new HttpHost(parsedUrl.getHost(), parsedUrl.getPort(), parsedUrl.getProtocol());
+        AuthCache authCache = new BasicAuthCache();
+        BasicScheme basicAuth = new BasicScheme();
+        authCache.put(targetHost, basicAuth);
+        BasicHttpContext localContext = new BasicHttpContext();
+        localContext.setAttribute(HttpClientContext.AUTH_CACHE, authCache);
+        return localContext;
+    }
 
-  @Override
-  protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
-    return this.httpContext;
-  }
+    @Override
+    protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
+        return this.httpContext;
+    }
 }

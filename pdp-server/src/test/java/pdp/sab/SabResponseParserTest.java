@@ -13,16 +13,16 @@ import static org.junit.Assert.assertEquals;
 
 public class SabResponseParserTest {
 
-  private SabResponseParser subject = new SabResponseParser();
+    private SabResponseParser subject = new SabResponseParser();
 
-  @Test
-  public void testParse() throws IOException, XMLStreamException {
-    InputStream soap = new ClassPathResource("sab/response_success.xml").getInputStream();
-    List<String> roles = subject.parse(soap);
-    assertEquals(Arrays.asList(
-        "Superuser", "Instellingsbevoegde", "Infraverantwoordelijke", "OperationeelBeheerder", "Mailverantwoordelijke",
-        "Domeinnamenverantwoordelijke", "DNS-Beheerder", "AAIverantwoordelijke", "Beveiligingsverantwoordelijke"),
-        roles);
-  }
+    @Test
+    public void testParse() throws IOException, XMLStreamException {
+        InputStream soap = new ClassPathResource("sab/response_success.xml").getInputStream();
+        List<String> roles = subject.parse(soap);
+        assertEquals(Arrays.asList(
+            "Superuser", "Instellingsbevoegde", "Infraverantwoordelijke", "OperationeelBeheerder", "Mailverantwoordelijke",
+            "Domeinnamenverantwoordelijke", "DNS-Beheerder", "AAIverantwoordelijke", "Beveiligingsverantwoordelijke"),
+            roles);
+    }
 
 }

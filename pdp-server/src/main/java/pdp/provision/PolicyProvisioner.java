@@ -16,7 +16,6 @@ import pdp.xacml.PolicyTemplateEngine;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-@Service
 public class PolicyProvisioner implements ApplicationListener<ContextStartedEvent>, JsonMapper {
 
     private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();

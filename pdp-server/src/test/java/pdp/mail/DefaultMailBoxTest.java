@@ -5,15 +5,14 @@ import com.icegreen.greenmail.util.ServerSetupTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 import pdp.AbstractPdpIntegrationTest;
-import pdp.PdpEngineTest;
 import pdp.domain.PdpPolicyDefinition;
 
 import javax.mail.Message;
 import javax.mail.internet.MimeMessage;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,35 +24,35 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
-@WebIntegrationTest(randomPort = true, value = {"spring.profiles.active=mail"})
+@ActiveProfiles("mail")
 public class DefaultMailBoxTest extends AbstractPdpIntegrationTest {
 
-  @Autowired
-  private MailBox mailBox;
+    @Autowired
+    private MailBox mailBox;
 
-  @Rule
-  public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.ALL);
+    @Rule
+    public final GreenMailRule greenMail = new GreenMailRule(ServerSetupTest.ALL);
 
-  @Test
-  public void testMailBox() throws Exception {
+    @Test
+    public void testMailBox() throws Exception {
 
-    Map<String, List<PdpPolicyDefinition>> conflicts = new HashMap<>();
-    conflicts.put("https://mock-sp", Arrays.asList(policyDefinition("sp1", asList("idp1", "idp2"))));
-    mailBox.sendConflictsMail(conflicts);
+        Map<String, List<PdpPolicyDefinition>> conflicts = new HashMap<>();
+        conflicts.put("https://mock-sp", Arrays.asList(policyDefinition("sp1", asList("idp1", "idp2"))));
+        mailBox.sendConflictsMail(conflicts);
 
-    //we send async
-    Thread.sleep(1500);
+        //we send async
+        Thread.sleep(1500);
 
-    MimeMessage mimeMessage = greenMail.getReceivedMessages()[0];
-    String body = getBody(mimeMessage);
+        MimeMessage mimeMessage = greenMail.getReceivedMessages()[0];
+        String body = getBody(mimeMessage);
 
-    assertTrue(body.contains("http://localhost:8001/#conflicts"));
-    assertEquals("to@test.nl", mimeMessage.getRecipients(Message.RecipientType.TO)[0].toString());
-  }
+        assertTrue(body.contains("http://localhost:8001/#conflicts"));
+        assertEquals("to@test.nl", mimeMessage.getRecipients(Message.RecipientType.TO)[0].toString());
+    }
 
 
-  @Override
-  public RestTemplate getRestTemplate() {
-    throw new RuntimeException("Not used");
-  }
+    @Override
+    public TestRestTemplate getRestTemplate() {
+        throw new RuntimeException("Not used");
+    }
 }

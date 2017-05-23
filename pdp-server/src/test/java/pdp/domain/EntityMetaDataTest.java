@@ -9,17 +9,17 @@ import static org.junit.Assert.assertTrue;
 
 public class EntityMetaDataTest {
 
-  private EntityMetaData metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority, "institutionId", "descriptionEn", "nameEn", "descriptionNl",
+    private EntityMetaData metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority, "institutionId", "descriptionEn", "nameEn", "descriptionNl",
         "nameNl", true, false, ImmutableSet.of("http://mock-sp", "http://dummy-sp"));
 
-  @Test
-  public void testIsAllowedFrom() throws Exception {
-    assertFalse(metaData.isAllowedFrom());
-    assertFalse(metaData.isAllowedFrom("http://private-sp", "http://unknown-sp"));
+    @Test
+    public void testIsAllowedFrom() throws Exception {
+        assertFalse(metaData.isAllowedFrom());
+        assertFalse(metaData.isAllowedFrom("http://private-sp", "http://unknown-sp"));
 
-    assertTrue(metaData.isAllowedFrom("http://mock-sp"));
+        assertTrue(metaData.isAllowedFrom("http://mock-sp"));
 
-    //only one match is required
-    assertTrue(metaData.isAllowedFrom("http://mock-sp", "http://private-sp"));
-  }
+        //only one match is required
+        assertTrue(metaData.isAllowedFrom("http://mock-sp", "http://private-sp"));
+    }
 }

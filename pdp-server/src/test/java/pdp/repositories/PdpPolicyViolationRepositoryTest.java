@@ -16,40 +16,40 @@ import static org.junit.Assert.assertEquals;
 
 public class PdpPolicyViolationRepositoryTest extends AbstractRepositoryTest {
 
-  private PdpPolicy pdpPolicy;
+    private PdpPolicy pdpPolicy;
 
-  @Before
-  public void before() throws Exception {
-    pdpPolicy = pdpPolicyRepository.save(pdpPolicy(NAME_ID + 1));
-    Timestamp oneMonthAgo = new Timestamp(System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30));
-    IntStream.of(1, 2, 2, 3, 3, 3).forEach(i -> {
-      PdpPolicyViolation violation = new PdpPolicyViolation(pdpPolicy, "{}", "response", true);
-      pdpPolicy.addPdpPolicyViolation(violation);
-      violation.setCreated(oneMonthAgo);
-      pdpPolicyViolationRepository.save(violation);
-    });
-  }
+    @Before
+    public void before() throws Exception {
+        pdpPolicy = pdpPolicyRepository.save(pdpPolicy(NAME_ID + 1));
+        Timestamp oneMonthAgo = new Timestamp(System.currentTimeMillis() - (1000L * 60 * 60 * 24 * 30));
+        IntStream.of(1, 2, 2, 3, 3, 3).forEach(i -> {
+            PdpPolicyViolation violation = new PdpPolicyViolation(pdpPolicy, "{}", "response", true);
+            pdpPolicy.addPdpPolicyViolation(violation);
+            violation.setCreated(oneMonthAgo);
+            pdpPolicyViolationRepository.save(violation);
+        });
+    }
 
-  @Test
-  public void testFindCountPerPolicyId() throws JsonProcessingException {
-    List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
-    Map<Number, Number> countPerPolicyIdMap = countPerPolicyId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
+    @Test
+    public void testFindCountPerPolicyId() throws JsonProcessingException {
+        List<Object[]> countPerPolicyId = pdpPolicyViolationRepository.findCountPerPolicyId();
+        Map<Number, Number> countPerPolicyIdMap = countPerPolicyId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
 
-    assertEquals(countPerPolicyIdMap.get(pdpPolicy.getId()), 6L);
-  }
+        assertEquals(countPerPolicyIdMap.get(pdpPolicy.getId()), 6L);
+    }
 
-  @Test
-  public void testDeleteByPolicyId() {
-    long before = pdpPolicyViolationRepository.count();
-    pdpPolicyRepository.delete(pdpPolicy);
-    long after = pdpPolicyViolationRepository.count();
-    assertEquals(before - 6, after);
-  }
+    @Test
+    public void testDeleteByPolicyId() {
+        long before = pdpPolicyViolationRepository.count();
+        pdpPolicyRepository.delete(pdpPolicy);
+        long after = pdpPolicyViolationRepository.count();
+        assertEquals(before - 6, after);
+    }
 
-  @Test
-  public void retentionPeriod() {
-    int deleted = pdpPolicyViolationRepository.deleteOlderThenRetentionDays(25);
-    assertEquals(6, deleted);
-  }
+    @Test
+    public void retentionPeriod() {
+        int deleted = pdpPolicyViolationRepository.deleteOlderThenRetentionDays(25);
+        assertEquals(6, deleted);
+    }
 
 }

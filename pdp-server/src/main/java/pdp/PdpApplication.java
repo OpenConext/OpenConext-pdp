@@ -30,46 +30,46 @@ import java.io.IOException;
 @SpringBootApplication(exclude = {ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class, TraceWebFilterAutoConfiguration.class, MetricFilterAutoConfiguration.class})
 public class PdpApplication {
 
-  @Autowired
-  private ResourceLoader resourceLoader;
+    @Autowired
+    private ResourceLoader resourceLoader;
 
-  public static void main(String[] args) {
-    SpringApplication.run(PdpApplication.class, args);
-  }
-
-  @Bean
-  @Autowired
-  public StatsContextHolder statsContextHolder(PdpDecisionRepository decisionRepository) {
-    return new StatsContextHolder("decide/policy", decisionRepository);
-  }
-
-  @Bean
-  public PDPEngineHolder pdpEngine(
-      @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
-      final PdpPolicyRepository pdpPolicyRepository,
-      final VootClient vootClient,
-      final SabClient sabClient,
-      final PolicyLoader policyLoader
-  ) throws IOException, FactoryException {
-    Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
-    String absolutePath = resource.getFile().getAbsolutePath();
-
-    //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
-    System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
-
-    policyLoader.loadPolicies();
-
-    return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
-  }
-
-  @Configuration
-  public static class WebMvcConfig extends WebMvcConfigurerAdapter {
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-      super.addInterceptors(registry);
-      registry.addInterceptor(new SessionAliveInterceptor());
+    public static void main(String[] args) {
+        SpringApplication.run(PdpApplication.class, args);
     }
-  }
+
+    @Bean
+    @Autowired
+    public StatsContextHolder statsContextHolder(PdpDecisionRepository decisionRepository) {
+        return new StatsContextHolder("decide/policy", decisionRepository);
+    }
+
+    @Bean
+    public PDPEngineHolder pdpEngine(
+        @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+        final PdpPolicyRepository pdpPolicyRepository,
+        final VootClient vootClient,
+        final SabClient sabClient,
+        final PolicyLoader policyLoader
+    ) throws IOException, FactoryException {
+        Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
+        String absolutePath = resource.getFile().getAbsolutePath();
+
+        //This will be picked up by the XACML bootstrapping when creating a new PDPEngine
+        System.setProperty(XACMLProperties.XACML_PROPERTIES_NAME, absolutePath);
+
+        policyLoader.loadPolicies();
+
+        return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
+    }
+
+    @Configuration
+    public static class WebMvcConfig extends WebMvcConfigurerAdapter {
+
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+            super.addInterceptors(registry);
+            registry.addInterceptor(new SessionAliveInterceptor());
+        }
+    }
 
 }

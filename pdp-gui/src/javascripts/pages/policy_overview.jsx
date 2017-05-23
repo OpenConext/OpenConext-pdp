@@ -110,10 +110,10 @@ class PolicyOverview extends React.Component {
     if (policy.actionsAllowed) {
       return (
         <div>
-          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("default-policies.edit")}>
+          <Link to={`/policy/${policy.id}`} data-tooltip={I18n.t("policies.edit")}>
             <i className="fa fa-edit"></i>
           </Link>
-          <a href="#" data-tooltip={I18n.t("default-policies.delete")} onClick={this.handleDeletePolicyDetail(policy).bind(this)}>
+          <a href="#" data-tooltip={I18n.t("policies.delete")} onClick={this.handleDeletePolicyDetail(policy).bind(this)}>
             <i className="fa fa-remove"></i>
           </a>
         </div>

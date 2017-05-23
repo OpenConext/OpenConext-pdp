@@ -11,12 +11,12 @@ import java.util.List;
 
 public interface PdpPolicyViolationRepository extends CrudRepository<PdpPolicyViolation, Long> {
 
-  @Query("SELECT p.policy.id, COUNT(p.id) FROM pdp.domain.PdpPolicyViolation p GROUP BY p.policy")
-  List<Object[]> findCountPerPolicyId();
+    @Query("SELECT p.policy.id, COUNT(p.id) FROM pdp.domain.PdpPolicyViolation p GROUP BY p.policy")
+    List<Object[]> findCountPerPolicyId();
 
-  @Transactional
-  @Modifying
-  @Query(value = "DELETE FROM pdp_policy_violations WHERE created < (NOW() - INTERVAL :retentionDays DAY)", nativeQuery = true)
-  int deleteOlderThenRetentionDays(@Param("retentionDays") int retentionDays);
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM pdp_policy_violations WHERE created < (NOW() - INTERVAL :retentionDays DAY)", nativeQuery = true)
+    int deleteOlderThenRetentionDays(@Param("retentionDays") int retentionDays);
 
 }

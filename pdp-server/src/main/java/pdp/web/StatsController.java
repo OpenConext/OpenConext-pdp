@@ -18,15 +18,15 @@ import java.util.List;
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
 public class StatsController {
 
-  //http://stackoverflow.com/questions/2447324/streaming-large-result-sets-with-mysql
+    //http://stackoverflow.com/questions/2447324/streaming-large-result-sets-with-mysql
 
-  @Autowired
-  private PdpDecisionRepository pdpDecisionRepository;
+    @Autowired
+    private PdpDecisionRepository pdpDecisionRepository;
 
-  @RequestMapping(method = RequestMethod.GET, value = "/internal/decisions")
-  public List<PdpDecision> decisions(@RequestParam("daysAgo") int daysAgo) {
-    Date date = Date.from(Instant.now().minus(daysAgo, ChronoUnit.DAYS));
-    return pdpDecisionRepository.findByCreatedAfter(date);
-  }
+    @RequestMapping(method = RequestMethod.GET, value = "/internal/decisions")
+    public List<PdpDecision> decisions(@RequestParam("daysAgo") int daysAgo) {
+        Date date = Date.from(Instant.now().minus(daysAgo, ChronoUnit.DAYS));
+        return pdpDecisionRepository.findByCreatedAfter(date);
+    }
 
 }
