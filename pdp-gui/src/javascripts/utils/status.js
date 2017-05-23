@@ -1,21 +1,14 @@
-export const determineStatus = decision => {
-  switch (decision) {
-  case "Permit":
-    {
-      return "check";
+const determineStatus = decision => {
+    switch (decision) {
+    case "Permit":
+        return "check";
+    case "Indeterminate":
+    case "Deny":
+        return "remove";
+    case "NotApplicable":
+        return "question";
+    default:
+        throw "Unknown decision" + decision;
     }
-  case "Indeterminate":
-  case "Deny":
-    {
-      return "remove";
-    }
-  case "NotApplicable":
-    {
-      return "question";
-    }
-  default:
-    {
-      throw "Unknown decision" + decision;
-    }
-  }
 };
+export default determineStatus;
