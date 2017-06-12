@@ -63,7 +63,9 @@ public class DefaultMailBox implements MailBox, JsonMapper {
     private void sendMail(String templateName, String subject, Map<String, String> variables) throws MessagingException, IOException {
         String html = IOUtils.toString(new ClassPathResource(templateName).getInputStream());
         for (Map.Entry<String, String> var : variables.entrySet()) {
-            html = html.replaceAll(var.getKey(), var.getValue());
+            String value = var.getValue();
+            value = value.replaceAll("\\$", "\\\\\\$");
+            html = html.replaceAll(var.getKey(), value);
         }
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
