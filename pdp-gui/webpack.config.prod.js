@@ -6,6 +6,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
 const extractCSS = new ExtractTextPlugin("application-[contenthash].css");
 
@@ -33,7 +34,7 @@ module.exports = {
     module: {
         loaders: [
             {test: /\.s(c|a)ss$/, loader: extractCSS.extract("style", "css?!sass?!import-glob")},
-            {test: /\.css$/, loader: extractCSS.extract("style?sourceMap", "css?")},
+            {test: /\.css$/, loader: extractCSS.extract("style", "css?")},
             {test: /\.(png|jpg)$/, loader: "file"},
             {test: /\.((woff2?|svg)(\?v=[0-9]\.[0-9]\.[0-9]))|(woff2?|svg)$/, loader: "url?limit=10000"},
             {test: /\.((ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9]))|(ttf|eot)$/, loader: "file"},
@@ -66,5 +67,6 @@ module.exports = {
             }
         }),
         new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /en|nl/)
+        //new UglifyJSPlugin()
     ]
 };
