@@ -93,7 +93,9 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
 
         List<String> result = getAttributes(userUrn);
 
-        stats.addPipResponse(getName(), System.currentTimeMillis() - start);
+        long ms = System.currentTimeMillis() - start;
+        stats.addPipResponse(getName(), ms);
+        LOG.info("{} PIP response for {} took {} ms", getName(), userUrn, ms);
 
         if (CollectionUtils.isEmpty(result)) {
             return empty;

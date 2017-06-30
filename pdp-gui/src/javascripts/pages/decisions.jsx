@@ -193,7 +193,6 @@ class Decisions extends React.Component {
                     { this.renderPeriodButton(1) }
                     { this.renderPeriodButton(7) }
                     { this.renderPeriodButton(30) }
-                    { this.renderPeriodButton(365) }
                 </div>
             </div>
         );

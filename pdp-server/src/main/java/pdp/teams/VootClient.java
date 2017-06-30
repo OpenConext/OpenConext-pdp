@@ -24,8 +24,11 @@ public class VootClient {
 
     @SuppressWarnings("unchecked")
     public List<String> groups(String userUrn) {
+        long start = System.currentTimeMillis();
+        LOG.info("Starting to retrieve groups for {}", userUrn);
         List<Map<String, Object>> groups = (List<Map<String, Object>>) vootService.getForObject(vootServiceUrl + "/internal/groups/{userUrn}", List.class, userUrn);
         LOG.debug("Retrieved groups: {}", groups);
+        LOG.info("finished retrieving groups for {} in {} ms", userUrn, System.currentTimeMillis() - start);
         return groups.stream().map(entry -> (String) entry.get("id")).collect(toList());
     }
 }
