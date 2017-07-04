@@ -271,6 +271,11 @@ public class PdpPolicyDefinition {
         return this.attributes.stream().collect(groupingBy(PdpAttribute::getName)).entrySet();
     }
 
+    @JsonIgnore
+    public boolean isIdpOnly() {
+        return !this.identityProviderIds.isEmpty();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

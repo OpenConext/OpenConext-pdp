@@ -88,6 +88,11 @@
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">You are not authorized to access Avans Youforce. Please contact <a href="mailto:hrm@avans.nl">Avans HRM</a> for details</AttributeValue>
                 </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="IdPOnly"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#boolean">true</AttributeValue>
+                </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
     </Rule>

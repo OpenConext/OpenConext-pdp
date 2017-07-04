@@ -46,11 +46,14 @@ class Playground extends React.Component {
             const policy = this.state.policies.filter(policy => {
                 return policy.id === parseInt(newValue);
             })[0];
-
+            const idp = policy.identityProviderIds && policy.identityProviderIds.length > 0 ?
+                policy.identityProviderIds[0] : null;
             this.setState({
                 pdpRequest: {
                     ...this.state.pdpRequest,
                     selectedPolicy: newValue,
+                    identityProviderId: idp,
+                    serviceProviderId: policy.serviceProviderId,
                     attributes: policy.attributes
                 }
             });

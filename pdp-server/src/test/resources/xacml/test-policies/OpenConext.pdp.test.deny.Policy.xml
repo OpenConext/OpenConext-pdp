@@ -72,6 +72,11 @@
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">UMCN students do not have access to the UMCN Loopbaanportaal</AttributeValue>
                 </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="IdPOnly"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#boolean">true</AttributeValue>
+                </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
     </Rule>

@@ -41,6 +41,7 @@ import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static pdp.util.StreamUtils.singletonCollector;
@@ -175,7 +176,10 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
     private Result assertResponse(Decision decision, Response pdpResponse) throws Exception {
         String json = JSONResponse.toString(pdpResponse, true);
-        LOG.debug(json);
+
+        if (decision.equals(Decision.DENY)) {
+            assertTrue(json.contains("\"AttributeId\" : \"IdPOnly\""));
+        }
 
         assertEquals(1, pdpResponse.getResults().size());
 

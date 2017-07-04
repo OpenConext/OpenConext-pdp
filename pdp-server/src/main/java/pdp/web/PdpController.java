@@ -160,6 +160,7 @@ public class PdpController implements JsonMapper {
 
         Decision decision = reportPolicyViolation(pdpResponse, response, payload, isPlayground);
         stats.setDecision(decision.toString());
+
         return response;
     }
 

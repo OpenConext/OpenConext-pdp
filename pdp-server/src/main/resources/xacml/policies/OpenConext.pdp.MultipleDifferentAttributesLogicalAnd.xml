@@ -92,6 +92,11 @@
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">Je bent niet bevoegd om de Enquete applicatie te gebruiken.</AttributeValue>
                 </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="IdPOnly"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#boolean">true</AttributeValue>
+                </AttributeAssignmentExpression>
             </AdviceExpression>
         </AdviceExpressions>
     </Rule>
