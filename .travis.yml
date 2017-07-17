@@ -2,19 +2,30 @@ language: java
 jdk:
   - oraclejdk8
 node_js:
-  - 6
+  - '7'
 services:
   - mysql
+cache:
+  yarn: true
+  directories:
+  - node_modules
 before_install:
   - pip install --user codecov
+  - nvm install 7
+  - npm install -g yarn
+  - yarn install
 install:
-  - cd pdp-gui && nvm install $(cat .node-version) && npm install && cd ..
+  - cd pdp-gui && yarn install && cd ..
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 before_script:
   - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'root';SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;" -uroot
 script:
   - mvn test
-  - cd pdp-gui && nvm install $(cat .node-version) && npm run lint
+  - cd pdp-gui && yarn install && yarn run lint
 after_success:
   - codecov
+
+
+
+
 
