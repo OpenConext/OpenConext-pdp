@@ -3,6 +3,8 @@ package pdp.teams;
 import pdp.xacml.AbstractConfigurableEngine;
 
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAware {
 
@@ -26,8 +28,8 @@ public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAw
     }
 
     @Override
-    protected List<String> getAttributes(String userUrn) {
-        return getVootClient().groups(userUrn);
+    protected List<Object> getAttributes(String userUrn) {
+        return getVootClient().groups(userUrn).stream().collect(Collectors.toList());
     }
 
     public VootClient getVootClient() {

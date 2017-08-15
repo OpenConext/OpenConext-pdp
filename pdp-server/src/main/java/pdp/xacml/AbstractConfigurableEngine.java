@@ -49,15 +49,23 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         IdentifierImpl identifierDataType = new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string");
         IdentifierImpl attributeCategory = new IdentifierImpl("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject");
 
-        requiredAttribute = new StdPIPRequest(attributeCategory, new IdentifierImpl(NAME_ID), identifierDataType);
+        requiredAttribute = requiredAttribute(identifierDataType, attributeCategory);
 
         IdentifierImpl identifierAttribute = new IdentifierImpl(getIdentifierProvidedAttribute());
-        providedAttribute = new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
+        providedAttribute = providedAttribute(identifierDataType, attributeCategory, identifierAttribute);
 
         Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.emptyList(), null, true);
         empty = new StdSinglePIPResponse(attribute);
         missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
 
+    }
+
+    protected StdPIPRequest providedAttribute(IdentifierImpl identifierDataType, IdentifierImpl attributeCategory, IdentifierImpl identifierAttribute) {
+        return new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
+    }
+
+    protected StdPIPRequest requiredAttribute(IdentifierImpl identifierDataType, IdentifierImpl attributeCategory) {
+        return new StdPIPRequest(attributeCategory, new IdentifierImpl(NAME_ID), identifierDataType);
     }
 
     @Override
@@ -91,7 +99,7 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         StatsContext stats = StatsContextHolder.getContext();
         long start = System.currentTimeMillis();
 
-        List<String> result = getAttributes(userUrn);
+        List<Object> result = getAttributes(userUrn);
 
         long ms = System.currentTimeMillis() - start;
         stats.addPipResponse(getName(), ms);
@@ -107,7 +115,7 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         return new StdSinglePIPResponse(responseAttr);
     }
 
-    protected abstract List<String> getAttributes(String userUrn);
+    protected abstract List<Object> getAttributes(String userUrn);
 
     public abstract String getIdentifierProvidedAttribute();
 }

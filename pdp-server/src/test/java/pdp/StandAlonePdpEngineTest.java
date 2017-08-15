@@ -131,7 +131,6 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
 
     @Test
-
     public void testTeamsPolicyWithAggregatedAttributes() throws Exception {
         Result result = doDecideTest("test_request_teams_policy.json", Decision.PERMIT, "OpenConext.pdp.test.teams.Policy.xml");
         assertAggregatedAttribute(result, TeamsPIP.GROUP_URN, "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo");
@@ -162,6 +161,12 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     @Test
     public void testNotApplicable() throws Exception {
         doDecideTest("json_policy_request.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.unknown.SP.Policy.xml");
+    }
+
+    @Test
+    public void testObligation() throws Exception {
+        doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT, "OpenConext.pdp.test.obligations.Policy.xml");
+        System.out.println(Math.pow(2,3));
     }
 
     private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {

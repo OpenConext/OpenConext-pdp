@@ -4,6 +4,7 @@ import pdp.xacml.AbstractConfigurableEngine;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SabPIP extends AbstractConfigurableEngine implements SabClientAware {
 
@@ -27,9 +28,9 @@ public class SabPIP extends AbstractConfigurableEngine implements SabClientAware
     }
 
     @Override
-    protected List<String> getAttributes(String userUrn) {
+    protected List<Object> getAttributes(String userUrn) {
         try {
-            return getSabClient().roles(userUrn);
+            return getSabClient().roles(userUrn).stream().collect(Collectors.toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

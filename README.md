@@ -12,7 +12,7 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 - Java 8
 - Maven 3
 - MySQL 5.5+
-- yarn (best installed with brew)
+- npm 
 - NodeJS 7.10.0 (best managed with `nvm`, current version in [.node-version](dashboard/.node-version)
 
 ### Create database
@@ -46,20 +46,19 @@ to set the active profile to dev otherwise the application uses the real VOOT cl
 
 Initial setup if you do:
 
-    nvm install
-    yarn install
+    npm install
 
 Add new dependencies to `devDependencies`:
 
-    yarn install ${dep} --dev
+    npm install ${dep} --dev
 
 To build:
 
-    yarn run webpack
+    npm run webpack
 
 To run locally:
 
-    yarn run webpack-dev-server
+    npm run local
 
 Browse to the [application homepage](http://localhost:8001/).
 

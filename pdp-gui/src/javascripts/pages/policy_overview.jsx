@@ -2,11 +2,13 @@ import React from "react";
 import I18n from "i18n-js";
 import $ from "jquery";
 import Link from "react-router/Link";
-import "datatables";
+import DataTable from "datatables";
 
 import {deletePolicy, getPolicies} from "../api";
 import Flash from "../components/flash";
 import {setFlash} from "../utils/flash";
+
+$.DataTable = DataTable;
 
 class PolicyOverview extends React.Component {
 
