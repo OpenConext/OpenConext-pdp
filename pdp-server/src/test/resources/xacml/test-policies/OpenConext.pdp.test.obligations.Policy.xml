@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause"
+        Version="1"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+
+    <Description>Toegang tot Avans vereist het juiste netwerk</Description>
+    <PolicyDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicyDefaults>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">avans_sp</AttributeValue>
+                    <AttributeDesignator
+                        AttributeId="SPentityID"
+                        DataType="http://www.w3.org/2001/XMLSchema#string"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
+    </Target>
+    <Rule
+        Effect="Permit"
+        RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause.permitAccess">
+        <Description/>
+        <Target/>
+        <Condition>
+            <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">192.168.2.0/24</AttributeValue>
+                <AttributeDesignator
+                    AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                    DataType="http://www.w3.org/2001/XMLSchema#string"
+                    Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                    MustBePresent="false"
+                />
+            </Apply>
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression
+                    AttributeId="urn:loa:level"
+                    Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">http://test2.surfconext.nl/assurance/loa2</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    <Rule
+        Effect="Deny"
+        RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.IDPandGroupClause.denyAccess">
+        <Description/>
+        <Target/>
+        <AdviceExpressions>
+            <AdviceExpression AdviceId="http://example.com/advice/reasonForDeny"
+                              AppliesTo="Deny">
+                <AttributeAssignmentExpression AttributeId="DenyMessage:en"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">You must be in the correct IP range
+                    </AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="DenyMessage:nl"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">Je moet in de juiste IP range zitten
+                    </AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression AttributeId="IdPOnly"
+                                               Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#boolean">false</AttributeValue>
+                </AttributeAssignmentExpression>
+            </AdviceExpression>
+        </AdviceExpressions>
+    </Rule>
+</Policy>
