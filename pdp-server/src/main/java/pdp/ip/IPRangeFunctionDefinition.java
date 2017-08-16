@@ -47,7 +47,8 @@ public class IPRangeFunctionDefinition implements FunctionDefinition {
         try {
             attributeValue = matcher.matches(ipAddress) ? DataTypeBoolean.AV_TRUE : DataTypeBoolean.AV_FALSE;
         } catch (IllegalArgumentException e) {
-            return ExpressionResult.newError(new StdStatus(StdStatusCode.STATUS_CODE_PROCESSING_ERROR));
+            return ExpressionResult.newError(new StdStatus(StdStatusCode.STATUS_CODE_PROCESSING_ERROR,
+                "Invalid IP address: ".concat(ipAddress)));
         }
         return ExpressionResult.newSingle(attributeValue);
     }

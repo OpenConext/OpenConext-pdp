@@ -13,7 +13,8 @@ import {
     getAllowedAttributes,
     getScopedIdentityProviders,
     getNewPolicy,
-    getServiceProviders
+    getServiceProviders,
+    getAllowedLoAs
 } from "../api";
 import {setFlash} from "../utils/flash";
 
@@ -34,17 +35,26 @@ class PolicyDetail extends React.Component {
             policy: null,
             identityProviders: [],
             serviceProviders: [],
-            allowedAttributes: []
+            allowedAttributes: [],
+            allowedLoAs: [],
+            type: undefined
         };
     }
 
     componentWillMount() {
+        const type = this.props.params.type;
+        if (type) {
+            this.setState({type: type});
+            if (type === "step") {
+                getAllowedLoAs().then(allowedLoAs => this.setState({allowedLoAs}));
+            }
+        }
+
         if (!this.props.params.id) {
             getNewPolicy().then(policy => {
                 if (!this.props.params.id) {
                     policy.active = true;
                 }
-
                 this.setState({policy});
             });
         } else {

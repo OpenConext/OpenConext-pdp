@@ -100,6 +100,18 @@ export function getAllowedAttributes() {
     return fetchJson("/internal/attributes");
 }
 
+export function getAllowedLoAs() {
+    return fetchJson("/internal/loas");
+}
+
+export function validateIp(ipAddress) {
+    return postJson("/internal/validate", {type: "ip", value: ipAddress}).then(parseJson);
+}
+
+export function ipInfo(ipAddress, networkPrefix) {
+    return fetchJson("/internal/ipinfo?ipAddress=" + encodeURIComponent(ipAddress) + "&networkPrefix=" + networkPrefix);
+}
+
 export function getPolicies() {
     return fetchJson("/internal/policies");
 }

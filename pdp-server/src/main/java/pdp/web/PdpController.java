@@ -58,6 +58,7 @@ import pdp.xacml.PolicyTemplateEngine;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
@@ -100,6 +102,7 @@ public class PdpController implements JsonMapper {
     private final boolean cachePolicies;
     private final MailBox mailBox;
     private final PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
+    private final List<String> loaLevels;
 
     // Can't be final as we need to swap this reference for reloading policies in production
     private volatile PDPEngine pdpEngine;
@@ -107,6 +110,7 @@ public class PdpController implements JsonMapper {
     @Autowired
     public PdpController(@Value("${period.policies.refresh.minutes}") int period,
                          @Value("${policies.cachePolicies}") boolean cachePolicies,
+                         @Value("${loa.levels}") String  loaLevelsCommaSeparated,
                          PdpPolicyViolationRepository pdpPolicyViolationRepository,
                          PdpPolicyRepository pdpPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
@@ -114,6 +118,7 @@ public class PdpController implements JsonMapper {
                          MailBox mailBox,
                          PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator) {
         this.cachePolicies = cachePolicies;
+        this.loaLevels = Stream.of(loaLevelsCommaSeparated.split(",")).map(String::trim).collect(toList());
         this.pdpEngineHolder = pdpEngineHolder;
         this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
         this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
@@ -123,7 +128,6 @@ public class PdpController implements JsonMapper {
         this.serviceRegistry = serviceRegistry;
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
-
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
             TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
@@ -295,6 +299,11 @@ public class PdpController implements JsonMapper {
 
         return policies.stream().map(rev ->
             policyMissingServiceProviderValidator.addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
+    }
+
+    @RequestMapping(method = GET, value = {"/internal/loas", "/protected/loas"})
+    public List<String> allowedLevelOfAssurances() throws IOException {
+        return this.loaLevels;
     }
 
     @RequestMapping(method = GET, value = {"/internal/attributes", "/protected/attributes"})

@@ -47,8 +47,6 @@ public class PdpPolicyDefinition {
     @Valid
     private List<PdpAttribute> attributes = new ArrayList<>();
 
-    @NotNull
-    @Size(min = 1)
     private String denyAdvice;
 
     private boolean denyRule;
@@ -66,8 +64,6 @@ public class PdpPolicyDefinition {
 
     private int numberOfRevisions;
 
-    @NotNull
-    @Size(min = 1)
     private String denyAdviceNl;
 
     private int revisionNbr;

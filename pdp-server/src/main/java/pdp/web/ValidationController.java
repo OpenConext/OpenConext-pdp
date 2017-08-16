@@ -46,7 +46,7 @@ public class ValidationController {
         CIDRUtils cidrUtils = new CIDRUtils(ipAddress.concat("/").concat(networkPrefix.toString()));
         boolean isIpv4 = address instanceof Inet4Address;
         int byteSize = isIpv4 ? 32 : 128;
-        long capacity = (long) Math.pow(2, byteSize - networkPrefix);
+        double capacity = Math.pow(2, byteSize - networkPrefix);
         return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(),capacity, isIpv4);
     }
 }

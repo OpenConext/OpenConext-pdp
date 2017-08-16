@@ -25,22 +25,22 @@ public class ValidationControllerTest {
             subject.ipInfo("fe80:0:0:0:0:0:c0a8:11", 32),
             "fe80:0:ffff:ffff:ffff:ffff:ffff:ffff",
             "fe80:0:0:0:0:0:0:0",
-            9223372036854775807L,
+            7.922816251426434E28D,
             false);
 
         assertIpInfo(
             subject.ipInfo("192.168.6.56", 21),
             "192.168.7.255",
             "192.168.0.0",
-            2048L,
+            2048D,
             true);
 
     }
 
-    private void assertIpInfo(IPInfo ipInfo, String broadCastAddress, String networkAddress, long capacity, boolean isIpv4) {
+    private void assertIpInfo(IPInfo ipInfo, String broadCastAddress, String networkAddress, double capacity, boolean isIpv4) {
         assertEquals(broadCastAddress, ipInfo.getBroadcastAddress());
         assertEquals(networkAddress, ipInfo.getNetworkAddress());
-        assertEquals(capacity, ipInfo.getCapacity());
+        assertEquals(capacity, ipInfo.getCapacity(), 1D);
         assertEquals(isIpv4, ipInfo.isIpv4());
     }
 

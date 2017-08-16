@@ -9,7 +9,7 @@ public class IPInfo {
 
     private String  networkAddress;
     private String broadcastAddress;
-    private long capacity;
+    private double capacity;
     private boolean ipv4;
 
 }
