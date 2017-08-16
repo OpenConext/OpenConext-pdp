@@ -2,5 +2,10 @@
   {
     "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
     "Value": "Name ID"
+  },
+  {
+    "AttributeId": "urn:mace:surfnet.nl:collab:xacml-attribute:ip-address",
+    "Value": "IP Address"
   }
+
 ]

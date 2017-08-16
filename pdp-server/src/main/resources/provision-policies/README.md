@@ -15,6 +15,7 @@ PdpPolicyDefinition bean:
 	"denyAdvice": "The message for the user",
 	"denyAdviceNl": "De melding voor de gebruiker",
 	"active": true,
-	"policyId": "urn:surfconext:xacml:policy:id:name"
+	"policyId": "urn:surfconext:xacml:policy:id:name",
+	"type": "reg"
 }
 ```

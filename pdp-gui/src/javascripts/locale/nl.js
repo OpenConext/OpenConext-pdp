@@ -36,8 +36,8 @@ I18n.translations.nl = {
         decisions: "Statistieken",
         playground: "Playground",
         my_idp: "Mijn instelling",
-        new_policy: "+ Nieuwe autorisatieregel",
-        new_ssa_policy: "+ Nieuwe SSA autorisatieregel",
+        new_policy: "+ Autorisatie",
+        new_ssa_policy: "+ Stepup Autorisatie",
         identity: "Identiteit"
     },
 

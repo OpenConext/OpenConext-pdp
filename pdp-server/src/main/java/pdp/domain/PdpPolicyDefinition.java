@@ -74,6 +74,8 @@ public class PdpPolicyDefinition {
 
     private boolean actionsAllowed;
 
+    private String type;
+
     public Long getId() {
         return id;
     }
@@ -254,6 +256,14 @@ public class PdpPolicyDefinition {
 
     public void setAuthenticatingAuthorityName(String authenticatingAuthorityName) {
         this.authenticatingAuthorityName = authenticatingAuthorityName;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getType() {
+        return type;
     }
 
     //used in the mustache templates

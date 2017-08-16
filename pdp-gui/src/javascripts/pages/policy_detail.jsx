@@ -8,21 +8,23 @@ import find from "lodash/find";
 import {
     createPolicy,
     deletePolicy,
-    updatePolicy,
-    getPolicy,
     getAllowedAttributes,
-    getScopedIdentityProviders,
+    getAllowedLoAs,
     getNewPolicy,
+    getPolicy,
+    getScopedIdentityProviders,
     getServiceProviders,
-    getAllowedLoAs
+    updatePolicy
 } from "../api";
 import {setFlash} from "../utils/flash";
 
 import AutoFormat from "../utils/autoformat_policy";
 import Flash from "../components/flash";
 import PolicyAttributes from "../components/policy_attributes";
-import PolicyDetailHelpEn from "../help/policy_detail_help_en";
-import PolicyDetailHelpNl from "../help/policy_detail_help_nl";
+import PolicyDetailHelpRegEn from "../help/policy_detail_help_reg_en";
+import PolicyDetailHelpRegNl from "../help/policy_detail_help_reg_nl";
+import PolicyDetailHelpStepEn from "../help/policy_detail_help_step_en";
+import PolicyDetailHelpStepNl from "../help/policy_detail_help_step_nl";
 import SelectWrapper from "../components/select_wrapper";
 
 class PolicyDetail extends React.Component {
@@ -41,6 +43,10 @@ class PolicyDetail extends React.Component {
         };
     }
 
+    componentWillReceiveProps(nextProps) {
+        location.reload();
+    }
+
     componentWillMount() {
         const type = this.props.params.type;
         if (type) {
@@ -51,14 +57,14 @@ class PolicyDetail extends React.Component {
         }
 
         if (!this.props.params.id) {
-            getNewPolicy().then(policy => {
+            getNewPolicy(type).then(policy => {
                 if (!this.props.params.id) {
                     policy.active = true;
                 }
                 this.setState({policy});
             });
         } else {
-            getPolicy(this.props.params.id).then(policy => this.setState({policy}));
+            getPolicy(this.props.params.id).then(policy => this.setState({policy, type: policy.type}));
         }
 
         getScopedIdentityProviders().then(identityProviders => this.setState({identityProviders}));
@@ -386,6 +392,10 @@ class PolicyDetail extends React.Component {
         this.setState({policy: {...this.state.policy, ...newAttributeState}});
     }
 
+    renderLoAs(policy) {
+
+    }
+
     renderAttributes(policy) {
         //we need state changes from the child component
         return (<PolicyAttributes
@@ -479,10 +489,12 @@ class PolicyDetail extends React.Component {
     }
 
     render() {
-        const {policy} = this.state;
+        const {policy, type} = this.state;
+        const regular = type === "reg";
 
         if (policy) {
-            const title = policy.id ? I18n.t("policy_detail.update_policy") : I18n.t("policy_detail.create_policy");
+            const title = policy.id ? I18n.t(`policy_detail.update_policy_${type}`) :
+                I18n.t(`policy_detail.create_policy_${type}`);
             //var classTitle = policy.id
             const created = moment(policy.created);
             created.locale(I18n.locale);
@@ -495,20 +507,21 @@ class PolicyDetail extends React.Component {
 
             return (
                 <div className="l-center mod-policy-detail">
-                    <Flash />
+                    <Flash/>
                     <div className="l-split-left form-element-container box">
                         <p className="form-element form-title sub-container">{title}<em
                             className="sub-element">{subtitle}</em>
                             <em className="sub-element second">{activatedSR}</em>
                         </p>
                         {this.renderName(policy)}
-                        {this.renderDenyPermitRule(policy)}
+                        {regular && this.renderDenyPermitRule(policy)}
                         {this.renderServiceProvider(policy)}
                         {this.renderIdentityProvider(policy)}
-                        {this.renderLogicalRule(policy)}
-                        {this.renderAttributes(policy)}
-                        {this.renderDenyAdvice(policy)}
-                        {this.renderDescription(policy)}
+                        {regular && this.renderLogicalRule(policy)}
+                        {regular && this.renderAttributes(policy)}
+                        {regular && this.renderDenyAdvice(policy)}
+                        {regular && this.renderDescription(policy)}
+                        {!regular && this.renderLoAs(policy)}
                         {this.renderActive(policy)}
                         {this.renderActions(policy)}
                     </div>
@@ -523,7 +536,15 @@ class PolicyDetail extends React.Component {
     }
 
     renderAboutPage() {
-        return I18n.locale === "en" ? <PolicyDetailHelpEn/> : <PolicyDetailHelpNl/>;
+        const type = this.state.type;
+        if (type === "reg") {
+            return I18n.locale === "en" ? <PolicyDetailHelpRegEn/> : <PolicyDetailHelpRegNl/>;
+        } else if (type === "step") {
+            return I18n.locale === "en" ? <PolicyDetailHelpStepEn/> : <PolicyDetailHelpStepNl/>;
+        } else {
+            throw new Error(`Invalid type ${type}`)
+        }
+
     }
 }
 
@@ -534,7 +555,8 @@ PolicyDetail.contextTypes = {
 
 PolicyDetail.propTypes = {
     params: React.PropTypes.shape({
-        id: React.PropTypes.string
+        id: React.PropTypes.string,
+        type: React.PropTypes.string
     })
 };
 

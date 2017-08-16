@@ -1,6 +1,6 @@
 import React from "react";
 
-class PolicyDetailHelpEn extends React.Component {
+class PolicyDetailHelpRegEn extends React.Component {
     render() {
         return (
             <div className="form-element about">
@@ -65,4 +65,4 @@ class PolicyDetailHelpEn extends React.Component {
     }
 }
 
-export default PolicyDetailHelpEn;
+export default PolicyDetailHelpRegEn;

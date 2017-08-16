@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class IPInfo {
 
-    private String  networkAddress;
+    private String networkAddress;
     private String broadcastAddress;
     private double capacity;
     private boolean ipv4;

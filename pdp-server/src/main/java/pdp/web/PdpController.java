@@ -221,7 +221,8 @@ public class PdpController implements JsonMapper {
                 policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
         } else {
             policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
-                policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
+                policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive(),
+                pdpPolicyDefinition.getType());
 
             //this will throw an Exception if it is not allowed
             policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
@@ -263,9 +264,11 @@ public class PdpController implements JsonMapper {
         pdpPolicyRepository.delete(policy);
     }
 
-    @RequestMapping(method = GET, value = "/internal/default-policy")
-    public PdpPolicyDefinition defaultPolicy() {
-        return new PdpPolicyDefinition();
+    @RequestMapping(method = GET, value = "/internal/default-policy/{type}")
+    public PdpPolicyDefinition defaultPolicy(@PathVariable String type) {
+        PdpPolicyDefinition pdpPolicyDefinition = new PdpPolicyDefinition();
+        pdpPolicyDefinition.setType(type);
+        return pdpPolicyDefinition;
     }
 
     @RequestMapping(method = GET, value = "/internal/policies/sp")
@@ -338,11 +341,6 @@ public class PdpController implements JsonMapper {
         pd.setActionsAllowed(actionsAllowed);
         pd.setAuthenticatingAuthorityName(serviceRegistry.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
         return pd;
-    }
-
-    @RequestMapping(method = GET, value = "internal/users/me")
-    public FederatedUser user() {
-        return (FederatedUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
     private void addStatsDetails(StatsContext stats, Request request) {

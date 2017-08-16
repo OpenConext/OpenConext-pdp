@@ -104,6 +104,10 @@ export function getAllowedLoAs() {
     return fetchJson("/internal/loas");
 }
 
+export function ping() {
+    return fetchJson("/internal/users/ping");
+}
+
 export function validateIp(ipAddress) {
     return postJson("/internal/validate", {type: "ip", value: ipAddress}).then(parseJson);
 }
@@ -124,8 +128,8 @@ export function getRevisions(policyId) {
     return fetchJson(`/internal/revisions/${policyId}`);
 }
 
-export function getNewPolicy() {
-    return fetchJson("/internal/default-policy");
+export function getNewPolicy(type) {
+    return fetchJson("/internal/default-policy/" + type);
 }
 
 export function getPolicy(policyId) {

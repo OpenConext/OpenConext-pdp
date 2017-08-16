@@ -27,7 +27,7 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">SSA</AttributeValue>
+                        DataType="http://www.w3.org/2001/XMLSchema#string">Stepup</AttributeValue>
                     <AttributeDesignator
                         AttributeId="ClientID"
                         DataType="http://www.w3.org/2001/XMLSchema#string"

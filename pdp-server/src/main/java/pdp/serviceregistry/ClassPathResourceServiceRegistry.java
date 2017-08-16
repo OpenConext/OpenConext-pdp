@@ -123,14 +123,15 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
         return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map(EntityMetaData::getNameEn).collect(toList());
     }
 
-    private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> optional) {
-        if (!optional.isPresent()) {
+    private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> entityMetaDataOptional) {
+        if (!entityMetaDataOptional.isPresent()) {
             LOG.error(entityId + " is not a valid or known IdP / SP entityId");
             throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP entityId");
         }
-        return optional.get();
+        return entityMetaDataOptional.get();
     }
 
+    @SuppressWarnings("unchecked")
     protected List<EntityMetaData> parseEntities(Resource resource) {
         try {
             List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
@@ -152,6 +153,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
         }
     }
 
+    @SuppressWarnings("unchecked")
     private Set<String> getAllowedEntries(Map<String, Object> entry) {
         List<String> allowedEntities = (List<String>) entry.getOrDefault("allowedEntities", Collections.emptyList());
         return new HashSet<>(allowedEntities);
@@ -176,7 +178,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     }
 
     private Comparator<? super EntityMetaData> sortEntityMetaData() {
-        return (e1, e2) -> getEntityMetaDataComparatorId(e1).compareTo(getEntityMetaDataComparatorId(e2));
+        return Comparator.comparing(this::getEntityMetaDataComparatorId);
     }
 
     private String getEntityMetaDataComparatorId(EntityMetaData metaData) {

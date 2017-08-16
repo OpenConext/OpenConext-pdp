@@ -50,6 +50,9 @@ public class PdpPolicy {
     @Column(name = "is_active")
     private boolean active;
 
+    @Column
+    private String type;
+
     @ManyToOne
     @JoinColumn(name = "revision_parent_id", nullable = true)
     //to prevent cycles
@@ -68,7 +71,7 @@ public class PdpPolicy {
     public PdpPolicy() {
     }
 
-    public PdpPolicy(String policyXml, String name, boolean latestRevision, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean active) {
+    public PdpPolicy(String policyXml, String name, boolean latestRevision, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean active, String type) {
         this.policyXml = policyXml;
         this.name = name;
         this.latestRevision = latestRevision;
@@ -77,7 +80,7 @@ public class PdpPolicy {
         this.authenticatingAuthority = authenticatingAuthority;
         this.active = active;
         this.policyId = PolicyTemplateEngine.getPolicyId(name);
-
+        this.type = type;
     }
 
     public Long getId() {
@@ -201,6 +204,14 @@ public class PdpPolicy {
         this.parentPolicy = parentPolicy;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean isActive) {
         parent.getRevisions().forEach(p -> p.setLatestRevision(false));
         parent.setLatestRevision(false);
@@ -215,6 +226,7 @@ public class PdpPolicy {
         clone.setActive(isActive);
         clone.setRevisionNbr(parent.getRevisions().size() + 1);
         clone.setPolicyId(PolicyTemplateEngine.getPolicyId(newName));
+        clone.setType(parent.getType());
 
         parent.addRevision(clone);
 

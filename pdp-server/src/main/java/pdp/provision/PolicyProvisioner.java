@@ -38,7 +38,7 @@ public class PolicyProvisioner implements ApplicationListener<ContextStartedEven
             .forEach(definition -> {
                 String policyXml = policyTemplateEngine.createPolicyXml(definition);
                 PdpPolicy pdpPolicy = new PdpPolicy(policyXml, definition.getName(), true, "provisioned",
-                    "surfnet", "system", true);
+                    "surfnet", "system", true, definition.getType());
                 pdpPolicyRepository.save(pdpPolicy);
             });
     }

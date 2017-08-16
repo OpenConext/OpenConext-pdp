@@ -51,7 +51,7 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
     @Before
     public void before() {
-        this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName, true);
+        this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName, true, "reg");
         //individual tests can overwrite this behaviour
         setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
         serviceRegistry.allowAll(false);

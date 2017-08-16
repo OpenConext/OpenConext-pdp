@@ -63,7 +63,7 @@ I18n.translations.en = {
         about: "About",
         my_idp: "My institute",
         new_policy: "+ New Policy",
-        new_ssa_policy: "+ New SSA Policy",
+        new_ssa_policy: "+ New Stepup Policy",
         identity: "Identity"
     },
 
@@ -99,8 +99,10 @@ I18n.translations.en = {
     },
 
     policy_detail: {
-        update_policy: "Update policy",
-        create_policy: "Create new policy",
+        update_policy_reg: "Update policy",
+        create_policy_reg: "Create new policy",
+        update_policy_step: "Update Stepup policy",
+        create_policy_step: "Create new Stepup policy",
         confirmation: "Are your sure you want to leave this page?",
         name: "Name",
         description: "Description",
