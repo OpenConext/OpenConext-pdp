@@ -63,6 +63,7 @@ I18n.translations.en = {
         about: "About",
         my_idp: "My institute",
         new_policy: "+ New Policy",
+        new_ssa_policy: "+ New SSA Policy",
         identity: "Identity"
     },
 

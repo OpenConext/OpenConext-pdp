@@ -60,7 +60,7 @@
                     AttributeId="urn:loa:level"
                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">http://test2.surfconext.nl/assurance/loa2</AttributeValue>
+                        DataType="http://www.w3.org/2001/XMLSchema#string">http://test2.surfconext.nl/assurance/loa3</AttributeValue>
                 </AttributeAssignmentExpression>
             </ObligationExpression>
         </ObligationExpressions>

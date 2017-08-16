@@ -3,10 +3,6 @@
     "AccessSubject": {
       "Attribute": [
         {
-          "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
-          "Value": "urn:collab:person:surfguest.nl:johndoe"
-        },
-        {
           "AttributeId": "urn:mace:surfnet.nl:collab:xacml-attribute:ip-address",
           "Value": "192.168.1.255"
         }
@@ -20,11 +16,11 @@
         },
         {
           "AttributeId": "SPentityID",
-          "Value": "avans_sp"
+          "Value": "nope"
         },
         {
           "AttributeId": "IDPentityID",
-          "Value": "avans_idp"
+          "Value": "nope"
         }
       ]
     }

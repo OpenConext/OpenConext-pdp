@@ -6,6 +6,7 @@ import org.apache.openaz.xacml.api.Attribute;
 import org.apache.openaz.xacml.api.AttributeCategory;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.IdReference;
+import org.apache.openaz.xacml.api.Obligation;
 import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
@@ -164,9 +165,70 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
 
     @Test
-    public void testObligation() throws Exception {
-        doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT, "OpenConext.pdp.test.obligations.Policy.xml");
-        System.out.println(Math.pow(2,3));
+    public void testIpRangeObligation() throws Exception {
+        Result result = doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT, "OpenConext.pdp.test.obligations.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://test2.surfconext.nl/assurance/loa2",
+            obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+    }
+
+    @Test
+    public void testIpRangeMultipleRulesObligation() throws Exception {
+        Result result = doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT,
+            "OpenConext.pdp.test.multiple.rules.obligations.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://test2.surfconext.nl/assurance/loa3",
+            obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+    }
+
+    @Test
+    public void testIpRangeObligationNegate() throws Exception {
+        Result result = doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT,
+            "OpenConext.pdp.test.obligations.negate.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(0, obligations.size());
+    }
+
+    @Test
+    public void testIpOutOfRangeObligation() throws Exception {
+        Result result = doDecideTest("json_policy_ip_not_in_range_request.json", Decision.PERMIT, "OpenConext.pdp.test.obligations.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(0, obligations.size());
+    }
+
+    @Test
+    public void testIpRangeObligationNotApplicable() throws Exception {
+        doDecideTest("json_policy_ip_range_not_applicable_request.json", Decision.NOTAPPLICABLE, "OpenConext.pdp.test.obligations.Policy.xml");
+    }
+
+    @Test
+    public void testIpRangeObligationIndeterminate() throws Exception {
+        doDecideTest("json_policy_ip_range_indeterminate_request.json", Decision.INDETERMINATE, "OpenConext.pdp.test.obligations.Policy.xml");
+    }
+
+    @Test
+    public void multipleObligationsCombined() throws Exception {
+        Result result = doDecideTest("json_policy_ip_range_request.json", Decision.PERMIT,
+            "OpenConext.pdp.test.obligations.Policy.xml",
+            "OpenConext.pdp.test.obligations.loa3.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(2, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://test2.surfconext.nl/assurance/loa2",
+            obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+
     }
 
     private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {

@@ -17,6 +17,17 @@
             }
           ],
           "Id": "urn:openconext:ssa:loa"
+        },
+        {
+          "AttributeAssignment": [
+            {
+              "Category": "urn:oasis:names:tc:xacml:1.0:subject-category:access-subject",
+              "AttributeId": "urn:loa:level",
+              "Value": "http://test2.surfconext.nl/assurance/loa3",
+              "DataType": "http://www.w3.org/2001/XMLSchema#string"
+            }
+          ],
+          "Id": "urn:openconext:ssa:loa"
         }
       ],
       "Decision": "Permit"
