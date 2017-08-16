@@ -1,0 +1,29 @@
+AND
+<Rule>
+  <Target>
+    <AnyOf>
+      <AllOf>
+        <Match/>
+      </AllOf>
+    </AnyOf>
+    <AnyOf>
+      <AllOf>
+        <Match/>
+      </AllOf>
+    </AnyOf>
+  </Target>
+</Rule>
+
+OR
+<Rule>
+  <Target>
+    <AnyOf>
+      <AllOf>
+        <Match/>
+      </AllOf>
+      <AllOf>
+        <Match/>
+      </AllOf>
+    </AnyOf>
+  </Target>
+</Rule>

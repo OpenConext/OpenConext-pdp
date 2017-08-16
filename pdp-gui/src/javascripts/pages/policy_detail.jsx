@@ -43,7 +43,7 @@ class PolicyDetail extends React.Component {
         };
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps() {
         location.reload();
     }
 
@@ -394,6 +394,7 @@ class PolicyDetail extends React.Component {
 
     renderLoAs(policy) {
 
+        return policy ? null : null;
     }
 
     renderAttributes(policy) {
@@ -537,14 +538,15 @@ class PolicyDetail extends React.Component {
 
     renderAboutPage() {
         const type = this.state.type;
+        let result;
         if (type === "reg") {
-            return I18n.locale === "en" ? <PolicyDetailHelpRegEn/> : <PolicyDetailHelpRegNl/>;
+            result = I18n.locale === "en" ? <PolicyDetailHelpRegEn/> : <PolicyDetailHelpRegNl/>;
         } else if (type === "step") {
-            return I18n.locale === "en" ? <PolicyDetailHelpStepEn/> : <PolicyDetailHelpStepNl/>;
+            result = I18n.locale === "en" ? <PolicyDetailHelpStepEn/> : <PolicyDetailHelpStepNl/>;
         } else {
-            throw new Error(`Invalid type ${type}`)
+            throw new Error(`Invalid type ${type}`);
         }
-
+        return result;
     }
 }
 
