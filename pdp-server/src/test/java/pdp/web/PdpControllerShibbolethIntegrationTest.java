@@ -183,7 +183,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
         List<JsonPolicyRequest.Attribute> samlAttributes = getForObject("/internal/saml-attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {
         });
 
-        assertThat(samlAttributes, hasSize(10));
+        assertThat(samlAttributes, hasSize(11));
 
         JsonPolicyRequest.Attribute nameId = samlAttributes.get(0);
 
