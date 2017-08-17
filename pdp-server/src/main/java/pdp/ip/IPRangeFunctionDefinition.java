@@ -17,7 +17,8 @@ import java.util.List;
 
 public class IPRangeFunctionDefinition implements FunctionDefinition {
 
-    private static final IdentifierImpl IDENTIFIER = new IdentifierImpl("urn:surfnet:cbac:custom:function:3.0:ip:range");
+    private static final IdentifierImpl IDENTIFIER =
+        new IdentifierImpl("urn:surfnet:cbac:custom:function:3.0:ip:range");
 
     @Override
     public Identifier getId() {

@@ -7,7 +7,12 @@
         {
           "AttributeId": "urn:mace:terena.org:attribute-def:edu",
           "Value": "what"
+        },
+        {
+          "AttributeId": "urn:mace:terena.org:attribute-def:edu",
+          "Value": "what21"
         }
+
       ]
     },
     "Resource": {

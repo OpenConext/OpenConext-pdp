@@ -183,6 +183,13 @@ I18n.translations.en = {
         group_info: " The value(s) must be fully qualified group IDs e.g. 'urn:collab:group:surfteams.nl:nl:surfnet:diensten:admins'",
         sab_info: " The value(s) must be valid roles in SAB e.g. 'Instellingsbevoegde'"
     },
+    policy_loas: {
+        loa: "Level of Assurance",
+        new_loa: "Add new LoA..."
+    },
+    policy_cidr: {
+        add_cidr: "Add new IP range"
+    },
     identity: {
         title: "Identity impersonation",
         subTitle: "",

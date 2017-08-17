@@ -41,12 +41,19 @@ public class ValidationController {
     }
 
     @GetMapping({"/internal/ipinfo", "/protected/ipinfo"})
-    public IPInfo ipInfo(@RequestParam String ipAddress, @RequestParam Integer networkPrefix) throws UnknownHostException {
+    public IPInfo ipInfo(@RequestParam String ipAddress,
+                         @RequestParam(required = false) Integer networkPrefix) throws UnknownHostException {
+        if (!validation(new Validation("ip", ipAddress))) {
+            return new IPInfo();
+        }
         InetAddress address = InetAddress.getByName(ipAddress);
-        CIDRUtils cidrUtils = new CIDRUtils(ipAddress.concat("/").concat(networkPrefix.toString()));
         boolean isIpv4 = address instanceof Inet4Address;
+        if (networkPrefix == null) {
+            networkPrefix = isIpv4 ? 24 : 62;
+        }
+        CIDRUtils cidrUtils = new CIDRUtils(ipAddress.concat("/").concat(networkPrefix.toString()));
         int byteSize = isIpv4 ? 32 : 128;
         double capacity = Math.pow(2, byteSize - networkPrefix);
-        return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(),capacity, isIpv4);
+        return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(),capacity, isIpv4, networkPrefix);
     }
 }

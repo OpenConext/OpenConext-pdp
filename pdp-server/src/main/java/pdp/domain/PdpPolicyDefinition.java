@@ -47,6 +47,9 @@ public class PdpPolicyDefinition {
     @Valid
     private List<PdpAttribute> attributes = new ArrayList<>();
 
+    @Valid
+    private List<LoA> loas = new ArrayList<>();
+
     private String denyAdvice;
 
     private boolean denyRule;
@@ -122,6 +125,14 @@ public class PdpPolicyDefinition {
 
     public void setAttributes(List<PdpAttribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public List<LoA> getLoas() {
+        return loas;
+    }
+
+    public void setLoas(List<LoA> loas) {
+        this.loas = loas;
     }
 
     public String getDenyAdvice() {

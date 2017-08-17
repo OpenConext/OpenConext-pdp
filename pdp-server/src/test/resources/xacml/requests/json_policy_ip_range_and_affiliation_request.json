@@ -1,0 +1,44 @@
+{
+  "Request": {
+    "AccessSubject": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+          "Value": "urn:collab:person:surfguest.nl:johndoe"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "teacher"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "teacher2"
+        },
+        {
+          "AttributeId": "urn:mace:surfnet.nl:collab:xacml-attribute:ip-address",
+          "Value": "192.168.1.255"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:isMemberOf",
+          "Value": "members"
+        }
+      ]
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "ClientID",
+          "Value": "Stepup"
+        },
+        {
+          "AttributeId": "SPentityID",
+          "Value": "avans_sp"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "avans_idp"
+        }
+      ]
+    }
+  }
+}

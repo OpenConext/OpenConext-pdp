@@ -9,18 +9,20 @@ import {
     createPolicy,
     deletePolicy,
     getAllowedAttributes,
-    getAllowedLoAs,
+    getAllowedLoas,
     getNewPolicy,
     getPolicy,
     getScopedIdentityProviders,
     getServiceProviders,
     updatePolicy
 } from "../api";
+
 import {setFlash} from "../utils/flash";
 
 import AutoFormat from "../utils/autoformat_policy";
 import Flash from "../components/flash";
 import PolicyAttributes from "../components/policy_attributes";
+import PolicyLoas from "../components/policy_loas";
 import PolicyDetailHelpRegEn from "../help/policy_detail_help_reg_en";
 import PolicyDetailHelpRegNl from "../help/policy_detail_help_reg_nl";
 import PolicyDetailHelpStepEn from "../help/policy_detail_help_step_en";
@@ -38,7 +40,7 @@ class PolicyDetail extends React.Component {
             identityProviders: [],
             serviceProviders: [],
             allowedAttributes: [],
-            allowedLoAs: [],
+            allowedLoas: [],
             type: undefined
         };
     }
@@ -52,7 +54,7 @@ class PolicyDetail extends React.Component {
         if (type) {
             this.setState({type: type});
             if (type === "step") {
-                getAllowedLoAs().then(allowedLoAs => this.setState({allowedLoAs}));
+                getAllowedLoas().then(allowedLoas => this.setState({allowedLoas}));
             }
         }
 
@@ -392,9 +394,17 @@ class PolicyDetail extends React.Component {
         this.setState({policy: {...this.state.policy, ...newAttributeState}});
     }
 
-    renderLoAs(policy) {
+    setLoaState(newLoaState) {
+        this.setState({policy: {...this.state.policy, ...newLoaState}});
+    }
 
-        return policy ? null : null;
+    renderLoAs(policy) {
+        //we need state changes from the child component
+        return (<PolicyLoas
+            policy={policy}
+            allowedLoas={this.state.allowedLoas}
+            allowedAttributes={this.state.allowedAttributes}
+            setLoasState={this.setLoaState.bind(this)}/>);
     }
 
     renderAttributes(policy) {

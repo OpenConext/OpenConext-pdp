@@ -27,6 +27,20 @@
             <AllOf>
                 <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
                     <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">avans_idp</AttributeValue>
+                    <AttributeDesignator
+                        AttributeId="IDPentityID"
+                        DataType="http://www.w3.org/2001/XMLSchema#string"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
                         DataType="http://www.w3.org/2001/XMLSchema#string">Stepup</AttributeValue>
                     <AttributeDesignator
                         AttributeId="ClientID"
@@ -44,20 +58,40 @@
         <Description/>
         <Target/>
         <Condition>
-            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
-                <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
-                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">192.168.6.56/21</AttributeValue>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">192.168.6.56/21</AttributeValue>
+                        <AttributeDesignator
+                            AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                            MustBePresent="true"
+                        />
+                    </Apply>
+                    <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">127.0.0.0/21</AttributeValue>
+                        <AttributeDesignator
+                            AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                            MustBePresent="true"
+                        />
+                    </Apply>
+                </Apply>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">teacher</AttributeValue>
                     <AttributeDesignator
-                        AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                        AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation"
                         DataType="http://www.w3.org/2001/XMLSchema#string"
                         Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                        MustBePresent="true"
+                        MustBePresent="false"
                     />
                 </Apply>
-                <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
-                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">148.9.0.0/23</AttributeValue>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">members</AttributeValue>
                     <AttributeDesignator
-                        AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                        AttributeId="urn:mace:dir:attribute-def:isMemberOf"
                         DataType="http://www.w3.org/2001/XMLSchema#string"
                         Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
                         MustBePresent="true"
@@ -71,7 +105,7 @@
                     AttributeId="urn:loa:level"
                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeValue
-                        DataType="http://www.w3.org/2001/XMLSchema#string">http://test2.surfconext.nl/assurance/loa2</AttributeValue>
+                        DataType="http://www.w3.org/2001/XMLSchema#string">http://test2.surfconext.nl/assurance/loa3</AttributeValue>
                 </AttributeAssignmentExpression>
             </ObligationExpression>
         </ObligationExpressions>

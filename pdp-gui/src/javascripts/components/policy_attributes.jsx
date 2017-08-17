@@ -4,6 +4,8 @@ import I18n from "i18n-js";
 import groupBy from "lodash/groupBy";
 import isEmpty from "lodash/isEmpty";
 
+import {preventProp} from "../lib/util";
+
 class PolicyAttributes extends React.Component {
 
     constructor() {
@@ -42,14 +44,9 @@ class PolicyAttributes extends React.Component {
         this.props.setAttributeState({attributes: attributes});
     }
 
-    preventProp(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
     handleAttributeValueChanged(attrName, index) {
         return function (e) {
-            this.preventProp(e);
+            preventProp(e);
             //change attribute value
             const attributes = this.state.attributes.map(attr => {
                 if (attr.name === attrName && attr.index === index) {
@@ -63,7 +60,7 @@ class PolicyAttributes extends React.Component {
 
     handleRemoveAttributeValue(attrName, index) {
         return function (e) {
-            this.preventProp(e);
+            preventProp(e);
             //remove attribute value
             const attributes = this.state.attributes.filter(attr => {
                 return !(attr.name === attrName && attr.index === index);
@@ -74,14 +71,14 @@ class PolicyAttributes extends React.Component {
 
     handleNewAttributeValue(attrName) {
         return function (e) {
-            this.preventProp(e);
+            preventProp(e);
             //change attribute value
             this.addAttribute(attrName);
         }.bind(this);
     }
 
     handleNewAttribute(e) {
-        this.preventProp(e);
+        preventProp(e);
         //change attribute value
         const attrName = e.target.value;
         this.addAttribute(attrName);
@@ -89,7 +86,7 @@ class PolicyAttributes extends React.Component {
 
     handleRemoveAttribute(attrName) {
         return function (e) {
-            this.preventProp(e);
+            preventProp(e);
             //change attribute value
             this.removeAttribute(attrName);
         }.bind(this);

@@ -231,6 +231,19 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
     }
 
+    @Test
+    public void testIpRangeAndAffiliationObligation() throws Exception {
+        Result result = doDecideTest("json_policy_ip_range_and_affiliation_request.json",
+            Decision.PERMIT, "OpenConext.pdp.test.obligations.multiple.and.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://test2.surfconext.nl/assurance/loa3",
+            obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+    }
+
     private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
         setUp(policyFiles);
 

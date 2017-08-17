@@ -100,7 +100,7 @@ export function getAllowedAttributes() {
     return fetchJson("/internal/attributes");
 }
 
-export function getAllowedLoAs() {
+export function getAllowedLoas() {
     return fetchJson("/internal/loas");
 }
 
@@ -113,7 +113,10 @@ export function validateIp(ipAddress) {
 }
 
 export function ipInfo(ipAddress, networkPrefix) {
-    return fetchJson("/internal/ipinfo?ipAddress=" + encodeURIComponent(ipAddress) + "&networkPrefix=" + networkPrefix);
+    if (networkPrefix) {
+        return fetchJson("/internal/ipinfo?ipAddress=" + encodeURIComponent(ipAddress) + "&networkPrefix=" + networkPrefix);
+    }
+    return fetchJson("/internal/ipinfo?ipAddress=" + encodeURIComponent(ipAddress));
 }
 
 export function getPolicies() {
