@@ -49,7 +49,7 @@ public class ValidationController {
         InetAddress address = InetAddress.getByName(ipAddress);
         boolean isIpv4 = address instanceof Inet4Address;
         if (networkPrefix == null) {
-            networkPrefix = isIpv4 ? 24 : 62;
+            networkPrefix = isIpv4 ? 24 : 64;
         }
         CIDRUtils cidrUtils = new CIDRUtils(ipAddress.concat("/").concat(networkPrefix.toString()));
         int byteSize = isIpv4 ? 32 : 128;

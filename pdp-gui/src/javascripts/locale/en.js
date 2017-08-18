@@ -188,7 +188,12 @@ I18n.translations.en = {
         new_loa: "Add new LoA..."
     },
     policy_cidr: {
-        add_cidr: "Add new IP range"
+        add_cidr: "Add new IP range",
+        capacity: "Capacity: ",
+        broadcastAddress: "Broadcast address: ",
+        networkAddress: "Network address: ",
+        invalid: "Invalid IP address",
+        negate: "Negate"
     },
     identity: {
         title: "Identity impersonation",

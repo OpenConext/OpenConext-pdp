@@ -1,0 +1,38 @@
+.all-cidrs
+
+  .cidr-container
+    margin: 10px 0
+    display: flex
+    align-items: center
+    position: relative
+    min-width: 100%
+
+    div.negate
+      margin-right: 10px
+
+    input.ip-address
+      flex-grow: 2
+      min-width: 0
+
+    span.slash
+      display: inline-block
+      margin: 0 10px
+      font-size: 22px
+
+    select.prefix
+      width: 50px
+
+  span.invalid
+    display: inline-block
+    margin-top: 5px
+    color: $red
+    font-style: italic
+
+  section.ip-info
+    display: flex
+    flex-direction: column
+    justify-content: space-between
+    margin-top: 5px
+    span.label
+      margin-right: 5px
+

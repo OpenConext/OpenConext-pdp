@@ -39,24 +39,20 @@ class PolicyCidrs extends React.Component {
         this.props.setCidrNotationsState({cidrNotations: cidrNotations});
     };
 
-    removeCidrNotation(index) {
-        let cidrNotations = this.state.cidrNotations || [];
-        cidrNotations = cidrNotations.filter(notation => {
-            return notation.index !== index;
-        });
-        this.props.setCidrNotationsState({cidrNotations: cidrNotations});
-    }
-
     validateIPAddress = index => e => {
         preventProp(e);
         const ipAddress = this.state.cidrNotations.find(notation => notation.index === index).ipAddress;
         ipInfo(ipAddress).then(ipInfo => {
-            const cidrNotations = this.state.cidrNotations || [];
+            const cidrNotations = [...this.state.cidrNotations] || [];
             const notation = cidrNotations.find(notation => notation.index === index);
             notation.invalid = !ipInfo.networkAddress;
             if (ipInfo.networkAddress) {
                 notation.ipInfo = ipInfo;
+                notation.prefix = ipInfo.prefix;
+            } else {
+                notation.ipInfo = undefined;
             }
+            this.props.setCidrNotationsState({cidrNotations: cidrNotations});
         });
     };
 
@@ -71,26 +67,58 @@ class PolicyCidrs extends React.Component {
         this.props.setCidrNotationsState({cidrNotations: cidrNotations});
     };
 
-    handleCidrsPrefixChanged = index => e => {
-        preventProp(e);
+    handleNegateNotation = index => e => {
         const cidrNotations = this.state.cidrNotations.map(notation => {
             if (notation.index === index) {
-                notation.prefix = e.target.value;
+                notation.negate = e.target.checked;
             }
             return notation;
         });
         this.props.setCidrNotationsState({cidrNotations: cidrNotations});
     };
 
-    handleRemoveCidrNotation(index) {
-        return function (e) {
-            preventProp(e);
-            const cidrNotations = this.state.cidrNotations.filter(notation => {
-                return !(notation.index === index);
-            });
-            this.props.setCidrNotationsState({cidrNotations: cidrNotations});
-        }.bind(this);
-    }
+
+    handleCidrsPrefixChanged = index => e => {
+        preventProp(e);
+        const cidrNotations = [...this.state.cidrNotations].map(notation => {
+            if (notation.index === index) {
+                notation.prefix = e.target.value;
+                ipInfo(notation.ipAddress, e.target.value).then(ipInfo => {
+                    const newCidrNotations = [...this.state.cidrNotations];
+                    const indexNotation = newCidrNotations.find(notation => notation.index === index);
+                    if (ipInfo.networkAddress) {
+                        indexNotation.ipInfo = ipInfo;
+                    }
+                    this.props.setCidrNotationsState({cidrNotations: newCidrNotations});
+                });
+            }
+            return notation;
+        });
+        this.props.setCidrNotationsState({cidrNotations: cidrNotations});
+    };
+
+    handleRemoveCidrNotation = index => e => {
+        preventProp(e);
+        const cidrNotations = [...this.state.cidrNotations].filter(notation => {
+            return !(notation.index === index);
+        });
+        this.props.setCidrNotationsState({cidrNotations: cidrNotations});
+    };
+
+    renderIpInfo = ipInfo => <section className="ip-info">
+        <div>
+            <span className="label">{I18n.t("policy_cidr.networkAddress")}</span>
+            <span>{ipInfo.networkAddress}</span>
+        </div>
+        <div>
+            <span className="label">{I18n.t("policy_cidr.broadcastAddress")}</span>
+            <span>{ipInfo.broadcastAddress}</span>
+        </div>
+        <div>
+            <span className="label">{I18n.t("policy_cidr.capacity")}</span>
+            <span>{parseInt(ipInfo.capacity).toLocaleString("nl")}</span>
+        </div>
+    </section>;
 
     getPrefixes = notation => {
         if (notation.invalid || !notation.ipInfo || isEmpty(notation.ipInfo.networkAddress)) {
@@ -100,27 +128,38 @@ class PolicyCidrs extends React.Component {
     };
 
     renderCidrNotation = notation => {
-        const className = notation.invalid ? "failure" : "success";
         const prefixValues = this.getPrefixes(notation);
+        const id = `negate_${notation.index}`;
         return (
-            <div className={`form-element cidr-container ${className}`} key={notation.index}>
-                <input type="text" className="ip-address" value={notation.ipAddress}
-                       onChange={this.handleCidrsIPAddressChanged(notation.index)}
-                       onBlur={this.validateIPAddress(notation.index)}/>
-                <span className="slash">/</span>
-                <select value={notation.prefix} onChange={this.handleCidrsPrefixChanged(notation.index)}>
-                    {prefixValues.map(prefix => <option value={prefix} key={prefix}>{prefix}</option>)}
-                </select>
-                <a href="#" onClick={this.handleRemoveCidrNotation(notation.index)} className="remove">
-                    <i className="fa fa-remove"></i>
-                </a>
+            <div key={notation.index}>
+                <div className="cidr-container">
+                    <div className="negate">
+                        <input type="checkbox" id={id} name={id} checked={notation.negate}
+                               onChange={this.handleNegateNotation(notation.index)}/>
+                        <label htmlFor={id}>{I18n.t("policy_cidr.negate")}</label>
+                    </div>
+                    <input type="text" className="form-input ip-address" value={notation.ipAddress}
+                           onChange={this.handleCidrsIPAddressChanged(notation.index)}
+                           onBlur={this.validateIPAddress(notation.index)}/>
+                    <span className="slash">/</span>
+                    <select className="prefix" value={notation.prefix}
+                            onChange={this.handleCidrsPrefixChanged(notation.index)}>
+                        {prefixValues.map(prefix => <option value={prefix} key={prefix}>{prefix}</option>)}
+                    </select>
+                    <a href="#" onClick={this.handleRemoveCidrNotation(notation.index)}
+                       className="remove inner-right">
+                        <i className="fa fa-remove"></i>
+                    </a>
+                </div>
+                {notation.invalid && <span className="invalid">{I18n.t("policy_cidr.invalid")}</span>}
+                {notation.ipInfo && this.renderIpInfo(notation.ipInfo)}
             </div>);
     };
 
     render() {
         const cidrNotations = this.state.cidrNotations;
         return (
-            <div>
+            <div className="all-cidrs">
                 {cidrNotations.map(notation => this.renderCidrNotation(notation))}
                 <a href="#" onClick={this.addCidrNotation} className="plus">
                     <i className="fa fa-plus"></i>

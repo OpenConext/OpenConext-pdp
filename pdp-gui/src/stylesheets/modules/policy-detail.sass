@@ -7,13 +7,13 @@
 
   .form-element
     padding: 5px 70px 10px 40px
-    margin: 25px 0px 0px 0px
+    margin: 25px 0 0 0
 
     &.split
       padding-right: 10px
 
-      &.no-pad-right
-        padding-right: 0px
+    &.no-pad-right
+      padding-right: 0
 
     &.success
       border-left: 6px solid $blue
@@ -121,7 +121,7 @@
       &.before-em
         margin-bottom: 2px
 
-  .attribute-container, .value-container, .loa-container
+  .attribute-container, .value-container, .loa-container, cidr-container
     position: relative
 
     a
@@ -131,6 +131,9 @@
         top: 4px
         font-size: 18px
         color: $remove-red
+
+        &.inner-right
+          right: 84px
 
       &.add
         color: $blue

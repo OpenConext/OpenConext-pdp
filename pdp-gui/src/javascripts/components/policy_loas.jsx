@@ -63,7 +63,7 @@ class PolicyLoas extends React.Component {
         const theLoa = newLoas.find(aLoa => aLoa.index === loa.index);
         theLoa.attributes = newAttributeState.attributes;
         this.props.setLoasState({loas: newLoas});
-    } ;
+    };
 
     setCidrNotationsState = loa => newCidrNotationState => {
         const newLoas = [...this.state.loas];
@@ -76,13 +76,14 @@ class PolicyLoas extends React.Component {
         const emptyAttributes = loa.attributes.filter(attr => {
             return isEmpty(attr.value);
         });
-        return (isEmpty(loa.attributes) || emptyAttributes.length > 0) && isEmpty(loa.cidrNotations) ;
+        const invalidCidrNotations = loa.cidrNotations.some(notation => !notation.ipInfo || !notation.ipInfo.networkAddress)
+        return (isEmpty(loa.attributes) || emptyAttributes.length > 0) && (isEmpty(loa.cidrNotations) || invalidCidrNotations);
     };
 
     renderLoa = (index, loa, css) => {
         const self = this;
         return (
-            <div className={"form-element " + css + " " + this.isInvalidLoa(loa) ? "failure" : "success"}
+            <div className={`form-element no-pad-right ${css} ${this.isInvalidLoa(loa) ? "failure" : "success"}`}
                  key={`${loa.level}_${index}`}>
                 <p className="label">{I18n.t("policy_loas.loa")}</p>
 
@@ -92,9 +93,13 @@ class PolicyLoas extends React.Component {
                     <a href="#" onClick={self.handleRemoveLoa(loa)} className="remove">
                         <i className="fa fa-remove"></i>
                     </a>
+                    <hr/>
                     <PolicyAttributes policy={loa}
+                                      css="no-pad-right"
                                       allowedAttributes={this.props.allowedAttributes}
-                                      setAttributeState={this.setAttributeState(loa)}/>
+                                      setAttributeState={this.setAttributeState(loa)}
+                                      innerAttributes={true}/>
+                    <hr/>
                     <PolicyCidrs loa={loa}
                                  setCidrNotationsState={this.setCidrNotationsState(loa)}/>
                 </div>
@@ -112,12 +117,11 @@ class PolicyLoas extends React.Component {
         const className = (isEmpty(policy.loas) || policy.loas.some(loa => this.isInvalidLoa(loa)))
             ? "failure" : "success";
         return (
-            <div className={"form-element " + css + " " + className}>
+            <div className={"form-element all-loas " + css + " " + className}>
                 {
                     policy.loas.map((loa, index) => this.renderLoa(index, loa, css))
                 }
-                <p className="label">{I18n.t("policy_loas.loa")}</p>
-                <select value="" onChange={self.handleNewLoa.bind(self)}>
+                <select className="new-loa" value="" onChange={self.handleNewLoa.bind(self)}>
                     <option value="" disabled="disabled">{I18n.t("policy_loas.new_loa")}</option>
                     {
                         allowedLoas.map(allowedLoa => {

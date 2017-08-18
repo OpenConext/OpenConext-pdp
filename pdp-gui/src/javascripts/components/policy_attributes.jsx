@@ -138,13 +138,15 @@ class PolicyAttributes extends React.Component {
         });
         const validClassName = (isEmpty(policy.attributes) || emptyAttributes.length > 0) ? "failure" : "success";
         const css = this.props.css || "";
+        const className = this.props.innerAttributes ? "" : "form-element " + css + " " + validClassName;
         return (
-            <div className={"form-element " + css + " " + validClassName}>
+            <div className={className}>
                 {
                     attrNames.map(attrName => {
                         return (
                             <div key={attrName}>
-                                <p className="label">{I18n.t("policy_attributes.attribute")}</p>
+
+                                  <p className="label">{I18n.t("policy_attributes.attribute")}</p>
 
                                 <div className="attribute-container">
                                     <input type="text" name="attribute" className="form-input disabled" value={attrName}
@@ -169,7 +171,8 @@ class PolicyAttributes extends React.Component {
                         );
                     })
                 }
-                <p className="label">{I18n.t("policy_attributes.attribute")}</p>
+                {!this.props.innerAttributes &&
+                <p className="label">{I18n.t("policy_attributes.attribute")}</p>}
                 <select value="" onChange={self.handleNewAttribute.bind(self)}>
                     <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
                     {
@@ -192,7 +195,8 @@ PolicyAttributes.propTypes = {
     })),
     policy: React.PropTypes.shape({
         attributes: React.PropTypes.arrayOf(React.PropTypes.shape({}))
-    })
+    }),
+    innerAttributes: React.PropTypes.boolean
 };
 
 export default PolicyAttributes;
