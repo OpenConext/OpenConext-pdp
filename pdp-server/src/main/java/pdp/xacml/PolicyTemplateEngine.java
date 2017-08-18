@@ -21,6 +21,7 @@ public class PolicyTemplateEngine {
 
     public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
         String type = pdpPolicyDefintion.getType();
+        pdpPolicyDefintion.sortLoas();
         String template = type.equals("step") ? "templates/policy-definition-step.xml" : "templates/policy-definition.xml";
         Mustache mustache = mf.compile(template);
         StringWriter writer = new StringWriter();

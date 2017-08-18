@@ -12,6 +12,7 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -335,6 +336,11 @@ public class PdpPolicyDefinition {
         definition.setServiceProviderName(serviceProviderId);
         definition.setIdentityProviderIds(identityProvidersIds);
         return definition;
+    }
+
+    @JsonIgnore
+    public void sortLoas() {
+        Collections.sort(this.loas, Comparator.comparing(LoA::getLevel).reversed());
     }
 
 }

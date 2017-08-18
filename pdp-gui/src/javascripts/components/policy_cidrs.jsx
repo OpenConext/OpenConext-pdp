@@ -41,8 +41,8 @@ class PolicyCidrs extends React.Component {
 
     validateIPAddress = index => e => {
         preventProp(e);
-        const ipAddress = this.state.cidrNotations.find(notation => notation.index === index).ipAddress;
-        ipInfo(ipAddress).then(ipInfo => {
+        const theNotation = this.state.cidrNotations.find(notation => notation.index === index);
+        ipInfo(theNotation.ipAddress, theNotation.prefix).then(ipInfo => {
             const cidrNotations = [...this.state.cidrNotations] || [];
             const notation = cidrNotations.find(notation => notation.index === index);
             notation.invalid = !ipInfo.networkAddress;
