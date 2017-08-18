@@ -43,7 +43,7 @@ module.exports = {
                 exclude: /node_modules/,
                 loader: "babel",
                 query: {
-                    presets: ["stage-0", "react", "es2015"],
+                    presets: ["react", "es2015", "stage-0"],
                     plugins: ["transform-object-rest-spread", "lodash"]
                 },
             },

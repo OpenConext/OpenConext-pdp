@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="{{policyId}}"
+        Version="1"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+    <Description>{{description}}</Description>
+    <PolicyDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicyDefaults>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{serviceProviderId}}</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="true"
+                            />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        {{#anyIdentityProviders}}
+        <AnyOf>
+            {{#identityProviderIds}}
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="IDPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="true"
+                            />
+                </Match>
+            </AllOf>
+            {{/identityProviderIds}}
+        </AnyOf>
+        {{/anyIdentityProviders}}
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">Stepup</AttributeValue>
+                    <AttributeDesignator
+                        AttributeId="ClientID"
+                        DataType="http://www.w3.org/2001/XMLSchema#string"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
+    </Target>
+    {{#loas}}
+    <Rule Effect="Permit"
+          RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target/>
+        <Condition>
+            {{#allAttributesMustMatch}}
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+            {{/allAttributesMustMatch}}
+            {{^allAttributesMustMatch}}
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+            {{/allAttributesMustMatch}}
+                {{#anyCidrNotations}}
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    {{#cidrNotations}}
+                    {{#negate}}
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+                    {{/negate}}
+                        <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{ipAddress}}/{{prefix}}</AttributeValue>
+                            <AttributeDesignator
+                                AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="true"
+                            />
+                        </Apply>
+                    {{#negate}}
+                    </Apply>
+                    {{/negate}}
+                    {{/cidrNotations}}
+                </Apply>
+                {{/anyCidrNotations}}
+                {{#anyAttributes}}
+                    {{#allAttributesMustMatch}}
+                        {{> target-partial-step-logical-and.xml}}
+                    {{/allAttributesMustMatch}}
+                    {{^allAttributesMustMatch}}
+                        {{> target-partial-step-logical-or.xml}}
+                    {{/allAttributesMustMatch}}
+                {{/anyAttributes}}
+            </Apply>
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression
+                    AttributeId="urn:loa:level"
+                    Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">{{level}}</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    {{/loas}}
+    <Rule Effect="Permit"
+          RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.DenyRulePolicyEmptyPermit.permitAccess">
+        <Description />
+        <Target />
+    </Rule>
+</Policy>

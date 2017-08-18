@@ -47,7 +47,13 @@ const AutoFormat = {
 
         const attributes = this.attributes(attrs, policy.allAttributesMustMatch);
         //we can't use JS templates as the backtick breaks the uglification. Will be resolved when we upgrade the build tooling
-        const description = "A user" + idps + " is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
+        let description ;
+        if (policy.type === "step") {
+            //TODO
+        } else {
+            description = "A user" + idps + " is " + only + " allowed to access " + sp + " when" + teamMembership + and + " " + attributes;
+        }
+
 
         return description;
     }

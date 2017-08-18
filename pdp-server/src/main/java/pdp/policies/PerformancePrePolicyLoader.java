@@ -49,6 +49,7 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
         definition.setDenyAdviceNl("Niet geautoriseerd");
         definition.setDescription("Performance Policy " + uuid);
         definition.setIdentityProviderIds(Arrays.asList(idp.getEntityId()));
+        definition.setType("reg");
         List<PdpAttribute> attributes = Arrays.asList(
             new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "teacher"),
             new PdpAttribute("urn:mace:dir:attribute-def:eduPersonAffiliation", "staff"),

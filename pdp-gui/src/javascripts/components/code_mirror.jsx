@@ -41,7 +41,7 @@ class CodeMirrorComponent extends React.Component {
 
 CodeMirrorComponent.propTypes = {
     options: React.PropTypes.shape({
-        readOnly: React.PropTypes.boolean
+        readOnly: React.PropTypes.bool
     }),
     value: React.PropTypes.string,
     onChange: React.PropTypes.func

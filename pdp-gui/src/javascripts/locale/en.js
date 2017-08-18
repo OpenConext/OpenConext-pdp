@@ -185,7 +185,8 @@ I18n.translations.en = {
     },
     policy_loas: {
         loa: "Level of Assurance",
-        new_loa: "Add new LoA..."
+        new_loa: "Add new LoA...",
+        and_or_rule: "An AND rule requires all the attributes to match. An OR rule only requires one of the attributes to match."
     },
     policy_cidr: {
         add_cidr: "Add new IP range",

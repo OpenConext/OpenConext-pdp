@@ -83,7 +83,8 @@ class App extends React.Component {
                     <Match exactly pattern="/identity" component={Identity}/>
                     <Match exactly pattern="/policies" component={PolicyOverview}/>
                     <Match exactly pattern="/revisions/:id" component={PolicyRevisions}/>
-                    <Match exactly pattern="/new-policy/:type" component={PolicyDetail}/>
+                    <Match exactly pattern="/new-policy" component={PolicyDetail}/>
+                    <Match exactly pattern="/new-step-policy" component={PolicyDetail}/>
                     <Match exactly pattern="/policy/:id" component={PolicyDetail}/>
                     <Match exactly pattern="/violations" component={PolicyViolations}/>
                     <Match exactly pattern="/violations/:id" component={PolicyViolations}/>

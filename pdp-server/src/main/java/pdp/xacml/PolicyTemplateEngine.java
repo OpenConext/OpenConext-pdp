@@ -20,7 +20,9 @@ public class PolicyTemplateEngine {
     private final MustacheFactory mf = new DefaultMustacheFactory();
 
     public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
-        Mustache mustache = mf.compile("templates/policy-definition.xml");
+        String type = pdpPolicyDefintion.getType();
+        String template = type.equals("step") ? "templates/policy-definition-step.xml" : "templates/policy-definition.xml";
+        Mustache mustache = mf.compile(template);
         StringWriter writer = new StringWriter();
         try {
             mustache.execute(writer, pdpPolicyDefintion).flush();

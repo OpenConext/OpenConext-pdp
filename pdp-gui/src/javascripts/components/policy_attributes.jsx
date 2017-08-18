@@ -196,7 +196,7 @@ PolicyAttributes.propTypes = {
     policy: React.PropTypes.shape({
         attributes: React.PropTypes.arrayOf(React.PropTypes.shape({}))
     }),
-    innerAttributes: React.PropTypes.boolean
+    innerAttributes: React.PropTypes.bool
 };
 
 export default PolicyAttributes;

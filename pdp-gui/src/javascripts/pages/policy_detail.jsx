@@ -3,7 +3,6 @@ import I18n from "i18n-js";
 import moment from "moment";
 import Link from "react-router/Link";
 import isEmpty from "lodash/isEmpty";
-import find from "lodash/find";
 
 import {
     createPolicy,
@@ -28,12 +27,12 @@ import PolicyDetailHelpRegNl from "../help/policy_detail_help_reg_nl";
 import PolicyDetailHelpStepEn from "../help/policy_detail_help_step_en";
 import PolicyDetailHelpStepNl from "../help/policy_detail_help_step_nl";
 import SelectWrapper from "../components/select_wrapper";
+import AndOrRule from "../components/and_or_rule";
 
 class PolicyDetail extends React.Component {
 
-    constructor() {
-        super();
-
+    constructor(props) {
+        super(props);
         this.state = {
             autoFormat: false,
             policy: null,
@@ -41,25 +40,26 @@ class PolicyDetail extends React.Component {
             serviceProviders: [],
             allowedAttributes: [],
             allowedLoas: [],
-            type: undefined
+            type: props.pathname.indexOf("step") > -1 ? "step" : "reg"
         };
     }
 
-    componentWillReceiveProps() {
-        location.reload();
+    componentWillReceiveProps(nextProps) {
+        const newType = nextProps.params.type;
+        const currentType = this.props.params.type;
+        if (newType !== currentType) {
+            this.componentWillUnmount();
+            this.setState({...this.state}, this.componentWillMount);
+        }
     }
 
     componentWillMount() {
-        const type = this.props.params.type;
-        if (type) {
-            this.setState({type: type});
-            if (type === "step") {
-                getAllowedLoas().then(allowedLoas => this.setState({allowedLoas}));
-            }
+        if (this.state.type === "step") {
+            getAllowedLoas().then(allowedLoas => this.setState({allowedLoas}));
         }
 
         if (!this.props.params.id) {
-            getNewPolicy(type).then(policy => {
+            getNewPolicy(this.state.type).then(policy => {
                 if (!this.props.params.id) {
                     policy.active = true;
                 }
@@ -80,26 +80,6 @@ class PolicyDetail extends React.Component {
             partialState.allAttributesMustMatch = true;
         }
         this.setState({policy: {...this.state.policy, ...partialState}});
-    }
-
-    provideProviderNames(partialState) {
-        const identityProvidersIds = partialState.identityProviderIds !== undefined ? partialState.identityProviderIds : this.state.policy.identityProviderIds;
-        let identityProviderNames = [];
-
-        if (!isEmpty(identityProvidersIds)) {
-            identityProviderNames = identityProvidersIds.map(idp => {
-                return I18n.entityName(find(this.state.identityProviders, "entityId", idp));
-            });
-        }
-
-        const serviceProviderId = partialState.serviceProviderId !== undefined ? partialState.serviceProviderId : this.state.policy.serviceProviderId;
-        let serviceProviderName = null;
-
-        if (!isEmpty(serviceProviderId)) {
-            serviceProviderName = I18n.entityName(find(this.state.serviceProviders, "entityId", serviceProviderId));
-        }
-
-        this.setState({policy: {...this.state.policy, identityProviderNames, serviceProviderName}});
     }
 
     parseEntities(entities) {
@@ -171,13 +151,25 @@ class PolicyDetail extends React.Component {
 
     isValidPolicy() {
         const {policy} = this.state;
-        const emptyAttributes = policy.attributes.filter(attr => {
-            return isEmpty(attr.value);
-        });
+        const emptyAttributes = policy.attributes.filter(attr => isEmpty(attr.value));
+
+        const invalidNotations = policy.loas.some(loa =>
+            loa.cidrNotations.some(notation => !notation.ipInfo || !notation.ipInfo.networkAddress));
+        const invalidLoas = policy.loas.some(loa => isEmpty(loa.cidrNotations) && isEmpty(loa.attributes));
+        const emptyLoaAttributes = policy.loas.some(loa =>
+            loa.attributes.some(attr => isEmpty(attr)));
+
         const description = this.renderAutoformatDescription(policy);
-        const inValid = isEmpty(policy.name) || isEmpty(description) || isEmpty(policy.serviceProviderId)
-            || isEmpty(policy.attributes) || emptyAttributes.length > 0 || isEmpty(policy.denyAdvice) || isEmpty(policy.denyAdviceNl);
-        return !inValid;
+        let invalid;
+        if (policy.type === "step") {
+            invalid = isEmpty(policy.loas) || invalidNotations || invalidLoas || emptyLoaAttributes;
+        } else {
+            invalid = isEmpty(policy.attributes) || emptyAttributes.length > 0 || isEmpty(policy.denyAdvice)
+                || isEmpty(policy.denyAdviceNl) || isEmpty(description);
+        }
+
+        const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderId) || invalid;
+        return !result;
     }
 
     handleOnChangeName(e) {
@@ -364,31 +356,10 @@ class PolicyDetail extends React.Component {
         );
     }
 
-    handleChooseRule(value) {
-        return function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-            const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
-            this.setState({policy: {...this.state.policy, allAttributesMustMatch}});
-        }.bind(this);
-    }
-
-    renderRule(value, selected) {
-        const className = value + " " + (selected ? "selected" : "");
-        if (this.state.policy.denyRule) {
-            return (
-                <li key={value}>
-                    <span className={className}>{value}</span>
-                </li>
-            );
-        }
-
-        return (
-            <li key={value}>
-                <a href="#" className={className} onClick={this.handleChooseRule(value)}>{value}</a>
-            </li>
-        );
-    }
+    handleChooseRule = value => {
+        const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
+        this.setState({policy: {...this.state.policy, allAttributesMustMatch: allAttributesMustMatch}});
+    };
 
     setAttributeState(newAttributeState) {
         this.setState({policy: {...this.state.policy, ...newAttributeState}});
@@ -413,47 +384,6 @@ class PolicyDetail extends React.Component {
             policy={policy}
             allowedAttributes={this.state.allowedAttributes}
             setAttributeState={this.setAttributeState.bind(this)}/>);
-    }
-
-    renderLogicalRule(policy) {
-        const allAttributesMustMatch = policy.allAttributesMustMatch;
-        const classNameAnd = !policy.allAttributesMustMatch ? "not-selected" : "";
-        const classNameOr = policy.allAttributesMustMatch ? "not-selected" : "";
-
-        return (
-            <div>
-                <div className="form-element success">
-                    <div className="column-3 first">
-                        <p className="label">{I18n.t("policy_detail.rule")}</p>
-                        <ul className="logical-rule">
-                            {[
-                                this.renderRule(I18n.t("policy_detail.rule_and"), allAttributesMustMatch),
-                                this.renderRule(I18n.t("policy_detail.rule_or"), !allAttributesMustMatch)
-                            ]}
-                        </ul>
-                    </div>
-                    <div className="column-3 middle">
-                        <p className={"info " + classNameAnd}>{I18n.t("policy_detail.rule_and")}</p>
-                        <em className={classNameAnd}>{I18n.t("policy_detail.rule_and_info")}</em>
-                    </div>
-                    <div className="column-3">
-                        <p className={"info " + classNameOr}>{I18n.t("policy_detail.rule_or")}</p>
-                        <em className={classNameOr}>{I18n.t("policy_detail.rule_or_info")}</em>
-                    </div>
-                    <em className="note"><sup>*</sup>{I18n.t("policy_detail.rule_info_add")} </em>
-                    {this.renderDenyRuleNote()}
-                </div>
-                <div className="bottom"></div>
-            </div>
-        );
-    }
-
-    renderDenyRuleNote() {
-        if (this.state.denyRule) {
-            return (<em><sup>*</sup> {I18n.t("policy_detail.rule_info_add_2")}</em>);
-        }
-
-        return null;
     }
 
     renderActions(policy) {
@@ -528,7 +458,7 @@ class PolicyDetail extends React.Component {
                         {regular && this.renderDenyPermitRule(policy)}
                         {this.renderServiceProvider(policy)}
                         {this.renderIdentityProvider(policy)}
-                        {regular && this.renderLogicalRule(policy)}
+                        {regular && <AndOrRule policy={policy} toggleRule={this.handleChooseRule}/>}
                         {regular && this.renderAttributes(policy)}
                         {regular && this.renderDenyAdvice(policy)}
                         {regular && this.renderDescription(policy)}
@@ -548,13 +478,11 @@ class PolicyDetail extends React.Component {
 
     renderAboutPage() {
         const type = this.state.type;
-        let result;
+        let result = null;
         if (type === "reg") {
             result = I18n.locale === "en" ? <PolicyDetailHelpRegEn/> : <PolicyDetailHelpRegNl/>;
         } else if (type === "step") {
             result = I18n.locale === "en" ? <PolicyDetailHelpStepEn/> : <PolicyDetailHelpStepNl/>;
-        } else {
-            throw new Error(`Invalid type ${type}`);
         }
         return result;
     }
@@ -566,10 +494,8 @@ PolicyDetail.contextTypes = {
 };
 
 PolicyDetail.propTypes = {
-    params: React.PropTypes.shape({
-        id: React.PropTypes.string,
-        type: React.PropTypes.string
-    })
+    params: React.PropTypes.object,
+    pathname: React.PropTypes.string
 };
 
 export default PolicyDetail;

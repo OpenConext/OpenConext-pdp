@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17" PolicyId="urn:surfconext:xacml:policy:id:brand_new_stepup_policy" Version="1" RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+    <Description />
+    <PolicyDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicyDefaults>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">https://csa.test.surfconext.nl</AttributeValue>
+                    <AttributeDesignator AttributeId="SPentityID" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="true" />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://mock-idp</AttributeValue>
+                    <AttributeDesignator AttributeId="IDPentityID" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="true" />
+                </Match>
+            </AllOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">https://openidp.feide.no</AttributeValue>
+                    <AttributeDesignator AttributeId="IDPentityID" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="true" />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">Stepup</AttributeValue>
+                    <AttributeDesignator AttributeId="ClientID" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource" MustBePresent="true" />
+                </Match>
+            </AllOf>
+        </AnyOf>
+    </Target>
+    <Rule Effect="Permit" RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target />
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+                        <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">127.0.0.1/24</AttributeValue>
+                            <AttributeDesignator AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="true" />
+                        </Apply>
+                    </Apply>
+                    <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">192.116.7.0/19</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="true" />
+                    </Apply>
+                </Apply>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">teachers</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:mace:dir:attribute-def:eduPersonAffiliation" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="false" />
+                    </Apply>
+                </Apply>
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">test</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="false" />
+                    </Apply>
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">test2</AttributeValue>
+                        <AttributeDesignator AttributeId="urn:mace:terena.org:attribute-def:schacHomeOrganization" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="false" />
+                    </Apply>
+                </Apply>
+            </Apply>
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa2</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    <Rule Effect="Permit" RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target />
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+                        <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
+                            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">9.9.9.9/24</AttributeValue>
+                            <AttributeDesignator AttributeId="urn:mace:surfnet.nl:collab:xacml-attribute:ip-address" DataType="http://www.w3.org/2001/XMLSchema#string" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject" MustBePresent="true" />
+                        </Apply>
+                    </Apply>
+                </Apply>
+            </Apply>
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa3</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    <Rule Effect="Permit" RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target />
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and" />
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa3</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    <Rule Effect="Permit" RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.DenyRulePolicyEmptyPermit.permitAccess">
+        <Description />
+        <Target />
+    </Rule>
+</Policy>

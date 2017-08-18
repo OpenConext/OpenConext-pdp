@@ -1,0 +1,10 @@
+        {{#attributes}}
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{value}}</AttributeValue>
+            <AttributeDesignator
+                AttributeId="{{name}}"
+                DataType="http://www.w3.org/2001/XMLSchema#string"
+                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                MustBePresent="false"/>
+        </Apply>
+        {{/attributes}}

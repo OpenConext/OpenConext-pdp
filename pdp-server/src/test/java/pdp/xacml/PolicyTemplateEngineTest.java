@@ -32,6 +32,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
             new PdpAttribute("attr2", "value2")));
         definition.setIdentityProviderIds(Arrays.asList(PolicyLoader.authenticatingAuthority, "http://mock-ipd2"));
         definition.setServiceProviderId("http://mock-sp");
+        definition.setType("reg");
     }
 
     @Test

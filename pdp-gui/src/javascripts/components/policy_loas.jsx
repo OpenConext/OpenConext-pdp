@@ -4,6 +4,7 @@ import isEmpty from "lodash/isEmpty";
 
 import PolicyAttributes from "./policy_attributes";
 import PolicyCidrs from "./policy_cidrs";
+import AndOrRule from "./and_or_rule";
 
 import {preventProp} from "../lib/util";
 
@@ -45,18 +46,24 @@ class PolicyLoas extends React.Component {
         this.props.setLoasState({loas: newLoas});
     }
 
+    handleChooseRule = index => value => {
+        const allAttributesMustMatch = (value === I18n.t("policy_detail.rule_and"));
+        const newLoas = [...this.state.loas];
+        const theLoa = newLoas.find(loa => loa.index === index);
+        theLoa.allAttributesMustMatch = allAttributesMustMatch;
+        this.props.setLoasState({loas: newLoas});
+    };
+
     handleNewLoa(e) {
         preventProp(e);
         const level = e.target.value;
         this.addLoa(level);
     }
 
-    handleRemoveLoa(level) {
-        return function (e) {
-            preventProp(e);
-            this.removeLoa(level);
-        }.bind(this);
-    }
+    handleRemoveLoa = level => e => {
+        preventProp(e);
+        this.removeLoa(level);
+    };
 
     setAttributeState = loa => newAttributeState => {
         const newLoas = [...this.state.loas];
@@ -94,6 +101,10 @@ class PolicyLoas extends React.Component {
                         <i className="fa fa-remove"></i>
                     </a>
                     <hr/>
+                    <AndOrRule policy={loa}
+                               toggleRule={this.handleChooseRule(index)}
+                               hideDetails={true}/>
+                    <p className="loas-and-or-rule">{I18n.t("policy_loas.and_or_rule")}</p>
                     <PolicyAttributes policy={loa}
                                       css="no-pad-right"
                                       allowedAttributes={this.props.allowedAttributes}

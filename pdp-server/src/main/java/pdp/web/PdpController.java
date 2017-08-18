@@ -12,6 +12,7 @@ import org.apache.openaz.xacml.api.RequestAttributes;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
+import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
@@ -25,6 +26,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -176,8 +178,10 @@ public class PdpController implements JsonMapper {
 
     @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
     public List<PdpPolicyDefinition> policyDefinitions() {
-        List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
-            .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
+        Stream<PdpPolicy> stream = stream(pdpPolicyRepository.findAll().spliterator(), false);
+        List<PdpPolicyDefinition> policies = stream
+            .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(
+                addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
 
         policies = policies.stream().filter(policy -> !policy.isServiceProviderInvalidOrMissing()).collect(toList());
 
@@ -210,7 +214,8 @@ public class PdpController implements JsonMapper {
     public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
         String policyXml = policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
         //if this works then we know the input was correct
-        pdpPolicyDefinitionParser.parsePolicy(policyXml);
+        Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml);
+        Assert.notNull(parsedPolicy, "ParsedPolicy is not valid");
 
         PdpPolicy policy;
         if (pdpPolicyDefinition.getId() != null) {

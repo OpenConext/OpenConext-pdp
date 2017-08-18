@@ -244,6 +244,19 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
             obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
     }
 
+    @Test
+    public void testStepupTemplate() throws Exception {
+        Result result = doDecideTest("json_policy_stepup_request.json",
+            Decision.PERMIT, "stepup.policy.template.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://localhost/assurance/loa2",
+            obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+    }
+
     private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
         setUp(policyFiles);
 

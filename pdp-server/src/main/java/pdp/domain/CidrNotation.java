@@ -13,5 +13,6 @@ public class CidrNotation {
 
     private String ipAddress;
     private int prefix;
+    private boolean negate;
 
 }
