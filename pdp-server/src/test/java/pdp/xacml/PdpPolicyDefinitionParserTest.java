@@ -1,15 +1,19 @@
 package pdp.xacml;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
+import pdp.domain.LoA;
 import pdp.domain.PdpPolicy;
+import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class PdpPolicyDefinitionParserTest {
@@ -29,6 +33,17 @@ public class PdpPolicyDefinitionParserTest {
             } catch (PdpParseException | IllegalArgumentException e) {
             }
         });
+    }
+
+    @Test
+    public void parseStepUpPolicy() throws IOException {
+        String xml = IOUtils.toString(new ClassPathResource("xacml/test-policies/stepup.policy.template.xml").getInputStream());
+        PdpPolicy policy = new PdpPolicy(xml, "policy-name", true, "me",
+            "mock-idp", "me", true, "step");
+        PdpPolicyDefinition policyDefinition = subject.parse(policy);
+
+        List<LoA> loas = policyDefinition.getLoas();
+        assertEquals(3 ,loas.size());
     }
 
     private PdpPolicy getPolicy(String name) {

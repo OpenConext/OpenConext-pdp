@@ -40,6 +40,20 @@
             {{/identityProviderIds}}
         </AnyOf>
         {{/anyIdentityProviders}}
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                        DataType="http://www.w3.org/2001/XMLSchema#string">Federation</AttributeValue>
+                    <AttributeDesignator
+                        AttributeId="ClientID"
+                        DataType="http://www.w3.org/2001/XMLSchema#string"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                        MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
     </Target>
     {{^denyRule}}
     <Rule Effect="Permit"

@@ -5,22 +5,31 @@ import org.apache.openaz.xacml.pdp.policy.AdviceExpression;
 import org.apache.openaz.xacml.pdp.policy.AllOf;
 import org.apache.openaz.xacml.pdp.policy.AnyOf;
 import org.apache.openaz.xacml.pdp.policy.AttributeAssignmentExpression;
+import org.apache.openaz.xacml.pdp.policy.Condition;
+import org.apache.openaz.xacml.pdp.policy.Expression;
 import org.apache.openaz.xacml.pdp.policy.Match;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.pdp.policy.Rule;
+import org.apache.openaz.xacml.pdp.policy.dom.DOMApply;
+import org.apache.openaz.xacml.pdp.policy.dom.DOMAttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pdp.domain.CidrNotation;
+import pdp.domain.LoA;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.util.StreamUtils;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,7 +46,9 @@ public class PdpPolicyDefinitionParser {
 
     public static final String SP_ENTITY_ID = "SPentityID";
     public static final String IDP_ENTITY_ID = "IDPentityID";
+    public static final String CLIENT_ID = "ClientID";
     public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
+    public static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
 
     public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
@@ -57,15 +68,95 @@ public class PdpPolicyDefinitionParser {
         parseTargets(policyXml, definition, policy);
 
         List<Rule> rules = iteratorToList(policy.getRules());
-        definition.setDenyRule(!isPermitRule(policyXml, rules));
 
-        parsePermit(policyXml, definition, rules);
-        parseDeny(policyXml, definition, rules);
+        if (pdpPolicy.getType().equals("step")) {
+            definition.setDenyRule(false);
+            List<LoA> loas = rules.stream()
+                .filter(rule -> rule.getCondition() != null)
+                .map(this::parseStepRule).collect(toList());
+            definition.setLoas(loas);
+            definition.sortLoas();
+        } else {
+            definition.setDenyRule(!isPermitRule(policyXml, rules));
 
-        //we need to sort to get a consistent attribute list for testing - run-time it makes no difference
-        Collections.sort(definition.getAttributes(), (a1, a2) -> a1.getName().compareTo(a2.getName()));
+            parsePermit(policyXml, definition, rules);
+            parseDeny(policyXml, definition, rules);
+
+            //we need to sort to get a consistent attribute list for testing - run-time it makes no difference
+            Collections.sort(definition.getAttributes(), (a1, a2) -> a1.getName().compareTo(a2.getName()));
+        }
 
         return definition;
+    }
+
+    private LoA parseStepRule(Rule rule) {
+        LoA loa = new LoA();
+
+        AttributeValueExpression attributeValueExpression = AttributeValueExpression.class.cast(rule.getObligationExpressions().next().getAttributeAssignmentExpressions().next().getExpression());
+        String level = (String) attributeValueExpression.getAttributeValue().getValue();
+        loa.setLevel(level);
+
+        Condition condition = rule.getCondition();
+        DOMApply domApply = DOMApply.class.cast(condition.getExpression());
+        boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString().endsWith("function:and");
+        loa.setAllAttributesMustMatch(allAttributesMustMatch);
+
+        this.parseArguments(loa, domApply.getArguments());
+        return loa;
+    }
+
+    private LoA parseArguments(LoA loA, Iterator<Expression> iterator) {
+        List<Expression> expressions = StreamUtils.iteratorToList(iterator);
+        expressions.forEach(expression -> {
+            if (expression instanceof DOMApply) {
+                parseDomApply(loA, DOMApply.class.cast(expression));
+            }
+        });
+        return loA;
+    }
+
+    private LoA parseDomApply(LoA loA, DOMApply domApply) {
+        String functionID = domApply.getFunctionId().getUri().toString();
+        if (functionID.endsWith("function:not")) {
+            DOMApply ipRange = DOMApply.class.cast(domApply.getArguments().next());
+            loA.getCidrNotations().add(parseCidrNotation(ipRange, true));
+            return loA;
+        } else if (functionID.equals(IP_FUNCTION)) {
+            loA.getCidrNotations().add(parseCidrNotation(domApply, false));
+            return loA;
+        } else if (functionID.endsWith("function:string-is-in")) {
+            AttributeValueExpression attributeValueExpression = castArgument(AttributeValueExpression.class, domApply);
+            String value = (String) attributeValueExpression.getAttributeValue().getValue();
+
+            DOMAttributeDesignator attributeDesignator = castArgument(DOMAttributeDesignator.class, domApply);
+            String name = attributeDesignator.getAttributeId().getUri().toString();
+
+            loA.getAttributes().add( new PdpAttribute(name, value));
+            return loA;
+        }
+        return parseArguments(loA, domApply.getArguments());
+    }
+
+    private <T> T castArgument(Class<T> clazz, DOMApply domApply) {
+        T t =
+            clazz.cast(StreamUtils.iteratorToList(domApply.getArguments()).stream()
+                .filter(expression -> clazz.isAssignableFrom(expression.getClass()))
+                .findFirst().get());
+        return clazz.cast(t);
+    }
+
+    private CidrNotation parseCidrNotation(DOMApply ipRange, boolean negate) {
+        String functionId = ipRange.getFunctionId().getUri().toString();
+        if (!functionId.equals(IP_FUNCTION)) {
+            throw new IllegalArgumentException("Expected IP_FUNCTION, but got " + functionId);
+        }
+        List<Expression> arguments = StreamUtils.iteratorToList(ipRange.getArguments());
+        Expression cidrNotationArgument = arguments.stream().filter(argument ->
+            argument instanceof AttributeValueExpression)
+            .findFirst().get();
+        String cidrNotation = (String) AttributeValueExpression.class.cast(cidrNotationArgument).getAttributeValue().getValue();
+        String[] splitted = cidrNotation.split("/");
+        return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]), negate);
     }
 
     private void parseDeny(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
@@ -116,14 +207,22 @@ public class PdpPolicyDefinitionParser {
         targetAnyOfs.forEach(anyOf -> {
             List<AllOf> targetAllOfs = iteratorToList(anyOf.getAllOfs());
             List<Match> targetMatches = targetAllOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(Collection::stream).collect(toList());
-            Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
+
+            Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase())
+                .getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
             if (spEntityID.isPresent()) {
                 definition.setServiceProviderId((String) spEntityID.get().getAttributeValue().getValue());
             }
             List<String> idpEntityIDs = targetMatches.stream().filter(match ->
                 ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(IDP_ENTITY_ID))
                 .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());
-            definition.setIdentityProviderIds(idpEntityIDs);
+            if (!idpEntityIDs.isEmpty()) {
+                definition.setIdentityProviderIds(idpEntityIDs);
+            }
+
+            Optional<Match> clientIdOptional = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase())
+                .getAttributeId().getUri().toString().equalsIgnoreCase(CLIENT_ID)).findFirst();
+            clientIdOptional.ifPresent(clientId -> definition.setClientId((String) clientId.getAttributeValue().getValue()));
         });
 
         if (definition.getServiceProviderId() == null) {

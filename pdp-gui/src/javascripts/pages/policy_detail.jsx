@@ -461,8 +461,8 @@ class PolicyDetail extends React.Component {
                         {regular && <AndOrRule policy={policy} toggleRule={this.handleChooseRule}/>}
                         {regular && this.renderAttributes(policy)}
                         {regular && this.renderDenyAdvice(policy)}
-                        {regular && this.renderDescription(policy)}
                         {!regular && this.renderLoAs(policy)}
+                        {this.renderDescription(policy)}
                         {this.renderActive(policy)}
                         {this.renderActions(policy)}
                     </div>

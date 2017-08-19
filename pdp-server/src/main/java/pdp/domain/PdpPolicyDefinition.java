@@ -45,6 +45,8 @@ public class PdpPolicyDefinition {
     private List<String> identityProviderIds = new ArrayList<>();
     private List<String> identityProviderNames = new ArrayList<>();
 
+    private String clientId;
+
     @Valid
     private List<PdpAttribute> attributes = new ArrayList<>();
 
@@ -210,6 +212,14 @@ public class PdpPolicyDefinition {
 
     public void setNumberOfRevisions(int numberOfRevisions) {
         this.numberOfRevisions = numberOfRevisions;
+    }
+
+    public String getClientId() {
+        return clientId;
+    }
+
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 
     @JsonProperty
