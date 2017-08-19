@@ -31,8 +31,6 @@ class PolicyDetailHelpStepEn extends React.Component {
 
                     <p>The attributes and their values actually define the LoA for a user.</p>
 
-                    <p>The value of an attribute may be a regular expression. Use .* to match any value.</p>
-
                     <h3>IP Ranges</h3>
 
                     <p>You can specify multiple IP addresses and their prefix to configure IP ranges. The IP
