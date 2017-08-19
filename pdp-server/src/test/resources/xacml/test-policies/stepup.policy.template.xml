@@ -74,7 +74,7 @@
         <ObligationExpressions>
             <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
-                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa1</AttributeValue>
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa3</AttributeValue>
                 </AttributeAssignmentExpression>
             </ObligationExpression>
         </ObligationExpressions>

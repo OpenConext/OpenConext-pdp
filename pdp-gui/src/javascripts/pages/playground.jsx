@@ -2,7 +2,7 @@ import React from "react";
 import I18n from "i18n-js";
 import isEmpty from "lodash/isEmpty";
 
-import {getIdentityProviders, getServiceProviders, getPolicies, getSamlAllowedAttributes, postPdpRequest} from "../api";
+import {getIdentityProviders, getPolicies, getSamlAllowedAttributes, getServiceProviders, postPdpRequest} from "../api";
 import determineStatus from "../utils/status";
 
 import SelectWrapper from "../components/select_wrapper";
@@ -19,6 +19,7 @@ class Playground extends React.Component {
         this.state = {
             identityProviders: [],
             serviceProviders: [],
+            clientId: "Federation",
             allowedSamlAttributes: [],
             policies: [],
             pdpRequest: {
@@ -48,13 +49,30 @@ class Playground extends React.Component {
             })[0];
             const idp = policy.identityProviderIds && policy.identityProviderIds.length > 0 ?
                 policy.identityProviderIds[0] : null;
+
+            const isReg = policy.type === "reg";
+            let attributes = [];
+            if (isReg) {
+                attributes = attributes.concat(policy.attributes);
+            } else {
+                policy.loas.forEach(loa => {
+                    attributes = attributes.concat(loa.attributes);
+                    loa.cidrNotations.forEach(notation => {
+                        attributes = attributes.concat([{
+                            name: "urn:mace:surfnet.nl:collab:xacml-attribute:ip-address",
+                            value: notation.ipAddress
+                        }]);
+                    });
+                });
+            }
             this.setState({
                 pdpRequest: {
                     ...this.state.pdpRequest,
                     selectedPolicy: newValue,
                     identityProviderId: idp,
                     serviceProviderId: policy.serviceProviderId,
-                    attributes: policy.attributes
+                    clientId: isReg ? "Federation" : "Stepup",
+                    attributes: attributes
                 }
             });
         }
@@ -93,16 +111,16 @@ class Playground extends React.Component {
         return function () {
             const idp = this.state.pdpRequest.identityProviderId;
             const sp = this.state.pdpRequest.serviceProviderId;
+            const clientId = this.state.pdpRequest.clientId;
             const decisionRequest = {
                 Request: {
-                    ReturnPolicyIdList: true,
-                    CombinedDecision: false,
                     AccessSubject: {Attribute: []},
                     Resource: {
-                        Attribute: [{AttributeId: "SPentityID", Value: sp}, {
-                            AttributeId: "IDPentityID",
-                            Value: idp
-                        }]
+                        Attribute: [
+                            {AttributeId: "SPentityID", Value: sp},
+                            {AttributeId: "IDPentityID", Value: idp},
+                            {AttributeId: "ClientID", Value: clientId},
+                        ]
                     }
                 }
             };
@@ -138,7 +156,7 @@ class Playground extends React.Component {
                     <p className="label before-em">{I18n.t("playground.policy")}</p>
                     <em className="label">{I18n.t("playground.policy_info")}</em>
                     <SelectWrapper
-                        defaultValue={ this.state.pdpRequest.selectedPolicy}
+                        defaultValue={this.state.pdpRequest.selectedPolicy}
                         placeholder={I18n.t("playground.policy_search")}
                         options={this.parsePolicies(this.state.policies)}
                         handleChange={this.handleChangePolicy.bind(this)}/>

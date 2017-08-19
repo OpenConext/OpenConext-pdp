@@ -32,7 +32,7 @@ public class PolicyConflictService {
 
     //if the two SP's are equal and there are overlapping IdP's or one policy has no IdP then there is a conflict
     private boolean conflict(PdpPolicyDefinition one, PdpPolicyDefinition two) {
-        return one.getServiceProviderId().equals(two.getServiceProviderId()) &&
+        return one.getType().equals(two.getType()) && one.getServiceProviderId().equals(two.getServiceProviderId()) &&
             (CollectionUtils.isEmpty(one.getIdentityProviderIds()) ||
                 CollectionUtils.isEmpty(two.getIdentityProviderIds()) ||
                 overlapping(one.getIdentityProviderIds(), two.getIdentityProviderIds()));

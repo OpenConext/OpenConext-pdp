@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pdp.ip.IPInfo;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +15,6 @@ public class CidrNotation {
     private String ipAddress;
     private int prefix;
     private boolean negate;
+    private IPInfo ipInfo;
 
 }

@@ -24,6 +24,7 @@ import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.util.StreamUtils;
+import pdp.web.IPAddressProvider;
 
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -40,15 +41,16 @@ import static pdp.util.StreamUtils.singletonCollector;
 /*
  * Thread-safe
  */
-public class PdpPolicyDefinitionParser {
+public class PdpPolicyDefinitionParser implements IPAddressProvider{
 
     private static final Logger LOG = LoggerFactory.getLogger(PdpPolicyDefinitionParser.class);
 
     public static final String SP_ENTITY_ID = "SPentityID";
     public static final String IDP_ENTITY_ID = "IDPentityID";
-    public static final String CLIENT_ID = "ClientID";
     public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
-    public static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
+
+    private static final String CLIENT_ID = "ClientID";
+    private static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
 
     public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
@@ -92,13 +94,16 @@ public class PdpPolicyDefinitionParser {
     private LoA parseStepRule(Rule rule) {
         LoA loa = new LoA();
 
-        AttributeValueExpression attributeValueExpression = AttributeValueExpression.class.cast(rule.getObligationExpressions().next().getAttributeAssignmentExpressions().next().getExpression());
+        AttributeValueExpression attributeValueExpression =
+            AttributeValueExpression.class.cast(rule.getObligationExpressions().next()
+                .getAttributeAssignmentExpressions().next().getExpression());
         String level = (String) attributeValueExpression.getAttributeValue().getValue();
         loa.setLevel(level);
 
         Condition condition = rule.getCondition();
         DOMApply domApply = DOMApply.class.cast(condition.getExpression());
-        boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString().endsWith("function:and");
+        boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
+            .endsWith("function:and");
         loa.setAllAttributesMustMatch(allAttributesMustMatch);
 
         this.parseArguments(loa, domApply.getArguments());
@@ -106,7 +111,7 @@ public class PdpPolicyDefinitionParser {
     }
 
     private LoA parseArguments(LoA loA, Iterator<Expression> iterator) {
-        List<Expression> expressions = StreamUtils.iteratorToList(iterator);
+        List<Expression> expressions = iteratorToList(iterator);
         expressions.forEach(expression -> {
             if (expression instanceof DOMApply) {
                 parseDomApply(loA, DOMApply.class.cast(expression));
@@ -138,11 +143,10 @@ public class PdpPolicyDefinitionParser {
     }
 
     private <T> T castArgument(Class<T> clazz, DOMApply domApply) {
-        T t =
-            clazz.cast(StreamUtils.iteratorToList(domApply.getArguments()).stream()
-                .filter(expression -> clazz.isAssignableFrom(expression.getClass()))
-                .findFirst().get());
-        return clazz.cast(t);
+        return clazz.cast(iteratorToList(domApply.getArguments())
+            .stream()
+            .filter(expression -> clazz.isAssignableFrom(expression.getClass()))
+            .findFirst().get());
     }
 
     private CidrNotation parseCidrNotation(DOMApply ipRange, boolean negate) {
@@ -150,13 +154,14 @@ public class PdpPolicyDefinitionParser {
         if (!functionId.equals(IP_FUNCTION)) {
             throw new IllegalArgumentException("Expected IP_FUNCTION, but got " + functionId);
         }
-        List<Expression> arguments = StreamUtils.iteratorToList(ipRange.getArguments());
+        List<Expression> arguments = iteratorToList(ipRange.getArguments());
         Expression cidrNotationArgument = arguments.stream().filter(argument ->
             argument instanceof AttributeValueExpression)
             .findFirst().get();
         String cidrNotation = (String) AttributeValueExpression.class.cast(cidrNotationArgument).getAttributeValue().getValue();
         String[] splitted = cidrNotation.split("/");
-        return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]), negate);
+        return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]), negate,
+            getIpInfo(splitted[0], Integer.parseInt(splitted[1])));
     }
 
     private void parseDeny(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
@@ -210,9 +215,9 @@ public class PdpPolicyDefinitionParser {
 
             Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase())
                 .getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
-            if (spEntityID.isPresent()) {
-                definition.setServiceProviderId((String) spEntityID.get().getAttributeValue().getValue());
-            }
+
+            spEntityID.ifPresent(match -> definition.setServiceProviderId((String) match.getAttributeValue().getValue()));
+
             List<String> idpEntityIDs = targetMatches.stream().filter(match ->
                 ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(IDP_ENTITY_ID))
                 .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());

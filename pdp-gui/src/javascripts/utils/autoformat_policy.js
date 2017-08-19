@@ -37,7 +37,7 @@ const AutoFormat = {
             return "";
         }
         const lines = passedCidrNotations.map((notation, index) => {
-            let res = (index === 0 && hasAttributes) ? (allAttributesMustMatch ? " and" : " or") : "";
+            const res = (index === 0 && hasAttributes) ? (allAttributesMustMatch ? " and" : " or") : "";
             const negate = notation.negate ? "not " : "";
             return res + " with an IP address " + negate + "in the range " + this.addQuotes(notation.ipAddress + "/" + notation.prefix);
         });

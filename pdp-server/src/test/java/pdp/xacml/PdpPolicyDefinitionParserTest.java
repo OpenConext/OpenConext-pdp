@@ -53,6 +53,7 @@ public class PdpPolicyDefinitionParserTest {
             String xml = IOUtils.toString(new ClassPathResource("xacml/invalid-policies/" + name).getInputStream());
             policy.setPolicyXml(xml);
             policy.setName(name);
+            policy.setType("reg");
             return policy;
         } catch (IOException e) {
             throw new RuntimeException(e);

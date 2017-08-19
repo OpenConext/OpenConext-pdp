@@ -253,7 +253,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
         assertEquals(1, obligations.size());
 
         Obligation obligation = obligations.iterator().next();
-        assertEquals("http://localhost/assurance/loa2",
+        assertEquals("http://localhost/assurance/loa3",
             obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
     }
 

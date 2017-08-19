@@ -23,7 +23,7 @@ import java.util.function.Function;
 import static java.util.stream.Collectors.toMap;
 
 @RestController
-public class ValidationController {
+public class ValidationController implements IPAddressProvider {
 
     private final Map<String,Validator> validators;
 
@@ -46,14 +46,7 @@ public class ValidationController {
         if (!validation(new Validation("ip", ipAddress))) {
             return new IPInfo();
         }
-        InetAddress address = InetAddress.getByName(ipAddress);
-        boolean isIpv4 = address instanceof Inet4Address;
-        if (networkPrefix == null) {
-            networkPrefix = isIpv4 ? 24 : 64;
-        }
-        CIDRUtils cidrUtils = new CIDRUtils(ipAddress.concat("/").concat(networkPrefix.toString()));
-        int byteSize = isIpv4 ? 32 : 128;
-        double capacity = Math.pow(2, byteSize - networkPrefix);
-        return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(),capacity, isIpv4, networkPrefix);
+        return getIpInfo(ipAddress, networkPrefix);
     }
+
 }

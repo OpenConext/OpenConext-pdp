@@ -345,6 +345,7 @@ public class PdpPolicyDefinition {
         definition.setServiceProviderId(serviceProviderId);
         definition.setServiceProviderName(serviceProviderId);
         definition.setIdentityProviderIds(identityProvidersIds);
+        definition.setType("reg");
         return definition;
     }
 
