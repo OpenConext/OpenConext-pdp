@@ -1,153 +1,60 @@
 import React from "react";
 import I18n from "i18n-js";
 import moment from "moment";
+import "jsondiffpatch/public/formatters-styles/html.css";
 
-import groupBy from "lodash/groupBy";
-import transform from "lodash/transform";
-import values from "lodash/values";
-import map from "lodash/map";
-import difference from "lodash/difference";
-import isArray from "lodash/isArray";
+import {DiffPatcher} from "jsondiffpatch/src/diffpatcher";
+import HtmlFormatter from "jsondiffpatch/src/formatters/html";
 
 import PolicyRevisionsHelpNl from "../help/policy_revisions_help_nl";
 import PolicyRevisionsHelpEn from "../help/policy_revisions_help_en";
 
 import {getRevisions} from "../api";
 
+const ignoreInDiff = ["created", "id", "revisionNbr", "actionsAllowed", "activatedSr", "numberOfRevisions", "numberOfViolations"];
+
 class PolicyRevisions extends React.Component {
 
     constructor() {
         super();
-
         this.state = {data: [], revisions: []};
+        this.differ = new DiffPatcher();
     }
 
     componentWillMount() {
         getRevisions(this.props.params.id).then(revisions => this.setState({revisions}));
     }
 
-    renderAttributesDiff(prev, curr) {
-        const attrPrevGrouped = groupBy(prev.attributes, attr => attr.name);
-
-        const attrCurrGrouped = groupBy(curr.attributes, attr => attr.name);
-
-        const attrResult = transform(attrCurrGrouped, (result, attributes, attrName) => {
-            if (attrPrevGrouped.hasOwnProperty(attrName)) {
-                //find out the diff in values
-                const prevValues = map(attrPrevGrouped[attrName], "value");
-                const currValues = map(attributes, "value");
-
-                const deleted = difference(prevValues, currValues).map(deletedValue => {
-                    return {value: deletedValue, status: "prev"};
-                });
-                const added = difference(currValues, prevValues).map(addedValue => {
-                    return {value: addedValue, status: "curr"};
-                });
-                const unchanged = currValues.filter(value => prevValues.indexOf(value) !== -1)
-                    .map(unchangedValue => {
-                        return {value: unchangedValue, status: "no-change"};
-                    });
-                const newValues = deleted.concat(added).concat(unchanged);
-                const anyValuesChanged = newValues.filter(val => val.status === "prev" || val.status === "curr").length > 0;
-
-                result[attrName] = {values: newValues, status: "no-change", anyValuesChanged: anyValuesChanged};
-            } else {
-                // these are the added attributes that are in curr and not in prev
-                result[attrName] = {
-                    values: attributes.map(attribute => {
-                        return {value: attribute.value, status: "curr"};
-                    }), status: "curr"
-                };
-            }
-
-        });
-        const prevNames = Object.keys(attrPrevGrouped);
-
-        // add the deleted attributes that are in prev and not in curr
-        prevNames.forEach(name => {
-            if (!attrResult.hasOwnProperty(name)) {
-                attrResult[name] = {
-                    values: attrPrevGrouped[name].map(attribute => {
-                        return {value: attribute.value, status: "prev"};
-                    }), status: "prev"
-                };
-            }
-        });
-        const attributesUnchanged = values(attrResult).filter(attribuut => (attribuut.status === "prev" || attribuut.status === "curr") && attribuut.values.filter(value =>
-                value.value === "prev" || value.value === "curr"
-                ).length === 0
-            ).length === 0;
-        const attributeNames = Object.keys(attrResult);
-        return (
-            <div key="diff">
-                <div
-                    className={"diff-element " + (attributesUnchanged ? "no-change" : "changed")}>
-                    <p className="label">{I18n.t("revisions.attributes")}</p>
-                    {
-                        attributeNames.map(attributeName => {
-                            return (
-                                <div key={attributeName}>
-                                    <div className="attribute-container">
-                                        <span
-                                            className={"diff " + attrResult[attributeName].status}>{attributeName}</span>
-                                    </div>
-                                    <div
-                                        className={"attribute-values-container " + (attrResult[attributeName].status === "no-change"
-                                        && attrResult[attributeName].anyValuesChanged ? "diff-element changed" : "")}>
-                                        <p className="label">{I18n.t("policy_attributes.values")}</p>
-                                        {
-                                            attrResult[attributeName].values.map(value => {
-                                                return (
-                                                    <div className="value-container"
-                                                         key={attributeName + "-" + attrResult[attributeName].status + "-" + value.value + "-" + value.status}>
-                                                        <span className={"diff " + value.status}>{value.value}</span>
-                                                    </div>
-                                                );
-                                            })
-                                        }
-                                    </div>
-                                </div>);
-                        })
-                    }
-                </div>
-                <div className="diff-element-seperator"></div>
-            </div>);
-    }
-
     renderDiff(passedPrev, curr) {
         let prev = passedPrev;
-        const properties = ["name", "description", "denyRule", "serviceProviderName", "identityProviderNames",
-            "allAttributesMustMatch", "attributes", "denyAdvice", "denyAdviceNl", "active"
-        ];
         //means someone if looking at the first initial revision
         if (!prev) {
             prev = {attributes: []};
         }
 
-        const renderPropertyDiff = function (prev, curr, name) {
-            if (name === "attributes") {
-                return this.renderAttributesDiff(prev, curr);
-            }
-            return (
-                <div key={name}>
-                    <div className={"diff-element " + this.classNamePropertyDiff(prev[name], curr[name])}>
-                        <p className="label">{I18n.t("revisions." + name)}</p>
-                        {this.renderPropertyDiff(prev[name], curr[name])}
-                    </div>
-                    <div className="diff-element-seperator"></div>
-                </div>
-            );
-        }.bind(this);
-
         return (
             <section>
                 {this.renderTopDiff(prev, curr)}
-                <div className="form-element about">
-                    <div className="diff-panel">{ properties.map(prop => renderPropertyDiff(prev, curr, prop)) }</div>
+                <div className="form-element">
+                    <div className="diff-panel">
+                        {this.renderDiffsBetweenCurrentAndPrevious(curr, prev)}
+                    </div>
                 </div>
             </section>
         );
     }
+
+    renderDiffsBetweenCurrentAndPrevious = (curr, previous) => {
+        const rev = {...curr};
+        ignoreInDiff.forEach(ignore => delete rev[ignore]);
+        const prev = {...previous};
+        ignoreInDiff.forEach(ignore => delete prev[ignore]);
+
+        const delta = this.differ.diff(prev, rev);
+        const html = HtmlFormatter.format(delta, prev);
+
+        return delta ? <p dangerouslySetInnerHTML={{__html: html}}/> : <p>{I18n.t("revisions.identical")}</p>;
+    };
 
     renderTopDiff(prev, curr) {
         if (prev.revisionNbr !== undefined && prev.revisionNbr !== curr.revisionNbr) {
@@ -179,28 +86,6 @@ class PolicyRevisions extends React.Component {
             }}>
             </div>
         );
-    }
-
-    renderPropertyDiff(prev, curr) {
-        const previous = isArray(prev) ? prev.join(", ") : prev;
-        const current = isArray(curr) ? curr.join(", ") : curr;
-        if (previous === current) {
-            return (<span className="diff no-change">{current.toString()}</span>);
-        } else if (previous === undefined) {
-            return <span className="diff curr">{current.toString()}</span>;
-        }
-        return (
-            <div>
-                <span className="diff prev">{previous.toString()}</span>
-                <span className="diff curr">{current.toString()}</span>
-            </div>
-        );
-    }
-
-    classNamePropertyDiff(prev, curr) {
-        const previous = isArray(prev) ? prev.join(", ") : prev;
-        const current = isArray(curr) ? curr.join(", ") : curr;
-        return previous !== current ? "changed" : "no-change";
     }
 
     handleCompare(revision) {

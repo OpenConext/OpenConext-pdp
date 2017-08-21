@@ -172,7 +172,8 @@ I18n.translations.en = {
         denyAdviceNl: "Deny message in Dutch",
         active: "Active",
         changes_info_html: "Showing the changes between <span class=\"prev\"> revision number {{prevRevisionNbr}}</span> and <span class=\"curr\">revision number {{currRevisionNbr}}</span> made by {{userDisplayName}} from {{authenticatingAuthorityName}} on {{createdDate}}.",
-        changes_first_html: "This is the first <span class=\"curr\">initial revision {{currRevisionNbr}}</span> created by {{userDisplayName}} from {{authenticatingAuthorityName}} on {{createdDate}}."
+        changes_first_html: "This is the first <span class=\"curr\">initial revision {{currRevisionNbr}}</span> created by {{userDisplayName}} from {{authenticatingAuthorityName}} on {{createdDate}}.",
+        identical: "This revision is identical to the previous revision"
     },
     policy_attributes: {
         attribute_value_placeholder: "Attribute value...",
