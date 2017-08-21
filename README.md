@@ -62,12 +62,6 @@ To run locally:
 
 Browse to the [application homepage](http://localhost:8001/).
 
-### foreman
-
-For ruby users you can start everything at once with:
-
-    foreman start
-
 ## Testing
 
 There are (slow) integration tests for PdpApplication where various decisions are tested against a full-blown running Spring app. See [PdpEngineTest](pdp-server/src/test/java/pdp/PdpEngineTest.java)
@@ -106,9 +100,11 @@ Read this [section](Security.md) for a in-depth security overview.
 The policies that can be created are limited in functionality:
 
 * All string comparisons are `urn:oasis:names:tc:xacml:1.0:function:string-equal`
-* Every policy has exactly one Permit rule and one Deny rule
+* Every Federation policy has exactly one Permit rule and one Deny rule
+* Every Stepup policy has multiple Permits rules and no Deny rule
 * The target of the policy is limited to exactly one SPENtityID and zero or more IDPEntityIDs
-* A policy is either a Deny policy or a Permit policy
+* A Federation policy is either a Deny policy or a Permit policy
+* A Stepup policy is always a Permit policy with one final / last Permit without any obligation
 * All policies have a RuleCombiningAlgId of `urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable`
 * All attributes with the same name are treated with the logical OR operator
 * All attributes with a different name are exclusively treated with the logical OR or AND operator depending on the type of policy

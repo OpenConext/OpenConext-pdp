@@ -183,6 +183,23 @@ class Playground extends React.Component {
         );
     }
 
+    renderClientId(pdpRequest) {
+        const workflow = isEmpty(pdpRequest.serviceProviderId) ? "failure" : "success";
+        return (
+            <div>
+                <div className={"form-element split " + workflow}>
+                    <p className="label">{I18n.t("policies.serviceProviderId")}</p>
+                    <SelectWrapper
+                        defaultValue={pdpRequest.serviceProviderId}
+                        placeholder={I18n.t("policy_detail.sp_placeholder")}
+                        options={this.parseEntities(this.state.serviceProviders)}
+                        handleChange={this.handleChangeServiceProvider.bind(this)}/>
+                </div>
+                <div className="bottom"></div>
+            </div>
+        );
+    }
+
     renderIdentityProvider(pdpRequest) {
         const workflow = isEmpty(pdpRequest.identityProviderId) ? "failure" : "success";
         return (

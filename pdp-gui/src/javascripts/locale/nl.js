@@ -73,8 +73,10 @@ I18n.translations.nl = {
     },
 
     policy_detail: {
-        update_policy: "Bijwerken autorisatieregel",
-        create_policy: "Nieuwe autorisatieregel",
+        update_policy_reg: "Bijwerken autorisatieregel",
+        create_policy_reg: "Nieuwe autorisatieregel",
+        update_policy_step: "Bijwerken Stepup autorisatieregel",
+        create_policy_step: "Nieuwe Stepup autorisatieregel",
         confirmation: "Weet je zeker dat je deze pagina wilt sluiten?",
         name: "Naam",
         description: "Omschrijving",
@@ -176,6 +178,19 @@ I18n.translations.nl = {
             "one": "{{count}} dag",
             "other": "{{count}} dagen"
         }
+    },
+    policy_loas: {
+        loa: "Level of Assurance",
+        new_loa: "Toevoegen nieuwe LoA...",
+        and_or_rule: "Een AND regel vereist dat alle attributen matchen. Een OR regel vereist slechts de match van een enkel attribuut."
+    },
+    policy_cidr: {
+        add_cidr: "Toevoegen nieuwe IP range",
+        capacity: "Capaciteit: ",
+        broadcastAddress: "Broadcast adres: ",
+        networkAddress: "Netwerk adres: ",
+        invalid: "Ongeldig IP address",
+        negate: "Negatie"
     },
     identity: {
         title: "Identiteitsimpersonatie",

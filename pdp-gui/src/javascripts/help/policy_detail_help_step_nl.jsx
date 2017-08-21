@@ -4,49 +4,55 @@ class PolicyDetailHelpStepEn extends React.Component {
     render() {
         return (
             <div className="form-element about">
-                <h1>How to create Stepup-Gateway Policies?</h1>
+                <h1>Hoe maak je Stepup-Gateway autorisatieregels?</h1>
 
-                <p>Access policies for the Stepup-Gateway define the Level of Assurance (LoA) for a user when he / she tries to login.
-                    The decision which LoA to enforce is based on the user attributes provided by the Institution and other attribute providers.</p>
+                <p>Autorisatieregels voor de Stepup-Gateway bepalen het Level of Assurance (LoA) voor gebruikers als zij inloggen op OpenConext.
+                    De keuze welke LoA toe te passen wordt bepaald door de attributen van de gebruiker - eventueel inclusief het IP adres - zoals
+                    deze zijn vrijgegeven door de Identity Provider.</p>
 
-                <h2>Service</h2>
+                <h2>Dienst</h2>
 
-                <p>The Service determines for which Service this policy applies. You can only link policies to one
-                    Service</p>
+                <p>De dienst bepaalt op welke Service Provider deze autorisatieregel van toepassing is. Er kan precies
+                    één dienst gekoppeld zijn aan een autorisatieregel.</p>
 
-                <h2>Institution</h2>
+                <h2>Instelling</h2>
 
-                <p>The Institution determines for which Institution this policy applies. The Institution in this context
-                    is the Identity Provider which authenticated the user. You can link policies to zero or more Institutions</p>
+                <p>De instelling bepaalt voor welke instelling deze autorisatieregel van toepassing is. De instelling in
+                    deze context
+                    is de 'Identity Provider' die de gebruiker heeft geauthenticeerd. Je kunt nul of meer instellingen
+                    koppelen aan een autorisatieregel.</p>
 
                 <h2>Level of Assurance</h2>
-                <p>You can define multple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
-                of a LoA will determine of the specified LoA is enforced by the Stepup-Gateway</p>
 
-                <h3>Rule</h3>
-                <p>The AND / OR rule specified if all the attributes defined for a LoA must match the attributes of the user or that one
-                    match is sufficient for a 'Match'</p>
+                <p>Je kan meerdere LoA's configureren voor een autorisatieregel. Elke LoA zal worden vertaald naar een XACML rule. De attributen
+                    van een LoA bepalen of deze wordt toegepast door de Stepup-Gateway</p>
 
-                <h3>Attributes</h3>
+                <section className="sub-form">
+                    <h3>Autorisatieregel</h3>
+                    <p>De EN / OF keuze bepaalt of alle attributen moeten matchen (=EN) of dat een enkele match voldoende is (=OF).</p>
 
-                <p>The attributes and their values actually define the LoA for a user.</p>
+                    <h3>Attributen</h3>
 
-                <p>The value of an attribute may be a regular expression. Use .* to match any value.</p>
+                    <p>De attributen en de waardes bepalen welke LoA zal worden toegepast.</p>
 
-                <h3>IP Ranges</h3>
+                    <h3>IP Ranges</h3>
 
-                <p>You can specify multiple IP addresses and their prefix to configure IP ranges. The IP
-                address of the user is matched against the range and based on the negation the LoA is choosen or not.</p>
-                <p>Multiple IP ranges within in LoA always are defined as logical OR.</p>
+                    <p>Je kan meerdere IP adressen / prefixes configuren. PDP zal het IP
+                        adres van een gebruiker toetsen aan de range en afhankelijk van de negatie wordt de LoA toegepast. De checkbox 'negatie'
+                        is een logische NOT voor een IP range.</p>
 
-                <h3>Group name authorization</h3>
+                    <p>Meerdere IP ranges binnen een LoA resulteren altijd in een logische OR.</p>
 
-                <p>Special care must be taken when you choose <em>urn:collab:group:surfteams.nl</em> as a required
-                    attribute.
-                    The value must be the fully qualified group name where the user is a member of. Please consult the
-                    responsible
-                    technical product manager how to retrieve the fully qualified name of a certain group / team.</p>
+                    <h3>Autorisatie op teamnaam</h3>
 
+                    <p>Let op als je het attribuut <em>urn:collab:group:surfteams.nl</em> kiest. De waarde(s) van dit
+                        attribuut
+                        moeten de geldige en volledige ID zijn van een team in SURFconext Teams. Neem contact op met
+                        SURFconext support
+                        als je twijfelt over de juiste waarde.</p>
+
+
+                </section>
             </div>
         );
     }

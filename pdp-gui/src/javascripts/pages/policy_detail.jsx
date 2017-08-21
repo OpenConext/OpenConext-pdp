@@ -66,7 +66,12 @@ class PolicyDetail extends React.Component {
                 this.setState({policy});
             });
         } else {
-            getPolicy(this.props.params.id).then(policy => this.setState({policy, type: policy.type}));
+            getPolicy(this.props.params.id).then(policy => {
+                this.setState({policy, type: policy.type});
+                if (policy.type === "step") {
+                    getAllowedLoas().then(allowedLoas => this.setState({allowedLoas}));
+                }
+            });
         }
 
         getScopedIdentityProviders().then(identityProviders => this.setState({identityProviders}));

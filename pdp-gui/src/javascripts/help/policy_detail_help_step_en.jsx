@@ -20,21 +20,25 @@ class PolicyDetailHelpStepEn extends React.Component {
                     is the Identity Provider which authenticated the user. You can link policies to zero or more Institutions</p>
 
                 <h2>Level of Assurance</h2>
+
                 <p>You can define multple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
                 of a LoA will determine of the specified LoA is enforced by the Stepup-Gateway</p>
+
                 <section className="sub-form">
                     <h3>Rule</h3>
-                    <p>The AND / OR rule specified if all the attributes defined for a LoA must match the attributes of the user or that one
+                    <p>The AND / OR rule decides if all the attributes defined for a LoA must match the attributes of the user or that one
                         match is sufficient for a 'Match'</p>
 
                     <h3>Attributes</h3>
 
-                    <p>The attributes and their values actually define the LoA for a user.</p>
+                    <p>The attributes and their values determine which LoA is enforced for a user.</p>
 
                     <h3>IP Ranges</h3>
 
                     <p>You can specify multiple IP addresses and their prefix to configure IP ranges. The IP
-                        address of the user is matched against the range and based on the negation the LoA is choosen or not.</p>
+                        address of the user is matched against the range and based on the negation the LoA is enforced or not. The checkbox 'negation'
+                    is a logical NOT for the IP range.</p>
+
                     <p>Multiple IP ranges within in LoA always are defined as logical OR.</p>
 
                     <h3>Group name authorization</h3>

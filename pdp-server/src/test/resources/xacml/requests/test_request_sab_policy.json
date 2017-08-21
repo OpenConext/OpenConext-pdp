@@ -1,7 +1,5 @@
 {
   "Request": {
-    "ReturnPolicyIdList": true,
-    "CombinedDecision": false,
     "AccessSubject": {
       "Attribute": [
         {
@@ -19,6 +17,10 @@
         {
           "AttributeId": "IDPentityID",
           "Value": "does_not_matter"
+        },
+        {
+          "AttributeId": "ClientID",
+          "Value": "Federation"
         }
       ]
     }
