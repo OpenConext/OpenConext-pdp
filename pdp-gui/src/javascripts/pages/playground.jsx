@@ -19,7 +19,7 @@ class Playground extends React.Component {
         this.state = {
             identityProviders: [],
             serviceProviders: [],
-            clientId: "Federation",
+            clientId: "EngineBlock",
             allowedSamlAttributes: [],
             policies: [],
             pdpRequest: {
@@ -71,7 +71,7 @@ class Playground extends React.Component {
                     selectedPolicy: newValue,
                     identityProviderId: idp,
                     serviceProviderId: policy.serviceProviderId,
-                    clientId: isReg ? "Federation" : "Stepup",
+                    clientId: isReg ? "EngineBlock" : "Stepup",
                     attributes: attributes
                 }
             });

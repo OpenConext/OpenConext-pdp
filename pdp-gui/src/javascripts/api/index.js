@@ -88,6 +88,10 @@ export function getIdentityProviders() {
     return fetchJson("/internal/identityProviders");
 }
 
+export function getLoasStats() {
+    return fetchJson("/internal/loas-stats");
+}
+
 export function getScopedIdentityProviders() {
     return fetchJson("/internal/identityProviders/scoped");
 }

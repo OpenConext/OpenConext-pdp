@@ -25,7 +25,7 @@ const QueryParameter = {
     hashToSearch: function (h) {
         let search = "?";
         for (const k in h) {
-            if (k.hasOwnProperty(h)) {
+            if (h.hasOwnProperty(k)) {
                 for (let i = 0; i < h[k].length; i++) {
                     search += search === "?" ? "" : "&";
                     search += encodeURIComponent(k) + "=" + encodeURIComponent(h[k][i]);

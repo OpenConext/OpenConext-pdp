@@ -31,8 +31,9 @@ I18n.translations.nl = {
 
     navigation: {
         policies: "Autorisatieregels",
-        violations: "Ongeautoriseerde logins",
+        violations: "Weigeringen",
         conflicts: "Conflicten",
+        loas: "Loa's",
         decisions: "Statistieken",
         playground: "Playground",
         my_idp: "Mijn instelling",
@@ -58,6 +59,9 @@ I18n.translations.nl = {
         flash_deleted: "verwijderd",
         confirmation: "Weet je zeker dat je autorisatieregel {{policyName}} wilt verwijderen?",
         edit: "Bewerk",
+        type: "Type",
+        type_reg: "EB",
+        type_step: "Stepup",
         delete: "Verwijder"
     },
 
@@ -110,7 +114,7 @@ I18n.translations.nl = {
     },
 
     violations: {
-        search: "Zoek ongeautoriseerde logins...",
+        search: "Zoek weigeringen...",
         policyName: "Naam van de regel: ",
         table: {
             sp_idp: "Instelling en Dienst",
@@ -185,11 +189,16 @@ I18n.translations.nl = {
         new_loa: "Toevoegen nieuwe LoA...",
         and_or_rule: "Een AND regel vereist dat alle attributen matchen. Een OR regel vereist slechts de match van een enkel attribuut."
     },
+    loas: {
+        policy_id: "Naam",
+        search: "Zoek regels"
+    },
+
     policy_cidr: {
         add_cidr: "Toevoegen nieuwe IP range",
-        capacity: "Capaciteit: ",
-        broadcastAddress: "Broadcast adres: ",
-        networkAddress: "Netwerk adres: ",
+        capacity: "Nbr of IPs: ",
+        broadcastAddress: "Ondergrens IP adres: ",
+        networkAddress: "Bovengrens IP adres: ",
         invalid: "Ongeldig IP address",
         negate: "Negatie"
     },

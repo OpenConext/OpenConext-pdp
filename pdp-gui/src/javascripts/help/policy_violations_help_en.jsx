@@ -4,7 +4,7 @@ class PolicyViotaltionsHelpEn extends React.Component {
     render() {
         return (
             <div className="form-element about">
-                <h1>What are unauthorized logins?</h1>
+                <h1>What are denies?</h1>
 
                 <p>Every time a negative decision is sent back from the Policy Decision Point (PDP) to the Policy
                     Enforcement

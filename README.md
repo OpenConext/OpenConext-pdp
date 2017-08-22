@@ -100,10 +100,10 @@ Read this [section](Security.md) for a in-depth security overview.
 The policies that can be created are limited in functionality:
 
 * All string comparisons are `urn:oasis:names:tc:xacml:1.0:function:string-equal`
-* Every Federation policy has exactly one Permit rule and one Deny rule
+* Every EngineBlock policy has exactly one Permit rule and one Deny rule
 * Every Stepup policy has multiple Permits rules and no Deny rule
 * The target of the policy is limited to exactly one SPENtityID and zero or more IDPEntityIDs
-* A Federation policy is either a Deny policy or a Permit policy
+* A EngineBlock policy is either a Deny policy or a Permit policy
 * A Stepup policy is always a Permit policy with one final / last Permit without any obligation
 * All policies have a RuleCombiningAlgId of `urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable`
 * All attributes with the same name are treated with the logical OR operator

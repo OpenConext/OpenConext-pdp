@@ -170,10 +170,10 @@ class PolicyDetail extends React.Component {
             invalid = isEmpty(policy.loas) || invalidNotations || invalidLoas || emptyLoaAttributes;
         } else {
             invalid = isEmpty(policy.attributes) || emptyAttributes.length > 0 || isEmpty(policy.denyAdvice)
-                || isEmpty(policy.denyAdviceNl) || isEmpty(description);
+                || isEmpty(policy.denyAdviceNl) ;
         }
 
-        const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderId) || invalid;
+        const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderId) || isEmpty(description) || invalid;
         return !result;
     }
 

@@ -13,9 +13,13 @@ import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.Policy;
+import org.apache.openaz.xacml.pdp.std.StdFunctionDefinitionFactory;
+import org.apache.openaz.xacml.std.StdMutableRequest;
+import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
+import org.apache.openaz.xacml.util.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +29,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.support.TaskUtils;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +41,6 @@ import org.springframework.web.bind.annotation.RestController;
 import pdp.JsonMapper;
 import pdp.PdpPolicyException;
 import pdp.PolicyNotFoundException;
-import pdp.access.FederatedUser;
 import pdp.access.PolicyAccess;
 import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.conflicts.PolicyConflictService;
@@ -60,14 +63,16 @@ import pdp.xacml.PolicyTemplateEngine;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -156,6 +161,8 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         Request request = JSONRequest.load(payload);
         addStatsDetails(stats, request);
 
+        returnPolicyIdInList(request);
+
         Response pdpResponse = isPlayground ? playgroundPdpEngine.decide(request) : pdpEngine.decide(request);
 
         String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
@@ -164,10 +171,28 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         stats.setResponseTimeMs(took);
         LOG.debug("decide response: {} took: {} ms", response, took);
 
-        Decision decision = reportPolicyViolation(pdpResponse, response, payload, isPlayground);
-        stats.setDecision(decision.toString());
+        reportPossiblePolicyViolation(pdpResponse, response, payload, isPlayground);
+        provideStatsContext(stats, pdpResponse);
 
         return response;
+    }
+
+    private void returnPolicyIdInList(Request request) {
+        StdRequest.class.cast(request);
+        Field field = ReflectionUtils.findField(Wrapper.class, "wrappedObject");
+        ReflectionUtils.makeAccessible(field);
+        StdMutableRequest.class.cast(ReflectionUtils.getField(field, request)).setReturnPolicyIdList(true);
+    }
+
+    private void provideStatsContext(StatsContext stats, Response pdpResponse) {
+        Result result = pdpResponse.getResults().iterator().next();
+        stats.setDecision(result.getDecision().toString());
+
+        Optional<String> optionalLoa = getOptionalLoa(pdpResponse);
+        optionalLoa.ifPresent(loa -> stats.setLoa(loa));
+
+        Optional<IdReference> optionalPolicyId = getPolicyId(result);
+        optionalPolicyId.ifPresent(policyId -> stats.setPolicyId(policyId.getId().getUri().toString()));
     }
 
     @RequestMapping(method = OPTIONS, value = "/protected/policies")
@@ -367,28 +392,35 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         return attribute.map(attr -> (String) attr.getValues().iterator().next().getValue());
     }
 
-    private Decision reportPolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
+    private void reportPossiblePolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
         Collection<Result> results = pdpResponse.getResults();
 
-        List<Result> deniesOrIndeterminates = results.stream().filter(result ->
-            result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).collect(toList());
-        if (!CollectionUtils.isEmpty(deniesOrIndeterminates)) {
-            Optional<IdReference> idReferenceOptional = getPolicyId(deniesOrIndeterminates);
-            if (idReferenceOptional.isPresent()) {
-                String policyId = idReferenceOptional.get().getId().stringValue();
+        Optional<Result> deniesOrIndeterminate = results.stream().filter(result ->
+            result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).findAny();
+        deniesOrIndeterminate.ifPresent(result -> {
+            Optional<IdReference> idReferenceOptional = getPolicyId(result);
+            idReferenceOptional.ifPresent(idReference -> {
+                String policyId = idReference.getId().stringValue();
                 Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true);
-                if (policyOptional.isPresent()) {
-                    pdpPolicyViolationRepository.save(new PdpPolicyViolation(policyOptional.get(), payload, response, isPlayground));
-                }
-            }
-        }
-        return results.iterator().next().getDecision();
+                policyOptional.ifPresent(policy -> {
+                    pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, payload, response, isPlayground));
+                });
+            });
+        });
     }
 
-    private Optional<IdReference> getPolicyId(List<Result> deniesOrIndeterminates) {
-        Result result = deniesOrIndeterminates.get(0);
-        Collection<IdReference> policyIdentifiers = result.getPolicyIdentifiers();
-        Collection<IdReference> policySetIdentifiers = result.getPolicySetIdentifiers();
+    private Optional<String> getOptionalLoa(Response pdpResponse) {
+        return pdpResponse.getResults().stream().map(result -> result.getObligations().stream()
+            .map(obligation -> obligation.getAttributeAssignments().stream()
+                .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
+            .flatMap(Function.identity())
+            .flatMap(Function.identity())
+            .max(Comparator.naturalOrder());
+    }
+
+    private Optional<IdReference> getPolicyId(Result deniesOrIndeterminate) {
+        Collection<IdReference> policyIdentifiers = deniesOrIndeterminate.getPolicyIdentifiers();
+        Collection<IdReference> policySetIdentifiers = deniesOrIndeterminate.getPolicySetIdentifiers();
         return !CollectionUtils.isEmpty(policyIdentifiers) ?
             policyIdentifiers.stream().collect(singletonOptionalCollector()) :
             policySetIdentifiers.stream().collect(singletonOptionalCollector());

@@ -114,10 +114,11 @@ class PolicyCidrs extends React.Component {
             <span className="label">{I18n.t("policy_cidr.broadcastAddress")}</span>
             <span>{ipInfo.broadcastAddress}</span>
         </div>
+        {ipInfo.ipv4 &&
         <div>
             <span className="label">{I18n.t("policy_cidr.capacity")}</span>
             <span>{parseInt(ipInfo.capacity).toLocaleString("nl")}</span>
-        </div>
+        </div>}
     </section>;
 
     getPrefixes = notation => {

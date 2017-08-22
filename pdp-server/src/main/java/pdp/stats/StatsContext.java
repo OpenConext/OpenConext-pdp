@@ -1,9 +1,14 @@
 package pdp.stats;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.openaz.xacml.api.IdReference;
+
 import java.util.HashMap;
 import java.util.Map;
 
-
+@Getter
+@Setter
 public class StatsContext {
 
     private String serviceProvicer;
@@ -11,44 +16,11 @@ public class StatsContext {
     private long responseTimeMs;
     private Map<String, Long> pipResponses = new HashMap<>();
     private String decision;
-
-    public String getServiceProvicer() {
-        return serviceProvicer;
-    }
-
-    public void setServiceProvicer(String serviceProvicer) {
-        this.serviceProvicer = serviceProvicer;
-    }
-
-    public String getIdentityProvider() {
-        return identityProvider;
-    }
-
-    public void setIdentityProvider(String identityProvider) {
-        this.identityProvider = identityProvider;
-    }
-
-    public long getResponseTimeMs() {
-        return responseTimeMs;
-    }
-
-    public void setResponseTimeMs(long responseTimeMs) {
-        this.responseTimeMs = responseTimeMs;
-    }
-
-    public String getDecision() {
-        return decision;
-    }
-
-    public void setDecision(String decision) {
-        this.decision = decision;
-    }
-
-    public Map<String, Long> getPipResponses() {
-        return pipResponses;
-    }
+    private String loa;
+    private String policyId;
 
     public void addPipResponse(String name, long ms) {
         this.pipResponses.put(name, ms);
     }
+
 }

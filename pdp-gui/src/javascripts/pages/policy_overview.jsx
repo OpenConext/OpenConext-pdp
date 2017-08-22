@@ -45,7 +45,7 @@ class PolicyOverview extends React.Component {
             },
             columnDefs: [
                 {targets: [3, 6], orderDataType: "dom-checkbox"},
-                {targets: [8], orderable: false}
+                {targets: [9], orderable: false}
             ]
         });
 
@@ -85,10 +85,12 @@ class PolicyOverview extends React.Component {
     }
 
     renderViolationsLink(policy) {
-        if (policy.numberOfViolations === 0) {
-            return (<span>0</span>);
+        if (policy.type === "step") {
+            return <span>NA</span>;
         }
-
+        if (policy.numberOfViolations === 0) {
+            return <span>0</span>;
+        }
         return (
             <Link to={`/violations/${policy.id}`}>
                 {policy.numberOfViolations}
@@ -142,6 +144,7 @@ class PolicyOverview extends React.Component {
                     <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
                     <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
                                                             disabled="true"/></td>
+                    <td className='policy_type'>{I18n.t("policies.type_" + policy.type)}</td>
                     <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
                     <td className="policy_controls">{this.renderControls(policy)}</td>
                 </tr>);
@@ -161,6 +164,7 @@ class PolicyOverview extends React.Component {
                             <th className='policy_idps_col'>{I18n.t("policies.identityProviderIds")}</th>
                             <th className='policy_violations'>{I18n.t("policies.violations")}</th>
                             <th className='policy_is_active'>{I18n.t("policies.isActive")}</th>
+                            <th className='policy_type'>{I18n.t("policies.type")}</th>
                             <th className='policy_revisions'>{I18n.t("policies.revisions")}</th>
                             <th className='policy_controls'></th>
                         </tr>

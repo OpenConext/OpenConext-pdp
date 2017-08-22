@@ -56,8 +56,9 @@ I18n.translations.en = {
 
     navigation: {
         policies: "Policies",
-        violations: "Unauthorized logins",
+        violations: "Denies",
         conflicts: "Conflicts",
+        loas: "Loa",
         decisions: "Stats",
         playground: "Playground",
         about: "About",
@@ -75,7 +76,7 @@ I18n.translations.en = {
         isActive: "Active",
         identityProviderId: "Institution",
         identityProviderIds: "Institution(s)",
-        violations: "Unauthorized logins",
+        violations: "Denies",
         revisions: "Revisions",
         search: "Search policies...",
         flash: "Policy '{{policyName}}' was successfully {{action}}",
@@ -84,6 +85,9 @@ I18n.translations.en = {
         flash_deleted: "deleted",
         confirmation: "Are your sure you want to remove policy {{policyName}}?",
         edit: "Edit",
+        type: "Type",
+        type_reg: "EB",
+        type_step: "Stepup",
         delete: "Delete"
     },
 
@@ -136,7 +140,7 @@ I18n.translations.en = {
     },
 
     violations: {
-        search: "Search unauthorized logins...",
+        search: "Search denies...",
         policyName: "Policy name: ",
         table: {
             sp_idp: "Institution and Service",
@@ -189,11 +193,15 @@ I18n.translations.en = {
         new_loa: "Add new LoA...",
         and_or_rule: "An AND rule requires all the attributes to match. An OR rule only requires one of the attributes to match."
     },
+    loas: {
+        policy_id: "Policy name",
+        search: "Search for policies"
+    },
     policy_cidr: {
         add_cidr: "Add new IP range",
-        capacity: "Capacity: ",
-        broadcastAddress: "Broadcast address: ",
-        networkAddress: "Network address: ",
+        capacity: "Nbr of IPs in range: ",
+        broadcastAddress: "Higher bound IP address: ",
+        networkAddress: "Lower bound IP address: ",
         invalid: "Invalid IP address",
         negate: "Negate"
     },

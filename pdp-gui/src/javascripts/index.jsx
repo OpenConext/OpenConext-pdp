@@ -33,6 +33,7 @@ import PolicyDetail from "./pages/policy_detail";
 import PolicyViolations from "./pages/policy_violations";
 import PolicyConflicts from "./pages/policy_conflicts";
 import Decisions from "./pages/decisions";
+import Loas from "./pages/loas";
 import Playground from "./pages/playground";
 
 import "./locale/en";
@@ -90,6 +91,7 @@ class App extends React.Component {
                     <Match exactly pattern="/violations/:id" component={PolicyViolations}/>
                     <Match exactly pattern="/conflicts" component={PolicyConflicts}/>
                     <Match exactly pattern="/decisions" component={Decisions}/>
+                    <Match exactly pattern="/loas" component={Loas}/>
                     <Match exactly pattern="/playground" component={Playground}/>
                     <Miss component={NotFound}/>
                     <Footer />
@@ -114,17 +116,15 @@ App.propTypes = {
     currentUser: React.PropTypes.shape({})
 };
 
-function determineLanguage() {
-    let parameterByName = QueryParameter.getParameterByName("lang");
+(function determineLanguage() {
+    let parameterByName = QueryParameter.getParameterByName("language");
 
     if (isEmpty(parameterByName)) {
-        parameterByName = Cookies.get("lang");
+        parameterByName = Cookies.get("language");
     }
 
-    I18n.locale = parameterByName ? parameterByName : "en";
-}
-
-determineLanguage();
+    I18n.locale = parameterByName || "en";
+})();
 
 getUserData().catch(e => {
     render(<NotFound />, document.getElementById("app"));
