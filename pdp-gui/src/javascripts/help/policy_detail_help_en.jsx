@@ -23,7 +23,7 @@ class PolicyDetailHelpEn extends React.Component {
                     is the rule determining the result - e.g. Deny or Permit.
                 </p>
 
-                <p>More information about the implications of a Deny access can be found
+                <p>More information about the implications of a Deny access can be found 
                     <a target="_blank"
                        href="http://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html#_Toc325047268">
                         here</a>.
