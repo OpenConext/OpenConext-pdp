@@ -60,6 +60,7 @@
           RuleId="urn:surfconext:xacml:rule:id:permit">
         <Description />
         <Target/>
+        {{^empty}}
         <Condition>
             {{#allAttributesMustMatch}}
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
@@ -98,6 +99,7 @@
                 {{/anyAttributes}}
             </Apply>
         </Condition>
+        {{/empty}}
         <ObligationExpressions>
             <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression

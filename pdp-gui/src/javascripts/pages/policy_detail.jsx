@@ -160,14 +160,13 @@ class PolicyDetail extends React.Component {
 
         const invalidNotations = policy.loas.some(loa =>
             loa.cidrNotations.some(notation => !notation.ipInfo || !notation.ipInfo.networkAddress));
-        const invalidLoas = policy.loas.some(loa => isEmpty(loa.cidrNotations) && isEmpty(loa.attributes));
         const emptyLoaAttributes = policy.loas.some(loa =>
             loa.attributes.some(attr => isEmpty(attr)));
 
         const description = this.renderAutoformatDescription(policy);
         let invalid;
         if (policy.type === "step") {
-            invalid = isEmpty(policy.loas) || invalidNotations || invalidLoas || emptyLoaAttributes;
+            invalid = isEmpty(policy.loas) || invalidNotations || emptyLoaAttributes;
         } else {
             invalid = isEmpty(policy.attributes) || emptyAttributes.length > 0 || isEmpty(policy.denyAdvice)
                 || isEmpty(policy.denyAdviceNl) ;

@@ -84,7 +84,7 @@ class PolicyLoas extends React.Component {
             return isEmpty(attr.value);
         });
         const invalidCidrNotations = loa.cidrNotations.some(notation => !notation.ipInfo || !notation.ipInfo.networkAddress);
-        return (isEmpty(loa.attributes) || emptyAttributes.length > 0) && (isEmpty(loa.cidrNotations) || invalidCidrNotations);
+        return emptyAttributes.length > 0 || invalidCidrNotations;
     };
 
     renderLoa = (index, loa, css) => {

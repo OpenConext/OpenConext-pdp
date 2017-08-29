@@ -42,7 +42,12 @@ public class LoA {
 
     @JsonIgnore
     public List<String> anyAttributes() {
-        return CollectionUtils.isEmpty(this.cidrNotations) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
+        return CollectionUtils.isEmpty(this.attributes) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
+    }
+
+    @JsonIgnore
+    public boolean empty() {
+        return CollectionUtils.isEmpty(this.cidrNotations) && CollectionUtils.isEmpty(this.attributes);
     }
 
     @JsonIgnore

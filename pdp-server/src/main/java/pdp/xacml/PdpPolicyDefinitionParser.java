@@ -74,7 +74,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         if (pdpPolicy.getType().equals("step")) {
             definition.setDenyRule(false);
             List<LoA> loas = rules.stream()
-                .filter(rule -> rule.getCondition() != null)
+                .filter(rule -> rule.getObligationExpressions().hasNext())
                 .map(this::parseStepRule).collect(toList());
             definition.setLoas(loas);
             definition.sortLoas();
@@ -101,12 +101,14 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         loa.setLevel(level);
 
         Condition condition = rule.getCondition();
-        DOMApply domApply = DOMApply.class.cast(condition.getExpression());
-        boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
-            .endsWith("function:and");
-        loa.setAllAttributesMustMatch(allAttributesMustMatch);
+        if (condition != null) {
+            DOMApply domApply = DOMApply.class.cast(condition.getExpression());
+            boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
+                .endsWith("function:and");
+            loa.setAllAttributesMustMatch(allAttributesMustMatch);
+            this.parseArguments(loa, domApply.getArguments());
+        }
 
-        this.parseArguments(loa, domApply.getArguments());
         return loa;
     }
 
