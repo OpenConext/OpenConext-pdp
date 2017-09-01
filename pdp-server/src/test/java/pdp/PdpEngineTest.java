@@ -80,7 +80,6 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
         PdpPolicyDefinition definition = policyDefinitionParser.parse(policy);
 
         JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
-        permitPolicyRequest.addOrReplaceResourceAttribute("ClientID", "EngineBlock");
 
         // We don't want INDETERMINATE Decisions based on the Target of the policy so we ensure the SP and  - optional - IDP is set on the JSON request
         permitPolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, definition.getServiceProviderId());

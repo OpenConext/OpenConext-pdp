@@ -5,6 +5,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
 import org.apache.openaz.xacml.api.Attribute;
+import org.apache.openaz.xacml.api.AttributeValue;
 import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.IdReference;
 import org.apache.openaz.xacml.api.Request;
@@ -14,7 +15,12 @@ import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.apache.openaz.xacml.pdp.std.StdFunctionDefinitionFactory;
+import org.apache.openaz.xacml.std.IdentifierImpl;
+import org.apache.openaz.xacml.std.StdAttribute;
+import org.apache.openaz.xacml.std.StdAttributeValue;
+import org.apache.openaz.xacml.std.StdMutableAttribute;
 import org.apache.openaz.xacml.std.StdMutableRequest;
+import org.apache.openaz.xacml.std.StdMutableRequestAttributes;
 import org.apache.openaz.xacml.std.StdRequest;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
@@ -64,6 +70,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -181,7 +188,23 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         StdRequest.class.cast(request);
         Field field = ReflectionUtils.findField(Wrapper.class, "wrappedObject");
         ReflectionUtils.makeAccessible(field);
-        StdMutableRequest.class.cast(ReflectionUtils.getField(field, request)).setReturnPolicyIdList(true);
+        StdMutableRequest mutableRequest = StdMutableRequest.class.cast(ReflectionUtils.getField(field, request));
+        mutableRequest.setReturnPolicyIdList(true);
+        StdMutableRequestAttributes requestAttributes = (StdMutableRequestAttributes) mutableRequest.getRequestAttributes().stream().filter(requestAttribute ->
+            requestAttribute.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
+            .findFirst().get();
+        Collection<Attribute> attributes = requestAttributes.getAttributes();
+        boolean clientIDPresent = attributes.stream().anyMatch(attribute -> attribute.getAttributeId().getUri().toString().equals("ClientID"));
+        if (!clientIDPresent) {
+            requestAttributes.add(new StdAttribute(
+                new StdMutableAttribute(
+                    new IdentifierImpl("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"),
+                    new IdentifierImpl("ClientID"),
+                    new StdAttributeValue<>(
+                        new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string"),
+                        "EngineBlock")
+                )));
+        }
     }
 
     private void provideStatsContext(StatsContext stats, Response pdpResponse) {
