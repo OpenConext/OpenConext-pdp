@@ -2,6 +2,7 @@ package pdp.serviceregistry;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.IOUtils;
+import org.junit.BeforeClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,6 +31,10 @@ public class UrlResourceServiceRegistryTest {
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8889);
 
+    @BeforeClass
+    public static void doBeforeClass() {
+      System.setProperty("http.keepAlive", "false");
+    }
 
     @Before
     public void before() throws IOException {
