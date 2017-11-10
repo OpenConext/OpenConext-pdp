@@ -12,8 +12,8 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 - Java 8
 - Maven 3
 - MySQL 5.5+
-- npm 
-- NodeJS 7.10.0 (best managed with `nvm`, current version in [.node-version](dashboard/.node-version)
+- npm 5.4.2
+- NodeJS v8.7.0 (best managed with `nvm`, current version in [.node-version](dashboard/.node-version)
 
 ### Create database
 
