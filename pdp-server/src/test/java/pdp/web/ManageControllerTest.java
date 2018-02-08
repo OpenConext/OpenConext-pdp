@@ -8,16 +8,16 @@ import org.springframework.security.core.context.SecurityContextImpl;
 import pdp.access.PolicyIdpAccessAwareToken;
 import pdp.access.RunAsFederatedUser;
 import pdp.domain.EntityMetaData;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.manage.ClassPathResourceManage;
 
 import java.util.Collections;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-public class ServiceRegistryControllerTest {
+public class ManageControllerTest {
 
-    private ServiceRegistryController subject = new ServiceRegistryController(new ClassPathResourceServiceRegistry(true));
+    private ServiceRegistryController subject = new ServiceRegistryController(new ClassPathResourceManage(true));
 
     @Test
     public void testServiceProviders() throws Exception {

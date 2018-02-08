@@ -6,7 +6,7 @@ import org.springframework.security.web.authentication.preauth.AbstractPreAuthen
 import pdp.access.FederatedUser;
 import pdp.access.FederatedUserBuilder;
 import pdp.access.RunAsFederatedUser;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
@@ -19,10 +19,10 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
     private final FederatedUserBuilder federatedUserBuilder;
 
-    public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegistry) {
+    public ShibbolethPreAuthenticatedProcessingFilter(AuthenticationManager authenticationManager, Manage manage) {
         super();
         setAuthenticationManager(authenticationManager);
-        this.federatedUserBuilder = new FederatedUserBuilder(serviceRegistry);
+        this.federatedUserBuilder = new FederatedUserBuilder(manage);
         setCheckForPrincipalChanges(true);
     }
 

@@ -4,7 +4,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,7 +15,7 @@ public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
 
     private final FederatedUserBuilder federatedUserBuilder;
 
-    public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, ServiceRegistry serviceRegsitry) {
+    public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, Manage serviceRegsitry) {
         super(authenticationManager);
         this.federatedUserBuilder = new FederatedUserBuilder(serviceRegsitry);
     }

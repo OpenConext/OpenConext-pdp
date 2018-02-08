@@ -5,8 +5,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
 import org.apache.openaz.xacml.api.Attribute;
-import org.apache.openaz.xacml.api.AttributeValue;
-import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.IdReference;
 import org.apache.openaz.xacml.api.Request;
 import org.apache.openaz.xacml.api.RequestAttributes;
@@ -14,7 +12,6 @@ import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.Policy;
-import org.apache.openaz.xacml.pdp.std.StdFunctionDefinitionFactory;
 import org.apache.openaz.xacml.std.IdentifierImpl;
 import org.apache.openaz.xacml.std.StdAttribute;
 import org.apache.openaz.xacml.std.StdAttributeValue;
@@ -56,10 +53,10 @@ import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.mail.MailBox;
+import pdp.manage.Manage;
 import pdp.policies.PolicyMissingServiceProviderValidator;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.serviceregistry.ServiceRegistry;
 import pdp.stats.StatsContext;
 import pdp.stats.StatsContextHolder;
 import pdp.xacml.PDPEngineHolder;
@@ -70,7 +67,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
@@ -110,7 +106,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
     private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
     private final PolicyConflictService policyConflictService = new PolicyConflictService();
-    private final ServiceRegistry serviceRegistry;
+    private final Manage manage;
     private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
     private final PDPEngine playgroundPdpEngine;
     private final boolean cachePolicies;
@@ -128,7 +124,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
                          PdpPolicyViolationRepository pdpPolicyViolationRepository,
                          PdpPolicyRepository pdpPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
-                         ServiceRegistry serviceRegistry,
+                         Manage manage,
                          MailBox mailBox,
                          PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator) {
         this.cachePolicies = cachePolicies;
@@ -137,9 +133,9 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
         this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
-        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
+        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(manage);
         this.pdpPolicyRepository = pdpPolicyRepository;
-        this.serviceRegistry = serviceRegistry;
+        this.manage = manage;
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
 
@@ -297,7 +293,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     private void checkConflicts(PdpPolicyDefinition pdpPolicyDefinition) {
         Map<String, List<PdpPolicyDefinition>> conflicts = conflicts();
-        Optional<EntityMetaData> entityMetaData = serviceRegistry.serviceProviderOptionalByEntityId(pdpPolicyDefinition.getServiceProviderId());
+        Optional<EntityMetaData> entityMetaData = manage.serviceProviderOptionalByEntityId(pdpPolicyDefinition.getServiceProviderId());
         if (entityMetaData.isPresent() && conflicts.containsKey(entityMetaData.get().getNameEn())) {
             this.mailBox.sendConflictsMail(conflicts);
         }
@@ -398,7 +394,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
         boolean actionsAllowed = policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
         pd.setActionsAllowed(actionsAllowed);
-        pd.setAuthenticatingAuthorityName(serviceRegistry.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
+        pd.setAuthenticatingAuthorityName(manage.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
         return pd;
     }
 

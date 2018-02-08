@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.domain.EntityMetaData;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 
 import java.util.List;
 
@@ -14,27 +14,27 @@ import java.util.List;
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
 public class ServiceRegistryController {
 
-    private final ServiceRegistry serviceRegistry;
+    private final Manage manage;
     private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
 
     @Autowired
-    public ServiceRegistryController(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(serviceRegistry);
+    public ServiceRegistryController(Manage manage) {
+        this.manage = manage;
+        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(manage);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")
     public List<EntityMetaData> serviceProviders() {
-        return serviceRegistry.serviceProviders();
+        return manage.serviceProviders();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders")
     public List<EntityMetaData> identityProviders() {
-        return serviceRegistry.identityProviders();
+        return manage.identityProviders();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/internal/identityProviders/scoped")
     public List<EntityMetaData> identityProvidersScoped() {
-        return policyIdpAccessEnforcer.filterIdentityProviders(serviceRegistry.identityProviders());
+        return policyIdpAccessEnforcer.filterIdentityProviders(manage.identityProviders());
     }
 }

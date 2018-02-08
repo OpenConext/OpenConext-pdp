@@ -1,4 +1,4 @@
-package pdp.serviceregistry;
+package pdp.manage;
 
 import pdp.domain.EntityMetaData;
 
@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public interface ServiceRegistry {
+public interface Manage {
 
     List<EntityMetaData> serviceProviders();
 

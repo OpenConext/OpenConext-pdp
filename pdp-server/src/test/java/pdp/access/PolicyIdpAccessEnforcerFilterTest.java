@@ -10,7 +10,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.manage.ClassPathResourceManage;
 
 import javax.servlet.FilterChain;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class PolicyIdpAccessEnforcerFilterTest {
     @Before
     public void before() throws Exception {
         ProviderManager providerManager = new ProviderManager(Arrays.asList(new BasicAuthenticationProvider("user", "password")));
-        subject = new PolicyIdpAccessEnforcerFilter(providerManager, new ClassPathResourceServiceRegistry(true));
+        subject = new PolicyIdpAccessEnforcerFilter(providerManager, new ClassPathResourceManage(true));
         SecurityContextHolder.clearContext();
     }
 

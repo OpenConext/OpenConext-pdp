@@ -1,4 +1,4 @@
-package pdp.serviceregistry;
+package pdp.manage;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.commons.io.IOUtils;
@@ -21,11 +21,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static junit.framework.TestCase.assertEquals;
 import static pdp.util.StreamUtils.singletonCollector;
 
-public class UrlResourceServiceRegistryTest {
+public class UrlResourceManageTest {
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8889);
-    private UrlResourceServiceRegistry subject;
+    private UrlResourceManage subject;
 
     @BeforeClass
     public static void doBeforeClass() {
@@ -46,7 +46,7 @@ public class UrlResourceServiceRegistryTest {
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(200)
             .withHeader("Content-Type", "application/json").withBody(spResponse)));
 
-        this.subject = new UrlResourceServiceRegistry("user", "password", "http://localhost:8889", 10);
+        this.subject = new UrlResourceManage("user", "password", "http://localhost:8889", 10);
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UrlResourceServiceRegistryTest {
     @Test
     public void testInitializeMetaDataNoEndpoint() throws IOException {
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(500)));
-        new UrlResourceServiceRegistry("u", "p", "http://localhost:9999/bogus", 10);
+        new UrlResourceManage("u", "p", "http://localhost:9999/bogus", 10);
     }
 
 

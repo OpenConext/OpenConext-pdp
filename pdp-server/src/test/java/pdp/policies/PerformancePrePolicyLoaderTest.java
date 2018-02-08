@@ -4,7 +4,7 @@ import org.junit.Test;
 import pdp.domain.PdpPolicy;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.manage.ClassPathResourceManage;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ public class PerformancePrePolicyLoaderTest {
     public void testGetPolicies() throws Exception {
         PdpPolicyRepository policyRepository = mock(PdpPolicyRepository.class);
         PdpPolicyViolationRepository policyViolationRepository = mock(PdpPolicyViolationRepository.class);
-        PerformancePrePolicyLoader subject = new PerformancePrePolicyLoader(0, new ClassPathResourceServiceRegistry(true), policyRepository, policyViolationRepository);
+        PerformancePrePolicyLoader subject = new PerformancePrePolicyLoader(0, new ClassPathResourceManage(true), policyRepository, policyViolationRepository);
 
         List<PdpPolicy> policies = subject.getPolicies();
         assertEquals(49, policies.size());

@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 import pdp.PolicyViolationRetentionPeriodCleaner;
 import pdp.mail.MailBox;
+import pdp.manage.Manage;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.serviceregistry.ServiceRegistry;
 
 @Configuration
 public class PolicyLoaderConfiguration {
@@ -28,8 +28,9 @@ public class PolicyLoaderConfiguration {
     @Bean
     @Autowired
     @Profile({"perf"})
-    public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-        return new PerformancePrePolicyLoader(count, serviceRegistry, pdpPolicyRepository, pdpPolicyViolationRepository);
+    public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, Manage
+        manage, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+        return new PerformancePrePolicyLoader(count, manage, pdpPolicyRepository, pdpPolicyViolationRepository);
     }
 
     @Bean
@@ -48,9 +49,9 @@ public class PolicyLoaderConfiguration {
 
     @Bean
     public PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator(MailBox mailBox,
-                                                                                       ServiceRegistry serviceRegistry,
+                                                                                       Manage manage,
                                                                                        PdpPolicyRepository pdpPolicyRepository) {
-        return new PolicyMissingServiceProviderValidator(mailBox, serviceRegistry, pdpPolicyRepository);
+        return new PolicyMissingServiceProviderValidator(mailBox, manage, pdpPolicyRepository);
     }
 
 

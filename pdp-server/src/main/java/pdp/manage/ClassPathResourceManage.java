@@ -1,4 +1,4 @@
-package pdp.serviceregistry;
+package pdp.manage;
 
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
-public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMapper {
+public class ClassPathResourceManage implements Manage, JsonMapper {
 
     protected final Logger LOG = LoggerFactory.getLogger(getClass());
 
@@ -38,7 +38,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     @Autowired
     private PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
 
-    public ClassPathResourceServiceRegistry(boolean initialize) {
+    public ClassPathResourceManage(boolean initialize) {
         //this provides subclasses a hook to set properties before initializing metadata
         if (initialize) {
             initializeMetadata();
@@ -195,7 +195,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     }
 
     /**
-     * Not part of the ServiceRegistry contract, but used for testing
+     * Not part of the Manage contract, but used for testing
      */
     public void allowAll(boolean allowAll) {
         identityProviders().forEach(md -> doAllowAll(md, allowAll));

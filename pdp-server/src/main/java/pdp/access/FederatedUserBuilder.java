@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import pdp.domain.EntityMetaData;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
@@ -35,9 +35,9 @@ public class FederatedUserBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(FederatedUserBuilder.class);
 
-    private final ServiceRegistry serviceRegsitry;
+    private final Manage serviceRegsitry;
 
-    public FederatedUserBuilder(ServiceRegistry serviceRegsitry) {
+    public FederatedUserBuilder(Manage serviceRegsitry) {
         this.serviceRegsitry = serviceRegsitry;
     }
 

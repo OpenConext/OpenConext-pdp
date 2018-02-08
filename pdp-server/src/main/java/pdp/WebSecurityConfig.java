@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CsrfFilter;
 import pdp.access.BasicAuthenticationProvider;
 import pdp.access.PolicyIdpAccessEnforcerFilter;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 import pdp.shibboleth.ShibbolethPreAuthenticatedProcessingFilter;
 import pdp.shibboleth.ShibbolethUserDetailService;
 import pdp.shibboleth.mock.MockShibbolethFilter;
@@ -51,7 +51,7 @@ public class WebSecurityConfig {
     public static class InternalSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         @Autowired
-        private ServiceRegistry serviceRegistry;
+        private Manage manage;
 
         @Autowired
         private Environment environment;
@@ -74,7 +74,7 @@ public class WebSecurityConfig {
                 .requireCsrfProtectionMatcher(new CsrfProtectionMatcher()).and()
                 .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
                 .addFilterAfter(
-                    new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), serviceRegistry),
+                    new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), manage),
                     AbstractPreAuthenticatedProcessingFilter.class
                 )
                 .authorizeRequests()
@@ -97,7 +97,7 @@ public class WebSecurityConfig {
     public static class ApiSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         @Autowired
-        private ServiceRegistry serviceRegistry;
+        private Manage manage;
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
@@ -107,7 +107,7 @@ public class WebSecurityConfig {
                 .csrf()
                 .disable()
                 .addFilterBefore(
-                    new PolicyIdpAccessEnforcerFilter(authenticationManager(), serviceRegistry),
+                    new PolicyIdpAccessEnforcerFilter(authenticationManager(), manage),
                     BasicAuthenticationFilter.class
                 )
                 .authorizeRequests()

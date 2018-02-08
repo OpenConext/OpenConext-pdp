@@ -1,4 +1,4 @@
-package pdp.serviceregistry;
+package pdp.manage;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.MalformedURLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 
-public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry implements HealthIndicator {
+public class UrlResourceManage extends ClassPathResourceManage implements HealthIndicator {
 
     private final static ZoneId GMT = ZoneId.of("GMT");
 
@@ -39,7 +38,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
     private volatile ZonedDateTime lastRefreshCheck = ZonedDateTime.now(GMT);
     private volatile ZonedDateTime metadataLastUpdated = ZonedDateTime.now(GMT);
 
-    public UrlResourceServiceRegistry(
+    public UrlResourceManage(
         String username,
         String password,
         String manageBaseUrl,
@@ -102,7 +101,7 @@ public class UrlResourceServiceRegistry extends ClassPathResourceServiceRegistry
             /*
              * By design we catch the error and not rethrow it.
              *
-             * UrlResourceServiceRegistry has timing issues when the server reboots and required MetadataExporter
+             * UrlResourceManage has timing issues when the server reboots and required MetadataExporter
              * endpoints
              * are not available yet. We re-schedule the timer to try every 15 seconds until it's succeeds
              */

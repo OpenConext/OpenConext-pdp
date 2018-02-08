@@ -14,7 +14,7 @@ import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.manage.ClassPathResourceManage;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -36,7 +36,7 @@ import static pdp.util.StreamUtils.singletonCollector;
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
-    private ClassPathResourceServiceRegistry serviceRegistry = new ClassPathResourceServiceRegistry(true);
+    private ClassPathResourceManage serviceRegistry = new ClassPathResourceManage(true);
     private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);
     private PdpPolicy pdpPolicy;
 

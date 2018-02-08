@@ -7,7 +7,7 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import pdp.access.FederatedUser;
 import pdp.access.RunAsFederatedUser;
 import pdp.policies.PolicyLoader;
-import pdp.serviceregistry.ClassPathResourceServiceRegistry;
+import pdp.manage.ClassPathResourceManage;
 
 import static java.util.Collections.emptySet;
 import static junit.framework.TestCase.assertFalse;
@@ -24,7 +24,7 @@ import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
 
 public class ShibbolethPreAuthenticatedProcessingFilterTest {
 
-    private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceServiceRegistry(true));
+    private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceManage(true));
 
     @Test
     public void testGetPreAuthenticatedShibPrincipal() throws Exception {

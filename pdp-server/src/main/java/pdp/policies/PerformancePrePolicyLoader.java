@@ -5,9 +5,9 @@ import pdp.domain.EntityMetaData;
 import pdp.domain.PdpAttribute;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.manage.Manage;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
-import pdp.serviceregistry.ServiceRegistry;
 import pdp.xacml.PolicyTemplateEngine;
 
 import java.util.Arrays;
@@ -18,21 +18,21 @@ import static java.util.stream.Collectors.toList;
 
 public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
 
-    private final ServiceRegistry serviceRegistry;
+    private final Manage manage;
     private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
     private final int count;
 
-    public PerformancePrePolicyLoader(int count, ServiceRegistry serviceRegistry, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    public PerformancePrePolicyLoader(int count, Manage manage, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         super(new ByteArrayResource("noop".getBytes()), pdpPolicyRepository, pdpPolicyViolationRepository);
         this.count = count;
-        this.serviceRegistry = serviceRegistry;
+        this.manage = manage;
     }
 
     @Override
     public List<PdpPolicy> getPolicies() {
         // for every ServiceProvider create a policy
-        List<EntityMetaData> sps = serviceRegistry.serviceProviders();
-        List<EntityMetaData> idps = serviceRegistry.identityProviders();
+        List<EntityMetaData> sps = manage.serviceProviders();
+        List<EntityMetaData> idps = manage.identityProviders();
         EntityMetaData idp = idps.get(idps.size() - 1);
         int nbr = (this.count == 0 ? sps.size() : this.count);
         return sps.subList(0, nbr).stream().map(sp -> pdpPolicyDefinition(sp, idp, UUID.randomUUID().toString()))

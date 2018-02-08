@@ -9,7 +9,7 @@ import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
-import pdp.serviceregistry.ServiceRegistry;
+import pdp.manage.Manage;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,10 +30,10 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(PolicyIdpAccessEnforcer.class);
 
-    private final ServiceRegistry serviceRegistry;
+    private final Manage manage;
 
-    public PolicyIdpAccessEnforcer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
+    public PolicyIdpAccessEnforcer(Manage manage) {
+        this.manage = manage;
     }
 
     /**
@@ -227,7 +227,7 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
     private boolean idpIsAllowed(FederatedUser user, Set<String> idpsOfUserEntityIds, String serviceProviderId) {
         boolean isAllowedFromIdp = user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderId));
         //rare case to check: ACLs are mostly defined on IdPs, but the SP can also have an ACL to restrict IDPs
-        EntityMetaData sp = serviceRegistry.serviceProviderByEntityId(serviceProviderId);
+        EntityMetaData sp = manage.serviceProviderByEntityId(serviceProviderId);
         String[] idps = idpsOfUserEntityIds.toArray(new String[idpsOfUserEntityIds.size()]);
         return isAllowedFromIdp && sp.isAllowedFrom(idps);
     }
