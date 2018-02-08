@@ -84,12 +84,16 @@ export function getUserData() {
     return fetchJson("/internal/users/me");
 }
 
-export function getIdentityProviders() {
-    return fetchJson("/internal/identityProviders");
+export function reportError(error) {
+    return postJson("/internal/users/error", error);
 }
 
 export function getLoasStats() {
     return fetchJson("/internal/loas-stats");
+}
+
+export function getIdentityProviders() {
+    return fetchJson("/internal/identityProviders");
 }
 
 export function getScopedIdentityProviders() {
@@ -106,14 +110,6 @@ export function getAllowedAttributes() {
 
 export function getAllowedLoas() {
     return fetchJson("/internal/loas");
-}
-
-export function ping() {
-    return fetchJson("/internal/users/ping");
-}
-
-export function validateIp(ipAddress) {
-    return postJson("/internal/validate", {type: "ip", value: ipAddress}).then(parseJson);
 }
 
 export function ipInfo(ipAddress, networkPrefix) {

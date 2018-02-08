@@ -50,8 +50,8 @@ public class PolicyIdpAccessEnforcerFilterTest {
 
         assertEquals("uid", user.getIdentifier());
         assertEquals("John Doe", user.getDisplayName());
-        assertEquals(2, user.getIdpEntities().size());
-        assertEquals(3, user.getSpEntities().size());
+        assertEquals(1, user.getIdpEntities().size());
+        assertEquals(1, user.getSpEntities().size());
         assertEquals(PolicyLoader.authenticatingAuthority, user.getAuthenticatingAuthority());
         assertEquals("[ROLE_PEP, ROLE_USER]", user.getAuthorities().toString());
 

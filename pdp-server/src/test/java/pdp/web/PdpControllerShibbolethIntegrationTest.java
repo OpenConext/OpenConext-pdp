@@ -64,7 +64,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
         List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
-        assertEquals(definitions.size(), 7);
+        assertEquals(2 ,definitions.size() );
     }
 
     @Test
@@ -78,7 +78,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
     public void testPolicyDefinitionsAdmin() {
         List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
-        assertThat(definitions, hasSize(greaterThan(9)));
+        assertThat(definitions, hasSize(greaterThan(2)));
     }
 
     @Test
@@ -223,8 +223,8 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
         assertEquals("John Doe", shibbolethUser.get("displayName"));
         assertEquals(PolicyLoader.authenticatingAuthority, shibbolethUser.get("authenticatingAuthority"));
 
-        assertEquals(2, ((Collection) shibbolethUser.get("idpEntities")).size());
-        assertEquals(3, ((Collection) shibbolethUser.get("spEntities")).size());
+        assertEquals(1, ((Collection) shibbolethUser.get("idpEntities")).size());
+        assertEquals(1, ((Collection) shibbolethUser.get("spEntities")).size());
     }
 
     @Test

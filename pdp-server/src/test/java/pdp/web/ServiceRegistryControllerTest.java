@@ -21,12 +21,12 @@ public class ServiceRegistryControllerTest {
 
     @Test
     public void testServiceProviders() throws Exception {
-        assertEquals(24, subject.serviceProviders().size());
+        assertEquals(49, subject.serviceProviders().size());
     }
 
     @Test
     public void testIdentityProviders() throws Exception {
-        assertEquals(8, subject.identityProviders().size());
+        assertEquals(13, subject.identityProviders().size());
     }
 
     @Test

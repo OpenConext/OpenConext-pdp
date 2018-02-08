@@ -93,8 +93,8 @@ public class ShibbolethPreAuthenticatedProcessingFilterTest {
     }
 
     private void assertPrincipal(FederatedUser principal, String authorities) {
-        assertEquals(2, principal.getIdpEntities().size());
-        assertEquals(3, principal.getSpEntities().size());
+        assertEquals(1, principal.getIdpEntities().size());
+        assertEquals(1, principal.getSpEntities().size());
         assertEquals(2, principal.getAuthorities().size());
         assertEquals(authorities, principal.getAuthorities().toString());
         assertEquals("John Doe", principal.getDisplayName());

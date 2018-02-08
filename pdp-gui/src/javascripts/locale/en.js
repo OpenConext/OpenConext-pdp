@@ -13,15 +13,6 @@ I18n.entityName = function (entity) {
     }
     return name;
 };
-I18n.entityDescription = function (entity) {
-    let description = entity["description" + (I18n.locale === "en" ? "En" : "Nl")];
-    if (isEmpty(description)) {
-        description = entity["description" + (I18n.locale === "en" ? "Nl" : "En")];
-    }
-    return description;
-
-};
-
 I18n.translations.en = {
     code: "EN",
     name: "English",

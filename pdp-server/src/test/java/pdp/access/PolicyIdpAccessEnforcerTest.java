@@ -47,7 +47,7 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
     private String[] serviceProviderIds = {"http://mock-sp", "http://mock-sp2"};
     private String institutionId = "MOCK";
     private String notOwnedIdp = "http://not-owned-idp";
-    private String notOwnedSp = "https://thki-sid.pt-48.utr.surfcloud.nl/mellon/metadata";
+    private String notOwnedSp = "https://authz-admin.test2.surfconext.nl/shibboleth";
 
     @Before
     public void before() {
@@ -173,7 +173,8 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
     }
 
     private Set<EntityMetaData> entityMetadata(String... entityIds) {
-        return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null, null, null, true, true, new HashSet<String>())).collect(toSet());
+        return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null,
+            true, true, new HashSet<String>())).collect(toSet());
     }
 
     private List<PdpPolicyViolation> pdpPolicyViolation(String... idpEntityIds) throws IOException {

@@ -1,5 +1,7 @@
 package pdp.domain;
 
+import org.springframework.util.StringUtils;
+
 import java.io.Serializable;
 import java.util.Set;
 
@@ -9,22 +11,18 @@ public class EntityMetaData implements Serializable {
 
     private final String entityId;
     private final String institutionId;
-    private final String descriptionEn;
     private final String nameEn;
-    private final String descriptionNl;
     private final String nameNl;
     private final boolean policyEnforcementDecisionRequired;
     private boolean allowedAll;
     private final Set<String> allowedEntityIds;
 
-    public EntityMetaData(String entityId, String institutionId, String descriptionEn, String nameEn, String descriptionNl,
-                          String nameNl, boolean policyEnforcementDecisionRequired, boolean allowedAll, Set<String> allowedEntityIds) {
+    public EntityMetaData(String entityId, String institutionId, String nameEn, String nameNl,
+                          boolean policyEnforcementDecisionRequired, boolean allowedAll, Set<String> allowedEntityIds) {
         this.entityId = entityId;
         this.institutionId = institutionId;
-        this.descriptionEn = descriptionEn;
-        this.nameEn = nameEn;
-        this.descriptionNl = descriptionNl;
-        this.nameNl = nameNl;
+        this.nameEn = StringUtils.hasText(nameEn) ? nameEn : entityId;
+        this.nameNl = StringUtils.hasText(nameNl) ? nameNl : entityId;
         this.policyEnforcementDecisionRequired = policyEnforcementDecisionRequired;
         this.allowedAll = allowedAll;
         this.allowedEntityIds = allowedEntityIds;
@@ -34,16 +32,8 @@ public class EntityMetaData implements Serializable {
         return entityId;
     }
 
-    public String getDescriptionEn() {
-        return descriptionEn;
-    }
-
     public String getNameEn() {
         return nameEn;
-    }
-
-    public String getDescriptionNl() {
-        return descriptionNl;
     }
 
     public String getNameNl() {

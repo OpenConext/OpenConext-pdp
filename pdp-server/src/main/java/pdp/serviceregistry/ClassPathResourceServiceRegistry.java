@@ -50,7 +50,8 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
         newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
         newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
         this.entityMetaData = newEntityMetaData;
-        LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID).size(), entityMetaData.get(SP_ENTITY_ID).size());
+        LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID)
+            .size(), entityMetaData.get(SP_ENTITY_ID).size());
 
         if (this.policyMissingServiceProviderValidator != null) {
             this.policyMissingServiceProviderValidator.validate();
@@ -80,7 +81,8 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
         EntityMetaData idp = identityProviderByEntityId(authenticatingAuthority);
         String institutionId = idp.getInstitutionId();
         if (StringUtils.hasText(institutionId)) {
-            return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect(toSet());
+            return identityProviders().stream().filter(md -> institutionId.equals(md.getInstitutionId())).collect
+                (toSet());
         } else {
             return Sets.newHashSet(idp);
         }
@@ -104,8 +106,10 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
         return entityMetaDataOptionalByEntityId(entityId, identityProviders());
     }
 
-    private Optional<EntityMetaData> entityMetaDataOptionalByEntityId(String entityId, List<EntityMetaData> entityMetaDatas) {
-        return entityMetaDatas.stream().filter(sp -> sp.getEntityId().equals(entityId)).collect(singletonOptionalCollector());
+    private Optional<EntityMetaData> entityMetaDataOptionalByEntityId(String entityId, List<EntityMetaData>
+        entityMetaDatas) {
+        return entityMetaDatas.stream().filter(sp -> sp.getEntityId().equals(entityId)).collect
+            (singletonOptionalCollector());
     }
 
     @Override
@@ -120,13 +124,15 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
 
     @Override
     public List<String> identityProviderNames(List<String> entityIds) {
-        return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map(EntityMetaData::getNameEn).collect(toList());
+        return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map
+            (EntityMetaData::getNameEn).collect(toList());
     }
 
     private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> entityMetaDataOptional) {
         if (!entityMetaDataOptional.isPresent()) {
             LOG.error(entityId + " is not a valid or known IdP / SP entityId");
-            throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP entityId");
+            throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP " +
+                "entityId");
         }
         return entityMetaDataOptional.get();
     }
@@ -135,18 +141,21 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     protected List<EntityMetaData> parseEntities(Resource resource) {
         try {
             List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
-            return list.stream().map(entry ->
-                new EntityMetaData(
-                    (String) entry.get("entityid"),
-                    (String) entry.get("coin:institution_id"),
-                    getMetaDateEntry(entry, "description"),
-                    getMetaDateEntry(entry, "name"),
-                    getMetaDateEntry(entry, "description"),
-                    getMetaDateEntry(entry, "name"),
-                    getPolicyEnforcementDecisionRequired(entry),
-                    getAllowedAll(entry),
-                    getAllowedEntries(entry)
-                )
+
+            return list.stream().map(entry -> {
+                Map<String, Object> data = (Map<String, Object>) entry.get("data");
+                Map<String, Object> metaDataFields = (Map<String, Object>) data.get("metaDataFields");
+                return
+                        new EntityMetaData(
+                            (String) data.get("entityid"),
+                            (String) metaDataFields.get("coin:institution_id"),
+                            (String) metaDataFields.get("name:en"),
+                            (String) metaDataFields.get("name:nl"),
+                            getPolicyEnforcementDecisionRequired(metaDataFields),
+                            getAllowedAll(data),
+                            getAllowedEntries(data)
+                        );
+                }
             ).sorted(sortEntityMetaData()).collect(toList());
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -160,8 +169,7 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     }
 
     private boolean getAllowedAll(Map<String, Object> entry) {
-        String allowedall = (String) entry.getOrDefault("allowedall", "yes");
-        return allowedall.equals("yes");
+        return (boolean) entry.getOrDefault("allowedall", true);
     }
 
     private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {
@@ -182,20 +190,8 @@ public class ClassPathResourceServiceRegistry implements ServiceRegistry, JsonMa
     }
 
     private String getEntityMetaDataComparatorId(EntityMetaData metaData) {
-        return metaData.getNameEn() != null ? metaData.getNameEn() : metaData.getNameNl() != null ? metaData.getNameNl() : metaData.getEntityId();
-    }
-
-    private String getMetaDateEntry(Map<String, Object> entry, String attributeName) {
-        String attribute = (String) entry.get(attributeName + ":en");
-        if (!StringUtils.hasText(attribute)) {
-            // try the other language
-            attribute = (String) entry.get(attributeName + ":nl");
-            if (!StringUtils.hasText(attribute)) {
-                //fallback to entityId
-                attribute = (String) entry.get("entityid");
-            }
-        }
-        return attribute;
+        return metaData.getNameEn() != null ? metaData.getNameEn() : metaData.getNameNl() != null ? metaData
+            .getNameNl() : metaData.getEntityId();
     }
 
     /**

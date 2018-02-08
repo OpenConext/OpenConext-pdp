@@ -246,7 +246,7 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
         return entities.stream().map(EntityMetaData::getEntityId).collect(toSet());
     }
 
-    private FederatedUser federatedUser() {
+    public static FederatedUser federatedUser() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!FederatedUser.class.isAssignableFrom(principal.getClass())) {

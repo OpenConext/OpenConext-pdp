@@ -18,7 +18,7 @@ import Miss from "react-router/Miss";
 import Cookies from "js-cookie";
 import I18n from "i18n-js";
 
-import {getUserData} from "./api";
+import {getUserData, reportError} from "./api";
 import QueryParameter from "./utils/query-parameters";
 import {changeIdentity, clearIdentity} from "./lib/identity";
 
@@ -45,6 +45,23 @@ class App extends React.Component {
         this.state = {
             currentUser: null
         };
+        window.onerror = (msg, url, line, col, err) => {
+            const info = err || {};
+            const response = info.response || {};
+            const error = {
+                userAgent: navigator.userAgent,
+                message: msg,
+                url: url,
+                line: line,
+                col: col,
+                error: info.message,
+                stack: info.stack,
+                targetUrl: response.url,
+                status: response.status
+            };
+            reportError(error);
+        };
+
     }
 
     componentWillMount() {
