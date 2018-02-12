@@ -18,10 +18,10 @@ public class ManageConfiguration {
     @Bean
     @Profile({"test", "acc", "prod"})
     public Manage urlResourceServiceRegistry(
-        @Value("${metadata.username}") String username,
-        @Value("${metadata.password}") String password,
-        @Value("${metadata.manageBaseUrl}") String manageBaseUrl,
-        @Value("${period.metadata.refresh.minutes}") int period) {
+        @Value("${manage.username}") String username,
+        @Value("${manage.password}") String password,
+        @Value("${manage.manageBaseUrl}") String manageBaseUrl,
+        @Value("${period.manage.refresh.minutes}") int period) {
         return new UrlResourceManage(username, password, manageBaseUrl, period);
     }
 
