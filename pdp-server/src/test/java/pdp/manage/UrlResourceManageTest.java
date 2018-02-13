@@ -34,7 +34,7 @@ public class UrlResourceManageTest {
 
     @Before
     public void before() throws IOException {
-        doBefore("service-registry/identity-providers.json", "service-registry/service-providers.json");
+        doBefore("manage/identity-providers.json", "manage/service-providers.json");
     }
 
     private void doBefore(String idpPath, String spPath) throws IOException {
@@ -64,7 +64,7 @@ public class UrlResourceManageTest {
 
     @Test
     public void testSorting() throws Exception {
-        doBefore("service-registry/identity-providers.json", "service-registry/service-providers.json");
+        doBefore("manage/identity-providers.json", "manage/service-providers.json");
         List<EntityMetaData> identityProviders = subject.identityProviders();
 
         String nameEn = identityProviders.get(0).getNameEn();
@@ -84,7 +84,7 @@ public class UrlResourceManageTest {
 
     @Test
     public void testNoNameFallback() throws Exception {
-        doBefore("service-registry/identity-providers.json", "service-registry/service-providers.json");
+        doBefore("manage/identity-providers.json", "manage/service-providers.json");
         List<EntityMetaData> identityProviders = subject.identityProviders();
         String idpEntityId = "https://idp.mrvanes.com/saml2/idp/metadata.php";
         EntityMetaData idp = identityProviders.stream().filter(metaData -> metaData.getEntityId().equals(idpEntityId)

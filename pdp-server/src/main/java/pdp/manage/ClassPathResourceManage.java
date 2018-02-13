@@ -59,11 +59,11 @@ public class ClassPathResourceManage implements Manage, JsonMapper {
     }
 
     protected Resource getIdpResource() {
-        return new ClassPathResource("service-registry/identity-providers.json");
+        return new ClassPathResource("manage/identity-providers.json");
     }
 
     protected Resource getSpResource() {
-        return new ClassPathResource("service-registry/service-providers.json");
+        return new ClassPathResource("manage/service-providers.json");
     }
 
     @Override
