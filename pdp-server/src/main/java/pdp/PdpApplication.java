@@ -38,9 +38,8 @@ public class PdpApplication {
     }
 
     @Bean
-    @Autowired
-    public StatsContextHolder statsContextHolder(PdpDecisionRepository decisionRepository) {
-        return new StatsContextHolder("decide/policy", decisionRepository);
+    public StatsContextHolder statsContextHolder() {
+        return new StatsContextHolder("decide/policy");
     }
 
     @Bean

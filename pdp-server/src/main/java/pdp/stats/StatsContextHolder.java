@@ -1,6 +1,8 @@
 package pdp.stats;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pdp.JsonMapper;
 import pdp.domain.PdpDecision;
 import pdp.repositories.PdpDecisionRepository;
@@ -16,13 +18,13 @@ import javax.servlet.http.HttpServletRequest;
 public class StatsContextHolder implements ServletRequestListener, JsonMapper {
 
     private static final ThreadLocal<StatsContext> contextHolder = new ThreadLocal<>();
+    private static final Logger logger = LoggerFactory.getLogger("analytics");
 
     private final String path;
-    private final PdpDecisionRepository decisionRepository;
 
-    public StatsContextHolder(String path, PdpDecisionRepository decisionRepository) {
+
+    public StatsContextHolder(String path) {
         this.path = path;
-        this.decisionRepository = decisionRepository;
     }
 
     @Override
@@ -46,9 +48,7 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
             return;
         }
         try {
-            PdpDecision pdpDecision = new PdpDecision();
-            pdpDecision.setDecisionJson(objectMapper.writeValueAsString(context));
-            decisionRepository.save(pdpDecision);
+            logger.info(objectMapper.writeValueAsString(context));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }

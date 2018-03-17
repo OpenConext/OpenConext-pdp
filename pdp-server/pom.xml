@@ -12,6 +12,7 @@
 
     <artifactId>pdp-server</artifactId>
     <packaging>jar</packaging>
+    <version>1.2.18</version>
 
     <name>pdp-server</name>
 
