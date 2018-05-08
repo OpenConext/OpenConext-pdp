@@ -47,12 +47,6 @@ public class PolicyMissingServiceProviderValidator {
 
         if (!invalidPolicies.isEmpty()) {
             this.mailBox.sendInvalidPoliciesMail(invalidPolicies);
-
-            invalidPolicies.forEach(policyDefinition -> {
-                PdpPolicy pdpPolicy = pdpPolicyRepository.findOne(policyDefinition.getId());
-                pdpPolicy.setActive(false);
-                pdpPolicyRepository.save(pdpPolicy);
-            });
         }
     }
 }

@@ -15,7 +15,7 @@ public class MailConfiguration {
     @Value("${email.from}")
     private String emailFrom;
 
-    @Value("${email.to}")
+    @Value("${invalid.policies.email.to}")
     private String emailTo;
 
     @Bean
