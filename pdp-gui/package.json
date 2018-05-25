@@ -50,7 +50,7 @@
     "sass-loader": "^6.0.5",
     "spin.js": "2.3.2",
     "style-loader": "0.13.1",
-    "uglify-es": "git://github.com/mishoo/UglifyJS2#harmony",
+    "uglify-es": "https://github.com/mishoo/UglifyJS2#harmony",
     "uglify-js": "^2.8.0",
     "uglifyjs-webpack-plugin": "^0.4.3",
     "url-loader": "0.5.7",
