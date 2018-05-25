@@ -19,7 +19,7 @@ class IdentityHelpEn extends React.Component {
                 <p>The logic to determine if an IdP or SP is linked to a user is based on the IdP used to login and all
                     IdP's linked to this IdP and
                     all SP's linked to this IdP. IdP's and SP's can be linked by one each other through the metadata
-                    attribute Institution ID in Service Registry</p>
+                    attribute Institution ID in Manage</p>
 
                 <h2>Identity Impersonation </h2>
 

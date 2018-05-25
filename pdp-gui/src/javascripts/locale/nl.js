@@ -109,8 +109,8 @@ I18n.translations.nl = {
         isActiveInfo: " Inactieve regels worden niet geëvalueerd in access-beslissingen",
         isActive: "Actief",
         spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen",
-        activated_false: "Niet geactiveerd in Service Registry",
-        activated_true: "Geactiveerd in Service Registry"
+        activated_false: "Niet geactiveerd in Manage",
+        activated_true: "Geactiveerd in Manage"
     },
 
     violations: {

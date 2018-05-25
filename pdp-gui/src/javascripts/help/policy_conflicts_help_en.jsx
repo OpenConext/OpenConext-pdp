@@ -19,7 +19,7 @@ class PolicyConflictsHelpEn extends React.Component {
 
                 <h2>Inactive conflicts</h2>
 
-                <p>If filtering out the inactive - marked PAP inactive OR not activated in SR - policies resolves the
+                <p>If filtering out the inactive - marked PAP inactive OR not activated in Manage - policies resolves the
                     conflict then we consider the conflict inactive.</p>
             </div>
 

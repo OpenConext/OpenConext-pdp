@@ -17,7 +17,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import pdp.policies.PolicyLoader;
-import pdp.repositories.PdpDecisionRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
 import pdp.stats.StatsContextHolder;

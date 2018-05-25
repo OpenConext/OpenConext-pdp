@@ -88,10 +88,6 @@ export function reportError(error) {
     return postJson("/internal/users/error", error);
 }
 
-export function getLoasStats() {
-    return fetchJson("/internal/loas-stats");
-}
-
 export function getIdentityProviders() {
     return fetchJson("/internal/identityProviders");
 }
@@ -165,10 +161,6 @@ export function getPolicyViolations(policyId) {
 
 export function getConflicts() {
     return fetchJson("/internal/conflicts");
-}
-
-export function getDecisions(period) {
-    return fetchJson(`/internal/decisions?daysAgo=${period}`);
 }
 
 export function getSamlAllowedAttributes() {

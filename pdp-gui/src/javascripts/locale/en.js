@@ -63,7 +63,7 @@ I18n.translations.en = {
         name: "Name",
         description: "Description",
         serviceProviderId: "Service",
-        activatedSr: "Activated in SR",
+        activatedSr: "Activated in Manage",
         isActive: "Active",
         identityProviderId: "Institution",
         identityProviderIds: "Institution(s)",
@@ -126,8 +126,8 @@ I18n.translations.en = {
         isActiveInfo: " Inactive policies are not evaluated in enforcement decisions",
         isActive: "Active",
         spScopeInfo: "The available Services are scoped to your services if you don't select an Institution",
-        activated_false: "Not activated in Service Registry",
-        activated_true: "Activated in Service Registry"
+        activated_false: "Not activated in Manage",
+        activated_true: "Activated in Manage"
     },
 
     violations: {

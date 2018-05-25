@@ -394,12 +394,12 @@ class PolicyDetail extends React.Component {
         const classNameSubmit = this.isValidPolicy() ? "" : "disabled";
         return (
             <div className="form-element">
-                <a className={classNameSubmit + " submit c-button"} href="#"
-                   onClick={this.submitForm.bind(this)}>{I18n.t("policy_detail.submit")}</a>
-                <a className="c-button cancel" href="#"
-                   onClick={this.cancelForm.bind(this)}>{I18n.t("policy_detail.cancel")}</a>
                 {this.renderDelete(policy)}
                 {this.renderRevisionsLink(policy)}
+                <a className="c-button cancel" href="#"
+                   onClick={this.cancelForm.bind(this)}>{I18n.t("policy_detail.cancel")}</a>
+                <a className={classNameSubmit + " submit c-button pull-right"} href="#"
+                   onClick={this.submitForm.bind(this)}>{I18n.t("policy_detail.submit")}</a>
             </div>
         );
     }
@@ -417,7 +417,7 @@ class PolicyDetail extends React.Component {
     renderRevisionsLink(policy) {
         if (policy.id) {
             return (
-                <Link className="c-button cancel pull-right" to={`/revisions/${policy.id}`}>
+                <Link className="c-button cancel" to={`/revisions/${policy.id}`}>
                     {I18n.t("policies.revisions")}
                 </Link>
             );
