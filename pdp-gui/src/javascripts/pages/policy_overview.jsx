@@ -27,6 +27,12 @@ class PolicyOverview extends React.Component {
                 return $("input", td).prop("checked") ? "1" : "0";
             });
         };
+        $.fn.dataTable.ext.order["epoch-ts"] = function (settings, col) {
+
+            return this.api().column(col, {order: "index"}).nodes().map(td => {
+                return $(td).data("epoch-ts");
+            });
+        };
         $("#policies_table").DataTable({
             paging: true,
             language: {
@@ -45,7 +51,8 @@ class PolicyOverview extends React.Component {
             },
             columnDefs: [
                 {targets: [3, 6], orderDataType: "dom-checkbox"},
-                {targets: [9], orderable: false}
+                {targets: [8], orderDataType: "epoch-ts"},
+                {targets: [10], orderable: false}
             ]
         });
 
@@ -132,19 +139,21 @@ class PolicyOverview extends React.Component {
     }
 
     render() {
+        const isEn = I18n.locale === "en";
         const renderRows = this.state.policies.map(policy => {
             return (
                 <tr key={policy.id}>
                     <td>{policy.name}</td>
                     <td>{policy.description}</td>
-                    <td>{policy.serviceProviderName}</td>
+                    <td>{isEn ? policy.serviceProviderName : policy.serviceProviderNameNl}</td>
                     <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
                                                                   disabled="true"/></td>
-                    <td>{this.renderIdpNames(policy.identityProviderNames)}</td>
+                    <td>{this.renderIdpNames(isEn ? policy.identityProviderNames : policy.identityProviderNamesNl)}</td>
                     <td className='policy_violations'>{this.renderViolationsLink(policy)}</td>
                     <td className='policy_is_active'><input type="checkbox" defaultChecked={policy.active}
                                                             disabled="true"/></td>
                     <td className='policy_type'>{I18n.t("policies.type_" + policy.type)}</td>
+                    <td data-epoch-ts={policy.created}>{new Date(policy.created).toLocaleString()}</td>
                     <td className='policy_revisions'>{this.renderRevisionsLink(policy)}</td>
                     <td className="policy_controls">{this.renderControls(policy)}</td>
                 </tr>);
@@ -165,6 +174,7 @@ class PolicyOverview extends React.Component {
                             <th className='policy_violations'>{I18n.t("policies.violations")}</th>
                             <th className='policy_is_active'>{I18n.t("policies.isActive")}</th>
                             <th className='policy_type'>{I18n.t("policies.type")}</th>
+                            <th className='policy_created'>{I18n.t("policies.created")}</th>
                             <th className='policy_revisions'>{I18n.t("policies.revisions")}</th>
                             <th className='policy_controls'></th>
                         </tr>

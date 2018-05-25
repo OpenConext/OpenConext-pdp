@@ -46,7 +46,7 @@ I18n.translations.nl = {
         name: "Naam",
         description: "Omschrijving",
         serviceProviderId: "Dienst",
-        activatedSr: "Geactiveerd in SR",
+        activatedSr: "Geactiveerd in Manage",
         isActive: "Actief",
         identityProviderIds: "Instelling(en)",
         identityProviderId: "Instelling",
@@ -62,7 +62,8 @@ I18n.translations.nl = {
         type: "Type",
         type_reg: "EB",
         type_step: "Stepup",
-        delete: "Verwijder"
+        delete: "Verwijder",
+        created: "Datum"
     },
 
     datatable: {

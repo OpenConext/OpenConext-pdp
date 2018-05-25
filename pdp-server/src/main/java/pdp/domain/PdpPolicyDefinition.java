@@ -40,10 +40,13 @@ public class PdpPolicyDefinition {
     @Size(min = 1)
     private String serviceProviderId;
     private String serviceProviderName;
+    private String serviceProviderNameNl;
+
     private boolean serviceProviderInvalidOrMissing;
 
     private List<String> identityProviderIds = new ArrayList<>();
     private List<String> identityProviderNames = new ArrayList<>();
+    private List<String> identityProviderNamesNl = new ArrayList<>();
 
     private String clientId;
 
@@ -188,6 +191,14 @@ public class PdpPolicyDefinition {
 
     public void setIdentityProviderNames(List<String> identityProviderNames) {
         this.identityProviderNames = identityProviderNames;
+    }
+
+    public List<String> getIdentityProviderNamesNl() {
+        return identityProviderNamesNl;
+    }
+
+    public void setIdentityProviderNamesNl(List<String> identityProviderNamesNl) {
+        this.identityProviderNamesNl = identityProviderNamesNl;
     }
 
     public int getNumberOfViolations() {
@@ -354,4 +365,11 @@ public class PdpPolicyDefinition {
         Collections.sort(this.loas, Comparator.comparing(LoA::getLevel).reversed());
     }
 
+    public void setServiceProviderNameNl(String serviceProviderNameNl) {
+        this.serviceProviderNameNl = serviceProviderNameNl;
+    }
+
+    public String getServiceProviderNameNl() {
+        return serviceProviderNameNl;
+    }
 }

@@ -105,8 +105,8 @@
       "allowedall": false,
       "entityid": "https://idp.surfnet.nl",
       "metaDataFields": {
-        "name:en": "SURFnet B.V.",
-        "name:nl": "SURFnet B.V."
+        "name:en": "SURFnet B.V. EN",
+        "name:nl": "SURFnet B.V. NL"
       },
       "state": "prodaccepted"
     },

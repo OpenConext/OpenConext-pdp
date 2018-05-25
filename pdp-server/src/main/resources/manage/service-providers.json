@@ -36,8 +36,8 @@
       "entityid": "http://mock-sp",
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
-        "name:en": "OpenConext Mujina SP",
-        "name:nl": "OpenConext Mujina SP"
+        "name:en": "OpenConext Mujina SP EN",
+        "name:nl": "OpenConext Mujina SP NL"
       },
       "state": "prodaccepted"
     },

@@ -25,4 +25,6 @@ public interface Manage {
     EntityMetaData identityProviderByEntityId(String entityId);
 
     List<String> identityProviderNames(List<String> entityIds);
+
+    List<String> identityProviderNamesNl(List<String> entityIds);
 }

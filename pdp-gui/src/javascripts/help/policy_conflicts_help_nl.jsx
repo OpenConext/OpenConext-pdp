@@ -22,7 +22,7 @@ class PolicyConflictsHelpNl extends React.Component {
 
                 <h2>Inactieve conflicten</h2>
 
-                <p>Als het conflict is 'opgelost' door alle niet-actieve - niet geactiveerd in SR of PAP - regels te
+                <p>Als het conflict is 'opgelost' door alle niet-actieve - niet geactiveerd in Manage of PAP - regels te
                     filteren dan is een conflict inactief.</p>
 
             </div>

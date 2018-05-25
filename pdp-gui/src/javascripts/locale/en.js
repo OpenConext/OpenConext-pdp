@@ -79,7 +79,8 @@ I18n.translations.en = {
         type: "Type",
         type_reg: "EB",
         type_step: "Stepup",
-        delete: "Delete"
+        delete: "Delete",
+        created: "Created"
     },
 
     datatable: {

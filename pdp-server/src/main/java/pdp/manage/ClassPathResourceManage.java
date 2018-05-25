@@ -50,7 +50,7 @@ public class ClassPathResourceManage implements Manage, JsonMapper {
         newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
         newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
         this.entityMetaData = newEntityMetaData;
-        LOG.debug("Initialized SR Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID)
+        LOG.debug("Initialized Manage Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID)
             .size(), entityMetaData.get(SP_ENTITY_ID).size());
 
         if (this.policyMissingServiceProviderValidator != null) {
@@ -126,6 +126,12 @@ public class ClassPathResourceManage implements Manage, JsonMapper {
     public List<String> identityProviderNames(List<String> entityIds) {
         return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map
             (EntityMetaData::getNameEn).collect(toList());
+    }
+
+    @Override
+    public List<String> identityProviderNamesNl(List<String> entityIds) {
+        return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map
+            (EntityMetaData::getNameNl).collect(toList());
     }
 
     private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> entityMetaDataOptional) {

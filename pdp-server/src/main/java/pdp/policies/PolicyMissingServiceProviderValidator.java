@@ -32,9 +32,11 @@ public class PolicyMissingServiceProviderValidator {
         pd.setServiceProviderInvalidOrMissing(!sp.isPresent());
         if (sp.isPresent()) {
             pd.setServiceProviderName(sp.get().getNameEn());
+            pd.setServiceProviderNameNl(sp.get().getNameNl());
             pd.setActivatedSr(sp.get().isPolicyEnforcementDecisionRequired());
         }
         pd.setIdentityProviderNames(manage.identityProviderNames(pd.getIdentityProviderIds()));
+        pd.setIdentityProviderNamesNl(manage.identityProviderNamesNl(pd.getIdentityProviderIds()));
         return pd;
     }
 
