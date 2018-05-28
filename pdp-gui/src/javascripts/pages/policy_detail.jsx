@@ -11,8 +11,6 @@ import {
     getAllowedLoas,
     getNewPolicy,
     getPolicy,
-    getScopedIdentityProviders,
-    getServiceProviders,
     updatePolicy
 } from "../api";
 

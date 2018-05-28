@@ -113,47 +113,47 @@ class App extends React.Component {
                         return <Redirect to="/policies"/>;
                     }}/>
                     <Match exactly pattern="/identity"
-                           render={(props) => {
+                           render={props => {
                                return <Identity identityProviders={identityProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/policies"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyOverview {...props}/>;
                            }}/>
                     <Match exactly pattern="/revisions/:id"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyRevisions {...props}/>;
                            }}/>
                     <Match exactly pattern="/new-policy"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyDetail identityProviders={scopedIdentityProviders}
                                                     serviceProviders={serviceProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/new-step-policy"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyDetail identityProviders={scopedIdentityProviders}
                                                     serviceProviders={serviceProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/policy/:id"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyDetail identityProviders={this.state.scopedIdentityProviders}
                                                     serviceProviders={this.state.serviceProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/violations"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyViolations identityProviders={this.state.identityProviders}
                                                         serviceProviders={this.state.serviceProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/violations:/id"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyViolations {...props}/>;
                            }}/>
                     <Match exactly pattern="/conflicts"
-                           render={(props) => {
+                           render={props => {
                                return <PolicyConflicts {...props}/>;
                            }}/>
                     <Match exactly pattern="/playground"
-                           render={(props) => {
+                           render={props => {
                                return <Playground serviceProviders={serviceProviders}
                                                   identityProviders={identityProviders} {...props}/>;
                            }}/>

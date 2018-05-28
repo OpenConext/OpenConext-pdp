@@ -10,7 +10,6 @@ import PolicyAttributes from "../components/policy_attributes";
 import PolicyPlaygroundHelpEn from "../help/policy_playground_help_en";
 import PolicyPlaygroundHelpNl from "../help/policy_playground_help_nl";
 import CodeMirror from "../components/code_mirror";
-import PolicyRevisions from "./policy_revisions";
 
 class Playground extends React.Component {
 
