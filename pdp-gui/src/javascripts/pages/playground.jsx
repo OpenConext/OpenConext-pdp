@@ -2,7 +2,7 @@ import React from "react";
 import I18n from "i18n-js";
 import isEmpty from "lodash/isEmpty";
 
-import {getIdentityProviders, getPolicies, getSamlAllowedAttributes, getServiceProviders, postPdpRequest} from "../api";
+import {getPolicies, getSamlAllowedAttributes, postPdpRequest} from "../api";
 import determineStatus from "../utils/status";
 
 import SelectWrapper from "../components/select_wrapper";
@@ -10,6 +10,7 @@ import PolicyAttributes from "../components/policy_attributes";
 import PolicyPlaygroundHelpEn from "../help/policy_playground_help_en";
 import PolicyPlaygroundHelpNl from "../help/policy_playground_help_nl";
 import CodeMirror from "../components/code_mirror";
+import PolicyRevisions from "./policy_revisions";
 
 class Playground extends React.Component {
 
@@ -17,8 +18,6 @@ class Playground extends React.Component {
         super();
 
         this.state = {
-            identityProviders: [],
-            serviceProviders: [],
             clientId: "EngineBlock",
             allowedSamlAttributes: [],
             policies: [],
@@ -29,17 +28,12 @@ class Playground extends React.Component {
     }
 
     componentWillMount() {
-        getIdentityProviders().then(identityProviders => this.setState({identityProviders}));
-        getServiceProviders().then(serviceProviders => this.setState({serviceProviders}));
         getPolicies().then(policies => this.setState({policies}));
         getSamlAllowedAttributes().then(allowedSamlAttributes => this.setState({allowedSamlAttributes}));
     }
 
     parseEntities(entities) {
-        const options = entities.map(entity => {
-            return {value: entity.entityId, display: I18n.entityName(entity)};
-        });
-        return options;
+        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity)}));
     }
 
     handleChangePolicy(newValue) {
@@ -175,7 +169,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.serviceProviderId}
                         placeholder={I18n.t("policy_detail.sp_placeholder")}
-                        options={this.parseEntities(this.state.serviceProviders)}
+                        options={this.parseEntities(this.props.serviceProviders)}
                         handleChange={this.handleChangeServiceProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>
@@ -192,7 +186,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.serviceProviderId}
                         placeholder={I18n.t("policy_detail.sp_placeholder")}
-                        options={this.parseEntities(this.state.serviceProviders)}
+                        options={this.parseEntities(this.props.serviceProviders)}
                         handleChange={this.handleChangeServiceProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>
@@ -210,7 +204,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.identityProviderId}
                         placeholder={I18n.t("playground.idp_placeholder")}
-                        options={this.parseEntities(this.state.identityProviders)}
+                        options={this.parseEntities(this.props.identityProviders)}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>
@@ -407,7 +401,12 @@ class Playground extends React.Component {
 
 Playground.contextTypes = {
     currentUser: React.PropTypes.object,
-    router: React.PropTypes.object
+    router: React.PropTypes.object,
 };
+Playground.propTypes = {
+    identityProviders: React.PropTypes.array,
+    serviceProviders: React.PropTypes.array
+};
+
 
 export default Playground;

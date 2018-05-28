@@ -36,8 +36,8 @@ import static pdp.util.StreamUtils.singletonCollector;
 @SuppressWarnings("unchecked")
 public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
-    private ClassPathResourceManage serviceRegistry = new ClassPathResourceManage(true);
-    private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(serviceRegistry);
+    private ClassPathResourceManage manage = new ClassPathResourceManage();
+    private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(manage);
     private PdpPolicy pdpPolicy;
 
     private String uid = "uid";
@@ -54,7 +54,7 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
         this.pdpPolicy = new PdpPolicy("N/A", "pdpPolicyName", true, uid, authenticatingAuthority, displayName, true, "reg");
         //individual tests can overwrite this behaviour
         setupSecurityContext(true, entityMetadata(identityProviderIds), entityMetadata(serviceProviderIds));
-        serviceRegistry.allowAll(false);
+        manage.allowAll(false);
     }
 
     private void setupSecurityContext(boolean policyIdpAccessEnforcement, Set<EntityMetaData> idpEntities, Set<EntityMetaData> spEntities) {
@@ -118,7 +118,7 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
     @Test
     public void testActionAllowedIdpsAndSpAllowed() throws Exception {
-        serviceRegistry.allowAll(true);
+        manage.allowAll(true);
         this.subject.actionAllowed(pdpPolicy, PolicyAccess.READ, notOwnedSp, Collections.EMPTY_LIST);
     }
 

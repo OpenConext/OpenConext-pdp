@@ -1,22 +1,14 @@
 package pdp.manage;
 
 import com.google.common.collect.Sets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-import pdp.JsonMapper;
-import pdp.access.PolicyIdpAccessUnknownIdentityProvidersException;
 import pdp.domain.EntityMetaData;
-import pdp.policies.PolicyMissingServiceProviderValidator;
+import pdp.domain.PdpPolicyDefinition;
 
-import java.io.IOException;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,40 +21,28 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
 import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
 
-public class ClassPathResourceManage implements Manage, JsonMapper {
-
-    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+public class ClassPathResourceManage implements Manage {
 
     private Map<String, List<EntityMetaData>> entityMetaData = new ConcurrentHashMap<>();
 
-    @Autowired
-    private PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
-
-    public ClassPathResourceManage(boolean initialize) {
-        //this provides subclasses a hook to set properties before initializing metadata
-        if (initialize) {
-            initializeMetadata();
-        }
+    public ClassPathResourceManage() {
+        initializeMetadata();
     }
 
-    protected void initializeMetadata() {
+    private void initializeMetadata() {
         Map<String, List<EntityMetaData>> newEntityMetaData = new ConcurrentHashMap<>();
         newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
         newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
         this.entityMetaData = newEntityMetaData;
         LOG.debug("Initialized Manage Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID)
             .size(), entityMetaData.get(SP_ENTITY_ID).size());
-
-        if (this.policyMissingServiceProviderValidator != null) {
-            this.policyMissingServiceProviderValidator.validate();
-        }
     }
 
-    protected Resource getIdpResource() {
+    private Resource getIdpResource() {
         return new ClassPathResource("manage/identity-providers.json");
     }
 
-    protected Resource getSpResource() {
+    private Resource getSpResource() {
         return new ClassPathResource("manage/service-providers.json");
     }
 
@@ -114,90 +94,22 @@ public class ClassPathResourceManage implements Manage, JsonMapper {
 
     @Override
     public EntityMetaData serviceProviderByEntityId(String entityId) {
-        return entityMetaData(entityId, serviceProviderOptionalByEntityId(entityId));
+        return nonEmptyOptionalToEntityMetaData(entityId, serviceProviderOptionalByEntityId(entityId));
     }
 
     @Override
     public EntityMetaData identityProviderByEntityId(String entityId) {
-        return entityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
+        return nonEmptyOptionalToEntityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
     }
 
     @Override
-    public List<String> identityProviderNames(List<String> entityIds) {
-        return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map
-            (EntityMetaData::getNameEn).collect(toList());
-    }
+    public void enrichPdPPolicyDefinition(PdpPolicyDefinition pd) {
+        List<String> entityIds = pd.getIdentityProviderIds();
+        List<EntityMetaData> metaDataList = identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId
+            ())).collect(toList());
 
-    @Override
-    public List<String> identityProviderNamesNl(List<String> entityIds) {
-        return identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId())).map
-            (EntityMetaData::getNameNl).collect(toList());
-    }
-
-    private EntityMetaData entityMetaData(String entityId, Optional<EntityMetaData> entityMetaDataOptional) {
-        if (!entityMetaDataOptional.isPresent()) {
-            LOG.error(entityId + " is not a valid or known IdP / SP entityId");
-            throw new PolicyIdpAccessUnknownIdentityProvidersException(entityId + " is not a valid or known IdP / SP " +
-                "entityId");
-        }
-        return entityMetaDataOptional.get();
-    }
-
-    @SuppressWarnings("unchecked")
-    protected List<EntityMetaData> parseEntities(Resource resource) {
-        try {
-            List<Map<String, Object>> list = objectMapper.readValue(resource.getInputStream(), List.class);
-
-            return list.stream().map(entry -> {
-                Map<String, Object> data = (Map<String, Object>) entry.get("data");
-                Map<String, Object> metaDataFields = (Map<String, Object>) data.get("metaDataFields");
-                return
-                        new EntityMetaData(
-                            (String) data.get("entityid"),
-                            (String) metaDataFields.get("coin:institution_id"),
-                            (String) metaDataFields.get("name:en"),
-                            (String) metaDataFields.get("name:nl"),
-                            getPolicyEnforcementDecisionRequired(metaDataFields),
-                            getAllowedAll(data),
-                            getAllowedEntries(data)
-                        );
-                }
-            ).sorted(sortEntityMetaData()).collect(toList());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private Set<String> getAllowedEntries(Map<String, Object> entry) {
-        List<String> allowedEntities = (List<String>) entry.getOrDefault("allowedEntities", Collections.emptyList());
-        return new HashSet<>(allowedEntities);
-    }
-
-    private boolean getAllowedAll(Map<String, Object> entry) {
-        return (boolean) entry.getOrDefault("allowedall", true);
-    }
-
-    private boolean getPolicyEnforcementDecisionRequired(Map<String, Object> entry) {
-        Object policyEnforcementDecisionRequired = entry.get("coin:policy_enforcement_decision_required");
-        if (policyEnforcementDecisionRequired != null) {
-            if (policyEnforcementDecisionRequired instanceof Boolean) {
-                return (Boolean) policyEnforcementDecisionRequired;
-            } else if (policyEnforcementDecisionRequired instanceof String) {
-                return policyEnforcementDecisionRequired.equals("1");
-            }
-        }
-        return false;
-
-    }
-
-    private Comparator<? super EntityMetaData> sortEntityMetaData() {
-        return Comparator.comparing(this::getEntityMetaDataComparatorId);
-    }
-
-    private String getEntityMetaDataComparatorId(EntityMetaData metaData) {
-        return metaData.getNameEn() != null ? metaData.getNameEn() : metaData.getNameNl() != null ? metaData
-            .getNameNl() : metaData.getEntityId();
+        pd.setIdentityProviderNames(metaDataList.stream().map(EntityMetaData::getNameEn).collect(toList()));
+        pd.setIdentityProviderNamesNl(metaDataList.stream().map(EntityMetaData::getNameNl).collect(toList()));
     }
 
     /**

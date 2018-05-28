@@ -12,13 +12,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
-public class ServiceRegistryController {
+public class ManageController {
 
     private final Manage manage;
     private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
 
     @Autowired
-    public ServiceRegistryController(Manage manage) {
+    public ManageController(Manage manage) {
         this.manage = manage;
         this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(manage);
     }

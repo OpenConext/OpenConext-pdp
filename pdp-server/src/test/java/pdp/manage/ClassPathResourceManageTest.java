@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ClassPathResourceManageTest {
 
-    private static Manage manage = new ClassPathResourceManage(true);
+    private static Manage manage = new ClassPathResourceManage();
 
     @Test
     public void testServiceProviders() throws Exception {

@@ -207,7 +207,10 @@ I18n.translations.nl = {
         title: "Identiteitsimpersonatie",
         subTitle: "",
         confirmation: "Verander identiteit",
+        idpEntityId: "Institution / IdP",
+        idpEntityIdPlaceHolder: "Selecteer een Identity Provider",
         unspecifiedNameId: "NameID",
+        unspecifiedNameIdPlaceholder: "urn:collab:person:example.com:admin",
         unspecifiedNameIdInfo: "De unieke NameID wordt opgeslagen bij elke regel verandering",
         displayName: "Naam",
         displayNameInfo: "De naam van de gebruiker wordt ook opgeslagen bij elke nieuwe regel-revisie",
@@ -215,7 +218,6 @@ I18n.translations.nl = {
         clear: "Stop impersonatie",
         cancel: "Annuleer"
     },
-
     contact: {
         email: "Service support e-mail"
     },

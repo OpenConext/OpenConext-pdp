@@ -10,19 +10,18 @@ public class ManageConfiguration {
 
     @Bean
     @Profile({"dev", "no-csrf", "perf", "mail"})
-    public Manage classPathResourceServiceRegistry() {
-        return new ClassPathResourceManage(true);
+    public Manage classPathResourceManage() {
+        return new ClassPathResourceManage();
     }
 
 
     @Bean
     @Profile({"test", "acc", "prod"})
-    public Manage urlResourceServiceRegistry(
+    public Manage urlResourceManage(
         @Value("${manage.username}") String username,
         @Value("${manage.password}") String password,
-        @Value("${manage.manageBaseUrl}") String manageBaseUrl,
-        @Value("${period.manage.refresh.minutes}") int period) {
-        return new UrlResourceManage(username, password, manageBaseUrl, period);
+        @Value("${manage.manageBaseUrl}") String manageBaseUrl) {
+        return new UrlResourceManage(username, password, manageBaseUrl);
     }
 
 

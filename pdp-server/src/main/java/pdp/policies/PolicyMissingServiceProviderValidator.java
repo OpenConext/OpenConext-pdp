@@ -15,6 +15,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
 public class PolicyMissingServiceProviderValidator {
+
     private MailBox mailBox;
     private Manage manage;
     private PdpPolicyRepository pdpPolicyRepository;
@@ -25,6 +26,7 @@ public class PolicyMissingServiceProviderValidator {
         this.mailBox = mailBox;
         this.manage = manage;
         this.pdpPolicyRepository = pdpPolicyRepository;
+        this.validate();
     }
 
     public PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
@@ -35,8 +37,7 @@ public class PolicyMissingServiceProviderValidator {
             pd.setServiceProviderNameNl(sp.get().getNameNl());
             pd.setActivatedSr(sp.get().isPolicyEnforcementDecisionRequired());
         }
-        pd.setIdentityProviderNames(manage.identityProviderNames(pd.getIdentityProviderIds()));
-        pd.setIdentityProviderNamesNl(manage.identityProviderNamesNl(pd.getIdentityProviderIds()));
+        manage.enrichPdPPolicyDefinition(pd);
         return pd;
     }
 

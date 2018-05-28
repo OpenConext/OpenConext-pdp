@@ -14,7 +14,6 @@ class PolicyOverview extends React.Component {
 
     constructor() {
         super();
-
         this.state = {
             data: [],
             policies: []

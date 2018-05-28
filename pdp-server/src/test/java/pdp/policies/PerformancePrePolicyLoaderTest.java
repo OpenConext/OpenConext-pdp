@@ -20,7 +20,7 @@ public class PerformancePrePolicyLoaderTest {
     public void testGetPolicies() throws Exception {
         PdpPolicyRepository policyRepository = mock(PdpPolicyRepository.class);
         PdpPolicyViolationRepository policyViolationRepository = mock(PdpPolicyViolationRepository.class);
-        PerformancePrePolicyLoader subject = new PerformancePrePolicyLoader(0, new ClassPathResourceManage(true), policyRepository, policyViolationRepository);
+        PerformancePrePolicyLoader subject = new PerformancePrePolicyLoader(0, new ClassPathResourceManage(), policyRepository, policyViolationRepository);
 
         List<PdpPolicy> policies = subject.getPolicies();
         assertEquals(49, policies.size());

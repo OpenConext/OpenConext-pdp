@@ -8,15 +8,12 @@ import IdentityHelpEn from "../help/identity_help_en";
 
 import {currentIdentity} from "../lib/identity";
 
-import {getIdentityProviders} from "../api";
-
 class Identity extends React.Component {
 
     constructor() {
         super();
 
         this.state = {
-            identityProviders: [],
             unspecifiedNameId: "",
             displayName: ""
         };
@@ -24,8 +21,6 @@ class Identity extends React.Component {
 
     componentWillMount() {
         this.setState(Object.assign({}, currentIdentity));
-        getIdentityProviders()
-            .then(identityProviders => this.setState({identityProviders}));
     }
 
     parseEntities(entities) {
@@ -46,7 +41,6 @@ class Identity extends React.Component {
     clearIdentity() {
         this.context.clearIdentity();
         this.setState({
-            identityProviders: [],
             unspecifiedNameId: "",
             displayName: ""
         });
@@ -106,7 +100,7 @@ class Identity extends React.Component {
                     <SelectWrapper
                         defaultValue={this.state.idpEntityId}
                         placeholder={I18n.t("identity.idpEntityIdPlaceHolder")}
-                        options={this.parseEntities(this.state.identityProviders)}
+                        options={this.parseEntities(this.props.identityProviders)}
                         multiple={false}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
                 </div>
@@ -154,6 +148,10 @@ Identity.contextTypes = {
     changeIdentity: React.PropTypes.func,
     clearIdentity: React.PropTypes.func,
     router: React.PropTypes.object
+};
+
+Identity.propTypes = {
+    identityProviders: React.PropTypes.array
 };
 
 export default Identity;

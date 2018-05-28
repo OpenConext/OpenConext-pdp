@@ -4,7 +4,7 @@ import $ from "jquery";
 import moment from "moment";
 import isEmpty from "lodash/isEmpty";
 
-import {getIdentityProviders, getServiceProviders, getViolations, getPolicyViolations} from "../api";
+import {getPolicyViolations, getViolations} from "../api";
 import determineStatus from "../utils/status";
 
 import CodeMirror from "../components/code_mirror";
@@ -18,15 +18,8 @@ class PolicyViolations extends React.Component {
 
         this.state = {
             data: [],
-            violations: [],
-            identityProviders: [],
-            serviceProviders: []
+            violations: []
         };
-    }
-
-    componentWillMount() {
-        getIdentityProviders().then(identityProviders => this.setState({identityProviders}));
-        getServiceProviders().then(serviceProviders => this.setState({serviceProviders}));
     }
 
     initDataTable() {
@@ -91,9 +84,7 @@ class PolicyViolations extends React.Component {
 
     getEntityName(id, type) {
         const name = id;
-        const entities = this.state[type].filter(entity => {
-            return entity.entityId === id;
-        });
+        const entities = this.props[type].filter(entity => entity.entityId === id);
         if (!isEmpty(entities)) {
             const entity = entities[0];
             return I18n.entityName(entity);
@@ -283,7 +274,9 @@ class PolicyViolations extends React.Component {
 PolicyViolations.propTypes = {
     params: React.PropTypes.shape({
         id: React.PropTypes.string
-    })
+    }),
+    identityProviders: React.PropTypes.array,
+    serviceProviders: React.PropTypes.array
 };
 
 export default PolicyViolations;

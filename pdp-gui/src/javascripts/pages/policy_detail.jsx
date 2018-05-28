@@ -36,8 +36,6 @@ class PolicyDetail extends React.Component {
         this.state = {
             autoFormat: false,
             policy: null,
-            identityProviders: [],
-            serviceProviders: [],
             allowedAttributes: [],
             allowedLoas: [],
             type: props.pathname.indexOf("step") > -1 ? "step" : "reg"
@@ -73,9 +71,6 @@ class PolicyDetail extends React.Component {
                 }
             });
         }
-
-        getScopedIdentityProviders().then(identityProviders => this.setState({identityProviders}));
-        getServiceProviders().then(serviceProviders => this.setState({serviceProviders}));
         getAllowedAttributes().then(allowedAttributes => this.setState({allowedAttributes}));
     }
 
@@ -88,10 +83,7 @@ class PolicyDetail extends React.Component {
     }
 
     parseEntities(entities) {
-        const options = entities.map(entity => {
-            return {value: entity.entityId, display: I18n.entityName(entity)};
-        });
-        return options;
+        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity)}));
     }
 
     handleChangeServiceProvider(newValue, newLabel) {
@@ -283,7 +275,7 @@ class PolicyDetail extends React.Component {
         const {currentUser} = this.context;
         const workflow = isEmpty(policy.serviceProviderId) ? "failure" : "success";
         const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && isEmpty(policy.identityProviderIds);
-        const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.state.serviceProviders);
+        const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
 
         return (
             <div>
@@ -319,7 +311,7 @@ class PolicyDetail extends React.Component {
                     <SelectWrapper
                         defaultValue={policy.identityProviderIds}
                         placeholder={I18n.t("policy_detail.idps_placeholder")}
-                        options={this.parseEntities(this.state.identityProviders)}
+                        options={this.parseEntities(this.props.identityProviders)}
                         dataChanged={false}
                         multiple={true}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
@@ -499,7 +491,9 @@ PolicyDetail.contextTypes = {
 
 PolicyDetail.propTypes = {
     params: React.PropTypes.object,
-    pathname: React.PropTypes.string
+    pathname: React.PropTypes.string,
+    identityProviders: React.PropTypes.array,
+    serviceProviders: React.PropTypes.array
 };
 
 export default PolicyDetail;

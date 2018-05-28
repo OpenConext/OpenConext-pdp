@@ -24,7 +24,7 @@ import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
 
 public class ShibbolethPreAuthenticatedProcessingFilterTest {
 
-    private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceManage(true));
+    private final static ShibbolethPreAuthenticatedProcessingFilter filter = new ShibbolethPreAuthenticatedProcessingFilter(null, new ClassPathResourceManage());
 
     @Test
     public void testGetPreAuthenticatedShibPrincipal() throws Exception {

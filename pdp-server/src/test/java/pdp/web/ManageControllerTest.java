@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ManageControllerTest {
 
-    private ServiceRegistryController subject = new ServiceRegistryController(new ClassPathResourceManage(true));
+    private ManageController subject = new ManageController(new ClassPathResourceManage());
 
     @Test
     public void testServiceProviders() throws Exception {

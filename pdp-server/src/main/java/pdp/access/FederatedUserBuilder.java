@@ -35,10 +35,10 @@ public class FederatedUserBuilder {
 
     private static final Logger LOG = LoggerFactory.getLogger(FederatedUserBuilder.class);
 
-    private final Manage serviceRegsitry;
+    private final Manage manage;
 
-    public FederatedUserBuilder(Manage serviceRegsitry) {
-        this.serviceRegsitry = serviceRegsitry;
+    public FederatedUserBuilder(Manage manage) {
+        this.manage = manage;
     }
 
     public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
@@ -52,7 +52,7 @@ public class FederatedUserBuilder {
             return Optional.empty();
         }
 
-        Set<EntityMetaData> idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(idpEntityId);
+        Set<EntityMetaData> idpEntities = manage.identityProvidersByAuthenticatingAuthority(idpEntityId);
         Set<EntityMetaData> spEntities = getSpEntities(idpEntities);
 
         LOG.debug("Creating RunAsFederatedUser {}", nameId);
@@ -73,7 +73,7 @@ public class FederatedUserBuilder {
         authenticatingAuthority = authenticatingAuthority.split(";")[0];
         Set<EntityMetaData> idpEntities;
         try {
-            idpEntities = serviceRegsitry.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
+            idpEntities = manage.identityProvidersByAuthenticatingAuthority(authenticatingAuthority);
         } catch (PolicyIdpAccessUnknownIdentityProvidersException e) {
             return Optional.empty();
         }
@@ -88,7 +88,7 @@ public class FederatedUserBuilder {
     private Set<EntityMetaData> getSpEntities(Set<EntityMetaData> idpEntities) {
         //By contract we have at least one Idp - otherwise an Exception is already raised
         String institutionId = idpEntities.iterator().next().getInstitutionId();
-        return serviceRegsitry.serviceProvidersByInstitutionId(institutionId);
+        return manage.serviceProvidersByInstitutionId(institutionId);
     }
 
 }

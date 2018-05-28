@@ -15,7 +15,7 @@ import Miss from "react-router/Miss";
 import Cookies from "js-cookie";
 import I18n from "i18n-js";
 
-import {getUserData, reportError} from "./api";
+import {getIdentityProviders, getScopedIdentityProviders, getServiceProviders, getUserData, reportError} from "./api";
 import QueryParameter from "./utils/query-parameters";
 import {changeIdentity, clearIdentity} from "./lib/identity";
 
@@ -40,7 +40,11 @@ class App extends React.Component {
     constructor() {
         super();
         this.state = {
-            currentUser: null
+            currentUser: null,
+            loading: true,
+            scopedIdentityProviders: [],
+            serviceProviders: [],
+            identityProviders: []
         };
         window.onerror = (msg, url, line, col, err) => {
             const info = err || {};
@@ -61,8 +65,16 @@ class App extends React.Component {
 
     }
 
-    componentWillMount() {
-        this.setState({currentUser: this.props.currentUser});
+    componentDidMount() {
+        Promise.all([getScopedIdentityProviders(), getServiceProviders(), getIdentityProviders()]).then(result => {
+            this.setState({
+                currentUser: this.props.currentUser,
+                loading: false,
+                scopedIdentityProviders: result[0],
+                serviceProviders: result[1],
+                identityProviders: result[2]
+            });
+        });
     }
 
     getChildContext() {
@@ -84,36 +96,76 @@ class App extends React.Component {
     }
 
     render() {
+        const {loading, serviceProviders, identityProviders, scopedIdentityProviders} = this.state;
+
+        if (loading) {
+            return null; // render null when app is not ready yet
+        }
         return (
             <Router>
                 <div>
                     <div className="l-header">
-                        <Header />
+                        <Header/>
                         {this.renderNavigation()}
                     </div>
 
                     <Match exactly pattern="/" render={() => {
                         return <Redirect to="/policies"/>;
                     }}/>
-                    <Match exactly pattern="/identity" component={Identity}/>
-                    <Match exactly pattern="/policies" component={PolicyOverview}/>
-                    <Match exactly pattern="/revisions/:id" component={PolicyRevisions}/>
-                    <Match exactly pattern="/new-policy" component={PolicyDetail}/>
-                    <Match exactly pattern="/new-step-policy" component={PolicyDetail}/>
-                    <Match exactly pattern="/policy/:id" component={PolicyDetail}/>
-                    <Match exactly pattern="/violations" component={PolicyViolations}/>
-                    <Match exactly pattern="/violations/:id" component={PolicyViolations}/>
-                    <Match exactly pattern="/conflicts" component={PolicyConflicts}/>
-                    <Match exactly pattern="/playground" component={Playground}/>
+                    <Match exactly pattern="/identity"
+                           render={(props) => {
+                               return <Identity identityProviders={identityProviders} {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/policies"
+                           render={(props) => {
+                               return <PolicyOverview {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/revisions/:id"
+                           render={(props) => {
+                               return <PolicyRevisions {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/new-policy"
+                           render={(props) => {
+                               return <PolicyDetail identityProviders={scopedIdentityProviders}
+                                                    serviceProviders={serviceProviders} {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/new-step-policy"
+                           render={(props) => {
+                               return <PolicyDetail identityProviders={scopedIdentityProviders}
+                                                    serviceProviders={serviceProviders} {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/policy/:id"
+                           render={(props) => {
+                               return <PolicyDetail identityProviders={this.state.scopedIdentityProviders}
+                                                    serviceProviders={this.state.serviceProviders} {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/violations"
+                           render={(props) => {
+                               return <PolicyViolations identityProviders={this.state.identityProviders}
+                                                        serviceProviders={this.state.serviceProviders} {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/violations:/id"
+                           render={(props) => {
+                               return <PolicyViolations {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/conflicts"
+                           render={(props) => {
+                               return <PolicyConflicts {...props}/>;
+                           }}/>
+                    <Match exactly pattern="/playground"
+                           render={(props) => {
+                               return <Playground serviceProviders={serviceProviders}
+                                                  identityProviders={identityProviders} {...props}/>;
+                           }}/>
                     <Miss component={NotFound}/>
-                    <Footer />
+                    <Footer/>
                 </div>
             </Router>
         );
     }
 
     renderNavigation() {
-        return <Navigation />;
+        return <Navigation/>;
     }
 }
 
@@ -139,11 +191,11 @@ App.propTypes = {
 })();
 
 getUserData().catch(e => {
-    render(<NotFound />, document.getElementById("app"));
+    render(<NotFound/>, document.getElementById("app"));
     throw e;
 }).then(currentUser => {
     if (!currentUser) {
-        render(<NotFound />, document.getElementById("app"));
+        render(<NotFound/>, document.getElementById("app"));
     } else {
         render(<App currentUser={currentUser}/>, document.getElementById("app"));
     }

@@ -2,7 +2,9 @@
 <configuration>
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+        <encoder>
+            <pattern>%d{ISO8601} %5p [%t] %logger{40}:%L - %m%n</pattern>
+        </encoder>
     </appender>
 
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -11,7 +13,6 @@
             <fileNamePattern>logs/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
-
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
@@ -24,7 +25,7 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
     </appender>
 
-    <logger name="analytics" level="INFO" additivity="false">
+    <logger name="analytics" level="WARN" additivity="false">
         <appender-ref ref="DECISIONS-FILE"/>
     </logger>
 

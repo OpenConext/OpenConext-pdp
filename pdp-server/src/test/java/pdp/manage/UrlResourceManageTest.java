@@ -46,7 +46,7 @@ public class UrlResourceManageTest {
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(200)
             .withHeader("Content-Type", "application/json").withBody(spResponse)));
 
-        this.subject = new UrlResourceManage("user", "password", "http://localhost:8889", 10);
+        this.subject = new UrlResourceManage("user", "password", "http://localhost:8889");
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UrlResourceManageTest {
     @Test
     public void testInitializeMetaDataNoEndpoint() throws IOException {
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(500)));
-        new UrlResourceManage("u", "p", "http://localhost:9999/bogus", 10);
+        new UrlResourceManage("u", "p", "http://localhost:9999/bogus");
     }
 
 
@@ -91,12 +91,6 @@ public class UrlResourceManageTest {
         ).collect(singletonCollector());
         assertEquals(idpEntityId, idp.getNameEn());
         assertEquals(idpEntityId, idp.getNameNl());
-    }
-
-    @Test
-    public void testHealth() {
-        Health health = subject.health();
-        assertEquals(Status.UP, health.getStatus());
     }
 
 }

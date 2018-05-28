@@ -15,9 +15,9 @@ public class PolicyIdpAccessEnforcerFilter extends BasicAuthenticationFilter {
 
     private final FederatedUserBuilder federatedUserBuilder;
 
-    public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, Manage serviceRegsitry) {
+    public PolicyIdpAccessEnforcerFilter(AuthenticationManager authenticationManager, Manage manage) {
         super(authenticationManager);
-        this.federatedUserBuilder = new FederatedUserBuilder(serviceRegsitry);
+        this.federatedUserBuilder = new FederatedUserBuilder(manage);
     }
 
     @Override

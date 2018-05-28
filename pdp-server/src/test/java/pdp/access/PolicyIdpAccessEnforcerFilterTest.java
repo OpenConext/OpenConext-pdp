@@ -28,7 +28,7 @@ public class PolicyIdpAccessEnforcerFilterTest {
     @Before
     public void before() throws Exception {
         ProviderManager providerManager = new ProviderManager(Arrays.asList(new BasicAuthenticationProvider("user", "password")));
-        subject = new PolicyIdpAccessEnforcerFilter(providerManager, new ClassPathResourceManage(true));
+        subject = new PolicyIdpAccessEnforcerFilter(providerManager, new ClassPathResourceManage());
         SecurityContextHolder.clearContext();
     }
 
