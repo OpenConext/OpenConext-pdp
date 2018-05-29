@@ -1,11 +1,7 @@
 package pdp.manage;
 
-import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -16,14 +12,9 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
-import pdp.JsonMapper;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicyDefinition;
-import pdp.policies.PolicyMissingServiceProviderValidator;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -31,12 +22,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
-import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 
 public class UrlResourceManage implements Manage {
 
@@ -50,9 +37,10 @@ public class UrlResourceManage implements Manage {
         ".coin:policy_enforcement_decision_required\", \"allowedall\", \"allowedEntities\"]";
 
     private String body = "{\"" + requestedAttributes + "}";
-    private String bodyForEntity = "{\"entityid\":\"@@entityid@@\", \""+requestedAttributes+"}";
-    private String bodyForEntityIdIn = "{\"entityid\":[@@entityids@@], \""+requestedAttributes+"}";
-    private String bodyForInstitutionId = "{\"metaDataFields.coin:institution_id\":\"@@institution_id@@\", \""+requestedAttributes+"}";
+    private String bodyForEntity = "{\"entityid\":\"@@entityid@@\", \"" + requestedAttributes + "}";
+    private String bodyForEntityIdIn = "{\"entityid\":[@@entityids@@], \"" + requestedAttributes + "}";
+    private String bodyForInstitutionId = "{\"metaDataFields.coin:institution_id\":\"@@institution_id@@\", \"" +
+        requestedAttributes + "}";
 
     public UrlResourceManage(
         String username,
@@ -117,7 +105,8 @@ public class UrlResourceManage implements Manage {
         if (StringUtils.isEmpty(institutionId)) {
             return Collections.emptySet();
         }
-        return new HashSet<>(parseEntities(getSpResource(this.bodyForInstitutionId.replace("@@institution_id@@", institutionId))));
+        return new HashSet<>(parseEntities(getSpResource(this.bodyForInstitutionId.replace("@@institution_id@@",
+            institutionId))));
     }
 
     @Override
@@ -129,8 +118,8 @@ public class UrlResourceManage implements Manage {
 
     @Override
     public Optional<EntityMetaData> identityProviderOptionalByEntityId(String entityId) {
-        List<EntityMetaData> entityMetaData = parseEntities(getIdpResource(this.bodyForEntity.replace("@@entityid@@",
-            entityId)));
+        String replaced = this.bodyForEntity.replace("@@entityid@@", entityId);
+        List<EntityMetaData> entityMetaData = parseEntities(getIdpResource(replaced));
         return entityMetaData.isEmpty() ? Optional.empty() : Optional.of(entityMetaData.get(0));
     }
 
@@ -147,15 +136,15 @@ public class UrlResourceManage implements Manage {
     @Override
     public void enrichPdPPolicyDefinition(PdpPolicyDefinition pd) {
         List<String> entityIds = pd.getIdentityProviderIds();
-        if (CollectionUtils.isEmpty(entityIds) || entityIds.stream().filter(s -> StringUtils.isEmpty(s)).count() == 0L) {
+        if (CollectionUtils.isEmpty(entityIds) || entityIds.stream().allMatch(s -> StringUtils.isEmpty(s))) {
             pd.setIdentityProviderNames(new ArrayList<>());
             pd.setIdentityProviderNamesNl(new ArrayList<>());
         } else {
-            String queryValue = String.join(",", entityIds.stream().map(s -> "\"\"").collect(toList()));
+            String queryValue = String.join(",", entityIds.stream().map(s -> "\"" + s + "\"").collect(toList()));
 
-            List<EntityMetaData> identityProviders = parseEntities(getSpResource(this.bodyForEntityIdIn.replace
-                ("@@entityids@@", queryValue)));
-
+            String replaced = this.bodyForEntityIdIn.replace
+                ("@@entityids@@", queryValue);
+            List<EntityMetaData> identityProviders = parseEntities(getIdpResource(replaced));
             pd.setIdentityProviderNames(identityProviders.stream().map(EntityMetaData::getNameEn).collect(toList()));
             pd.setIdentityProviderNamesNl(identityProviders.stream().map(EntityMetaData::getNameNl).collect(toList()));
         }
