@@ -6,22 +6,19 @@ node_js:
 services:
   - mysql
 cache:
-  yarn: true
   directories:
   - node_modules
 before_install:
   - pip install --user codecov
   - nvm install 7
-  - npm install -g yarn
-  - yarn install
 install:
-  - cd pdp-gui && yarn install && cd ..
+  - cd pdp-gui && sh ./build.sh && cd ..
   - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 before_script:
   - mysql -e "create database IF NOT EXISTS pdpserver; grant all on pdpserver.* to 'root';SET GLOBAL TRANSACTION ISOLATION LEVEL SERIALIZABLE;" -uroot
 script:
   - mvn test
-  - cd pdp-gui && yarn install && yarn run lint
+  - cd pdp-gui && sh ./build.sh
 after_success:
   - codecov
 
