@@ -14,14 +14,13 @@ class PolicyConflicts extends React.Component {
 
     constructor() {
         super();
-
         this.state = {
             conflicts: {},
             hideInactive: false
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         getConflicts().then(conflicts => this.setState({conflicts}));
     }
 
@@ -110,7 +109,7 @@ class PolicyConflicts extends React.Component {
                         <i className="fa fa-edit"></i>
                     </Link>
                     <a className="remove" href="#" data-tooltip={I18n.t("policies.delete")}
-                       onClick={this.handleDeletePolicyDetail(policy)}>
+                       onClick={this.handleDeletePolicyDetail(policy).bind(this)}>
                         <i className="fa fa-remove"></i>
                     </a>
                 </td>
@@ -141,7 +140,9 @@ class PolicyConflicts extends React.Component {
                         policyName: policy.name,
                         action: I18n.t("policies.flash_deleted")
                     }));
+                    getConflicts().then(conflicts => this.setState({conflicts}));
                 });
+
             }
         };
     }

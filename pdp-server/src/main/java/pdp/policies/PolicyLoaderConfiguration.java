@@ -50,8 +50,9 @@ public class PolicyLoaderConfiguration {
     @Bean
     public PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator(MailBox mailBox,
                                                                                        Manage manage,
-                                                                                       PdpPolicyRepository pdpPolicyRepository) {
-        return new PolicyMissingServiceProviderValidator(mailBox, manage, pdpPolicyRepository);
+                                                                                       PdpPolicyRepository pdpPolicyRepository,
+                                                                                       @Value("${pdpCronJobResponsible}") boolean pdpCronJobResponsible) {
+        return new PolicyMissingServiceProviderValidator(mailBox, manage, pdpPolicyRepository, pdpCronJobResponsible);
     }
 
 

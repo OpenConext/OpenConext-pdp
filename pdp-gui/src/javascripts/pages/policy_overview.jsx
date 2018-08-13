@@ -82,9 +82,7 @@ class PolicyOverview extends React.Component {
                         action: I18n.t("policies.flash_deleted")
                     }));
                     $("#policies_table").DataTable().destroy();
-                    getPolicies().then(policies => this.setState({policies}, () => {
-                        this.initDataTable();
-                    }));
+                    getPolicies().then(policies => this.setState({policies}, () => this.initDataTable()));
                 });
             }
         };

@@ -273,7 +273,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
     private void assertViolations(List<PdpPolicyViolation> violations, int expectedSize) {
         assertThat(violations, hasSize(expectedSize));
-        violations.forEach(v -> assertTrue(v.getCreated().before(new Date())));
+        violations.forEach(v -> assertNotNull(v.getCreated()));
     }
 
     private void assertAttributes(List<JsonPolicyRequest.Attribute> allowedAttributes) {

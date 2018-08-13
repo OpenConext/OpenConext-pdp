@@ -19,7 +19,6 @@ import org.apache.openaz.xacml.std.StdMutableAttribute;
 import org.apache.openaz.xacml.std.StdMutableRequest;
 import org.apache.openaz.xacml.std.StdMutableRequestAttributes;
 import org.apache.openaz.xacml.std.StdRequest;
-import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.Wrapper;
@@ -208,7 +207,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         stats.setDecision(result.getDecision().toString());
 
         Optional<String> optionalLoa = getOptionalLoa(pdpResponse);
-        optionalLoa.ifPresent(loa -> stats.setLoa(loa));
+        optionalLoa.ifPresent(stats::setLoa);
 
         Optional<IdReference> optionalPolicyId = getPolicyId(result);
         optionalPolicyId.ifPresent(policyId -> stats.setPolicyId(policyId.getId().getUri().toString()));
@@ -243,19 +242,26 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     @RequestMapping(method = GET, value = {"/internal/conflicts", "/protected/conflicts"})
     public Map<String, List<PdpPolicyDefinition>> conflicts() {
+        return doConflicts(true);
+    }
+
+    private Map<String, List<PdpPolicyDefinition>> doConflicts(boolean includeInvalid) {
         List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
             .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
 
         Map<String, List<PdpPolicyDefinition>> conflicts = policyConflictService.conflicts(policies);
-        List<PdpPolicyDefinition> invalid = policies.stream().filter(policy -> policy.isServiceProviderInvalidOrMissing()).collect(toList());
-        if (!invalid.isEmpty()) {
-            conflicts.put("Invalid", invalid);
+        if (includeInvalid) {
+            List<PdpPolicyDefinition> invalid = policies.stream()
+                .filter(PdpPolicyDefinition::isServiceProviderInvalidOrMissing).collect(toList());
+            if (!invalid.isEmpty()) {
+                conflicts.put("EntityID not present in Manage", invalid);
+            }
         }
         return conflicts;
     }
 
     @RequestMapping(method = {PUT, POST}, value = {"/internal/policies", "/protected/policies"})
-    public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) throws DOMStructureException {
+    public PdpPolicy createPdpPolicy(@RequestBody PdpPolicyDefinition pdpPolicyDefinition) {
         String policyXml = policyTemplateEngine.createPolicyXml(pdpPolicyDefinition);
         //if this works then we know the input was correct
         Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml);
@@ -292,7 +298,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     }
 
     private void checkConflicts(PdpPolicyDefinition pdpPolicyDefinition) {
-        Map<String, List<PdpPolicyDefinition>> conflicts = conflicts();
+        Map<String, List<PdpPolicyDefinition>> conflicts = this.doConflicts(false);
         Optional<EntityMetaData> entityMetaData = manage.serviceProviderOptionalByEntityId(pdpPolicyDefinition.getServiceProviderId());
         if (entityMetaData.isPresent() && conflicts.containsKey(entityMetaData.get().getNameEn())) {
             this.mailBox.sendConflictsMail(conflicts);
@@ -311,7 +317,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     }
 
     @RequestMapping(method = DELETE, value = {"/internal/policies/{id}", "/protected/policies/{id}"})
-    public void deletePdpPolicy(@PathVariable Long id) throws DOMStructureException {
+    public void deletePdpPolicy(@PathVariable Long id)  {
         PdpPolicy policy = findPolicyById(id, PolicyAccess.WRITE);
 
         LOG.info("Deleting PdpPolicy {}", policy.getName());
@@ -330,7 +336,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
         List<PdpPolicyDefinition> policies = policyDefinitions();
 
-        List<PdpPolicyDefinition> filterBySp = stream(policies.spliterator(), false).filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
+        List<PdpPolicyDefinition> filterBySp = policies.stream().filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
 
         return policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
     }
@@ -360,7 +366,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     }
 
     @RequestMapping(method = GET, value = {"/internal/loas", "/protected/loas"})
-    public List<String> allowedLevelOfAssurances() throws IOException {
+    public List<String> allowedLevelOfAssurances() {
         return this.loaLevels;
     }
 
@@ -422,9 +428,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
             idReferenceOptional.ifPresent(idReference -> {
                 String policyId = idReference.getId().stringValue();
                 Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true);
-                policyOptional.ifPresent(policy -> {
-                    pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, payload, response, isPlayground));
-                });
+                policyOptional.ifPresent(policy -> pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, payload, response, isPlayground)));
             });
         });
     }

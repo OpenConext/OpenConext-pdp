@@ -10,7 +10,9 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
+import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.StreamSupport.stream;
 
@@ -22,11 +24,14 @@ public class PolicyMissingServiceProviderValidator {
     private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
 
     public PolicyMissingServiceProviderValidator(MailBox mailBox, Manage manage,
-                                                 PdpPolicyRepository pdpPolicyRepository) {
+                                                 PdpPolicyRepository pdpPolicyRepository,
+                                                 boolean pdpCronJobResponsible) {
         this.mailBox = mailBox;
         this.manage = manage;
         this.pdpPolicyRepository = pdpPolicyRepository;
-        this.validate();
+        if (pdpCronJobResponsible) {
+            newScheduledThreadPool(1).scheduleAtFixedRate(() -> this.validate(), 0, 7, TimeUnit.DAYS);
+        }
     }
 
     public PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
