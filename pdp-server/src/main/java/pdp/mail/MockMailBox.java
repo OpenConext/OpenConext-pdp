@@ -7,6 +7,7 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 public class MockMailBox extends DefaultMailBox {
 
@@ -33,7 +34,7 @@ public class MockMailBox extends DefaultMailBox {
 
     private void openInBrowser(String text) throws IOException {
         File tempFile = File.createTempFile("javamail", ".html");
-        FileUtils.writeStringToFile(tempFile, text);
+        FileUtils.writeStringToFile(tempFile, text, Charset.defaultCharset());
         Runtime.getRuntime().exec("open " + tempFile.getAbsolutePath());
     }
 }

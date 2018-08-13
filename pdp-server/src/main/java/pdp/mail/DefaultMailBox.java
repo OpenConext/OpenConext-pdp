@@ -12,17 +12,18 @@ import pdp.domain.PdpPolicyDefinition;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class DefaultMailBox implements MailBox, JsonMapper {
 
-    @Autowired
-    private JavaMailSender mailSender;
     private final String baseUrl;
     private final String to;
     private final String from;
+    @Autowired
+    private JavaMailSender mailSender;
 
     public DefaultMailBox(String baseUrl, String to, String from) {
         this.baseUrl = baseUrl;
@@ -60,8 +61,9 @@ public class DefaultMailBox implements MailBox, JsonMapper {
         return "<pre>" + objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(arg) + "</pre>";
     }
 
-    private void sendMail(String templateName, String subject, Map<String, String> variables) throws MessagingException, IOException {
-        String html = IOUtils.toString(new ClassPathResource(templateName).getInputStream());
+    private void sendMail(String templateName, String subject, Map<String, String> variables) throws
+        MessagingException, IOException {
+        String html = IOUtils.toString(new ClassPathResource(templateName).getInputStream(), Charset.defaultCharset());
         for (Map.Entry<String, String> var : variables.entrySet()) {
             String value = var.getValue();
             value = value.replaceAll("\\$", "\\\\\\$");

@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.openconext</groupId>
         <artifactId>pdp</artifactId>
-        <version>2.0.2</version>
+        <version>2.0.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <openaz.version>0.0.4-OPENCONEXT</openaz.version>
-        <jackson.version>2.9.0.pr3</jackson.version>
+        <jackson.version>2.9.6</jackson.version>
 
     </properties>
 
@@ -27,28 +27,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-            <exclusions>
-                <exclusion>  <!-- https://github.com/logstash/logstash-logback-encoder/issues/160 -->
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.1.6</version>
-            <exclusions>
-                <exclusion>  <!-- https://github.com/logstash/logstash-logback-encoder/issues/160 -->
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-core</artifactId>
-            <version>1.1.6</version>
         </dependency>
         <dependency>
             <groupId>net.logstash.logback</groupId>
@@ -74,7 +52,7 @@
         <dependency>
             <groupId>org.springframework.security.oauth</groupId>
             <artifactId>spring-security-oauth2</artifactId>
-            <version>2.1.0.RELEASE</version>
+            <version>2.3.3.RELEASE</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.codehaus.jackson</groupId>
@@ -109,9 +87,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <scope>runtime</scope>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>2.2.6</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
@@ -131,7 +109,7 @@
         <dependency>
             <groupId>com.github.spullara.mustache.java</groupId>
             <artifactId>compiler</artifactId>
-            <version>0.9.1</version>
+            <version>0.9.5</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -140,12 +118,12 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
-            <version>1.5.5</version>
+            <version>1.6.1</version>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>2.6</version>
         </dependency>
         <dependency>
             <groupId>joda-time</groupId>
@@ -159,7 +137,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.6.0</version>
+            <version>2.18.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -171,7 +149,7 @@
         <dependency>
             <groupId>com.icegreen</groupId>
             <artifactId>greenmail</artifactId>
-            <version>1.5.0</version>
+            <version>1.5.7</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -222,7 +200,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>0.8.1</version>
                 <executions>
                     <execution>
                         <goals>
@@ -239,34 +217,14 @@
                 </executions>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-webdav</artifactId>
-                <version>1.0-beta-2</version>
-            </extension>
-        </extensions>
     </build>
     <repositories>
         <repository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
             <id>openconext-snapshots</id>
             <name>OpenConext public snapshot repository</name>
             <url>https://build.openconext.org/repository/public/snapshots</url>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
             <id>openconext-releases</id>
             <name>OpenConext public releases repository</name>
             <url>https://build.openconext.org/repository/public/releases</url>
@@ -275,13 +233,6 @@
             <id>openconext-third-party-releases</id>
             <name>OpenConext third-party repository</name>
             <url>https://build.openconext.org/repository/public/third-party</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
         </repository>
     </repositories>
-
 </project>

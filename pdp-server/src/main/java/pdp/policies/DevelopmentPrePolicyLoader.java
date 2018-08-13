@@ -12,6 +12,7 @@ import pdp.repositories.PdpPolicyViolationRepository;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,7 +32,8 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
     private final PdpPolicyRepository pdpPolicyRepository;
     private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
-    public DevelopmentPrePolicyLoader(Resource baseDirResource, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+    public DevelopmentPrePolicyLoader(Resource baseDirResource, PdpPolicyRepository pdpPolicyRepository,
+                                      PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         this.pdpPolicyRepository = pdpPolicyRepository;
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
         this.baseDirResource = baseDirResource;
@@ -67,7 +69,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
 
     private String getXml(File file) {
         try {
-            return IOUtils.toString(new FileInputStream(file));
+            return IOUtils.toString(new FileInputStream(file), Charset.defaultCharset());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

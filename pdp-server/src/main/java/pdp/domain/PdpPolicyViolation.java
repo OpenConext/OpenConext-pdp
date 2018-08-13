@@ -42,6 +42,7 @@ public class PdpPolicyViolation {
         this.jsonRequest = jsonRequest;
         this.response = response;
         this.isPlayground = isPlayground;
+        this.created = new Timestamp(System.currentTimeMillis());
     }
 
     public Long getId() {
