@@ -111,7 +111,10 @@ I18n.translations.nl = {
         isActive: "Actief",
         spScopeInfo: "De beschikbare diensten zijn beperkt tot je eigen diensten zolang er geen Instelling is gekozen",
         activated_false: "Niet geactiveerd in Manage",
-        activated_true: "Geactiveerd in Manage"
+        activated_true: "Geactiveerd in Manage",
+        latest_revision_warning: "Dit is niet de laatste revisie. Klik op de onderstaande link om de laatste revisie te bewerken.",
+        latest_revision: "Bewerk de laatste revisie"
+
     },
 
     violations: {

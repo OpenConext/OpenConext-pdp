@@ -85,6 +85,8 @@ public class PdpPolicyDefinition {
 
     private String type;
 
+    private Long parentId;
+
     public Long getId() {
         return id;
     }
@@ -297,6 +299,14 @@ public class PdpPolicyDefinition {
 
     public String getType() {
         return type;
+    }
+
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 
     //used in the mustache templates

@@ -36,15 +36,17 @@ class PolicyDetail extends React.Component {
             policy: null,
             allowedAttributes: [],
             allowedLoas: [],
-            type: props.pathname.indexOf("step") > -1 ? "step" : "reg"
+            type: props.pathname.indexOf("step") > -1 ? "step" : "reg",
+            parentId: null
         };
     }
 
     componentWillReceiveProps(nextProps) {
         const newType = nextProps.params.type;
         const currentType = this.props.params.type;
-        if (newType !== currentType) {
-            this.componentWillUnmount();
+        const currentId = this.props.params.id;
+        const newId = nextProps.params.id;
+        if (newType !== currentType || currentId !== newId) {
             this.setState({...this.state}, this.componentWillMount);
         }
     }
@@ -63,7 +65,7 @@ class PolicyDetail extends React.Component {
             });
         } else {
             getPolicy(this.props.params.id).then(policy => {
-                this.setState({policy, type: policy.type});
+                this.setState({policy, type: policy.type, parentId: policy.parentId});
                 if (policy.type === "step") {
                     getAllowedLoas().then(allowedLoas => this.setState({allowedLoas}));
                 }
@@ -188,6 +190,18 @@ class PolicyDetail extends React.Component {
 
     handleOnDenyAdviceNl(e) {
         this.setState({policy: {...this.state.policy, denyAdviceNl: e.target.value}});
+    }
+
+    renderNotLatestRevision(parentId) {
+        if (!parentId) {
+            return null;
+        }
+        return <section className="not-latest-revsion">
+            <p>{I18n.t("policy_detail.latest_revision_warning")}</p>
+            <Link to={`/policy/${parentId}`}>
+                {I18n.t("policy_detail.latest_revision")}
+            </Link>
+        </section>
     }
 
     renderName(policy) {
@@ -424,7 +438,7 @@ class PolicyDetail extends React.Component {
     }
 
     render() {
-        const {policy, type} = this.state;
+        const {policy, type, parentId} = this.state;
         const regular = type === "reg";
 
         if (policy) {
@@ -448,6 +462,7 @@ class PolicyDetail extends React.Component {
                             className="sub-element">{subtitle}</em>
                             <em className="sub-element second">{activatedSR}</em>
                         </p>
+                        {this.renderNotLatestRevision(parentId)}
                         {this.renderName(policy)}
                         {regular && this.renderDenyPermitRule(policy)}
                         {this.renderServiceProvider(policy)}

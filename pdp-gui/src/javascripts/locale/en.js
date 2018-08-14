@@ -128,7 +128,9 @@ I18n.translations.en = {
         isActive: "Active",
         spScopeInfo: "The available Services are scoped to your services if you don't select an Institution",
         activated_false: "Not activated in Manage",
-        activated_true: "Activated in Manage"
+        activated_true: "Activated in Manage",
+        latest_revision_warning: "This is not the latest revision. Click on the link below to edit the latest revision.",
+        latest_revision: "Edit the latest revision"
     },
 
     violations: {

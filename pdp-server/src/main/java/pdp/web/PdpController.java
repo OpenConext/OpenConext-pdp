@@ -307,11 +307,17 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     @RequestMapping(method = GET, value = {"/internal/policies/{id}", "/protected/policies/{id}"})
     public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
-        PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(findPolicyById(id, READ));
+        PdpPolicy policyById = findPolicyById(id, READ);
+        PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policyById);
         policyDefinition = policyMissingServiceProviderValidator.addEntityMetaData(policyDefinition);
         if (policyDefinition.getType().equals("step")) {
             policyDefinition.getLoas().forEach(loa -> loa.getCidrNotations()
                 .forEach(notation -> notation.setIpInfo(getIpInfo(notation.getIpAddress(), notation.getPrefix()))));
+        }
+        if (!policyById.isLatestRevision()) {
+            PdpPolicy latestPolicy =
+                policyById.getRevisions().stream().max(Comparator.comparing(PdpPolicy::getRevisionNbr)).get();
+            policyDefinition.setParentId(latestPolicy.getId());
         }
         return policyDefinition;
     }
