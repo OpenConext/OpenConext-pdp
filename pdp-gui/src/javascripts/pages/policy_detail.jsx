@@ -201,7 +201,7 @@ class PolicyDetail extends React.Component {
             <Link to={`/policy/${parentId}`}>
                 {I18n.t("policy_detail.latest_revision")}
             </Link>
-        </section>
+        </section>;
     }
 
     renderName(policy) {
