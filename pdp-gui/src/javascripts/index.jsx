@@ -144,9 +144,10 @@ class App extends React.Component {
                                return <PolicyViolations identityProviders={this.state.identityProviders}
                                                         serviceProviders={this.state.serviceProviders} {...props}/>;
                            }}/>
-                    <Match exactly pattern="/violations:/id"
+                    <Match exactly pattern="/violations/:id"
                            render={props => {
-                               return <PolicyViolations {...props}/>;
+                               return <PolicyViolations identityProviders={this.state.identityProviders}
+                                                        serviceProviders={this.state.serviceProviders} {...props}/>;
                            }}/>
                     <Match exactly pattern="/conflicts"
                            render={props => {
