@@ -22,7 +22,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                 <h2>Level of Assurance</h2>
 
                 <p>You can define multple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
-                of a LoA will determine of the specified LoA is enforced by the Stepup-Gateway</p>
+                of a LoA will determine if the specified LoA is enforced by the Stepup-Gateway</p>
 
                 <section className="sub-form">
                     <h3>Rule</h3>
