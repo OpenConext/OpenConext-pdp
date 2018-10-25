@@ -30,7 +30,7 @@ public class PolicyMissingServiceProviderValidator {
         this.manage = manage;
         this.pdpPolicyRepository = pdpPolicyRepository;
         if (pdpCronJobResponsible) {
-            newScheduledThreadPool(1).scheduleAtFixedRate(() -> this.validate(), 0, 7, TimeUnit.DAYS);
+            newScheduledThreadPool(1).scheduleAtFixedRate(() -> this.validate(), 1, 7*24, TimeUnit.HOURS);
         }
     }
 
@@ -47,7 +47,7 @@ public class PolicyMissingServiceProviderValidator {
     }
 
     public void validate() {
-        List<PdpPolicyDefinition> invalidPolicies = stream(pdpPolicyRepository.findAll().spliterator(), false)
+        List<PdpPolicyDefinition> invalidPolicies = pdpPolicyRepository.findAll().stream()
             .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)))
             .filter(policy -> policy.isServiceProviderInvalidOrMissing())
             .filter(policy -> policy.isActive())

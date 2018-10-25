@@ -221,7 +221,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
     public List<PdpPolicyDefinition> policyDefinitions() {
-        Stream<PdpPolicy> stream = stream(pdpPolicyRepository.findAll().spliterator(), false);
+        Stream<PdpPolicy> stream = pdpPolicyRepository.findAll().stream();
         List<PdpPolicyDefinition> policies = stream
             .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(
                 addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
@@ -246,7 +246,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     }
 
     private Map<String, List<PdpPolicyDefinition>> doConflicts(boolean includeInvalid) {
-        List<PdpPolicyDefinition> policies = stream(pdpPolicyRepository.findAll().spliterator(), false)
+        List<PdpPolicyDefinition> policies = pdpPolicyRepository.findAll().stream()
             .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
 
         Map<String, List<PdpPolicyDefinition>> conflicts = policyConflictService.conflicts(policies);
