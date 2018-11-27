@@ -3,10 +3,12 @@ package pdp.access;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.util.StringUtils;
 import pdp.domain.EntityMetaData;
 import pdp.manage.Manage;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -43,9 +45,9 @@ public class FederatedUserBuilder {
 
     public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
         //check headers for enrichment of the Authentication
-        String idpEntityId = request.getHeader(X_IDP_ENTITY_ID);
-        String nameId = request.getHeader(X_UNSPECIFIED_NAME_ID);
-        String displayName = request.getHeader(X_DISPLAY_NAME);
+        String idpEntityId = getHeader(X_IDP_ENTITY_ID, request);
+        String nameId = getHeader(X_UNSPECIFIED_NAME_ID, request);
+        String displayName = getHeader(X_DISPLAY_NAME, request);
 
         if (isEmpty(idpEntityId) || isEmpty(nameId) || isEmpty(displayName)) {
             //any policy idp access checks will fail, but it might be that this call is not for something that requires access
@@ -61,9 +63,9 @@ public class FederatedUserBuilder {
     }
 
     public Optional<FederatedUser> shibUser(HttpServletRequest request) {
-        String uid = request.getHeader(UID_HEADER_NAME);
-        String displayName = request.getHeader(DISPLAY_NAME_HEADER_NAME);
-        String authenticatingAuthority = request.getHeader(SHIB_AUTHENTICATING_AUTHORITY);
+        String uid = getHeader(UID_HEADER_NAME, request);
+        String displayName = getHeader(DISPLAY_NAME_HEADER_NAME, request);
+        String authenticatingAuthority = getHeader(SHIB_AUTHENTICATING_AUTHORITY, request);
 
         if (isEmpty(uid) || isEmpty(displayName) || isEmpty(authenticatingAuthority)) {
             return Optional.empty();
@@ -89,6 +91,16 @@ public class FederatedUserBuilder {
         //By contract we have at least one Idp - otherwise an Exception is already raised
         String institutionId = idpEntities.iterator().next().getInstitutionId();
         return manage.serviceProvidersByInstitutionId(institutionId);
+    }
+
+    private String getHeader(String name, HttpServletRequest request) {
+        String header = request.getHeader(name);
+        try {
+            return StringUtils.hasText(header) ?
+                    new String(header.getBytes("ISO8859-1"), "UTF-8") : header;
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
 }
