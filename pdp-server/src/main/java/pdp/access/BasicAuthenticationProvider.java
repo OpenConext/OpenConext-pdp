@@ -21,7 +21,7 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
 
     public BasicAuthenticationProvider(String userName, String password) {
         notNull(userName, "Username must not be null");
-        notNull(password, "Username must not be null");
+        notNull(password, "Password must not be null");
 
         this.userName = userName;
         this.password = password;
