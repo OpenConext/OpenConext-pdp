@@ -45,9 +45,9 @@ public class FederatedUserBuilder {
 
     public Optional<FederatedUser> basicAuthUser(HttpServletRequest request, Collection<? extends GrantedAuthority> authorities) {
         //check headers for enrichment of the Authentication
-        String idpEntityId = getHeader(X_IDP_ENTITY_ID, request);
-        String nameId = getHeader(X_UNSPECIFIED_NAME_ID, request);
-        String displayName = getHeader(X_DISPLAY_NAME, request);
+        String idpEntityId = getHeader(X_IDP_ENTITY_ID, request, false);
+        String nameId = getHeader(X_UNSPECIFIED_NAME_ID, request, false);
+        String displayName = getHeader(X_DISPLAY_NAME, request, false);
 
         if (isEmpty(idpEntityId) || isEmpty(nameId) || isEmpty(displayName)) {
             //any policy idp access checks will fail, but it might be that this call is not for something that requires access
@@ -63,9 +63,9 @@ public class FederatedUserBuilder {
     }
 
     public Optional<FederatedUser> shibUser(HttpServletRequest request) {
-        String uid = getHeader(UID_HEADER_NAME, request);
-        String displayName = getHeader(DISPLAY_NAME_HEADER_NAME, request);
-        String authenticatingAuthority = getHeader(SHIB_AUTHENTICATING_AUTHORITY, request);
+        String uid = getHeader(UID_HEADER_NAME, request, true);
+        String displayName = getHeader(DISPLAY_NAME_HEADER_NAME, request, true);
+        String authenticatingAuthority = getHeader(SHIB_AUTHENTICATING_AUTHORITY, request, true);
 
         if (isEmpty(uid) || isEmpty(displayName) || isEmpty(authenticatingAuthority)) {
             return Optional.empty();
@@ -93,8 +93,11 @@ public class FederatedUserBuilder {
         return manage.serviceProvidersByInstitutionId(institutionId);
     }
 
-    private String getHeader(String name, HttpServletRequest request) {
+    private String getHeader(String name, HttpServletRequest request, boolean convertFromIso88591) {
         String header = request.getHeader(name);
+        if (!convertFromIso88591) {
+            return header;
+        }
         try {
             return StringUtils.hasText(header) ?
                     new String(header.getBytes("ISO8859-1"), "UTF-8") : header;
