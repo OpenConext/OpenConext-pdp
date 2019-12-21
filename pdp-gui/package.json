@@ -6,7 +6,7 @@
   "scripts": {
     "webpack": "webpack --config webpack.config.prod.js",
     "webpack-dev-server": "webpack-dev-server -d --host 0.0.0.0",
-    "local": "webpack-dev-server -d --host 0.0.0.0",
+    "local": "webpack-dev-server -d --open --host 0.0.0.0",
     "lint": "eslint --ext .js --ext .jsx --ignore-pattern '**/node_modules/**' --ignore-pattern '**/build/**' --ignore-pattern '**/__tests__/**' --ignore-pattern '**/dist/**/*.js' --ignore-pattern '**/coverage/**' ."
   },
   "devDependencies": {
