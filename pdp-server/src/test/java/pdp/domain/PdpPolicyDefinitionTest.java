@@ -57,7 +57,9 @@ public class PdpPolicyDefinitionTest implements JsonMapper {
     }
 
     private PdpPolicyDefinition getPdpPolicyDefinition() throws java.io.IOException {
-        return objectMapper.readValue(IOUtils.toString(new ClassPathResource("xacml/json-policies/policy_definition.json").getInputStream()), PdpPolicyDefinition.class);
+        return objectMapper.readValue(IOUtils.toString(
+                new ClassPathResource("xacml/json-policies/policy_definition.json").getInputStream(), "UTF-8"),
+                PdpPolicyDefinition.class);
     }
 
     private LoA getLoa(String level) {

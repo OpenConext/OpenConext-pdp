@@ -20,7 +20,7 @@ public class ManageController {
     @Autowired
     public ManageController(Manage manage) {
         this.manage = manage;
-        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(manage);
+        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer();
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/internal/serviceProviders")

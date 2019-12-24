@@ -67,6 +67,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.StreamSupport.stream;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
@@ -95,7 +95,7 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
 
 @RestController
 @RequestMapping(headers = {"Content-Type=application/json"}, produces = {"application/json"})
-public class PdpController implements JsonMapper, IPAddressProvider{
+public class PdpController implements JsonMapper, IPAddressProvider {
 
     private final static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
@@ -106,7 +106,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
     private final PolicyConflictService policyConflictService = new PolicyConflictService();
     private final Manage manage;
-    private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer;
+    private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer();
     private final PDPEngine playgroundPdpEngine;
     private final boolean cachePolicies;
     private final MailBox mailBox;
@@ -119,7 +119,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     @Autowired
     public PdpController(@Value("${period.policies.refresh.minutes}") int period,
                          @Value("${policies.cachePolicies}") boolean cachePolicies,
-                         @Value("${loa.levels}") String  loaLevelsCommaSeparated,
+                         @Value("${loa.levels}") String loaLevelsCommaSeparated,
                          PdpPolicyViolationRepository pdpPolicyViolationRepository,
                          PdpPolicyRepository pdpPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
@@ -132,15 +132,14 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
         this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
-        this.policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer(manage);
         this.pdpPolicyRepository = pdpPolicyRepository;
         this.manage = manage;
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-            TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
-            period, period, TimeUnit.MINUTES);
+                TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
+                period, period, TimeUnit.MINUTES);
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
@@ -186,19 +185,19 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         StdMutableRequest mutableRequest = StdMutableRequest.class.cast(ReflectionUtils.getField(field, request));
         mutableRequest.setReturnPolicyIdList(true);
         StdMutableRequestAttributes requestAttributes = (StdMutableRequestAttributes) mutableRequest.getRequestAttributes().stream().filter(requestAttribute ->
-            requestAttribute.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
-            .findFirst().get();
+                requestAttribute.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
+                .findFirst().get();
         Collection<Attribute> attributes = requestAttributes.getAttributes();
         boolean clientIDPresent = attributes.stream().anyMatch(attribute -> attribute.getAttributeId().getUri().toString().equals("ClientID"));
         if (!clientIDPresent) {
             requestAttributes.add(new StdAttribute(
-                new StdMutableAttribute(
-                    new IdentifierImpl("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"),
-                    new IdentifierImpl("ClientID"),
-                    new StdAttributeValue<>(
-                        new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string"),
-                        "EngineBlock")
-                )));
+                    new StdMutableAttribute(
+                            new IdentifierImpl("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"),
+                            new IdentifierImpl("ClientID"),
+                            new StdAttributeValue<>(
+                                    new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string"),
+                                    "EngineBlock")
+                    )));
         }
     }
 
@@ -221,10 +220,13 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
     public List<PdpPolicyDefinition> policyDefinitions() {
-        Stream<PdpPolicy> stream = pdpPolicyRepository.findAll().stream();
-        List<PdpPolicyDefinition> policies = stream
-            .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(
-                addAccessRules(policy, pdpPolicyDefinitionParser.parse(policy)))).collect(toList());
+        List<PdpPolicyDefinition> policies = pdpPolicyRepository.findAll().stream()
+                .map(policy -> {
+                    PdpPolicyDefinition pdpPolicyDefinition = pdpPolicyDefinitionParser.parse(policy);
+                    return addAccessRules(policy, pdpPolicyDefinition);
+                }).collect(toList());
+
+        policies = policyMissingServiceProviderValidator.addEntityMetaData(policies);
 
         policies = policies.stream().filter(policy -> !policy.isServiceProviderInvalidOrMissing()).collect(toList());
 
@@ -247,12 +249,14 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     private Map<String, List<PdpPolicyDefinition>> doConflicts(boolean includeInvalid) {
         List<PdpPolicyDefinition> policies = pdpPolicyRepository.findAll().stream()
-            .map(policy -> policyMissingServiceProviderValidator.addEntityMetaData(pdpPolicyDefinitionParser.parse(policy))).collect(toList());
+                .map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
+
+        policies = policyMissingServiceProviderValidator.addEntityMetaData(policies);
 
         Map<String, List<PdpPolicyDefinition>> conflicts = policyConflictService.conflicts(policies);
         if (includeInvalid) {
             List<PdpPolicyDefinition> invalid = policies.stream()
-                .filter(PdpPolicyDefinition::isServiceProviderInvalidOrMissing).collect(toList());
+                    .filter(PdpPolicyDefinition::isServiceProviderInvalidOrMissing).collect(toList());
             if (!invalid.isEmpty()) {
                 conflicts.put("EntityID not present in Manage", invalid);
             }
@@ -273,11 +277,11 @@ public class PdpController implements JsonMapper, IPAddressProvider{
             policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
             //Cascade.ALL
             PdpPolicy.revision(pdpPolicyDefinition.getName(), policy, policyXml, policyIdpAccessEnforcer.username(),
-                policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
+                    policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
         } else {
             policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
-                policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive(),
-                pdpPolicyDefinition.getType());
+                    policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive(),
+                    pdpPolicyDefinition.getType());
 
             //this will throw an Exception if it is not allowed
             policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
@@ -309,21 +313,21 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     public PdpPolicyDefinition policyDefinition(@PathVariable Long id) {
         PdpPolicy policyById = findPolicyById(id, READ);
         PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policyById);
-        policyDefinition = policyMissingServiceProviderValidator.addEntityMetaData(policyDefinition);
+        policyDefinition = policyMissingServiceProviderValidator.addEntityMetaData(Collections.singletonList(policyDefinition)).get(0);
         if (policyDefinition.getType().equals("step")) {
             policyDefinition.getLoas().forEach(loa -> loa.getCidrNotations()
-                .forEach(notation -> notation.setIpInfo(getIpInfo(notation.getIpAddress(), notation.getPrefix()))));
+                    .forEach(notation -> notation.setIpInfo(getIpInfo(notation.getIpAddress(), notation.getPrefix()))));
         }
         if (!policyById.isLatestRevision()) {
             PdpPolicy latestPolicy =
-                policyById.getRevisions().stream().max(Comparator.comparing(PdpPolicy::getRevisionNbr)).get();
+                    policyById.getRevisions().stream().max(Comparator.comparing(PdpPolicy::getRevisionNbr)).get();
             policyDefinition.setParentId(latestPolicy.getId());
         }
         return policyDefinition;
     }
 
     @RequestMapping(method = DELETE, value = {"/internal/policies/{id}", "/protected/policies/{id}"})
-    public void deletePdpPolicy(@PathVariable Long id)  {
+    public void deletePdpPolicy(@PathVariable Long id) {
         PdpPolicy policy = findPolicyById(id, PolicyAccess.WRITE);
 
         LOG.info("Deleting PdpPolicy {}", policy.getName());
@@ -366,9 +370,10 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
         Set<PdpPolicy> policies = parent.getRevisions();
         policies.add(parent);
-
-        return policies.stream().map(rev ->
-            policyMissingServiceProviderValidator.addEntityMetaData(addAccessRules(rev, pdpPolicyDefinitionParser.parse(rev)))).collect(toList());
+        return policies.stream().map(rev -> {
+            PdpPolicyDefinition def = pdpPolicyDefinitionParser.parse(rev);
+            return addAccessRules(rev, def);
+        }).collect(toList());
     }
 
     @RequestMapping(method = GET, value = {"/internal/loas", "/protected/loas"})
@@ -406,14 +411,13 @@ public class PdpController implements JsonMapper, IPAddressProvider{
     private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
         boolean actionsAllowed = policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
         pd.setActionsAllowed(actionsAllowed);
-        pd.setAuthenticatingAuthorityName(manage.identityProviderByEntityId(policy.getAuthenticatingAuthority()).getNameEn());
         return pd;
     }
 
     private void addStatsDetails(StatsContext stats, Request request) {
         RequestAttributes req = request.getRequestAttributes().stream()
-            .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
-            .collect(singletonCollector());
+                .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
+                .collect(singletonCollector());
         Collection<Attribute> attributes = req.getAttributes();
         stats.setIdentityProvider(getAttributeValue(attributes, "IDPentityID").orElse(""));
         stats.setServiceProvicer(getAttributeValue(attributes, "SPentityID").orElse(""));
@@ -428,7 +432,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
         Collection<Result> results = pdpResponse.getResults();
 
         Optional<Result> deniesOrIndeterminate = results.stream().filter(result ->
-            result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).findAny();
+                result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).findAny();
         deniesOrIndeterminate.ifPresent(result -> {
             Optional<IdReference> idReferenceOptional = getPolicyId(result);
             idReferenceOptional.ifPresent(idReference -> {
@@ -441,19 +445,19 @@ public class PdpController implements JsonMapper, IPAddressProvider{
 
     private Optional<String> getOptionalLoa(Response pdpResponse) {
         return pdpResponse.getResults().stream().map(result -> result.getObligations().stream()
-            .map(obligation -> obligation.getAttributeAssignments().stream()
-                .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
-            .flatMap(Function.identity())
-            .flatMap(Function.identity())
-            .max(Comparator.naturalOrder());
+                .map(obligation -> obligation.getAttributeAssignments().stream()
+                        .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
+                .flatMap(Function.identity())
+                .flatMap(Function.identity())
+                .max(Comparator.naturalOrder());
     }
 
     private Optional<IdReference> getPolicyId(Result deniesOrIndeterminate) {
         Collection<IdReference> policyIdentifiers = deniesOrIndeterminate.getPolicyIdentifiers();
         Collection<IdReference> policySetIdentifiers = deniesOrIndeterminate.getPolicySetIdentifiers();
         return !CollectionUtils.isEmpty(policyIdentifiers) ?
-            policyIdentifiers.stream().collect(singletonOptionalCollector()) :
-            policySetIdentifiers.stream().collect(singletonOptionalCollector());
+                policyIdentifiers.stream().collect(singletonOptionalCollector()) :
+                policySetIdentifiers.stream().collect(singletonOptionalCollector());
     }
 
     private void refreshPolicies() {

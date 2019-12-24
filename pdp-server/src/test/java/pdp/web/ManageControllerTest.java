@@ -21,7 +21,7 @@ public class ManageControllerTest {
 
     @Test
     public void testServiceProviders() throws Exception {
-        assertEquals(49, subject.serviceProviders().size());
+        assertEquals(51, subject.serviceProviders().size());
     }
 
     @Test

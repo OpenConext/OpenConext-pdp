@@ -23,10 +23,10 @@ public class PerformancePrePolicyLoaderTest {
         PerformancePrePolicyLoader subject = new PerformancePrePolicyLoader(0, new ClassPathResourceManage(), policyRepository, policyViolationRepository);
 
         List<PdpPolicy> policies = subject.getPolicies();
-        assertEquals(49, policies.size());
+        assertEquals(51, policies.size());
 
         subject.loadPolicies();
-        verify(policyRepository, times(49)).save(any(PdpPolicy.class));
+        verify(policyRepository, times(51)).save(any(PdpPolicy.class));
 
     }
 

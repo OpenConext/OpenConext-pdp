@@ -6,8 +6,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Status;
 import org.springframework.core.io.ClassPathResource;
 import pdp.domain.EntityMetaData;
 
@@ -34,25 +32,29 @@ public class UrlResourceManageTest {
 
     @Before
     public void before() throws IOException {
-        doBefore("manage/identity-providers.json", "manage/service-providers.json");
+        doBefore("manage/identity-providers.json", "manage/service-providers.json", "manage/relying-parties.json");
     }
 
-    private void doBefore(String idpPath, String spPath) throws IOException {
-        String idpResponse = IOUtils.toString(new ClassPathResource(idpPath).getInputStream());
+    private void doBefore(String idpPath, String spPath, String rpPath) throws IOException {
+        String idpResponse = IOUtils.toString(new ClassPathResource(idpPath).getInputStream(), "UTF-8");
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_idp")).willReturn(aResponse().withStatus(200)
-            .withHeader("Content-Type", "application/json").withBody(idpResponse)));
+                .withHeader("Content-Type", "application/json").withBody(idpResponse)));
 
-        String spResponse = IOUtils.toString(new ClassPathResource(spPath).getInputStream());
+        String spResponse = IOUtils.toString(new ClassPathResource(spPath).getInputStream(), "UTF-8");
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(200)
-            .withHeader("Content-Type", "application/json").withBody(spResponse)));
+                .withHeader("Content-Type", "application/json").withBody(spResponse)));
+
+        String rpResponse = IOUtils.toString(new ClassPathResource(rpPath).getInputStream(), "UTF-8");
+        stubFor(post(urlEqualTo("/manage/api/internal/search/oidc10_rp")).willReturn(aResponse().withStatus(200)
+                .withHeader("Content-Type", "application/json").withBody(rpResponse)));
 
         this.subject = new UrlResourceManage("user", "password", "http://localhost:8889");
     }
 
     @Test
-    public void testMetaData() throws Exception {
+    public void testMetaData() {
         assertEquals(13, subject.identityProviders().size());
-        assertEquals(49, subject.serviceProviders().size());
+        assertEquals(51, subject.serviceProviders().size());
     }
 
     @Test
@@ -64,7 +66,6 @@ public class UrlResourceManageTest {
 
     @Test
     public void testSorting() throws Exception {
-        doBefore("manage/identity-providers.json", "manage/service-providers.json");
         List<EntityMetaData> identityProviders = subject.identityProviders();
 
         String nameEn = identityProviders.get(0).getNameEn();
@@ -79,12 +80,11 @@ public class UrlResourceManageTest {
         assertEquals("Bart test RP", nameEn);
 
         entityId = serviceProviders.get(serviceProviders.size() - 1).getEntityId();
-        assertEquals("https://thki-sid.pt-48.utr.surfcloud.nl/ssp/module.php/saml/sp/metadata.php/default-sp", entityId);
+        assertEquals("https://rp/2", entityId);
     }
 
     @Test
     public void testNoNameFallback() throws Exception {
-        doBefore("manage/identity-providers.json", "manage/service-providers.json");
         List<EntityMetaData> identityProviders = subject.identityProviders();
         String idpEntityId = "https://idp.mrvanes.com/saml2/idp/metadata.php";
         EntityMetaData idp = identityProviders.stream().filter(metaData -> metaData.getEntityId().equals(idpEntityId)

@@ -66,6 +66,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         definition.setRevisionNbr(pdpPolicy.getRevisionNbr());
         definition.setActive(pdpPolicy.isActive());
         definition.setType(pdpPolicy.getType());
+        definition.setAuthenticatingAuthorityName(pdpPolicy.getAuthenticatingAuthority());
 
         parseTargets(policyXml, definition, policy);
 

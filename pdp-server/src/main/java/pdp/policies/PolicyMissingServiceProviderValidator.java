@@ -1,7 +1,6 @@
 package pdp.policies;
 
 import pdp.domain.EntityMetaData;
-import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.mail.MailBox;
 import pdp.manage.Manage;
@@ -9,12 +8,13 @@ import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
 
 public class PolicyMissingServiceProviderValidator {
 
@@ -30,28 +30,62 @@ public class PolicyMissingServiceProviderValidator {
         this.manage = manage;
         this.pdpPolicyRepository = pdpPolicyRepository;
         if (pdpCronJobResponsible) {
-            newScheduledThreadPool(1).scheduleAtFixedRate(() -> this.validate(), 1, 7*24, TimeUnit.HOURS);
+            newScheduledThreadPool(1).scheduleAtFixedRate(() -> this.validate(), 1, 7 * 24, TimeUnit.HOURS);
         }
     }
 
-    public PdpPolicyDefinition addEntityMetaData(PdpPolicyDefinition pd) {
-        Optional<EntityMetaData> sp = manage.serviceProviderOptionalByEntityId(pd.getServiceProviderId());
-        pd.setServiceProviderInvalidOrMissing(!sp.isPresent());
-        if (sp.isPresent()) {
-            pd.setServiceProviderName(sp.get().getNameEn());
-            pd.setServiceProviderNameNl(sp.get().getNameNl());
-            pd.setActivatedSr(sp.get().isPolicyEnforcementDecisionRequired());
-        }
-        manage.enrichPdPPolicyDefinition(pd);
-        return pd;
+    public List<PdpPolicyDefinition> addEntityMetaData(List<PdpPolicyDefinition> pdpPolicyDefinitions) {
+
+        Set<String> idpEntitiesIds = pdpPolicyDefinitions.stream()
+                .map(PdpPolicyDefinition::getIdentityProviderIds)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
+        idpEntitiesIds.addAll(pdpPolicyDefinitions.stream().map(PdpPolicyDefinition::getAuthenticatingAuthorityName).collect(Collectors.toSet()));
+        Map<String, EntityMetaData> identityProviders = manage.identityProvidersByEntityIds(idpEntitiesIds);
+
+        Set<String> spEntitiesIds = pdpPolicyDefinitions.stream().map(PdpPolicyDefinition::getServiceProviderId).collect(Collectors.toSet());
+        Map<String, EntityMetaData> serviceProviders = manage.serviceProvidersByEntityIds(spEntitiesIds);
+
+        pdpPolicyDefinitions.forEach(pd -> {
+            EntityMetaData emd = identityProviders.get(pd.getAuthenticatingAuthorityName());
+            if (emd != null) {
+                pd.setAuthenticatingAuthorityName(emd.getNameEn());
+            }
+            EntityMetaData sp = serviceProviders.get(pd.getServiceProviderId());
+            pd.setServiceProviderInvalidOrMissing(sp == null);
+            if (sp != null) {
+                pd.setServiceProviderName(sp.getNameEn());
+                pd.setServiceProviderNameNl(sp.getNameNl());
+                pd.setActivatedSr(sp.isPolicyEnforcementDecisionRequired());
+            }
+
+            List<String> entityIds = pd.getIdentityProviderIds();
+            pd.setIdentityProviderNames(identityProviders.values().stream()
+                    .filter(idp -> entityIds.contains(idp.getEntityId()))
+                    .map(idp -> idp.getNameEn())
+                    .collect(toList()));
+            pd.setIdentityProviderNamesNl(identityProviders.values().stream()
+                    .filter(idp -> entityIds.contains(idp.getEntityId()))
+                    .map(idp -> idp.getNameNl())
+                    .collect(toList()));
+        });
+
+
+        return pdpPolicyDefinitions;
     }
 
     public void validate() {
-        List<PdpPolicyDefinition> invalidPolicies = pdpPolicyRepository.findAll().stream()
-            .map(policy -> addEntityMetaData(pdpPolicyDefinitionParser.parse(policy)))
-            .filter(policy -> policy.isServiceProviderInvalidOrMissing())
-            .filter(policy -> policy.isActive())
-            .collect(toList());
+        List<PdpPolicyDefinition> pdpPolicyDefinitions = pdpPolicyRepository.findAll().stream().map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
+        Set<String> idpEntitiesIds = pdpPolicyDefinitions.stream().map(def -> def.getIdentityProviderIds()).flatMap(List::stream).collect(Collectors.toSet());
+        Map<String, EntityMetaData> identityProviders = manage.identityProvidersByEntityIds(idpEntitiesIds);
+
+        Set<String> spEntitiesIds = pdpPolicyDefinitions.stream().map(def -> def.getServiceProviderId()).collect(Collectors.toSet());
+        Map<String, EntityMetaData> serviceProviders = manage.serviceProvidersByEntityIds(spEntitiesIds);
+
+        List<PdpPolicyDefinition> invalidPolicies = this.addEntityMetaData(pdpPolicyDefinitions).stream()
+                .filter(policy -> policy.isServiceProviderInvalidOrMissing())
+                .filter(policy -> policy.isActive())
+                .collect(toList());
 
         if (!invalidPolicies.isEmpty()) {
             this.mailBox.sendInvalidPoliciesMail(invalidPolicies);

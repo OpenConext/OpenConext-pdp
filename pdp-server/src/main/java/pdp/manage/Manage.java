@@ -9,6 +9,7 @@ import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicyDefinition;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -35,11 +36,13 @@ public interface Manage extends JsonMapper {
 
     Optional<EntityMetaData> identityProviderOptionalByEntityId(String entityId);
 
+    Map<String, EntityMetaData> identityProvidersByEntityIds(Collection<String> entityIds);
+
+    Map<String, EntityMetaData> serviceProvidersByEntityIds(Collection<String> entityIds);
+
     EntityMetaData serviceProviderByEntityId(String entityId);
 
     EntityMetaData identityProviderByEntityId(String entityId);
-
-    void enrichPdPPolicyDefinition(PdpPolicyDefinition pd);
 
     @SuppressWarnings("unchecked")
     default List<EntityMetaData> parseEntities(Resource resource) {

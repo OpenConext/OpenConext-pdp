@@ -29,7 +29,7 @@ public class SabClientTest {
 
     @Test
     public void testGetRolesHappyFlow() throws Exception {
-        String response = IOUtils.toString(new ClassPathResource("sab/response_success.xml").getInputStream());
+        String response = IOUtils.toString(new ClassPathResource("sab/response_success.xml").getInputStream(), "UTF-8");
         stubFor(post(urlEqualTo("/sab")).withHeader("Authorization", equalTo("Basic " + encodeBase64String("user:password".getBytes())))
             .willReturn(aResponse().withStatus(200).withBody(response)));
         List<String> roles = subject.roles("id1");
@@ -56,7 +56,7 @@ public class SabClientTest {
     }
 
     private void assertEmptyRoles(String fileName) throws IOException {
-        String response = IOUtils.toString(new ClassPathResource("sab/" + fileName).getInputStream());
+        String response = IOUtils.toString(new ClassPathResource("sab/" + fileName).getInputStream(), "UTF-8");
         stubFor(post(urlEqualTo("/sab")).withHeader("Authorization", equalTo("Basic " + encodeBase64String("user:password".getBytes())))
             .willReturn(aResponse().withStatus(200).withBody(response)));
         assertTrue(subject.roles("id1").isEmpty());

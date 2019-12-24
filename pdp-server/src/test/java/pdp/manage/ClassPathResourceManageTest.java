@@ -20,7 +20,7 @@ public class ClassPathResourceManageTest {
     @Test
     public void testServiceProviders() throws Exception {
         List<EntityMetaData> sps = manage.serviceProviders();
-        assertEquals(49, sps.size());
+        assertEquals(51, sps.size());
         assertTrue(sps.stream().allMatch(entityMetaData -> StringUtils.hasText(entityMetaData.getEntityId())));
         // we expect a sorted list
         assertEquals(asList("B", "B", "D"), sps.subList(0, 3).stream().map(e -> e.getNameEn().substring(0, 1)).collect(toList()));

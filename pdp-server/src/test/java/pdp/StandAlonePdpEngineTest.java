@@ -83,7 +83,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
     private PdpPolicy loadPolicy(String policyFile) {
         try {
-            String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream());
+            String policyXml = IOUtils.toString(new ClassPathResource("xacml/test-policies/" + policyFile).getInputStream(), "UTF-8");
             return new PdpPolicy(policyXml, policyFile, true, "system", PolicyLoader.authenticatingAuthority, "John Doe", true, "reg");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -260,7 +260,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     private Result doDecideTest(final String requestFile, Decision decision, String... policyFiles) throws Exception {
         setUp(policyFiles);
 
-        String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream());
+        String payload = IOUtils.toString(new ClassPathResource("xacml/requests/" + requestFile).getInputStream(), "UTF-8");
         Request pdpRequest = JSONRequest.load(payload);
 
         Response pdpResponse = pdpEngine.decide(pdpRequest);

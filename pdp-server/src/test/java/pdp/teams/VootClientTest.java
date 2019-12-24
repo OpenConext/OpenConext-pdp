@@ -41,7 +41,7 @@ public class VootClientTest {
 
     @Test
     public void testGroups() throws Exception {
-        String response = IOUtils.toString(new ClassPathResource("voot/empty_groups.json").getInputStream());
+        String response = IOUtils.toString(new ClassPathResource("voot/empty_groups.json").getInputStream(), "UTF-8");
         stubFor(get(urlEqualTo("/internal/groups/id1")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(response)));
         List<String> groups = subject.groups("id1");
         assertTrue(groups.isEmpty());
@@ -49,7 +49,7 @@ public class VootClientTest {
 
     @Test
     public void testHasAccess() throws Exception {
-        String response = IOUtils.toString(new ClassPathResource("voot/groups.json").getInputStream());
+        String response = IOUtils.toString(new ClassPathResource("voot/groups.json").getInputStream(), "UTF-8");
         stubFor(get(urlEqualTo("/internal/groups/id1")).willReturn(aResponse().withStatus(200).withHeader("Content-Type", "application/json").withBody(response)));
         List<String> groups = subject.groups("id1");
         assertEquals(14, groups.size());

@@ -37,7 +37,7 @@ import static pdp.util.StreamUtils.singletonCollector;
 public class PolicyIdpAccessEnforcerTest implements JsonMapper {
 
     private ClassPathResourceManage manage = new ClassPathResourceManage();
-    private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer(manage);
+    private PolicyIdpAccessEnforcer subject = new PolicyIdpAccessEnforcer();
     private PdpPolicy pdpPolicy;
 
     private String uid = "uid";

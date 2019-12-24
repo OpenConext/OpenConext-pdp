@@ -30,7 +30,7 @@ public class PdpPolicyTest implements JsonMapper {
 
     @Test
     public void testCreateReadonly() throws Exception {
-        String json = IOUtils.toString(new ClassPathResource("policies/update_policy.json").getInputStream());
+        String json = IOUtils.toString(new ClassPathResource("policies/update_policy.json").getInputStream(), "UTF-8");
         PdpPolicyDefinition definition = objectMapper.readValue(json, PdpPolicyDefinition.class);
 
         assertNull(definition.getCreated());

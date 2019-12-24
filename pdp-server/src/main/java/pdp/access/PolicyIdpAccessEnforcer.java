@@ -30,12 +30,6 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
 
     private static final Logger LOG = LoggerFactory.getLogger(PolicyIdpAccessEnforcer.class);
 
-    private final Manage manage;
-
-    public PolicyIdpAccessEnforcer(Manage manage) {
-        this.manage = manage;
-    }
-
     /**
      * Create, update or delete actions and access to the (read-only) revisions are only allowed if the
      * AuthenticatingAuthority of the signed in user equals the AuthenticatingAuthority of the PdpPolicy or the
@@ -226,10 +220,7 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
 
     private boolean idpIsAllowed(FederatedUser user, Set<String> idpsOfUserEntityIds, String serviceProviderId) {
         boolean isAllowedFromIdp = user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderId));
-        //rare case to check: ACLs are mostly defined on IdPs, but the SP can also have an ACL to restrict IDPs
-        EntityMetaData sp = manage.serviceProviderByEntityId(serviceProviderId);
-        String[] idps = idpsOfUserEntityIds.toArray(new String[idpsOfUserEntityIds.size()]);
-        return isAllowedFromIdp && sp.isAllowedFrom(idps);
+        return isAllowedFromIdp;
     }
 
     public List<EntityMetaData> filterIdentityProviders(List<EntityMetaData> identityProviders) {

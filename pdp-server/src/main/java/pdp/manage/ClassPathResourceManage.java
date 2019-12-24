@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import pdp.domain.EntityMetaData;
 import pdp.domain.PdpPolicyDefinition;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
@@ -32,7 +34,9 @@ public class ClassPathResourceManage implements Manage {
     private void initializeMetadata() {
         Map<String, List<EntityMetaData>> newEntityMetaData = new ConcurrentHashMap<>();
         newEntityMetaData.put(IDP_ENTITY_ID, parseEntities(getIdpResource()));
-        newEntityMetaData.put(SP_ENTITY_ID, parseEntities(getSpResource()));
+        List<EntityMetaData> serviceProviders = parseEntities(getSpResource());
+        serviceProviders.addAll(parseEntities(getOidcResource()));
+        newEntityMetaData.put(SP_ENTITY_ID, serviceProviders);
         this.entityMetaData = newEntityMetaData;
         LOG.debug("Initialized Manage Resources. Number of IDPs {}. Number of SPs {}", entityMetaData.get(IDP_ENTITY_ID)
             .size(), entityMetaData.get(SP_ENTITY_ID).size());
@@ -44,6 +48,10 @@ public class ClassPathResourceManage implements Manage {
 
     private Resource getSpResource() {
         return new ClassPathResource("manage/service-providers.json");
+    }
+
+    private Resource getOidcResource() {
+        return new ClassPathResource("manage/relying-parties.json");
     }
 
     @Override
@@ -86,6 +94,22 @@ public class ClassPathResourceManage implements Manage {
         return entityMetaDataOptionalByEntityId(entityId, identityProviders());
     }
 
+    @Override
+    public Map<String, EntityMetaData> identityProvidersByEntityIds(Collection<String> entityIds) {
+        return entityIds.stream().map(this::identityProviderOptionalByEntityId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(toMap(entity -> entity.getEntityId(), entity -> entity));
+    }
+
+    @Override
+    public Map<String, EntityMetaData> serviceProvidersByEntityIds(Collection<String> entityIds) {
+        return entityIds.stream().map(this::serviceProviderOptionalByEntityId)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(toMap(entity -> entity.getEntityId(), entity -> entity));
+    }
+
     private Optional<EntityMetaData> entityMetaDataOptionalByEntityId(String entityId, List<EntityMetaData>
         entityMetaDatas) {
         return entityMetaDatas.stream().filter(sp -> sp.getEntityId().equals(entityId)).collect
@@ -100,16 +124,6 @@ public class ClassPathResourceManage implements Manage {
     @Override
     public EntityMetaData identityProviderByEntityId(String entityId) {
         return nonEmptyOptionalToEntityMetaData(entityId, identityProviderOptionalByEntityId(entityId));
-    }
-
-    @Override
-    public void enrichPdPPolicyDefinition(PdpPolicyDefinition pd) {
-        List<String> entityIds = pd.getIdentityProviderIds();
-        List<EntityMetaData> metaDataList = identityProviders().stream().filter(idp -> entityIds.contains(idp.getEntityId
-            ())).collect(toList());
-
-        pd.setIdentityProviderNames(metaDataList.stream().map(EntityMetaData::getNameEn).collect(toList()));
-        pd.setIdentityProviderNamesNl(metaDataList.stream().map(EntityMetaData::getNameNl).collect(toList()));
     }
 
     /**

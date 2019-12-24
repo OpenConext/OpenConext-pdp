@@ -1,0 +1,31 @@
+[
+  {
+    "_id": "8FBAA0EC-385D-4EE3-8601-C4F03024090A",
+    "data": {
+      "allowedEntities": [],
+      "allowedall": true,
+      "entityid": "https://rp/1",
+      "metaDataFields": {
+        "name:en": "Relying Party - 1",
+        "name:nl": "Relying Party - 1"
+      },
+      "state": "prodaccepted"
+    },
+    "version": 0
+  },
+  {
+    "_id": "168FB622-B8C7-426B-801D-0A7BFEC89A6C",
+    "data": {
+      "allowedEntities": [],
+      "allowedall": true,
+      "entityid": "https://rp/2",
+      "metaDataFields": {
+        "coin:policy_enforcement_decision_required": "1",
+        "name:en": "Relying Party - 2",
+        "name:nl": "Relying Party - 2"
+      },
+      "state": "prodaccepted"
+    },
+    "version": 9
+  }
+]
