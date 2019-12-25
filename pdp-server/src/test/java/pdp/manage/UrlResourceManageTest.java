@@ -10,7 +10,9 @@ import org.springframework.core.io.ClassPathResource;
 import pdp.domain.EntityMetaData;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -58,14 +60,14 @@ public class UrlResourceManageTest {
     }
 
     @Test
-    public void testInitializeMetaDataNoEndpoint() throws IOException {
+    public void testInitializeMetaDataNoEndpoint() {
         stubFor(post(urlEqualTo("/manage/api/internal/search/saml20_sp")).willReturn(aResponse().withStatus(500)));
         new UrlResourceManage("u", "p", "http://localhost:9999/bogus");
     }
 
 
     @Test
-    public void testSorting() throws Exception {
+    public void testSorting() {
         List<EntityMetaData> identityProviders = subject.identityProviders();
 
         String nameEn = identityProviders.get(0).getNameEn();
@@ -84,13 +86,19 @@ public class UrlResourceManageTest {
     }
 
     @Test
-    public void testNoNameFallback() throws Exception {
+    public void testNoNameFallback() {
         List<EntityMetaData> identityProviders = subject.identityProviders();
         String idpEntityId = "https://idp.mrvanes.com/saml2/idp/metadata.php";
         EntityMetaData idp = identityProviders.stream().filter(metaData -> metaData.getEntityId().equals(idpEntityId)
         ).collect(singletonCollector());
         assertEquals(idpEntityId, idp.getNameEn());
         assertEquals(idpEntityId, idp.getNameNl());
+    }
+
+    @Test
+    public void testServiceProvidersByEntityIds() {
+        Map<String, EntityMetaData> result = subject.serviceProvidersByEntityIds(Arrays.asList("https://rp/2", "http://mock-sp", "nope"));
+        assertEquals(51, result.size());
     }
 
 }

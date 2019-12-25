@@ -147,7 +147,10 @@ public class UrlResourceManage implements Manage {
     public Map<String, EntityMetaData> serviceProvidersByEntityIds(Collection<String> entityIds) {
         Map<String, EntityMetaData> serviceProviders = getEntityMetaDataMap(entityIds, this::getSpResource);
         //for all missing ones we fetch them from oidc10_rp collection
-        List<String> missing = serviceProviders.keySet().stream().filter(s -> !entityIds.contains(s)).collect(toList());
+
+        Set<String> allEntityIds = serviceProviders.keySet();
+        List<String> missing = entityIds.stream().filter(s -> !allEntityIds.contains(s)).collect(toList());
+
         if (!missing.isEmpty()) {
             Map<String, EntityMetaData> relyiingParties = getEntityMetaDataMap(missing, this::getRpResource);
             serviceProviders.putAll(relyiingParties);
