@@ -370,10 +370,11 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
         Set<PdpPolicy> policies = parent.getRevisions();
         policies.add(parent);
-        return policies.stream().map(rev -> {
+        List<PdpPolicyDefinition> definitions = policies.stream().map(rev -> {
             PdpPolicyDefinition def = pdpPolicyDefinitionParser.parse(rev);
             return addAccessRules(rev, def);
         }).collect(toList());
+        return policyMissingServiceProviderValidator.addEntityMetaData(definitions);
     }
 
     @RequestMapping(method = GET, value = {"/internal/loas", "/protected/loas"})
