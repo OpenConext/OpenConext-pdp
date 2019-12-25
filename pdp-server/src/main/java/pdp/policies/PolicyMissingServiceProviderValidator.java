@@ -76,12 +76,6 @@ public class PolicyMissingServiceProviderValidator {
 
     public void validate() {
         List<PdpPolicyDefinition> pdpPolicyDefinitions = pdpPolicyRepository.findAll().stream().map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
-        Set<String> idpEntitiesIds = pdpPolicyDefinitions.stream().map(def -> def.getIdentityProviderIds()).flatMap(List::stream).collect(Collectors.toSet());
-        Map<String, EntityMetaData> identityProviders = manage.identityProvidersByEntityIds(idpEntitiesIds);
-
-        Set<String> spEntitiesIds = pdpPolicyDefinitions.stream().map(def -> def.getServiceProviderId()).collect(Collectors.toSet());
-        Map<String, EntityMetaData> serviceProviders = manage.serviceProvidersByEntityIds(spEntitiesIds);
-
         List<PdpPolicyDefinition> invalidPolicies = this.addEntityMetaData(pdpPolicyDefinitions).stream()
                 .filter(policy -> policy.isServiceProviderInvalidOrMissing())
                 .filter(policy -> policy.isActive())

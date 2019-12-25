@@ -63,25 +63,21 @@ public class UrlResourceManage implements Manage {
     }
 
     private Resource getIdpResource(String body) {
-        LOG.debug("Fetching IDP metadata entries from {} with body {}", manageBaseUrl, body);
-        ResponseEntity<String> responseEntity = restTemplate.exchange
-                (manageBaseUrl + "/manage/api/internal/search/saml20_idp", HttpMethod.POST,
-                        new HttpEntity<>(body, this.httpHeaders), String.class);
-        return new ByteArrayResource(responseEntity.getBody().getBytes());
+        return doGetResource(body, "saml20_idp");
     }
 
     private Resource getSpResource(String body) {
-        LOG.debug("Fetching SP metadata entries from {} with body {}", manageBaseUrl, body);
-        ResponseEntity<String> responseEntity = restTemplate.exchange
-                (manageBaseUrl + "/manage/api/internal/search/saml20_sp", HttpMethod.POST,
-                        new HttpEntity<>(body, this.httpHeaders), String.class);
-        return new ByteArrayResource(responseEntity.getBody().getBytes());
+        return doGetResource(body, "saml20_sp");
     }
 
     private Resource getRpResource(String body) {
-        LOG.debug("Fetching RP metadata entries from {} with body {}", manageBaseUrl, body);
+        return doGetResource(body, "oidc10_rp");
+    }
+
+    private Resource doGetResource(String body, final String type) {
+        LOG.debug("Fetching " + type + " metadata entries from {} with body {}", manageBaseUrl, body);
         ResponseEntity<String> responseEntity = restTemplate.exchange
-                (manageBaseUrl + "/manage/api/internal/search/oidc10_rp", HttpMethod.POST,
+                (manageBaseUrl + "/manage/api/internal/search/" + type, HttpMethod.POST,
                         new HttpEntity<>(body, this.httpHeaders), String.class);
         return new ByteArrayResource(responseEntity.getBody().getBytes());
     }
