@@ -221,7 +221,6 @@ public class PdpPolicy {
         clone.setName(newName);
         clone.setLatestRevision(true);
         clone.setUserIdentifier(userIdentifier);
-        clone.setAuthenticatingAuthority(parent.getAuthenticatingAuthority());
         clone.setUserDisplayName(userDisplayName);
         clone.setActive(isActive);
         clone.setRevisionNbr(parent.getRevisions().size() + 1);
