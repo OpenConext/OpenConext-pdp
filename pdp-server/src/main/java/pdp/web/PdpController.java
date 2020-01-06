@@ -273,7 +273,7 @@ public class PdpController implements JsonMapper, IPAddressProvider{
             policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
             //Cascade.ALL
             PdpPolicy.revision(pdpPolicyDefinition.getName(), policy, policyXml, policyIdpAccessEnforcer.username(),
-                policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
+                policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive());
         } else {
             policy = new PdpPolicy(policyXml, pdpPolicyDefinition.getName(), true, policyIdpAccessEnforcer.username(),
                 policyIdpAccessEnforcer.authenticatingAuthority(), policyIdpAccessEnforcer.userDisplayName(), pdpPolicyDefinition.isActive(),
