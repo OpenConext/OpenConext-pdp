@@ -243,6 +243,10 @@ I18n.translations.en = {
         title: "The PDP application is currently unavailable.",
         description_html: "Please try again later or contact <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
     },
+    session_expired: {
+        title: "Session expired.",
+        description_html: "Your session has expired. Please log in again to use the website."
+    },
 
     server_error: {
         title: "The PDP application is currently unavailable.",

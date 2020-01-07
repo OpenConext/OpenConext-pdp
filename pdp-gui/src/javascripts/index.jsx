@@ -21,6 +21,7 @@ import {changeIdentity, clearIdentity} from "./lib/identity";
 
 import Identity from "./pages/identity";
 import NotFound from "./pages/not_found";
+import SessionExpired from "./pages/session_expired";
 import Footer from "./components/footer";
 import Header from "./components/header";
 import Navigation from "./components/navigation";
@@ -195,8 +196,8 @@ getUserData().catch(e => {
     render(<NotFound/>, document.getElementById("app"));
     throw e;
 }).then(currentUser => {
-    if (!currentUser) {
-        render(<NotFound/>, document.getElementById("app"));
+    if (!currentUser) { // is this for expired session or non-logged-in user?
+        render(<SessionExpired/>, document.getElementById("app"));
     } else {
         render(<App currentUser={currentUser}/>, document.getElementById("app"));
     }
