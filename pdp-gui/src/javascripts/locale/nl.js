@@ -236,7 +236,7 @@ I18n.translations.nl = {
     },
     session_expired: {
         title: "Sessie is verlopen.",
-        description_html: "Uw sessie is verlopen en u bent automatisch uitgelogd. Log opnieuw in om de website te gebruiken."
+        description_html: "U bent niet ingelogd of uw sessie is verlopen. Ga naar de <a href=\"/\">homepage</a> en log in om de website te gebruiken."
     },
 
     logout: {

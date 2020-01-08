@@ -245,7 +245,7 @@ I18n.translations.en = {
     },
     session_expired: {
         title: "Session expired.",
-        description_html: "Your session has expired. Please log in again to use the website."
+        description_html: "You are not logged in or your session has expired. Go to the <a href=\"/\">homepage</a> and log in to use the website."
     },
 
     server_error: {
