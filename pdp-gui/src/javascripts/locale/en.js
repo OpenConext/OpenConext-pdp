@@ -240,8 +240,8 @@ I18n.translations.en = {
     },
 
     not_found: {
-        title: "The PDP application is currently unavailable.",
-        description_html: "Please try again later or contact <a href=\"mailto:support@surfconext.nl\">support@surfconext.nl</a>."
+        title: "Page not found.",
+        description_html: "Check whether the address is correctly spelt or go back to the <a href=\"/\">homepage</a>."
     },
 
     server_error: {
