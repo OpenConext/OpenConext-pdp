@@ -212,7 +212,7 @@ public class PdpPolicy {
         this.type = type;
     }
 
-    public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String authenticatingAuthority, String userDisplayName, boolean isActive) {
+    public static PdpPolicy revision(String newName, PdpPolicy parent, String newPolicyXml, String userIdentifier, String userDisplayName, boolean isActive) {
         parent.getRevisions().forEach(p -> p.setLatestRevision(false));
         parent.setLatestRevision(false);
 
@@ -221,7 +221,7 @@ public class PdpPolicy {
         clone.setName(newName);
         clone.setLatestRevision(true);
         clone.setUserIdentifier(userIdentifier);
-        clone.setAuthenticatingAuthority(authenticatingAuthority);
+        clone.setAuthenticatingAuthority(parent.getAuthenticatingAuthority());
         clone.setUserDisplayName(userDisplayName);
         clone.setActive(isActive);
         clone.setRevisionNbr(parent.getRevisions().size() + 1);

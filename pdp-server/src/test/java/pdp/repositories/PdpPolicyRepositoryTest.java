@@ -53,8 +53,8 @@ public class PdpPolicyRepositoryTest extends AbstractRepositoryTest {
     @Test
     public void testFindRevisionCountPerId() throws Exception {
         PdpPolicy policy = pdpPolicy(NAME_ID + 2);
-        PdpPolicy.revision(NAME_ID + 3, policy, "xml", "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
-        PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", PolicyLoader.authenticatingAuthority, "John Doe", true);
+        PdpPolicy.revision(NAME_ID + 3, policy, "xml", "system", "John Doe", true);
+        PdpPolicy.revision(NAME_ID + 4, policy, "xml", "system", "John Doe", true);
         pdpPolicyRepository.save(policy);
 
         PdpPolicy latestRevision = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(getPolicyId(NAME_ID + 4), true).get();
