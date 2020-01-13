@@ -63,7 +63,7 @@ const QueryParameter = {
     },
 
     getParameterByName: function (name) {
-        const replacedName = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        const replacedName = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
         const regex = new RegExp("[\\?&]" + replacedName + "=([^&#]*)"),
             results = regex.exec(location.search);
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));

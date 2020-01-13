@@ -34,7 +34,7 @@ class Header extends React.Component {
                     {this.renderProfileLink()}
                     {this.renderDropDown()}
                 </div>
-                <LanguageSelector />
+                <LanguageSelector/>
                 <ul className="links">
                     <li dangerouslySetInnerHTML={{__html: I18n.t("header.links.help_html")}}></li>
                     {this.renderExitLogout()}
@@ -74,7 +74,7 @@ class Header extends React.Component {
         if (this.state.dropDownActive) {
             return (
                 <div>
-                    <UserProfile />
+                    <UserProfile/>
                 </div>
             );
         }
@@ -92,7 +92,7 @@ class Header extends React.Component {
         e.preventDefault();
         const node = document.getElementById("app");
         unmountComponentAtNode(node);
-        render(<Logout />, node);
+        render(<Logout/>, node);
     }
 
     handleToggle(e) {
