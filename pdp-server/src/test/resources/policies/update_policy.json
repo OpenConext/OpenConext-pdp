@@ -19,6 +19,7 @@
   ],
   "denyAdvice": "asf",
   "denyAdviceNl": "asdf",
+  "denyAdvicePt": "asdfg",
   "denyRule": false,
   "allAttributesMustMatch": false,
   "userDisplayName": "admin",
