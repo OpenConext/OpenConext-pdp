@@ -8,6 +8,7 @@
   }],
   "denyAdvice": "The message for the user",
   "denyAdviceNl": "De melding voor de gebruiker",
+  "denyAdvicePt": "A mensagem para o utilizador",
   "active": true,
   "type": "reg"
 }
