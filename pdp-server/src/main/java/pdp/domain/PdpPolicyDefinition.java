@@ -41,12 +41,14 @@ public class PdpPolicyDefinition {
     private String serviceProviderId;
     private String serviceProviderName;
     private String serviceProviderNameNl;
+    private String serviceProviderNamePt;
 
     private boolean serviceProviderInvalidOrMissing;
 
     private List<String> identityProviderIds = new ArrayList<>();
     private List<String> identityProviderNames = new ArrayList<>();
     private List<String> identityProviderNamesNl = new ArrayList<>();
+    private List<String> identityProviderNamesPt = new ArrayList<>();
 
     private String clientId;
 
@@ -74,6 +76,7 @@ public class PdpPolicyDefinition {
     private int numberOfRevisions;
 
     private String denyAdviceNl;
+    private String denyAdvicePt;
 
     private int revisionNbr;
 
@@ -203,6 +206,16 @@ public class PdpPolicyDefinition {
         this.identityProviderNamesNl = identityProviderNamesNl;
     }
 
+    public List<String> getIdentityProviderNamesPt() {
+        return identityProviderNamesPt;
+    }
+
+    public void setIdentityProviderNamesPt(List<String> identityProviderNamesPt) {
+        this.identityProviderNamesPt = identityProviderNamesPt;
+    }
+
+
+
     public int getNumberOfViolations() {
         return numberOfViolations;
     }
@@ -218,6 +231,18 @@ public class PdpPolicyDefinition {
     public String getDenyAdviceNl() {
         return denyAdviceNl;
     }
+
+
+
+    public void setDenyAdvicePt(String denyAdvicePt) {
+        this.denyAdvicePt = denyAdvicePt;
+    }
+
+    public String getDenyAdvicePt() {
+        return denyAdvicePt;
+    }
+
+
 
     public int getNumberOfRevisions() {
         return numberOfRevisions;
@@ -338,7 +363,8 @@ public class PdpPolicyDefinition {
             Objects.equals(identityProviderIds, that.identityProviderIds) &&
             Objects.equals(attributes, that.attributes) &&
             Objects.equals(denyAdvice, that.denyAdvice) &&
-            Objects.equals(denyAdviceNl, that.denyAdviceNl);
+            Objects.equals(denyAdviceNl, that.denyAdviceNl) &&
+            Objects.equals(denyAdvicePt, that.denyAdvicePt);
     }
 
     @Override
@@ -356,6 +382,7 @@ public class PdpPolicyDefinition {
             ", attributes=" + attributes + "\n" +
             ", denyAdvice='" + denyAdvice + '\'' + "\n" +
             ", denyAdviceNl='" + denyAdviceNl + '\'' + "\n" +
+            ", denyAdvicePt='" + denyAdvicePt + '\'' + "\n" +
             ", denyRule=" + denyRule + "\n" +
             ", allAttributesMustMatch=" + allAttributesMustMatch + "\n" +
             '}';
@@ -382,4 +409,13 @@ public class PdpPolicyDefinition {
     public String getServiceProviderNameNl() {
         return serviceProviderNameNl;
     }
+
+    public void setServiceProviderNamePt(String serviceProviderNamePt) {
+        this.serviceProviderNamePt = serviceProviderNamePt;
+    }
+
+    public String getServiceProviderNamePt() {
+        return serviceProviderNamePt;
+    }
+
 }
