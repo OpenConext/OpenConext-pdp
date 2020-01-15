@@ -16,6 +16,7 @@
   "allAttributesMustMatch": false,
   "userDisplayName": "system",
   "denyAdviceNl": "Je bent geen lid van de SURF organisatie",
+  "denyAdvicePt": "Não é membro da organização SURF",
   "active": true,
   "type": "reg"
 }
