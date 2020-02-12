@@ -22,15 +22,19 @@ class PolicyOverview extends React.Component {
 
     initDataTable() {
         $.fn.dataTable.ext.order["dom-checkbox"] = function (settings, col) {
-            return this.api().column(col, {order: "index"}).nodes().map(td => {
+            const strings = this.api().column(col, {order: "index"}).nodes().map(td => {
                 return $("input", td).prop("checked") ? "1" : "0";
             });
+            return strings;
         };
+        //WIP / debugging for getting this to work in FireFox 
         $.fn.dataTable.ext.order["epoch-ts"] = function (settings, col) {
-
-            return this.api().column(col, {order: "index"}).nodes().map(td => {
-                return $(td).data("epoch-ts");
+            const res = this.api().column(col, {order: "index"}).nodes().map(td => {
+                const jqTd = $(td) || {data: () => 1};
+                const number = jqTd.data ? (jqTd.data("epoch-ts") || 1) : 1;
+                return number;
             });
+            return res;
         };
         $("#policies_table").DataTable({
             paging: true,
@@ -158,7 +162,7 @@ class PolicyOverview extends React.Component {
 
         return (
             <div className="mod-policy-overview">
-                <Flash />
+                <Flash/>
                 <div className='table-responsive'>
                     <table className='table table-bordered box' id='policies_table'>
                         <thead>
