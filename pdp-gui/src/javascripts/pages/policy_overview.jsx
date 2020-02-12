@@ -27,7 +27,7 @@ class PolicyOverview extends React.Component {
             });
             return strings;
         };
-        //WIP / debugging for getting this to work in FireFox 
+        //WIP / debugging for getting this to work in FireFox
         $.fn.dataTable.ext.order["epoch-ts"] = function (settings, col) {
             const res = this.api().column(col, {order: "index"}).nodes().map(td => {
                 const jqTd = $(td) || {data: () => 1};
