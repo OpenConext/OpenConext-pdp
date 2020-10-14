@@ -19,7 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
         <openaz.version>0.0.4-OPENCONEXT</openaz.version>
-        <jackson.version>2.9.6</jackson.version>
+        <jackson.version>2.11.3</jackson.version>
 
     </properties>
 
