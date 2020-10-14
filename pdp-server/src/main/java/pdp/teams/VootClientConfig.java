@@ -20,9 +20,6 @@ public class VootClientConfig {
     @Value("${voot.accessTokenUri}")
     private String accessTokenUri;
 
-    @Value("${voot.userAuthorizationUri}")
-    private String userAuthorizationUri;
-
     @Value("${voot.clientId}")
     private String clientId;
 
