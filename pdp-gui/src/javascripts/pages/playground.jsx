@@ -64,7 +64,7 @@ class Playground extends React.Component {
                     selectedPolicy: newValue,
                     identityProviderId: idp,
                     serviceProviderId: policy.serviceProviderId,
-                    clientId: isReg ? "EngineBlock" : "Stepup",
+                    clientId: isReg ? "EngineBlock" : "EngineBlock",
                     attributes: attributes
                 }
             });
