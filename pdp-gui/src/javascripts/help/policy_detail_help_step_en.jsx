@@ -4,9 +4,9 @@ class PolicyDetailHelpStepEn extends React.Component {
     render() {
         return (
             <div className="form-element about">
-                <h1>How to create Stepup-Gateway Policies?</h1>
+                <h1>How to create Stepup Policies</h1>
 
-                <p>Access policies for the Stepup-Gateway define the Level of Assurance (LoA) for a user when he / she tries to login.
+                <p>Access policies for Stepup define the Level of Assurance (LoA) for a user when he / she tries to login.
                     The decision which LoA to enforce is based on the user attributes provided by the Institution and other attribute providers.</p>
 
                 <h2>Service</h2>
@@ -22,7 +22,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                 <h2>Level of Assurance</h2>
 
                 <p>You can define multple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
-                of a LoA will determine if the specified LoA is enforced by the Stepup-Gateway</p>
+                of a LoA will determine if the specified LoA is enforced by the policy enforcement point.</p>
 
                 <section className="sub-form">
                     <h3>Rule</h3>
@@ -39,7 +39,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                         address of the user is matched against the range and based on the negation the LoA is enforced or not. The checkbox 'negation'
                     is a logical NOT for the IP range.</p>
 
-                    <p>Multiple IP ranges within in LoA always are defined as logical OR.</p>
+                    <p>Multiple IP ranges within a LoA always are defined as logical OR.</p>
 
                     <h3>Group name authorization</h3>
 
@@ -47,7 +47,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                         attribute.
                         The value must be the fully qualified group name where the user is a member of. Please consult the
                         responsible
-                        technical product manager how to retrieve the fully qualified name of a certain group / team.</p>
+                        support team on how to retrieve the fully qualified name of a certain group / team.</p>
 
 
                 </section>
