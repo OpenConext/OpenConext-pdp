@@ -199,11 +199,11 @@ I18n.translations.nl = {
     },
 
     policy_cidr: {
-        add_cidr: "Toevoegen nieuwe IP range",
-        capacity: "Nbr of IPs: ",
-        broadcastAddress: "Ondergrens IP adres: ",
-        networkAddress: "Bovengrens IP adres: ",
-        invalid: "Ongeldig IP address",
+        add_cidr: "Toevoegen nieuwe IP-range",
+        capacity: "Aantal IPs: ",
+        broadcastAddress: "Ondergrens IP-adres: ",
+        networkAddress: "Bovengrens IP-adres: ",
+        invalid: "Ongeldig IP-adres",
         negate: "Negatie"
     },
     identity: {
