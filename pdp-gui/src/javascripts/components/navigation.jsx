@@ -45,7 +45,7 @@ class Navigation extends React.Component {
                     {this.renderItem("/conflicts", "conflicts")}
                     {this.renderItem("/playground", "playground")}
                     {this.renderItem("/identity", "identity")}
-                    {this.renderAction("/new-step-policy", "new_ssa_policy")}
+                    {this.renderAction("/new-step-policy", "new_stepup_policy")}
                     {this.renderAction("/new-policy", "new_policy")}
                 </ul>
 

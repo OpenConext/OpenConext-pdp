@@ -72,7 +72,7 @@
             </Apply>
         </Condition>
         <ObligationExpressions>
-            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+            <ObligationExpression ObligationId="urn:openconext:stepup:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa2</AttributeValue>
                 </AttributeAssignmentExpression>
@@ -95,7 +95,7 @@
             </Apply>
         </Condition>
         <ObligationExpressions>
-            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+            <ObligationExpression ObligationId="urn:openconext:stepup:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa3</AttributeValue>
                 </AttributeAssignmentExpression>
@@ -109,7 +109,7 @@
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and" />
         </Condition>
         <ObligationExpressions>
-            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+            <ObligationExpression ObligationId="urn:openconext:stepup:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression AttributeId="urn:loa:level" Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
                     <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa3</AttributeValue>
                 </AttributeAssignmentExpression>

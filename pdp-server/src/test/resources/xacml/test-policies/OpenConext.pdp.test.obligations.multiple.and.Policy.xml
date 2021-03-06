@@ -100,7 +100,7 @@
             </Apply>
         </Condition>
         <ObligationExpressions>
-            <ObligationExpression ObligationId="urn:openconext:ssa:loa" FulfillOn="Permit">
+            <ObligationExpression ObligationId="urn:openconext:stepup:loa" FulfillOn="Permit">
                 <AttributeAssignmentExpression
                     AttributeId="urn:loa:level"
                     Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
