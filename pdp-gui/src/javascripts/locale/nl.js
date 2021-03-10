@@ -38,7 +38,7 @@ I18n.translations.nl = {
         playground: "Playground",
         my_idp: "Mijn instelling",
         new_policy: "+ Autorisatie",
-        new_ssa_policy: "+ Stepup Autorisatie",
+        new_stepup_policy: "+ Stepup Autorisatie",
         identity: "Identiteit"
     },
 
@@ -199,11 +199,11 @@ I18n.translations.nl = {
     },
 
     policy_cidr: {
-        add_cidr: "Toevoegen nieuwe IP range",
-        capacity: "Nbr of IPs: ",
-        broadcastAddress: "Ondergrens IP adres: ",
-        networkAddress: "Bovengrens IP adres: ",
-        invalid: "Ongeldig IP address",
+        add_cidr: "Toevoegen nieuwe IP-range",
+        capacity: "Aantal IPs: ",
+        broadcastAddress: "Ondergrens IP-adres: ",
+        networkAddress: "Bovengrens IP-adres: ",
+        invalid: "Ongeldig IP-adres",
         negate: "Negatie"
     },
     identity: {

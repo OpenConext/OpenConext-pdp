@@ -4,9 +4,9 @@ class PolicyDetailHelpStepEn extends React.Component {
     render() {
         return (
             <div className="form-element about">
-                <h1>Hoe maak je Stepup-Gateway autorisatieregels?</h1>
+                <h1>Hoe maak je Stepup autorisatieregels?</h1>
 
-                <p>Autorisatieregels voor de Stepup-Gateway bepalen het Level of Assurance (LoA) voor gebruikers als zij inloggen op OpenConext.
+                <p>Autorisatieregels voor Stepup bepalen het Level of Assurance (LoA) voor gebruikers als zij inloggen op OpenConext.
                     De keuze welke LoA toe te passen wordt bepaald door de attributen van de gebruiker - eventueel inclusief het IP adres - zoals
                     deze zijn vrijgegeven door de Identity Provider.</p>
 
@@ -25,7 +25,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                 <h2>Level of Assurance</h2>
 
                 <p>Je kan meerdere LoA's configureren voor een autorisatieregel. Elke LoA zal worden vertaald naar een XACML rule. De attributen
-                    van een LoA bepalen of deze wordt toegepast door de Stepup-Gateway</p>
+                    van een LoA bepalen of deze wordt toegepast door de policy enforcement point.</p>
 
                 <section className="sub-form">
                     <h3>Autorisatieregel</h3>
@@ -48,7 +48,7 @@ class PolicyDetailHelpStepEn extends React.Component {
                     <p>Let op als je het attribuut <em>urn:collab:group:surfteams.nl</em> kiest. De waarde(s) van dit
                         attribuut
                         moeten de geldige en volledige ID zijn van een team in SURFconext Teams. Neem contact op met
-                        SURFconext support
+                        support
                         als je twijfelt over de juiste waarde.</p>
 
 
