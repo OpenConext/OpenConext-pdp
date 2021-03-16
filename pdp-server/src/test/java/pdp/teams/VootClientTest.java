@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 
 public class VootClientTest {
 
-    private VootClient subject = new VootClient(new RestTemplate(), "http://localhost:8889");
+    private final VootClient subject = new VootClient(new RestTemplate(), "http://localhost:8889");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8889);
@@ -35,8 +35,7 @@ public class VootClientTest {
     public void testInstanceOf() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         Class<?> classForEngine = Class.forName("pdp.teams.TeamsPIP");
         ConfigurableEngine teamsPIP = ConfigurableEngine.class.cast(classForEngine.newInstance());
-
-        System.out.println(teamsPIP instanceof VootClientAware);
+        assertTrue(teamsPIP instanceof VootClientAware);
     }
 
     @Test
