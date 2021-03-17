@@ -26,6 +26,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
         definition.setDescription("The long description");
         definition.setDenyAdvice("Sorry, no access");
         definition.setDenyAdviceNl("Sorry, geen toegang");
+        definition.setDenyAdvicePt("Desculpe, não tem acesso");
         definition.setAttributes(Arrays.asList(
             new PdpAttribute("attr1", "value1"),
             new PdpAttribute("attr1", "value1a"),
@@ -68,3 +69,4 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
         assertEquals(fromPolicyXml, definition);
     }
 }
+

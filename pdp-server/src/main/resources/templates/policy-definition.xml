@@ -86,6 +86,12 @@
                             DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdviceNl}}</AttributeValue>
                 </AttributeAssignmentExpression>
                 <AttributeAssignmentExpression
+                        AttributeId="DenyMessage:pt"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdvicePt}}</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression
                     AttributeId="IdPOnly"
                     Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
@@ -119,6 +125,12 @@
                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
                     <AttributeValue
                             DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdviceNl}}</AttributeValue>
+                </AttributeAssignmentExpression>
+                <AttributeAssignmentExpression
+                        AttributeId="DenyMessage:pt"
+                        Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">{{denyAdvicePt}}</AttributeValue>
                 </AttributeAssignmentExpression>
                 <AttributeAssignmentExpression
                     AttributeId="IdPOnly"
