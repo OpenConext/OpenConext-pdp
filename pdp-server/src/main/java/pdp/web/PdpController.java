@@ -113,6 +113,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
     private final List<String> loaLevels;
 
+    private final Object reloadingLock = new Object();
+
     // Can't be final as we need to swap this reference for reloading policies in production
     private volatile PDPEngine pdpEngine;
 
@@ -462,10 +464,12 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     }
 
     private void refreshPolicies() {
-        LOG.info("Starting reloading policies");
-        long start = System.currentTimeMillis();
-        this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
-        LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
+        synchronized (reloadingLock) {
+            LOG.info("Starting reloading policies");
+            long start = System.currentTimeMillis();
+            this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
+            LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
+        }
     }
 
 }

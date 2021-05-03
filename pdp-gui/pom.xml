@@ -10,7 +10,7 @@
 
     <artifactId>pdp-gui</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>pdp-gui</name>
 
     <build>

@@ -12,7 +12,7 @@
 
     <artifactId>pdp-server</artifactId>
     <packaging>jar</packaging>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>pdp-server</name>
 
     <properties>
