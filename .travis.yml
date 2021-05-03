@@ -10,7 +10,8 @@ cache:
   directories:
   - node_modules
 before_install:
-  - pip install --user codecov
+  - pyenv global system 3.6
+  - pip3 install --user codecov
   - nvm install 7
 install:
   - cd pdp-gui && sh ./build.sh && cd ..
