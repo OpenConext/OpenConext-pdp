@@ -21,7 +21,7 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "babili-webpack-plugin": "^0.0.11",
-    "codemirror": "5.19.0",
+    "codemirror": "5.58.2",
     "compass-mixins": "0.12.10",
     "css-loader": "0.25.0",
     "datatables": "1.10.12",
