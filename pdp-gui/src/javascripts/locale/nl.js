@@ -234,6 +234,10 @@ I18n.translations.nl = {
         title: "Deze pagina kon niet worden gevonden.",
         description_html: "Controleer of het adres correct gespeld is of ga terug naar de <a href=\"/\">homepage</a>."
     },
+    session_expired: {
+        title: "Sessie is verlopen.",
+        description_html: "U bent niet ingelogd of uw sessie is verlopen. Ga naar de <a href=\"/\">homepage</a> en log in om de website te gebruiken."
+    },
 
     logout: {
         title: "Succesvol uitgelogd.",

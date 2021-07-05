@@ -243,6 +243,10 @@ I18n.translations.en = {
         title: "Page not found.",
         description_html: "Check whether the address is correctly spelt or go back to the <a href=\"/\">homepage</a>."
     },
+    session_expired: {
+        title: "Session expired.",
+        description_html: "You are not logged in or your session has expired. Go to the <a href=\"/\">homepage</a> and log in to use the website."
+    },
 
     server_error: {
         title: "The PDP application is currently unavailable.",
