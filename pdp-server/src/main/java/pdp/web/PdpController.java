@@ -75,6 +75,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -113,7 +114,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
     private final List<String> loaLevels;
 
-    private final Object reloadingLock = new Object();
+    private final ReentrantLock lock = new ReentrantLock();
 
     // Can't be final as we need to swap this reference for reloading policies in production
     private volatile PDPEngine pdpEngine;
@@ -165,8 +166,13 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         addStatsDetails(stats, request);
 
         returnPolicyIdInList(request);
-
-        Response pdpResponse = isPlayground ? playgroundPdpEngine.decide(request) : pdpEngine.decide(request);
+        Response pdpResponse;
+        try {
+            lock.lock();
+            pdpResponse = isPlayground ? playgroundPdpEngine.decide(request) : pdpEngine.decide(request);
+        } finally {
+            lock.unlock();
+        }
 
         String response = JSONResponse.toString(pdpResponse, LOG.isDebugEnabled());
 
@@ -464,11 +470,14 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     }
 
     private void refreshPolicies() {
-        synchronized (reloadingLock) {
+        try {
+            lock.lock();
             LOG.info("Starting reloading policies");
             long start = System.currentTimeMillis();
             this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
             LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
+        } finally {
+            lock.unlock();
         }
     }
 
