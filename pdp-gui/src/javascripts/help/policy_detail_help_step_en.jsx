@@ -21,7 +21,7 @@ class PolicyDetailHelpStepEn extends React.Component {
 
                 <h2>Level of Assurance</h2>
 
-                <p>You can define multple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
+                <p>You can define multiple LoA's for a policy. Each LoA will be translated to a XACML rule. The attributes
                 of a LoA will determine if the specified LoA is enforced by the policy enforcement point.</p>
 
                 <section className="sub-form">
