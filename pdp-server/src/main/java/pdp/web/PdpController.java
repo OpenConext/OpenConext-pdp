@@ -4,21 +4,10 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
-import org.apache.openaz.xacml.api.Attribute;
-import org.apache.openaz.xacml.api.IdReference;
-import org.apache.openaz.xacml.api.Request;
-import org.apache.openaz.xacml.api.RequestAttributes;
-import org.apache.openaz.xacml.api.Response;
-import org.apache.openaz.xacml.api.Result;
+import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.Policy;
-import org.apache.openaz.xacml.std.IdentifierImpl;
-import org.apache.openaz.xacml.std.StdAttribute;
-import org.apache.openaz.xacml.std.StdAttributeValue;
-import org.apache.openaz.xacml.std.StdMutableAttribute;
-import org.apache.openaz.xacml.std.StdMutableRequest;
-import org.apache.openaz.xacml.std.StdMutableRequestAttributes;
-import org.apache.openaz.xacml.std.StdRequest;
+import org.apache.openaz.xacml.std.*;
 import org.apache.openaz.xacml.std.json.JSONRequest;
 import org.apache.openaz.xacml.std.json.JSONResponse;
 import org.apache.openaz.xacml.util.Wrapper;
@@ -34,23 +23,14 @@ import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pdp.JsonMapper;
 import pdp.PdpPolicyException;
 import pdp.PolicyNotFoundException;
 import pdp.access.PolicyAccess;
 import pdp.access.PolicyIdpAccessEnforcer;
 import pdp.conflicts.PolicyConflictService;
-import pdp.domain.EntityMetaData;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
+import pdp.domain.*;
 import pdp.mail.MailBox;
 import pdp.manage.Manage;
 import pdp.policies.PolicyMissingServiceProviderValidator;
@@ -66,13 +46,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -83,14 +57,8 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.apache.openaz.xacml.api.Decision.DENY;
 import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
-import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.OPTIONS;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
-import static pdp.access.PolicyAccess.READ;
-import static pdp.access.PolicyAccess.VIOLATIONS;
-import static pdp.access.PolicyAccess.WRITE;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static pdp.access.PolicyAccess.*;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
 
@@ -193,7 +161,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         StdMutableRequest mutableRequest = StdMutableRequest.class.cast(ReflectionUtils.getField(field, request));
         mutableRequest.setReturnPolicyIdList(true);
         StdMutableRequestAttributes requestAttributes = (StdMutableRequestAttributes) mutableRequest.getRequestAttributes().stream().filter(requestAttribute ->
-                requestAttribute.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
+                        requestAttribute.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))
                 .findFirst().get();
         Collection<Attribute> attributes = requestAttributes.getAttributes();
         boolean clientIDPresent = attributes.stream().anyMatch(attribute -> attribute.getAttributeId().getUri().toString().equals("ClientID"));
@@ -407,10 +375,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     }
 
     private PdpPolicy findPolicyById(Long id, PolicyAccess policyAccess) {
-        PdpPolicy policy = pdpPolicyRepository.findOne(id);
-        if (policy == null) {
-            throw new PolicyNotFoundException("PdpPolicy with id " + id + " not found");
-        }
+        PdpPolicy policy = pdpPolicyRepository.findById(id).orElseThrow(() -> new PolicyNotFoundException("PdpPolicy with id " + id + " not found"));
         PdpPolicyDefinition definition = pdpPolicyDefinitionParser.parse(policy);
         //this will throw an Exception if it is not allowed
         policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
@@ -454,8 +419,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     private Optional<String> getOptionalLoa(Response pdpResponse) {
         return pdpResponse.getResults().stream().map(result -> result.getObligations().stream()
-                .map(obligation -> obligation.getAttributeAssignments().stream()
-                        .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
+                        .map(obligation -> obligation.getAttributeAssignments().stream()
+                                .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
                 .flatMap(Function.identity())
                 .flatMap(Function.identity())
                 .max(Comparator.naturalOrder());

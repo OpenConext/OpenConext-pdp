@@ -98,6 +98,24 @@
         </extensions>
     </build>
 
+    <repositories>
+        <repository>
+            <id>openconext-snapshots</id>
+            <name>OpenConext public snapshot repository</name>
+            <url>https://build.openconext.org/repository/public/snapshots</url>
+        </repository>
+        <repository>
+            <id>openconext-releases</id>
+            <name>OpenConext public releases repository</name>
+            <url>https://build.openconext.org/repository/public/releases</url>
+        </repository>
+        <repository>
+            <id>openconext-third-party-releases</id>
+            <name>OpenConext third-party repository</name>
+            <url>https://build.openconext.org/repository/public/third-party</url>
+        </repository>
+    </repositories>
+
     <distributionManagement>
         <repository>
             <id>openconext-releases</id>

@@ -5,17 +5,18 @@ import org.apache.openaz.xacml.util.XACMLProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.ManagementWebSecurityAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.TraceWebFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
@@ -26,7 +27,12 @@ import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
 
-@SpringBootApplication(exclude = {ManagementWebSecurityAutoConfiguration.class, SecurityAutoConfiguration.class, TraceWebFilterAutoConfiguration.class, MetricFilterAutoConfiguration.class})
+@SpringBootApplication(exclude = {
+        FreeMarkerAutoConfiguration.class,
+        AuditAutoConfiguration.class,
+        SecurityAutoConfiguration.class,
+        HttpTraceAutoConfiguration.class,
+        MetricsAutoConfiguration.class})
 public class PdpApplication {
 
     @Autowired
@@ -43,11 +49,11 @@ public class PdpApplication {
 
     @Bean
     public PDPEngineHolder pdpEngine(
-        @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
-        final PdpPolicyRepository pdpPolicyRepository,
-        final VootClient vootClient,
-        final SabClient sabClient,
-        final PolicyLoader policyLoader
+            @Value("${xacml.properties.path}") final String xacmlPropertiesFileLocation,
+            final PdpPolicyRepository pdpPolicyRepository,
+            final VootClient vootClient,
+            final SabClient sabClient,
+            final PolicyLoader policyLoader
     ) throws IOException, FactoryException {
         Resource resource = resourceLoader.getResource(xacmlPropertiesFileLocation);
         String absolutePath = resource.getFile().getAbsolutePath();
@@ -61,11 +67,10 @@ public class PdpApplication {
     }
 
     @Configuration
-    public static class WebMvcConfig extends WebMvcConfigurerAdapter {
+    public static class WebMvcConfig implements WebMvcConfigurer {
 
-        @Override
+    @Override
         public void addInterceptors(InterceptorRegistry registry) {
-            super.addInterceptors(registry);
             registry.addInterceptor(new SessionAliveInterceptor());
         }
     }

@@ -61,11 +61,10 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
     @Test
     public void testCrsfConfiguration() throws Exception {
-        Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<Map<String, Object>>() {
+        Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<>() {
         });
 
         assertEquals(403, jsonResponse.get("status"));
-        assertEquals("Could not verify the provided CSRF token because your session was not found.", jsonResponse.get("message"));
     }
 
     @Override

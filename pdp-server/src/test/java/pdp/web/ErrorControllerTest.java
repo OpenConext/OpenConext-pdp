@@ -2,11 +2,12 @@ package pdp.web;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.boot.autoconfigure.web.ErrorAttributes;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
@@ -18,16 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyBoolean;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.http.HttpStatus.*;
 
 public class ErrorControllerTest {
 
@@ -42,9 +36,10 @@ public class ErrorControllerTest {
         result.put("exception", "exception");
         result.put("message", "message");
 
-        when(errorAttributes.getErrorAttributes(any(), anyBoolean())).thenReturn(result);
+        when(errorAttributes.getErrorAttributes(any(), any())).thenReturn(result);
 
-        this.subject = new ErrorController(errorAttributes);
+        this.subject = new ErrorController();
+        ReflectionTestUtils.setField(subject, "errorAttributes", this.errorAttributes);
     }
 
     @Test

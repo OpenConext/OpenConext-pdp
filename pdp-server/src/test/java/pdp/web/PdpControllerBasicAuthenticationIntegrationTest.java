@@ -43,7 +43,7 @@ public class PdpControllerBasicAuthenticationIntegrationTest extends AbstractPdp
     }
 
     @Test
-    public void shouldBeAbleToFetchPoliciesWithBasciAuthAndHeadersOnProtectedEndPoint() {
+    public void shouldBeAbleToFetchPoliciesWithBasicAuthAndHeadersOnProtectedEndPoint() {
         basicAuthTemplate();
         impersonate(PolicyLoader.authenticatingAuthority, "urn:collab:person:example.com:mary.doe", "Mary Doe");
 
@@ -53,7 +53,7 @@ public class PdpControllerBasicAuthenticationIntegrationTest extends AbstractPdp
     }
 
     @Test
-    public void shouldNotBeAbleToFetchPoliciesWithBasciAuthAndNoHeadersOnProtectedEndPoint() {
+    public void shouldNotBeAbleToFetchPoliciesWithBasicAuthAndNoHeadersOnProtectedEndPoint() {
         basicAuthTemplate();
         ResponseEntity<String> response = get("/protected/policies");
 

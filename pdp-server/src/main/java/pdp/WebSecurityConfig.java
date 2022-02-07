@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -80,11 +81,11 @@ public class WebSecurityConfig {
                 .authorizeRequests()
                 .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN");
 
-            if (environment.acceptsProfiles("no-csrf")) {
+            if (environment.acceptsProfiles(Profiles.of("no-csrf"))) {
                 http.csrf().disable();
             }
 
-            if (environment.acceptsProfiles("dev", "perf")) {
+            if (environment.acceptsProfiles(Profiles.of("dev", "perf"))) {
                 //we can't use @Profile, because we need to add it before the real filter
                 http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
             }
