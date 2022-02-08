@@ -61,7 +61,7 @@ public class WebSecurityConfig {
         public void configure(WebSecurity web) throws Exception {
             web
                 .ignoring()
-                .antMatchers("/health/**", "/info/**", "/public/**");
+                .antMatchers("/internal/health", "/internal/info", "/public/**");
         }
 
         @Override
