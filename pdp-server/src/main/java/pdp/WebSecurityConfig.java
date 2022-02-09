@@ -60,26 +60,27 @@ public class WebSecurityConfig {
         @Override
         public void configure(WebSecurity web) throws Exception {
             web
-                .ignoring()
-                .antMatchers("/internal/health", "/internal/info", "/public/**");
+                    .ignoring()
+                    .antMatchers("/internal/health", "/internal/info", "/public/**");
         }
 
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http
-                .antMatcher("/internal/**")
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .and()
-                .csrf()
-                .requireCsrfProtectionMatcher(new CsrfProtectionMatcher()).and()
-                .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
-                .addFilterAfter(
-                    new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), manage),
-                    AbstractPreAuthenticatedProcessingFilter.class
-                )
-                .authorizeRequests()
-                .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN");
+                    .antMatcher("/internal/**")
+                    .sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                    .and()
+                    .csrf()
+                    .requireCsrfProtectionMatcher(new CsrfProtectionMatcher())
+                    .and()
+                    .addFilterAfter(new CsrfTokenResponseHeaderBindingFilter(), CsrfFilter.class)
+                    .addFilterAfter(
+                            new ShibbolethPreAuthenticatedProcessingFilter(authenticationManagerBean(), manage),
+                            AbstractPreAuthenticatedProcessingFilter.class
+                    )
+                    .authorizeRequests()
+                    .antMatchers("/internal/**").hasAnyRole("PEP", "ADMIN");
 
             if (environment.acceptsProfiles(Profiles.of("no-csrf"))) {
                 http.csrf().disable();
@@ -103,17 +104,17 @@ public class WebSecurityConfig {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
             http.antMatcher("/**")
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .csrf()
-                .disable()
-                .addFilterBefore(
-                    new PolicyIdpAccessEnforcerFilter(authenticationManager(), manage),
-                    BasicAuthenticationFilter.class
-                )
-                .authorizeRequests()
-                .antMatchers("/protected/**", "/decide/policy")
-                .hasAnyRole("PEP", "ADMIN");
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .and()
+                    .csrf()
+                    .disable()
+                    .addFilterBefore(
+                            new PolicyIdpAccessEnforcerFilter(authenticationManager(), manage),
+                            BasicAuthenticationFilter.class
+                    )
+                    .authorizeRequests()
+                    .antMatchers("/protected/**", "/decide/policy")
+                    .hasAnyRole("PEP", "ADMIN");
         }
 
     }
