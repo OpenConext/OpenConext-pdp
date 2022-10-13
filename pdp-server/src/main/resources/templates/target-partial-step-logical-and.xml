@@ -1,14 +1,27 @@
         {{#allAttributesGrouped}}
         <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
             {{#value}}
-            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+            {{#negated}}
+            <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:negation">
                 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{value}}</AttributeValue>
                 <AttributeDesignator
-                    AttributeId="{{name}}"
-                    DataType="http://www.w3.org/2001/XMLSchema#string"
-                    Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
-                    MustBePresent="false"/>
+                        AttributeId="{{name}}"
+                        DataType="http://www.w3.org/2001/XMLSchema#string"
+                        Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                        MustBePresent="false"
+                />
             </Apply>
+            {{/negated}}
+            {{^negated}}
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
+                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{value}}</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="{{name}}"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                            MustBePresent="false"/>
+                </Apply>
+            {{/negated}}
             {{/value}}
         </Apply>
         {{/allAttributesGrouped}}

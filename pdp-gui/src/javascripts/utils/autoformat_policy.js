@@ -22,9 +22,11 @@ const AutoFormat = {
         const length = attributeNames.length;
         const lines = attributeNames.map((attributeName, index) => {
             const values = attributes[attributeName].map(attribute => {
-                return this.addQuotes(attribute.value);
+                const negated = attribute.negated ? " NOT " : "";
+                return negated + this.addQuotes(attribute.value);
             }).join(" or ");
             const logical = index === (length - 1) ? "" : allAttributesMustMatch ? " and " : " or ";
+
             const result = "he/she has the value " + values + " for attribute '" + attributeName + "'" + logical;
             return result;
         });

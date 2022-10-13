@@ -1,4 +1,4 @@
-package pdp.ip;
+package pdp.negate;
 
 import org.apache.openaz.xacml.api.AttributeValue;
 import org.apache.openaz.xacml.api.Identifier;
@@ -15,12 +15,12 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 import java.util.List;
 
-import static pdp.xacml.PdpPolicyDefinitionParser.IP_FUNCTION;
+import static pdp.xacml.PdpPolicyDefinitionParser.NEGATE_FUNCTION;
 
-public class IPRangeFunctionDefinition implements FunctionDefinition {
+public class NegateFunctionDefinition implements FunctionDefinition {
 
     private static final IdentifierImpl IDENTIFIER =
-        new IdentifierImpl(IP_FUNCTION);
+        new IdentifierImpl(NEGATE_FUNCTION);
 
     @Override
     public Identifier getId() {
@@ -42,17 +42,12 @@ public class IPRangeFunctionDefinition implements FunctionDefinition {
         if (arguments.size() != 2) {
             return ExpressionResult.newError(new StdStatus(StdStatusCode.STATUS_CODE_SYNTAX_ERROR));
         }
-        String cidr = String.class.cast(arguments.get(0).getValue().getValue());
-        String ipAddress = String.class.cast(arguments.get(1).getValue().getValue());
+        String policyValue = (String) arguments.get(0).getValue().getValue();
+        AttributeValue<String> value = (AttributeValue<String>) arguments.get(1).getValue();
+        String actualValue = value != null ? value.getValue() : "";
 
-        IpAddressMatcher matcher = new IpAddressMatcher(cidr);
-        AttributeValue attributeValue;
-        try {
-            attributeValue = matcher.matches(ipAddress) ? DataTypeBoolean.AV_TRUE : DataTypeBoolean.AV_FALSE;
-        } catch (IllegalArgumentException e) {
-            return ExpressionResult.newError(new StdStatus(StdStatusCode.STATUS_CODE_PROCESSING_ERROR,
-                "Invalid IP address: ".concat(ipAddress)));
-        }
-        return ExpressionResult.newSingle(attributeValue);
+        AttributeValue<Boolean> booleanAttributeValue = policyValue.equalsIgnoreCase(actualValue) ? DataTypeBoolean.AV_FALSE : DataTypeBoolean.AV_TRUE;
+
+        return ExpressionResult.newSingle(booleanAttributeValue);
     }
 }

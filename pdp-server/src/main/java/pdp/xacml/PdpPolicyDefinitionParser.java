@@ -48,9 +48,10 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
     public static final String SP_ENTITY_ID = "SPentityID";
     public static final String IDP_ENTITY_ID = "IDPentityID";
     public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
+    public static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
+    public static final String NEGATE_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:negation";
 
     private static final String CLIENT_ID = "ClientID";
-    private static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
 
     public PdpPolicyDefinition parse(PdpPolicy pdpPolicy) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
@@ -126,23 +127,32 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
     private LoA parseDomApply(LoA loA, DOMApply domApply) {
         String functionID = domApply.getFunctionId().getUri().toString();
         if (functionID.endsWith("function:not")) {
-            DOMApply ipRange = DOMApply.class.cast(domApply.getArguments().next());
-            loA.getCidrNotations().add(parseCidrNotation(ipRange, true));
+            DOMApply ipRange = (DOMApply) domApply.getArguments().next();
+            String ipRangeFunctionId = ipRange.getFunctionId().getUri().toString();
+            if (ipRangeFunctionId.equals(IP_FUNCTION)) {
+                loA.getCidrNotations().add(parseCidrNotation(ipRange, true));
+            }
             return loA;
         } else if (functionID.equals(IP_FUNCTION)) {
             loA.getCidrNotations().add(parseCidrNotation(domApply, false));
             return loA;
-        } else if (functionID.endsWith("function:string-is-in")) {
-            AttributeValueExpression attributeValueExpression = castArgument(AttributeValueExpression.class, domApply);
-            String value = (String) attributeValueExpression.getAttributeValue().getValue();
-
-            DOMAttributeDesignator attributeDesignator = castArgument(DOMAttributeDesignator.class, domApply);
-            String name = attributeDesignator.getAttributeId().getUri().toString();
-
-            loA.getAttributes().add( new PdpAttribute(name, value));
+        } else if (functionID.endsWith("function:string-is-in") || functionID.equals(NEGATE_FUNCTION)) {
+            addArgumentToLoa(loA, domApply, functionID.equals(NEGATE_FUNCTION));
             return loA;
         }
         return parseArguments(loA, domApply.getArguments());
+    }
+
+    private void addArgumentToLoa(LoA loA, DOMApply domApply, boolean negated) {
+        AttributeValueExpression attributeValueExpression = castArgument(AttributeValueExpression.class, domApply);
+        String value = (String) attributeValueExpression.getAttributeValue().getValue();
+
+        DOMAttributeDesignator attributeDesignator = castArgument(DOMAttributeDesignator.class, domApply);
+        String name = attributeDesignator.getAttributeId().getUri().toString();
+
+        PdpAttribute pdpAttribute = new PdpAttribute(name, value);
+        pdpAttribute.setNegated(negated);
+        loA.getAttributes().add(pdpAttribute);
     }
 
     private <T> T castArgument(Class<T> clazz, DOMApply domApply) {

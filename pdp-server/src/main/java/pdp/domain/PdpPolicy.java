@@ -73,6 +73,7 @@ public class PdpPolicy {
         this.active = active;
         this.policyId = PolicyTemplateEngine.getPolicyId(name);
         this.type = type;
+        this.created = new Date();
     }
 
     public Long getId() {

@@ -17,6 +17,8 @@ public class PdpAttribute {
     @Size(min = 1)
     private String value;
 
+    private boolean negated;
+
     public PdpAttribute() {
     }
 
@@ -39,6 +41,14 @@ public class PdpAttribute {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public boolean isNegated() {
+        return negated;
+    }
+
+    public void setNegated(boolean negated) {
+        this.negated = negated;
     }
 
     @Override

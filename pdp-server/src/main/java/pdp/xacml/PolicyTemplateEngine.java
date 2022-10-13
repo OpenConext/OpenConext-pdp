@@ -28,7 +28,9 @@ public class PolicyTemplateEngine {
         try {
             mustache.execute(writer, pdpPolicyDefintion).flush();
             String policyXml = writer.toString();
+
             LOG.debug("Returning policyXml {}", policyXml);
+
             return policyXml;
         } catch (IOException e) {
             throw new RuntimeException(e);

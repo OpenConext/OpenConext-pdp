@@ -108,6 +108,7 @@ class PolicyLoas extends React.Component {
                     <PolicyAttributes policy={loa}
                                       css="no-pad-right"
                                       allowedAttributes={this.props.allowedAttributes}
+                                      negateAttributes={true}
                                       setAttributeState={this.setAttributeState(loa)}
                                       innerAttributes={true}/>
                     <hr/>

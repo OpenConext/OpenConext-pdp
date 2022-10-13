@@ -129,11 +129,11 @@ class PolicyDetail extends React.Component {
         const apiCall = policy.id ? updatePolicy : createPolicy;
         const action = policy.id ? I18n.t("policies.flash_updated") : I18n.t("policies.flash_created");
 
-        apiCall({...policy, description: this.renderAutoformatDescription(policy)}).then(() => {
-            setFlash(I18n.t("policies.flash", {policyName: policy.name, action}));
-            this.context.router.transitionTo("/policies");
-        })
-            .catch(e => {
+        apiCall({...policy, description: this.renderAutoFormatDescription(policy)})
+            .then(() => {
+                setFlash(I18n.t("policies.flash", {policyName: policy.name, action}));
+                this.context.router.transitionTo("/policies");
+            }).catch(e => {
                 if (e.response.status === 400) {
                     e.response.json()
                         .then(body => {
@@ -155,13 +155,13 @@ class PolicyDetail extends React.Component {
         const emptyLoaAttributes = policy.loas.some(loa =>
             loa.attributes.some(attr => isEmpty(attr)));
 
-        const description = this.renderAutoformatDescription(policy);
+        const description = this.renderAutoFormatDescription(policy);
         let invalid;
         if (policy.type === "step") {
             invalid = isEmpty(policy.loas) || invalidNotations || emptyLoaAttributes;
         } else {
             invalid = isEmpty(policy.attributes) || emptyAttributes.length > 0 || isEmpty(policy.denyAdvice)
-                || isEmpty(policy.denyAdviceNl) ;
+                || isEmpty(policy.denyAdviceNl);
         }
 
         const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderId) || isEmpty(description) || invalid;
@@ -219,7 +219,7 @@ class PolicyDetail extends React.Component {
     }
 
     renderDescription(policy) {
-        const description = this.renderAutoformatDescription(policy);
+        const description = this.renderAutoFormatDescription(policy);
         const workflow = isEmpty(description) ? "failure" : "success";
         return (
             <div>
@@ -237,7 +237,7 @@ class PolicyDetail extends React.Component {
         );
     }
 
-    renderAutoformatDescription(policy) {
+    renderAutoFormatDescription(policy) {
         if (this.state.autoFormat) {
             return AutoFormat.description(policy);
         }
@@ -310,7 +310,6 @@ class PolicyDetail extends React.Component {
         if (scopedSPs) {
             return (<em className="note"><sup>*</sup>{I18n.t("policy_detail.spScopeInfo")} </em>);
         }
-
         return null;
     }
 
@@ -346,7 +345,7 @@ class PolicyDetail extends React.Component {
 
                         <div id="ios_checkbox" className={classNameSelected + " ios-ui-select"}
                              onClick={this.toggleDenyRule.bind(this)}>
-                            <div className="inner"></div>
+                            <div className="inner"/>
                             <p>{policyPermit}</p>
                         </div>
                     </div>
@@ -359,7 +358,7 @@ class PolicyDetail extends React.Component {
                         <em className={classNameDeny}>{I18n.t("policy_detail.deny_info")}</em>
                     </div>
                 </div>
-                <div className="bottom"></div>
+                <div className="bottom"/>
             </div>
         );
     }
@@ -390,6 +389,7 @@ class PolicyDetail extends React.Component {
         //we need state changes from the child component
         return (<PolicyAttributes
             policy={policy}
+            negateAttributes={false}
             allowedAttributes={this.state.allowedAttributes}
             setAttributeState={this.setAttributeState.bind(this)}/>);
     }

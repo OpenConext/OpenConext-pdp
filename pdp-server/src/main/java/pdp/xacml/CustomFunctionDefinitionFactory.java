@@ -5,6 +5,7 @@ import org.apache.openaz.xacml.pdp.policy.FunctionDefinition;
 import org.apache.openaz.xacml.pdp.std.StdFunctionDefinitionFactory;
 import org.springframework.util.ReflectionUtils;
 import pdp.ip.IPRangeFunctionDefinition;
+import pdp.negate.NegateFunctionDefinition;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -23,7 +24,10 @@ public class CustomFunctionDefinitionFactory extends StdFunctionDefinitionFactor
         Map<Identifier, FunctionDefinition> mapFunctionDefinitions =
             (Map<Identifier, FunctionDefinition>) ReflectionUtils.getField(field, this);
 
-        IPRangeFunctionDefinition functionDefinition = new IPRangeFunctionDefinition();
-        mapFunctionDefinitions.put(functionDefinition.getId(), functionDefinition);
+        IPRangeFunctionDefinition ipRangeFunctionDefinition = new IPRangeFunctionDefinition();
+        NegateFunctionDefinition negateFunctionDefinition = new NegateFunctionDefinition();
+
+        mapFunctionDefinitions.put(ipRangeFunctionDefinition.getId(), ipRangeFunctionDefinition);
+        mapFunctionDefinitions.put(negateFunctionDefinition.getId(), negateFunctionDefinition);
     }
 }

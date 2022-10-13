@@ -114,8 +114,8 @@
     width: 100%
 
   .attribute-values
-    margin: 10px 0px 10px 25px
-    padding-left: 20px
+    margin: 10px 0 10px 15px
+    padding-left: 15px
     border-left: 1px solid $medium-grey
 
     a.plus
@@ -125,10 +125,24 @@
     input
       margin-bottom: 10px
 
+      &[type="checkbox"]
+        margin-bottom: 0
+
       &.before-em
         margin-bottom: 2px
 
-  .attribute-container, .value-container, .loa-container, cidr-container
+  .value-container
+    display: flex
+    align-items: center
+
+    label.negate-label
+      margin-right: 10px
+
+    input[type="text"].form-input
+      min-width: 0
+      flex-grow: 2
+
+  .attribute-container, .value-container, .loa-container, .cidr-container
     position: relative
 
     a
@@ -144,14 +158,14 @@
 
       &.add
         color: $blue
-      
+
   input[type="text"]:disabled
     background-color: #fbfbfb
 
   a.plus i
     margin-right: 10px
 
-  input + em.attribute-value
+  input[type="text"] + em.attribute-value
     margin-bottom: 10px
     display: inline-block
     margin-top: 3px

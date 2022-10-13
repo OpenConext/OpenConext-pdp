@@ -22,7 +22,8 @@ class PolicyAttributes extends React.Component {
     }
 
     componentWillMount() {
-        this.setState(this.markAttributes(this.props.policy));
+        const {policy} = this.props;
+        this.setState(this.markAttributes(policy));
     }
 
     componentWillReceiveProps(nextProps) {
@@ -42,6 +43,18 @@ class PolicyAttributes extends React.Component {
             return attribute.name !== name;
         });
         this.props.setAttributeState({attributes: attributes});
+    }
+
+    handleNegateAttribute(attrName, index) {
+        return function () {
+            const attributes = this.state.attributes.map(attr => {
+                if (attr.name === attrName && attr.index === index) {
+                    attr.negated = !attr.negated;
+                }
+                return attr;
+            });
+            this.props.setAttributeState({attributes: attributes});
+        }.bind(this);
     }
 
     handleAttributeValueChanged(attrName, index) {
@@ -107,8 +120,17 @@ class PolicyAttributes extends React.Component {
 
     renderAttributeValue(attrName, attribute, index) {
         const className = this.renderAttributeInfo(attrName, index) === undefined ? "" : "before-em";
+        const {negateAttributes} = this.props;
         return (
             <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
+                {negateAttributes && <input type="checkbox"
+                       id={`${index}_${attrName}`}
+                       name={`${index}_${attrName}`}
+                       checked={attribute.negated}
+                       onChange={this.handleNegateAttribute(attrName, attribute.index)}/>}
+                {negateAttributes && <label htmlFor={`${index}_${attrName}`} className={"negate-label"}>
+                    {I18n.t("policy_cidr.negate")}
+                </label>}
                 <input type="text" name="value" className={"form-input " + className}
                        key={attrName + "-" + attribute.index}
                        value={attribute.value}
@@ -116,7 +138,7 @@ class PolicyAttributes extends React.Component {
                        onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
                 {this.renderAttributeInfo(attrName, index)}
                 <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
-                    <i className="fa fa-remove"></i>
+                    <i className="fa fa-remove"/>
                 </a>
 
             </div>
@@ -196,6 +218,7 @@ PolicyAttributes.propTypes = {
     policy: React.PropTypes.shape({
         attributes: React.PropTypes.arrayOf(React.PropTypes.shape({}))
     }),
+    negateAttributes: React.PropTypes.bool,
     innerAttributes: React.PropTypes.bool
 };
 
