@@ -78,7 +78,7 @@ public class ClassPathResourceManage implements Manage {
 
     @Override
     public Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId) {
-        if (StringUtils.isEmpty(institutionId)) {
+        if (!StringUtils.hasText(institutionId)) {
             return Collections.emptySet();
         }
         return serviceProviders().stream().filter(sp -> institutionId.equals(sp.getInstitutionId())).collect(toSet());

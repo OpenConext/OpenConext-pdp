@@ -44,20 +44,21 @@ public class VootClientConfig {
         return new VootClient(vootRestTemplate(), vootServiceUrl) {
             @Override
             public List<String> groups(String userUrn) {
-        /*
-         * These are the groups names defined in the test set of policies
-         */
+                /*
+                 * These are the groups names defined in the test set of policies
+                 */
                 return URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN.equals(userUrn) ?
-                    asList(
-                        "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
-                        "urn:collab:group:avans.nl:HRemployees",
-                        "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
-                        "urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess"
-                    ) : Collections.emptyList();
+                        asList(
+                                "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+                                "urn:collab:group:avans.nl:HRemployees",
+                                "urn:collab:group:test.surfteams.nl:nl:surfnet:diensten:managementvo",
+                                "urn:collab:group:surfteams.nl:nl:surfnet:diensten:SURFnetWikiAccess"
+                        ) : Collections.emptyList();
             }
         };
     }
 
+    @SuppressWarnings("deprecation")
     private OAuth2RestTemplate vootRestTemplate() {
         ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
         details.setId("pdp");

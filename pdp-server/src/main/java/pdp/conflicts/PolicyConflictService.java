@@ -3,10 +3,7 @@ package pdp.conflicts;
 import org.springframework.util.CollectionUtils;
 import pdp.domain.PdpPolicyDefinition;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.groupingBy;
@@ -24,15 +21,28 @@ public class PolicyConflictService {
                 conflicts.addAll(asList(one, two));
             }
         }));
-        return conflicts.stream()
-            .filter(conflict -> !conflict.isServiceProviderInvalidOrMissing())
-            .collect(groupingBy(PdpPolicyDefinition::getServiceProviderName));
+        Map<String, List<PdpPolicyDefinition>> result = new HashMap<>();
+        conflicts.forEach(conflict -> {
+            conflict.getServiceProviderNames().forEach(name -> {
+                if (result.containsKey(name)) {
+                    List<PdpPolicyDefinition> value = result.get(name);
+                    value.add(conflict);
+
+                } else {
+                    List<PdpPolicyDefinition> value = new ArrayList<>();
+                    value.add(conflict);
+                    result.put(name, value);
+                }
+
+            });
+        });
+        return result;
 
     }
 
     //if the two SP's are equal and there are overlapping IdP's or one policy has no IdP then there is a conflict
     private boolean conflict(PdpPolicyDefinition one, PdpPolicyDefinition two) {
-        return one.getType().equals(two.getType()) && one.getServiceProviderId().equals(two.getServiceProviderId()) &&
+        return one.getType().equals(two.getType()) && overlapping(one.getServiceProviderIds(), two.getServiceProviderIds()) &&
             (CollectionUtils.isEmpty(one.getIdentityProviderIds()) ||
                 CollectionUtils.isEmpty(two.getIdentityProviderIds()) ||
                 overlapping(one.getIdentityProviderIds(), two.getIdentityProviderIds()));

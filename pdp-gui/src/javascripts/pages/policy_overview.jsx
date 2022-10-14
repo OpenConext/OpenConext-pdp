@@ -146,7 +146,7 @@ class PolicyOverview extends React.Component {
                 <tr key={policy.id}>
                     <td>{policy.name}</td>
                     <td>{policy.description}</td>
-                    <td>{isEn ? policy.serviceProviderName : policy.serviceProviderNameNl}</td>
+                    <td>{isEn ? policy.serviceProviderNames : policy.serviceProviderNamesNl}</td>
                     <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
                                                                   disabled="true"/></td>
                     <td>{this.renderIdpNames(isEn ? policy.identityProviderNames : policy.identityProviderNamesNl)}</td>
@@ -169,7 +169,7 @@ class PolicyOverview extends React.Component {
                         <tr className='success'>
                             <th className='policy_name_col'>{I18n.t("policies.name")}</th>
                             <th className='policy_description_col'>{I18n.t("policies.description")}</th>
-                            <th className='policy_sp_col'>{I18n.t("policies.serviceProviderId")}</th>
+                            <th className='policy_sp_col'>{I18n.t("policies.serviceProviderIds")}</th>
                             <th className='policy_is_activated_sr'>{I18n.t("policies.activatedSr")}</th>
                             <th className='policy_idps_col'>{I18n.t("policies.identityProviderIds")}</th>
                             <th className='policy_violations'>{I18n.t("policies.violations")}</th>

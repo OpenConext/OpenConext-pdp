@@ -38,9 +38,9 @@ public class PdpPolicyDefinition {
 
     @NotNull
     @Size(min = 1)
-    private String serviceProviderId;
-    private String serviceProviderName;
-    private String serviceProviderNameNl;
+    private List<String> serviceProviderIds= new ArrayList<>();
+    private List<String> serviceProviderNames= new ArrayList<>();
+    private List<String> serviceProviderNamesNl= new ArrayList<>();
 
     private boolean serviceProviderInvalidOrMissing;
 
@@ -111,14 +111,6 @@ public class PdpPolicyDefinition {
         this.description = description;
     }
 
-    public String getServiceProviderId() {
-        return serviceProviderId;
-    }
-
-    public void setServiceProviderId(String serviceProviderId) {
-        this.serviceProviderId = serviceProviderId;
-    }
-
     public List<String> getIdentityProviderIds() {
         return identityProviderIds;
     }
@@ -171,12 +163,20 @@ public class PdpPolicyDefinition {
         return PolicyTemplateEngine.getPolicyId(name);
     }
 
-    public String getServiceProviderName() {
-        return serviceProviderName;
+    public List<String> getServiceProviderNames() {
+        return serviceProviderNames;
     }
 
-    public void setServiceProviderName(String serviceProviderName) {
-        this.serviceProviderName = serviceProviderName;
+    public List<String> getServiceProviderIds() {
+        return serviceProviderIds;
+    }
+
+    public void setServiceProviderIds(List<String> serviceProviderIds) {
+        this.serviceProviderIds = serviceProviderIds;
+    }
+
+    public void setServiceProviderNames(List<String> serviceProviderNames) {
+        this.serviceProviderNames = serviceProviderNames;
     }
 
     public boolean isServiceProviderInvalidOrMissing() {
@@ -334,7 +334,7 @@ public class PdpPolicyDefinition {
             Objects.equals(allAttributesMustMatch, that.allAttributesMustMatch) &&
             Objects.equals(name, that.name) &&
             Objects.equals(description, that.description) &&
-            Objects.equals(serviceProviderId, that.serviceProviderId) &&
+            Objects.equals(serviceProviderIds, that.serviceProviderIds) &&
             Objects.equals(identityProviderIds, that.identityProviderIds) &&
             Objects.equals(attributes, that.attributes) &&
             Objects.equals(denyAdvice, that.denyAdvice) &&
@@ -343,7 +343,7 @@ public class PdpPolicyDefinition {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, description, serviceProviderId, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
+        return Objects.hash(name, description, serviceProviderIds, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
     }
 
     @Override
@@ -351,7 +351,7 @@ public class PdpPolicyDefinition {
         return "PdpPolicyDefinition{" + "\n" +
             "name='" + name + '\'' + "\n" +
             ", description='" + description + '\'' + "\n" +
-            ", serviceProviderId='" + serviceProviderId + '\'' + "\n" +
+            ", serviceProviderId='" + serviceProviderIds + '\'' + "\n" +
             ", identityProviderIds=" + identityProviderIds + "\n" +
             ", attributes=" + attributes + "\n" +
             ", denyAdvice='" + denyAdvice + '\'' + "\n" +
@@ -361,10 +361,10 @@ public class PdpPolicyDefinition {
             '}';
     }
 
-    public static PdpPolicyDefinition policyDefinition(String serviceProviderId, List<String> identityProvidersIds) {
+    public static PdpPolicyDefinition policyDefinition(List<String> serviceProviderIds, List<String> identityProvidersIds) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
-        definition.setServiceProviderId(serviceProviderId);
-        definition.setServiceProviderName(serviceProviderId);
+        definition.setServiceProviderIds(serviceProviderIds);
+        definition.setServiceProviderNames(serviceProviderIds);
         definition.setIdentityProviderIds(identityProvidersIds);
         definition.setType("reg");
         return definition;
@@ -375,11 +375,11 @@ public class PdpPolicyDefinition {
         Collections.sort(this.loas, Comparator.comparing(LoA::getLevel).reversed());
     }
 
-    public void setServiceProviderNameNl(String serviceProviderNameNl) {
-        this.serviceProviderNameNl = serviceProviderNameNl;
+    public List<String> getServiceProviderNamesNl() {
+        return serviceProviderNamesNl;
     }
 
-    public String getServiceProviderNameNl() {
-        return serviceProviderNameNl;
+    public void setServiceProviderNamesNl(List<String> serviceProviderNamesNl) {
+        this.serviceProviderNamesNl = serviceProviderNamesNl;
     }
 }

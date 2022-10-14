@@ -63,7 +63,7 @@ class Playground extends React.Component {
                     ...this.state.pdpRequest,
                     selectedPolicy: newValue,
                     identityProviderId: idp,
-                    serviceProviderId: policy.serviceProviderId,
+                    serviceProviderId: policy.serviceProviderIds[0],
                     clientId: isReg ? "EngineBlock" : "EngineBlock",
                     attributes: attributes
                 }

@@ -44,7 +44,7 @@ public class PerformancePrePolicyLoader extends DevelopmentPrePolicyLoader {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
         definition.setName("Performance_Policy_" + uuid);
         definition.setDescription("Performance Policy " + uuid);
-        definition.setServiceProviderId(sp.getEntityId());
+        definition.setServiceProviderIds(Arrays.asList(sp.getEntityId()));
         definition.setDenyAdvice("Not authorized");
         definition.setDenyAdviceNl("Niet geautoriseerd");
         definition.setDescription("Performance Policy " + uuid);

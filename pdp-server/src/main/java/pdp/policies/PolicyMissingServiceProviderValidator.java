@@ -35,7 +35,6 @@ public class PolicyMissingServiceProviderValidator {
     }
 
     public List<PdpPolicyDefinition> addEntityMetaData(List<PdpPolicyDefinition> pdpPolicyDefinitions) {
-
         Set<String> idpEntitiesIds = pdpPolicyDefinitions.stream()
                 .map(PdpPolicyDefinition::getIdentityProviderIds)
                 .flatMap(List::stream)
@@ -43,7 +42,10 @@ public class PolicyMissingServiceProviderValidator {
         idpEntitiesIds.addAll(pdpPolicyDefinitions.stream().map(PdpPolicyDefinition::getAuthenticatingAuthorityName).collect(Collectors.toSet()));
         Map<String, EntityMetaData> identityProviders = manage.identityProvidersByEntityIds(idpEntitiesIds);
 
-        Set<String> spEntitiesIds = pdpPolicyDefinitions.stream().map(PdpPolicyDefinition::getServiceProviderId).collect(Collectors.toSet());
+        Set<String> spEntitiesIds = pdpPolicyDefinitions.stream()
+                .map(PdpPolicyDefinition::getServiceProviderIds)
+                .flatMap(List::stream)
+                .collect(Collectors.toSet());
         Map<String, EntityMetaData> serviceProviders = manage.serviceProvidersByEntityIds(spEntitiesIds);
 
         pdpPolicyDefinitions.forEach(pd -> {
@@ -51,21 +53,25 @@ public class PolicyMissingServiceProviderValidator {
             if (emd != null) {
                 pd.setAuthenticatingAuthorityName(emd.getNameEn());
             }
-            EntityMetaData sp = serviceProviders.get(pd.getServiceProviderId());
-            pd.setServiceProviderInvalidOrMissing(sp == null);
-            if (sp != null) {
-                pd.setServiceProviderName(sp.getNameEn());
-                pd.setServiceProviderNameNl(sp.getNameNl());
-                pd.setActivatedSr(sp.isPolicyEnforcementDecisionRequired());
-            }
 
-            List<String> entityIds = pd.getIdentityProviderIds();
+            List<String> spEntityIds = pd.getServiceProviderIds();
+            pd.setServiceProviderNames(serviceProviders.values().stream()
+                    .filter(idp -> spEntityIds.contains(idp.getEntityId()))
+                    .map(sp -> sp.getNameEn())
+                    .collect(toList()));
+            pd.setServiceProviderNamesNl(serviceProviders.values().stream()
+                    .filter(sp -> spEntityIds.contains(sp.getEntityId()))
+                    .map(sp -> sp.getNameNl())
+                    .collect(toList()));
+            pd.setActivatedSr(spEntityIds.size() == serviceProviders.size());
+
+            List<String> identityProviderIds = pd.getIdentityProviderIds();
             pd.setIdentityProviderNames(identityProviders.values().stream()
-                    .filter(idp -> entityIds.contains(idp.getEntityId()))
+                    .filter(idp -> identityProviderIds.contains(idp.getEntityId()))
                     .map(idp -> idp.getNameEn())
                     .collect(toList()));
             pd.setIdentityProviderNamesNl(identityProviders.values().stream()
-                    .filter(idp -> entityIds.contains(idp.getEntityId()))
+                    .filter(idp -> identityProviderIds.contains(idp.getEntityId()))
                     .map(idp -> idp.getNameNl())
                     .collect(toList()));
         });

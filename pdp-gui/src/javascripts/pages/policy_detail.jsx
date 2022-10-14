@@ -87,7 +87,8 @@ class PolicyDetail extends React.Component {
     }
 
     handleChangeServiceProvider(newValue, newLabel) {
-        this.setState({policy: {...this.state.policy, serviceProviderId: newValue, serviceProviderName: newLabel}});
+        const partialState = {serviceProviderIds: newValue, serviceProviderNames: newLabel};
+        this.setState({policy: {...this.state.policy, ...partialState }});
     }
 
 
@@ -164,7 +165,7 @@ class PolicyDetail extends React.Component {
                 || isEmpty(policy.denyAdviceNl);
         }
 
-        const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderId) || isEmpty(description) || invalid;
+        const result = isEmpty(policy.name) || isEmpty(policy.serviceProviderIds) || isEmpty(description) || invalid;
         return !result;
     }
 
@@ -285,23 +286,24 @@ class PolicyDetail extends React.Component {
 
     renderServiceProvider(policy) {
         const {currentUser} = this.context;
-        const workflow = isEmpty(policy.serviceProviderId) ? "failure" : "success";
+        const workflow = isEmpty(policy.serviceProviderIds) ? "failure" : "success";
         const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && isEmpty(policy.identityProviderIds);
         const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
 
         return (
             <div>
                 <div className={"form-element " + workflow}>
-                    <p className="label">{I18n.t("policies.serviceProviderId")}</p>
+                    <p className="label">{I18n.t("policies.serviceProviderIds")}</p>
                     <SelectWrapper
-                        defaultValue={policy.serviceProviderId}
+                        defaultValue={policy.serviceProviderIds}
                         placeholder={I18n.t("policy_detail.sp_placeholder")}
                         options={serviceProviders}
                         dataChanged={policy.spDataChanged}
+                        multiple={true}
                         handleChange={this.handleChangeServiceProvider.bind(this)}/>
                     {this.renderScopedWarning(scopeSPs)}
                 </div>
-                <div className="bottom"></div>
+                <div className="bottom"/>
             </div>
         );
     }
@@ -327,7 +329,7 @@ class PolicyDetail extends React.Component {
                         multiple={true}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
                 </div>
-                <div className="bottom"></div>
+                <div className="bottom"/>
             </div>
         );
     }

@@ -4,7 +4,7 @@ import groupBy from "lodash/groupBy";
 const AutoFormat = {
 
     addQuotes: function (str) {
-        return (isEmpty(str)) ? str : "'" + str + "'";
+        return isEmpty(str) ? str : `'${str}'`;
     },
 
     attributes: function (passedAttributes, allAttributesMustMatch) {
@@ -48,7 +48,7 @@ const AutoFormat = {
 
     description: function (policy) {
         const idps = isEmpty(policy.identityProviderNames) ? "" : " from " + policy.identityProviderNames.map(this.addQuotes).join(" or ");
-        const sp = this.addQuotes(policy.serviceProviderName) || "?";
+        const sp = this.addQuotes(policy.serviceProviderNames.join(", ")) || "?";
         const attrs = policy.attributes || [];
         const teamMembershipAttr = attrs.filter(attr => {
             return attr.name === "urn:collab:group:surfteams.nl";

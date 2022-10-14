@@ -16,6 +16,7 @@ import java.util.Set;
 import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 import static org.springframework.util.StringUtils.isEmpty;
 
+@SuppressWarnings("deprecation")
 public class FederatedUserBuilder {
 
     private static final Collection<? extends GrantedAuthority> shibAuthorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");

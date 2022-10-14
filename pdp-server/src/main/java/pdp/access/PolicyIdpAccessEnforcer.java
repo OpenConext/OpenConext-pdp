@@ -1,24 +1,20 @@
 package pdp.access;
 
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.CollectionUtils;
 import pdp.JsonMapper;
-import pdp.domain.EntityMetaData;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
-import pdp.manage.Manage;
+import pdp.domain.*;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static java.util.stream.StreamSupport.stream;
-import static org.springframework.util.Assert.hasText;
 import static org.springframework.util.Assert.notNull;
 import static org.springframework.util.CollectionUtils.isEmpty;
 import static pdp.access.PolicyAccess.READ;
@@ -45,15 +41,15 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
      * Violations can only be seen if the IdP of the JSON request is equal or linked to the AuthenticatingAuthority of
      * the signed in user.
      */
-    public void actionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds) {
-        doActionAllowed(pdpPolicy, policyAccess, serviceProviderId, identityProviderIds, true);
+    public void actionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, List<String> serviceProviderIds, List<String> identityProviderIds) {
+        doActionAllowed(pdpPolicy, policyAccess, serviceProviderIds, identityProviderIds, true);
     }
 
-    public boolean actionAllowedIndicator(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds) {
-        return doActionAllowed(pdpPolicy, policyAccess, serviceProviderId, identityProviderIds, false);
+    public boolean actionAllowedIndicator(PdpPolicy pdpPolicy, PolicyAccess policyAccess, List<String> serviceProviderIds, List<String> identityProviderIds) {
+        return doActionAllowed(pdpPolicy, policyAccess, serviceProviderIds, identityProviderIds, false);
     }
 
-    private boolean doActionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, String serviceProviderId, List<String> identityProviderIds, boolean throwException) {
+    private boolean doActionAllowed(PdpPolicy pdpPolicy, PolicyAccess policyAccess, List<String> serviceProviderIds, List<String> identityProviderIds, boolean throwException) {
         FederatedUser user = federatedUser();
         if (!user.isPolicyIdpAccessEnforcementRequired()) {
             return true;
@@ -66,8 +62,9 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
             return true;
         }
 
-        hasText(serviceProviderId, "ServiceProvider ID must have text");
-
+        if (CollectionUtils.isEmpty(serviceProviderIds)) {
+            throw new IllegalArgumentException("ServiceProvider Ids must not be empty");
+        }
         String authenticatingAuthorityUser = user.getAuthenticatingAuthority();
         String userIdentifier = user.getIdentifier();
 
@@ -78,13 +75,13 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
             switch (policyAccess) {
                 case READ:
                     //Valid to have no identityProvidersIds, but then the SP must be allowed access by this users IdP
-                    if (!idpIsAllowed(user, idpsOfUserEntityIds, serviceProviderId)) {
+                    if (!idpIsAllowed(user, new ArrayList<>(serviceProviderIds))) {
                         if (throwException) {
                             throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
-                                "Policy for target SP '%s' requested by '%s', but this SP is not allowed access by users from IdP '%s'",
-                                serviceProviderId,
-                                userIdentifier,
-                                authenticatingAuthorityUser)
+                                    "Policy for target SP '%s' requested by '%s', but this SP is not allowed access by users from IdP '%s'",
+                                    serviceProviderIds,
+                                    userIdentifier,
+                                    authenticatingAuthorityUser)
                             );
                         }
                         return false;
@@ -92,13 +89,13 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
                     break;
                 case WRITE:
                     //Valid to have no identityProvidersIds, but then the SP must be linked by this users IdP
-                    if (!spsOfUserEntityIds.contains(serviceProviderId)) {
+                    if (!spsOfUserEntityIds.containsAll(serviceProviderIds)) {
                         if (throwException) {
                             throw new PolicyIdpAccessMismatchServiceProviderException(String.format(
-                                "Policy for target SP '%s' requested by '%s', but this SP is not linked to users IdP '%s'",
-                                serviceProviderId,
-                                userIdentifier,
-                                authenticatingAuthorityUser)
+                                    "Policy for target SP '%s' requested by '%s', but this SP is not linked to users IdP '%s'",
+                                    serviceProviderIds,
+                                    userIdentifier,
+                                    authenticatingAuthorityUser)
                             );
                         }
                         return false;
@@ -112,10 +109,10 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
             if (!idpsOfUserEntityIds.containsAll(identityProviderIds)) {
                 if (throwException) {
                     throw new PolicyIdpAccessMismatchIdentityProvidersException(String.format(
-                        "Policy for target IdPs '%s' requested by '%s', but not all are linked to users IdP '%s",
-                        identityProviderIds,
-                        userIdentifier,
-                        authenticatingAuthorityUser)
+                            "Policy for target IdPs '%s' requested by '%s', but not all are linked to users IdP '%s",
+                            identityProviderIds,
+                            userIdentifier,
+                            authenticatingAuthorityUser)
                     );
                 }
                 return false;
@@ -130,14 +127,14 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
         //finally check (e.g. for update and delete actions) if the getAuthenticatingAuthority of the policy is owned by this user
         String authenticatingAuthorityPolicy = pdpPolicy.getAuthenticatingAuthority();
         if (!authenticatingAuthorityPolicy.equals(authenticatingAuthorityUser) &&
-            !idpsOfUserEntityIds.contains(authenticatingAuthorityPolicy)) {
+                !idpsOfUserEntityIds.contains(authenticatingAuthorityPolicy)) {
             if (throwException) {
                 throw new PolicyIdpAccessOriginatingIdentityProviderException(String.format(
-                    "Policy created by admin '%s' of IdP '%s' can not be updated / deleted by admin '%s' of IdP '%s'",
-                    pdpPolicy.getUserIdentifier(),
-                    authenticatingAuthorityPolicy,
-                    userIdentifier,
-                    authenticatingAuthorityUser)
+                        "Policy created by admin '%s' of IdP '%s' can not be updated / deleted by admin '%s' of IdP '%s'",
+                        pdpPolicy.getUserIdentifier(),
+                        authenticatingAuthorityPolicy,
+                        userIdentifier,
+                        authenticatingAuthorityUser)
                 );
             }
             return false;
@@ -162,14 +159,9 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
     /**
      * Only PdpPolicyViolation are returned where the Idp of the violation is owned by the user
      */
+    @SneakyThrows
     private boolean maySeeViolation(PdpPolicyViolation violation, Set<String> idpsOfUserEntityIds) {
-        JsonPolicyRequest jsonPolicyRequest;
-        try {
-            //we are called from lambda
-            jsonPolicyRequest = objectMapper.readValue(violation.getJsonRequest(), JsonPolicyRequest.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        JsonPolicyRequest jsonPolicyRequest = objectMapper.readValue(violation.getJsonRequest(), JsonPolicyRequest.class);
         String idp = getEntityAttributeValue(jsonPolicyRequest, IDP_ENTITY_ID);
 
         return idpsOfUserEntityIds.contains(idp);
@@ -177,8 +169,8 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
 
     private String getEntityAttributeValue(JsonPolicyRequest jsonPolicyRequest, String attributeName) {
         return jsonPolicyRequest.request.resource.attributes.stream()
-            .filter(attr -> attr.attributeId.equals(attributeName))
-            .collect(singletonCollector()).value;
+                .filter(attr -> attr.attributeId.equals(attributeName))
+                .collect(singletonCollector()).value;
     }
 
     /**
@@ -209,18 +201,15 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
         List<String> identityProviderIds = pdpPolicyDefinition.getIdentityProviderIds();
 
         if (isEmpty(identityProviderIds) &&
-            (idpIsAllowed(user, idpsOfUserEntityIds, pdpPolicyDefinition.getServiceProviderId())
-                || spsOfUserEntityIds.contains(pdpPolicyDefinition.getServiceProviderId()))) {
-            return true;
-        } else if (identityProviderIds.stream().anyMatch(idp -> idpsOfUserEntityIds.contains(idp))) {
+                (idpIsAllowed(user, pdpPolicyDefinition.getServiceProviderIds())
+                        || spsOfUserEntityIds.containsAll(pdpPolicyDefinition.getServiceProviderIds()))) {
             return true;
         }
-        return false;
+        return identityProviderIds.stream().anyMatch(idpsOfUserEntityIds::contains);
     }
 
-    private boolean idpIsAllowed(FederatedUser user, Set<String> idpsOfUserEntityIds, String serviceProviderId) {
-        boolean isAllowedFromIdp = user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderId));
-        return isAllowedFromIdp;
+    private boolean idpIsAllowed(FederatedUser user, List<String> serviceProviderIds) {
+        return user.getIdpEntities().stream().anyMatch(idp -> idp.isAllowedFrom(serviceProviderIds.toArray(new String[0])));
     }
 
     public List<EntityMetaData> filterIdentityProviders(List<EntityMetaData> identityProviders) {
@@ -260,7 +249,4 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
         return federatedUser().getDisplayName();
     }
 
-    public boolean isPolicyIdpAccessEnforcementRequired() {
-        return federatedUser().isPolicyIdpAccessEnforcementRequired();
-    }
 }

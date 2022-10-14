@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.RestTemplate;
 import pdp.AbstractPdpIntegrationTest;
 import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
@@ -28,18 +27,11 @@ import pdp.xacml.PolicyTemplateEngine;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 import static pdp.util.StreamUtils.singletonCollector;
 
 @RunWith(SpringRunner.class)
@@ -47,10 +39,10 @@ import static pdp.util.StreamUtils.singletonCollector;
 @ActiveProfiles({"dev", "no-csrf"})
 public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrationTest {
 
-    private static final ParameterizedTypeReference<List<PdpPolicyDefinition>> pdpPolicyDefinitionsType = new ParameterizedTypeReference<List<PdpPolicyDefinition>>() {
+    private static final ParameterizedTypeReference<List<PdpPolicyDefinition>> pdpPolicyDefinitionsType = new ParameterizedTypeReference<>() {
     };
 
-    private TestRestTemplate restTemplate = new TestRestTemplate();
+    private final TestRestTemplate restTemplate = new TestRestTemplate();
 
     @Before
     public void before() throws IOException {
@@ -64,7 +56,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
         List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
-        assertEquals(2 ,definitions.size() );
+        assertEquals(5, definitions.size());
     }
 
     @Test
@@ -152,7 +144,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
         assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
 
         PdpPolicy saved = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(
-            PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get();
+                PolicyTemplateEngine.getPolicyId(policyDefinition.getName()), true).get();
 
         List<PdpPolicyDefinition> definitions = getForObject("/internal/revisions/" + saved.getId(), pdpPolicyDefinitionsType);
 

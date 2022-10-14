@@ -36,7 +36,7 @@ public class MockMailBoxTest extends AbstractPdpIntegrationTest {
 
     private void doSendMail() throws InterruptedException {
         Map<String, List<PdpPolicyDefinition>> conflicts = new HashMap<>();
-        conflicts.put("https://mock-sp", Arrays.asList(policyDefinition("sp1", asList("idp1", "idp2"))));
+        conflicts.put("https://mock-sp", Arrays.asList(policyDefinition(asList("sp1"), asList("idp1", "idp2"))));
         mailBox.sendConflictsMail(conflicts);
 
         //we send async

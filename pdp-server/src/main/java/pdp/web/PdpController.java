@@ -225,7 +225,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     private Map<String, List<PdpPolicyDefinition>> doConflicts(boolean includeInvalid) {
         List<PdpPolicyDefinition> policies = pdpPolicyRepository.findAll().stream()
-                .map(policy -> pdpPolicyDefinitionParser.parse(policy)).collect(toList());
+                .map(pdpPolicyDefinitionParser::parse).collect(toList());
 
         policies = policyMissingServiceProviderValidator.addEntityMetaData(policies);
 
@@ -260,7 +260,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                     pdpPolicyDefinition.getType());
 
             //this will throw an Exception if it is not allowed
-            policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderId(), pdpPolicyDefinition.getIdentityProviderIds());
+            policyIdpAccessEnforcer.actionAllowed(policy, PolicyAccess.WRITE, pdpPolicyDefinition.getServiceProviderIds(), pdpPolicyDefinition.getIdentityProviderIds());
         }
 
         try {
@@ -279,8 +279,13 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     private void checkConflicts(PdpPolicyDefinition pdpPolicyDefinition) {
         Map<String, List<PdpPolicyDefinition>> conflicts = this.doConflicts(false);
-        Optional<EntityMetaData> entityMetaData = manage.serviceProviderOptionalByEntityId(pdpPolicyDefinition.getServiceProviderId());
-        if (entityMetaData.isPresent() && conflicts.containsKey(entityMetaData.get().getNameEn())) {
+        List<EntityMetaData> serviceProvider = pdpPolicyDefinition.getServiceProviderIds().stream()
+                .map(id -> manage.serviceProviderOptionalByEntityId(id))
+                .filter(opt -> opt.isPresent())
+                .map(opt -> opt.get())
+                .collect(toList());
+        boolean anyMatch = serviceProvider.stream().anyMatch(sp -> conflicts.containsKey(sp.getNameEn()));
+        if (anyMatch) {
             this.mailBox.sendConflictsMail(conflicts);
         }
     }
@@ -322,7 +327,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     public List<PdpPolicyDefinition> policyDefinitionsByServiceProvider(@RequestParam String serviceProvider) {
         List<PdpPolicyDefinition> policies = policyDefinitions();
 
-        List<PdpPolicyDefinition> filterBySp = policies.stream().filter(policy -> policy.getServiceProviderId().equals(serviceProvider)).collect(toList());
+        List<PdpPolicyDefinition> filterBySp = policies.stream().filter(policy -> policy.getServiceProviderIds().contains(serviceProvider)).collect(toList());
 
         return policyIdpAccessEnforcer.filterPdpPolicies(filterBySp);
     }
@@ -378,12 +383,12 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         PdpPolicy policy = pdpPolicyRepository.findById(id).orElseThrow(() -> new PolicyNotFoundException("PdpPolicy with id " + id + " not found"));
         PdpPolicyDefinition definition = pdpPolicyDefinitionParser.parse(policy);
         //this will throw an Exception if it is not allowed
-        policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderId(), definition.getIdentityProviderIds());
+        policyIdpAccessEnforcer.actionAllowed(policy, policyAccess, definition.getServiceProviderIds(), definition.getIdentityProviderIds());
         return policy;
     }
 
     private PdpPolicyDefinition addAccessRules(PdpPolicy policy, PdpPolicyDefinition pd) {
-        boolean actionsAllowed = policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderId(), pd.getIdentityProviderIds());
+        boolean actionsAllowed = policyIdpAccessEnforcer.actionAllowedIndicator(policy, PolicyAccess.WRITE, pd.getServiceProviderIds(), pd.getIdentityProviderIds());
         pd.setActionsAllowed(actionsAllowed);
         return pd;
     }

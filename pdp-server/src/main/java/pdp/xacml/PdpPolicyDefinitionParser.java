@@ -1,15 +1,7 @@
 package pdp.xacml;
 
 import org.apache.openaz.xacml.api.Decision;
-import org.apache.openaz.xacml.pdp.policy.AdviceExpression;
-import org.apache.openaz.xacml.pdp.policy.AllOf;
-import org.apache.openaz.xacml.pdp.policy.AnyOf;
-import org.apache.openaz.xacml.pdp.policy.AttributeAssignmentExpression;
-import org.apache.openaz.xacml.pdp.policy.Condition;
-import org.apache.openaz.xacml.pdp.policy.Expression;
-import org.apache.openaz.xacml.pdp.policy.Match;
-import org.apache.openaz.xacml.pdp.policy.Policy;
-import org.apache.openaz.xacml.pdp.policy.Rule;
+import org.apache.openaz.xacml.pdp.policy.*;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMApply;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMAttributeDesignator;
 import org.apache.openaz.xacml.pdp.policy.dom.DOMPolicyDef;
@@ -18,21 +10,12 @@ import org.apache.openaz.xacml.pdp.policy.expressions.AttributeValueExpression;
 import org.apache.openaz.xacml.std.dom.DOMStructureException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pdp.domain.CidrNotation;
-import pdp.domain.LoA;
-import pdp.domain.PdpAttribute;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.util.StreamUtils;
+import org.springframework.util.CollectionUtils;
+import pdp.domain.*;
 import pdp.web.IPAddressProvider;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 import static pdp.util.StreamUtils.iteratorToList;
@@ -41,7 +24,7 @@ import static pdp.util.StreamUtils.singletonCollector;
 /*
  * Thread-safe
  */
-public class PdpPolicyDefinitionParser implements IPAddressProvider{
+public class PdpPolicyDefinitionParser implements IPAddressProvider {
 
     private static final Logger LOG = LoggerFactory.getLogger(PdpPolicyDefinitionParser.class);
 
@@ -76,8 +59,8 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         if (pdpPolicy.getType().equals("step")) {
             definition.setDenyRule(false);
             List<LoA> loas = rules.stream()
-                .filter(rule -> rule.getObligationExpressions().hasNext())
-                .map(this::parseStepRule).collect(toList());
+                    .filter(rule -> rule.getObligationExpressions().hasNext())
+                    .map(this::parseStepRule).collect(toList());
             definition.setLoas(loas);
             definition.sortLoas();
         } else {
@@ -97,8 +80,8 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         LoA loa = new LoA();
 
         AttributeValueExpression attributeValueExpression =
-            AttributeValueExpression.class.cast(rule.getObligationExpressions().next()
-                .getAttributeAssignmentExpressions().next().getExpression());
+                AttributeValueExpression.class.cast(rule.getObligationExpressions().next()
+                        .getAttributeAssignmentExpressions().next().getExpression());
         String level = (String) attributeValueExpression.getAttributeValue().getValue();
         loa.setLevel(level);
 
@@ -106,7 +89,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         if (condition != null) {
             DOMApply domApply = DOMApply.class.cast(condition.getExpression());
             boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
-                .endsWith("function:and");
+                    .endsWith("function:and");
             loa.setAllAttributesMustMatch(allAttributesMustMatch);
             this.parseArguments(loa, domApply.getArguments());
         }
@@ -157,9 +140,9 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
 
     private <T> T castArgument(Class<T> clazz, DOMApply domApply) {
         return clazz.cast(iteratorToList(domApply.getArguments())
-            .stream()
-            .filter(expression -> clazz.isAssignableFrom(expression.getClass()))
-            .findFirst().get());
+                .stream()
+                .filter(expression -> clazz.isAssignableFrom(expression.getClass()))
+                .findFirst().get());
     }
 
     private CidrNotation parseCidrNotation(DOMApply ipRange, boolean negate) {
@@ -169,12 +152,12 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
         }
         List<Expression> arguments = iteratorToList(ipRange.getArguments());
         Expression cidrNotationArgument = arguments.stream().filter(argument ->
-            argument instanceof AttributeValueExpression)
-            .findFirst().get();
+                        argument instanceof AttributeValueExpression)
+                .findFirst().get();
         String cidrNotation = (String) AttributeValueExpression.class.cast(cidrNotationArgument).getAttributeValue().getValue();
         String[] splitted = cidrNotation.split("/");
         return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]), negate,
-            getIpInfo(splitted[0], Integer.parseInt(splitted[1])));
+                getIpInfo(splitted[0], Integer.parseInt(splitted[1])));
     }
 
     private void parseDeny(String policyXml, PdpPolicyDefinition definition, List<Rule> rules) {
@@ -226,25 +209,27 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
             List<AllOf> targetAllOfs = iteratorToList(anyOf.getAllOfs());
             List<Match> targetMatches = targetAllOfs.stream().map(allOf -> iteratorToList(allOf.getMatches())).flatMap(Collection::stream).collect(toList());
 
-            Optional<Match> spEntityID = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase())
-                .getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID)).findFirst();
-
-            spEntityID.ifPresent(match -> definition.setServiceProviderId((String) match.getAttributeValue().getValue()));
+            List<String> spEntityIDs = targetMatches.stream().filter(match ->
+                            ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(SP_ENTITY_ID))
+                    .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());
+            if (!spEntityIDs.isEmpty()) {
+                definition.setServiceProviderIds(spEntityIDs);
+            }
 
             List<String> idpEntityIDs = targetMatches.stream().filter(match ->
-                ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(IDP_ENTITY_ID))
-                .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());
+                            ((AttributeDesignator) match.getAttributeRetrievalBase()).getAttributeId().getUri().toString().equalsIgnoreCase(IDP_ENTITY_ID))
+                    .map(match -> (String) match.getAttributeValue().getValue()).collect(toList());
             if (!idpEntityIDs.isEmpty()) {
                 definition.setIdentityProviderIds(idpEntityIDs);
             }
 
             Optional<Match> clientIdOptional = targetMatches.stream().filter(match -> ((AttributeDesignator) match.getAttributeRetrievalBase())
-                .getAttributeId().getUri().toString().equalsIgnoreCase(CLIENT_ID)).findFirst();
+                    .getAttributeId().getUri().toString().equalsIgnoreCase(CLIENT_ID)).findFirst();
             clientIdOptional.ifPresent(clientId -> definition.setClientId((String) clientId.getAttributeValue().getValue()));
         });
 
-        if (definition.getServiceProviderId() == null) {
-            throw new PdpParseException("SPentityID is required " + policyXml);
+        if (CollectionUtils.isEmpty(definition.getServiceProviderIds())) {
+            throw new PdpParseException("SPentityIDs is required " + policyXml);
         }
     }
 
@@ -261,9 +246,9 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider{
 
     private String extractDenyMessage(List<AttributeAssignmentExpression> attributeAssignmentExpressions, String language) {
         return attributeAssignmentExpressions.stream()
-            .filter(ase -> ase.getAttributeId().getUri().toString().equals("DenyMessage:" + language))
-            .map(ase -> (String) (((AttributeValueExpression) ase.getExpression()).getAttributeValue().getValue()))
-            .collect(singletonCollector());
+                .filter(ase -> ase.getAttributeId().getUri().toString().equals("DenyMessage:" + language))
+                .map(ase -> (String) (((AttributeValueExpression) ase.getExpression()).getAttributeValue().getValue()))
+                .collect(singletonCollector());
     }
 
     public Policy parsePolicy(String policyXml) {

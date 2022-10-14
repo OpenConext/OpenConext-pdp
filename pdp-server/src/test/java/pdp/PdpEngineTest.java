@@ -81,7 +81,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
         JsonPolicyRequest permitPolicyRequest = policyRequest.copy();
 
         // We don't want INDETERMINATE Decisions based on the Target of the policy so we ensure the SP and  - optional - IDP is set on the JSON request
-        permitPolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, definition.getServiceProviderId());
+        permitPolicyRequest.addOrReplaceResourceAttribute(SP_ENTITY_ID, definition.getServiceProviderIds().get(0));
         if (definition.getIdentityProviderIds().isEmpty()) {
             permitPolicyRequest.deleteAttribute(IDP_ENTITY_ID);
         } else {

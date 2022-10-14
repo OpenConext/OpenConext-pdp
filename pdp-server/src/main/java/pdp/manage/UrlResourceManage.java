@@ -110,7 +110,7 @@ public class UrlResourceManage implements Manage {
 
     @Override
     public Set<EntityMetaData> serviceProvidersByInstitutionId(String institutionId) {
-        if (StringUtils.isEmpty(institutionId)) {
+        if (!StringUtils.hasText(institutionId)) {
             return Collections.emptySet();
         }
         HashSet<EntityMetaData> serviceProviders = new HashSet<>(parseEntities(getSpResource(this.bodyForInstitutionId.replace("@@institution_id@@",

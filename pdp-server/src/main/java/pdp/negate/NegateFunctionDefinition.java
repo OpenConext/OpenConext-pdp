@@ -11,7 +11,6 @@ import org.apache.openaz.xacml.std.IdentifierImpl;
 import org.apache.openaz.xacml.std.StdStatus;
 import org.apache.openaz.xacml.std.StdStatusCode;
 import org.apache.openaz.xacml.std.datatypes.DataTypeBoolean;
-import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ import static pdp.xacml.PdpPolicyDefinitionParser.NEGATE_FUNCTION;
 public class NegateFunctionDefinition implements FunctionDefinition {
 
     private static final IdentifierImpl IDENTIFIER =
-        new IdentifierImpl(NEGATE_FUNCTION);
+            new IdentifierImpl(NEGATE_FUNCTION);
 
     @Override
     public Identifier getId() {
@@ -38,6 +37,7 @@ public class NegateFunctionDefinition implements FunctionDefinition {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public ExpressionResult evaluate(EvaluationContext evaluationContext, List<FunctionArgument> arguments) {
         if (arguments.size() != 2) {
             return ExpressionResult.newError(new StdStatus(StdStatusCode.STATUS_CODE_SYNTAX_ERROR));
