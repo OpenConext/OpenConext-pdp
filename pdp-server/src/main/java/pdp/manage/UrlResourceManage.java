@@ -14,14 +14,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import pdp.domain.EntityMetaData;
 
-import java.util.Base64;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -34,20 +27,18 @@ public class UrlResourceManage implements Manage {
     private final RestTemplate restTemplate = new RestTemplate();
     private final HttpHeaders httpHeaders;
 
-    private String requestedAttributes = "REQUESTED_ATTRIBUTES\":[\"metaDataFields.coin:institution_id\"," +
+    private final String requestedAttributes = "REQUESTED_ATTRIBUTES\":[\"metaDataFields.coin:institution_id\"," +
             " \"metaDataFields" +
             ".coin:policy_enforcement_decision_required\", \"allowedall\", \"allowedEntities\"]";
 
-    private String body = "{\"" + requestedAttributes + "}";
-    private String bodyForEntity = "{\"entityid\":\"@@entityid@@\", \"" + requestedAttributes + "}";
-    private String bodyForEntityIdIn = "{\"entityid\":[@@entityids@@], \"" + requestedAttributes + "}";
-    private String bodyForInstitutionId = "{\"metaDataFields.coin:institution_id\":\"@@institution_id@@\", \"" +
+    private final String body = "{\"" + requestedAttributes + "}";
+    private final String bodyForEntity = "{\"entityid\":\"@@entityid@@\", \"" + requestedAttributes + "}";
+    private final String bodyForInstitutionId = "{\"metaDataFields.coin:institution_id\":\"@@institution_id@@\", \"" +
             requestedAttributes + "}";
 
-    public UrlResourceManage(
-            String username,
-            String password,
-            String manageBaseUrl) {
+    public UrlResourceManage(String username,
+                             String password,
+                             String manageBaseUrl) {
 
         String basicAuth = "Basic " + new String(Base64.getEncoder().encode((username + ":" + password).getBytes()));
 
@@ -161,7 +152,8 @@ public class UrlResourceManage implements Manage {
     private Map<String, EntityMetaData> getEntityMetaDataMap(Collection<String> entityIds, Function<String, Resource> resource) {
         String queryValue = entityIds.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(","));
 
-        String replaced = this.bodyForEntityIdIn.replace
+        String bodyForEntityIdIn = "{\"entityid\":[@@entityids@@], \"" + requestedAttributes + "}";
+        String replaced = bodyForEntityIdIn.replace
                 ("@@entityids@@", queryValue);
         Resource idpResource = resource.apply(replaced);
         return parseEntities(idpResource).stream().collect(toMap(e -> e.getEntityId(), e -> e));

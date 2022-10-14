@@ -13,16 +13,27 @@ public class EntityMetaData implements Serializable {
     private final String institutionId;
     private final String nameEn;
     private final String nameNl;
+    private final String organisationNameEn;
+    private final String organisationNameNl;
     private final boolean policyEnforcementDecisionRequired;
-    private boolean allowedAll;
+    private final boolean allowedAll;
     private final Set<String> allowedEntityIds;
 
-    public EntityMetaData(String entityId, String institutionId, String nameEn, String nameNl,
-                          boolean policyEnforcementDecisionRequired, boolean allowedAll, Set<String> allowedEntityIds) {
+    public EntityMetaData(String entityId,
+                          String institutionId,
+                          String nameEn,
+                          String nameNl,
+                          String organisationNameEn,
+                          String organisationNameNl,
+                          boolean policyEnforcementDecisionRequired,
+                          boolean allowedAll,
+                          Set<String> allowedEntityIds) {
         this.entityId = entityId;
         this.institutionId = institutionId;
         this.nameEn = StringUtils.hasText(nameEn) ? nameEn : entityId;
         this.nameNl = StringUtils.hasText(nameNl) ? nameNl : entityId;
+        this.organisationNameEn = StringUtils.hasText(organisationNameEn) ? organisationNameEn : "";
+        this.organisationNameNl = StringUtils.hasText(organisationNameNl) ? organisationNameEn : this.organisationNameEn;
         this.policyEnforcementDecisionRequired = policyEnforcementDecisionRequired;
         this.allowedAll = allowedAll;
         this.allowedEntityIds = allowedEntityIds;
@@ -52,5 +63,11 @@ public class EntityMetaData implements Serializable {
         return allowedAll || stream(entityIds).anyMatch(allowedEntityIds::contains);
     }
 
+    public String getOrganisationNameEn() {
+        return organisationNameEn;
+    }
 
+    public String getOrganisationNameNl() {
+        return organisationNameNl;
+    }
 }
