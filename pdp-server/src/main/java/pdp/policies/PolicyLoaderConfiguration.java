@@ -20,7 +20,7 @@ public class PolicyLoaderConfiguration {
 
     @Bean
     @Autowired
-    @Profile({"dev1", "no-csrf"})
+    @Profile({"dev", "no-csrf"})
     public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") String policyBaseDir, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
     }
@@ -35,7 +35,7 @@ public class PolicyLoaderConfiguration {
 
     @Bean
     @Autowired
-    @Profile({"test", "acc", "dev", "prod", "mail"})
+    @Profile({"test", "acc", "prod", "mail"})
     public PolicyLoader noopPolicyLoader() {
         return new NoopPrePolicyLoader();
     }
