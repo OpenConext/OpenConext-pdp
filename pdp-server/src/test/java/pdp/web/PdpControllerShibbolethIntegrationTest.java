@@ -56,7 +56,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
         List<PdpPolicyDefinition> definitions = getForObject("/internal/policies", pdpPolicyDefinitionsType);
 
-        assertEquals(5, definitions.size());
+        assertEquals(2, definitions.size());
     }
 
     @Test

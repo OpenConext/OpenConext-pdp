@@ -56,14 +56,15 @@ public class PolicyMissingServiceProviderValidator {
 
             List<String> spEntityIds = pd.getServiceProviderIds();
             pd.setServiceProviderNames(serviceProviders.values().stream()
-                    .filter(idp -> spEntityIds.contains(idp.getEntityId()))
+                    .filter(sp -> spEntityIds.contains(sp.getEntityId()))
                     .map(sp -> sp.getNameEn())
                     .collect(toList()));
             pd.setServiceProviderNamesNl(serviceProviders.values().stream()
                     .filter(sp -> spEntityIds.contains(sp.getEntityId()))
                     .map(sp -> sp.getNameNl())
                     .collect(toList()));
-            pd.setActivatedSr(spEntityIds.size() == serviceProviders.size());
+            pd.setServiceProviderInvalidOrMissing(spEntityIds.stream().noneMatch(serviceProviders::containsKey) );
+            pd.setActivatedSr(serviceProviders.values().stream().allMatch(EntityMetaData::isPolicyEnforcementDecisionRequired));
 
             List<String> identityProviderIds = pd.getIdentityProviderIds();
             pd.setIdentityProviderNames(identityProviders.values().stream()

@@ -190,7 +190,7 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
     /**
      * Only PdpPolicyDefinitions are returned where
      * <p>
-     * the IdPs of the policy are empty and the SP of the policy is allowed from through the idp of the user
+     * the IdPs of the policy are empty and one of the SPs of the policy is allowed from through the idp's of the user
      * <p>
      * or where one of the IdPs of the policy is owned by the user
      * <p>
@@ -199,13 +199,11 @@ public class PolicyIdpAccessEnforcer implements JsonMapper {
     private boolean maySeePolicy(PdpPolicyDefinition pdpPolicyDefinition, FederatedUser user,
                                  Set<String> idpsOfUserEntityIds, Set<String> spsOfUserEntityIds) {
         List<String> identityProviderIds = pdpPolicyDefinition.getIdentityProviderIds();
-
-        if (isEmpty(identityProviderIds) &&
-                (idpIsAllowed(user, pdpPolicyDefinition.getServiceProviderIds())
-                        || spsOfUserEntityIds.containsAll(pdpPolicyDefinition.getServiceProviderIds()))) {
-            return true;
-        }
-        return identityProviderIds.stream().anyMatch(idpsOfUserEntityIds::contains);
+        List<String> serviceProviderIds = pdpPolicyDefinition.getServiceProviderIds();
+        return (isEmpty(identityProviderIds) &&
+                (idpIsAllowed(user, serviceProviderIds)
+                        || serviceProviderIds.stream().anyMatch(spsOfUserEntityIds::contains)))
+                || identityProviderIds.stream().anyMatch(idpsOfUserEntityIds::contains);
     }
 
     private boolean idpIsAllowed(FederatedUser user, List<String> serviceProviderIds) {
