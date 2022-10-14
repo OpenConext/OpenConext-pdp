@@ -6,13 +6,12 @@
     <parent>
         <groupId>org.openconext</groupId>
         <artifactId>pdp</artifactId>
-        <version>10.0.0</version>
+        <version>4.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>pdp-server</artifactId>
     <packaging>jar</packaging>
-    <version>4.0.0</version>
     <name>pdp-server</name>
 
     <dependencies>
