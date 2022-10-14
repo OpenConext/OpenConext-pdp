@@ -146,7 +146,7 @@ class PolicyOverview extends React.Component {
                 <tr key={policy.id}>
                     <td>{policy.name}</td>
                     <td>{policy.description}</td>
-                    <td>{isEn ? policy.serviceProviderNames : policy.serviceProviderNamesNl}</td>
+                    <td>{isEn ? (policy.serviceProviderNames || []).join(", ") : (policy.serviceProviderNamesNl || []).join(", ")}</td>
                     <td className='policy_is_activated_sr'><input type="checkbox" defaultChecked={policy.activatedSr}
                                                                   disabled="true"/></td>
                     <td>{this.renderIdpNames(isEn ? policy.identityProviderNames : policy.identityProviderNamesNl)}</td>
