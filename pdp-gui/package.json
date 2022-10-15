@@ -36,7 +36,7 @@
     "i18n-js": "https://github.com/fnando/i18n-js/archive/v3.0.0.rc12.tar.gz",
     "import-glob-loader": "1.1.0",
     "isomorphic-fetch": "2.2.1",
-    "node-fetch": ">=2.6.1",
+    "node-fetch": ">=2.6.7",
     "open": ">=6.0.0",
     "jquery": "3.5.0",
     "js-cookie": "2.1.3",
