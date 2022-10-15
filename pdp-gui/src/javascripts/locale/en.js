@@ -11,7 +11,7 @@ I18n.entityName = function (entity) {
     const name = entity["name" + suffix] || entity["name" + (suffix === "En") ? "Nl" : "En"];
     const organisation = entity["organisationName" + suffix] || entity["organisationName" + (suffix === "En") ? "Nl" : "En"] || "";
     const organisationPart = isEmpty(organisation) ? "" : ` | ${organisation}`;
-    return `${name}${organisationPart}`
+    return `${name}${organisationPart}`;
 };
 
 I18n.translations.en = {
