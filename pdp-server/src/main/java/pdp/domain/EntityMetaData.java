@@ -32,7 +32,7 @@ public class EntityMetaData implements Serializable {
         this.entityId = entityId;
         this.institutionId = institutionId;
         this.nameEn = StringUtils.hasText(nameEn) ? nameEn : entityId;
-        this.nameNl = StringUtils.hasText(nameNl) ? nameNl : nameEn;
+        this.nameNl = StringUtils.hasText(nameNl) ? nameNl : this.nameEn;
         this.organisationNameEn = StringUtils.hasText(organisationNameEn) ? organisationNameEn : "";
         this.organisationNameNl = StringUtils.hasText(organisationNameNl) ? organisationNameNl : this.organisationNameEn;
         this.policyEnforcementDecisionRequired = policyEnforcementDecisionRequired;
