@@ -8,13 +8,8 @@ import org.junit.Test;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-import pdp.domain.JsonPolicyRequest;
-import pdp.domain.PdpAttribute;
-import pdp.domain.PdpPolicy;
-import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
+import pdp.domain.*;
 import pdp.policies.PolicyLoader;
 import pdp.teams.TeamsPIP;
 
@@ -24,17 +19,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.StreamSupport.stream;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
-import static pdp.xacml.PdpPolicyDefinitionParser.IDP_ENTITY_ID;
-import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
-import static pdp.xacml.PdpPolicyDefinitionParser.SP_ENTITY_ID;
+import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.
@@ -113,8 +102,8 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
         postDecide(policy, permitPolicyRequest, definition.isDenyRule() ? Decision.DENY : Decision.PERMIT, "urn:oasis:names:tc:xacml:1.0:status:ok");
         postDecide(policy, denyPolicyRequest, definition.isDenyRule() ? Decision.PERMIT : Decision.DENY, "urn:oasis:names:tc:xacml:1.0:status:ok");
         postDecide(policy, denyIndeterminatePolicyRequest,
-            definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
-            definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
+                definition.isDenyRule() ? Decision.INDETERMINATE : Decision.DENY,
+                definition.isDenyRule() ? "urn:oasis:names:tc:xacml:1.0:status:missing-attribute" : "urn:oasis:names:tc:xacml:1.0:status:ok");
         postDecide(policy, notApplicablePolicyRequest, Decision.NOTAPPLICABLE, "urn:oasis:names:tc:xacml:1.0:status:ok");
     }
 
@@ -136,8 +125,8 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
     private boolean isValid(PdpPolicyViolation violation) {
         return violation.getPolicy() != null
-            && StringUtils.hasText(violation.getJsonRequest())
-            && StringUtils.hasText(violation.getResponse());
+                && StringUtils.hasText(violation.getJsonRequest())
+                && StringUtils.hasText(violation.getResponse());
     }
 
 }

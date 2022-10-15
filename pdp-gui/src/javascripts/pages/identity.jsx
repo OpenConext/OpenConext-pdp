@@ -104,7 +104,7 @@ class Identity extends React.Component {
                         multiple={false}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
                 </div>
-                <div className="bottom"></div>
+                <div className="bottom"/>
             </div>
         );
     }

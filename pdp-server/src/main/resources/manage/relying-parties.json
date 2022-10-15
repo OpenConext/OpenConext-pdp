@@ -7,7 +7,8 @@
       "entityid": "https://rp/1",
       "metaDataFields": {
         "name:en": "Relying Party - 1",
-        "name:nl": "Relying Party - 1"
+        "name:nl": "Relying Party - 1",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -22,7 +23,8 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "Relying Party - 2",
-        "name:nl": "Relying Party - 2"
+        "name:nl": "Relying Party - 2",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },

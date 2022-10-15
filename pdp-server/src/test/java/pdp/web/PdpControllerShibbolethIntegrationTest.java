@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static pdp.util.StreamUtils.singletonCollector;
@@ -154,7 +155,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
     @Test
     public void testDefaultPolicy() {
-        PdpPolicyDefinition definition = getForObject("/internal/default-policy", new ParameterizedTypeReference<PdpPolicyDefinition>() {
+        PdpPolicyDefinition definition = getForObject("/internal/default-policy", new ParameterizedTypeReference<>() {
         });
 
         assertFalse(definition.isAllAttributesMustMatch());
@@ -163,7 +164,7 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
 
     @Test
     public void testAllowedAttributes() {
-        List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("/internal/attributes", new ParameterizedTypeReference<List<JsonPolicyRequest.Attribute>>() {
+        List<JsonPolicyRequest.Attribute> allowedAttributes = getForObject("/internal/attributes", new ParameterizedTypeReference<>() {
         });
 
         assertThat(allowedAttributes, hasSize(9));

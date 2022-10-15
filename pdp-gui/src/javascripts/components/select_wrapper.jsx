@@ -4,11 +4,11 @@ import isArray from "lodash/isArray";
 import Select from "react-select";
 
 class SelectWrapper extends React.Component {
+
     onChange(val) {
         if (isArray(val)) {
             return this.props.handleChange(val.map(v => v.value), val.map(v => v.label));
         }
-
         return this.props.handleChange(val.value, val.label);
     }
 

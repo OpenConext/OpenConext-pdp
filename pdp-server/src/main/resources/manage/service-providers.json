@@ -7,7 +7,8 @@
       "entityid": "https://engine.test2.surfconext.nl/authentication/sp/metadata",
       "metaDataFields": {
         "name:en": "OpenConext Engine",
-        "name:nl": "OpenConext Engine"
+        "name:nl": "OpenConext Engine",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -22,7 +23,8 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext Profile",
-        "name:nl": "OpenConext Profile"
+        "name:nl": "OpenConext Profile",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -37,7 +39,9 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext Mujina SP EN",
-        "name:nl": "OpenConext Mujina SP NL"
+        "name:nl": "OpenConext Mujina SP NL",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -52,7 +56,9 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext ServiceRegistry",
-        "name:nl": "OpenConext ServiceRegistry"
+        "name:nl": "OpenConext ServiceRegistry",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -68,7 +74,9 @@
         "coin:institution_id": "surfconext",
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext Teams",
-        "name:nl": "OpenConext Teams"
+        "name:nl": "OpenConext Teams",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -83,7 +91,9 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext Authz Admin",
-        "name:nl": "OpenConext Authz Admin"
+        "name:nl": "OpenConext Authz Admin",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -97,7 +107,9 @@
       "entityid": "https://authz.test2.surfconext.nl/shibboleth",
       "metaDataFields": {
         "name:en": "OpenConext Authz Server",
-        "name:nl": "OpenConext Authz Server"
+        "name:nl": "OpenConext Authz Server",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -111,7 +123,9 @@
       "entityid": "https://pdp.test2.surfconext.nl/shibboleth",
       "metaDataFields": {
         "name:en": "OpenConext PDP Server",
-        "name:nl": "OpenConext PDP Server"
+        "name:nl": "OpenConext PDP Server",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -125,7 +139,9 @@
       "entityid": "https://oidc.test2.surfconext.nl",
       "metaDataFields": {
         "name:en": "OpenConext OIDC",
-        "name:nl": "OpenConext OIDC"
+        "name:nl": "OpenConext OIDC",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -139,7 +155,9 @@
       "entityid": "https://aa.test2.surfconext.nl/shibboleth",
       "metaDataFields": {
         "name:en": "OpenConext AA",
-        "name:nl": "OpenConext AA"
+        "name:nl": "OpenConext AA",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -153,7 +171,9 @@
       "entityid": "https://attribute-mapper.test2.surfconext.nl",
       "metaDataFields": {
         "name:en": "OpenConext Attribute Mapper",
-        "name:nl": "OpenConext Attribute Mapper"
+        "name:nl": "OpenConext Attribute Mapper",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -172,7 +192,9 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "OpenConext eduProxy",
-        "name:nl": "OpenConext eduProxy"
+        "name:nl": "OpenConext eduProxy",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -186,7 +208,9 @@
       "entityid": "https://eduproxy.localhost.surfconext.nl",
       "metaDataFields": {
         "name:en": "EduProxy localhost",
-        "name:nl": "EduProxy localhost"
+        "name:nl": "EduProxy localhost",
+        "OrganizationName:en": "Local EN",
+        "OrganizationName:nl": "Local NL"
       },
       "state": "prodaccepted"
     },
@@ -199,7 +223,9 @@
       "allowedall": true,
       "entityid": "https://makr.conext.surfnetlabs.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp",
       "metaDataFields": {
-        "name:en": "MaKr Test Service"
+        "name:en": "MaKr Test Service",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -213,7 +239,9 @@
       "entityid": "https://idensys.localhost.surfconext.nl",
       "metaDataFields": {
         "name:en": "Idensys Local",
-        "name:nl": "Idensys Local"
+        "name:nl": "Idensys Local",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -227,7 +255,9 @@
       "entityid": "http://sts.edugroepen.nl/adfs/services/trust",
       "metaDataFields": {
         "name:en": "EDUgroepen",
-        "name:nl": "EDUgroepen"
+        "name:nl": "EDUgroepen",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -240,7 +270,9 @@
       "allowedall": true,
       "entityid": "https://dashboard.test.surfconext.nl",
       "metaDataFields": {
-        "name:en": "Dashboard test"
+        "name:en": "Dashboard test",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -265,7 +297,9 @@
       "entityid": "https://authz-playground.test2.surfconext.nl",
       "metaDataFields": {
         "name:en": "OpenConext Authz-playground  OIDC - SURFnet",
-        "name:nl": "OpenConext Authz-playground  OIDC - SURFnet"
+        "name:nl": "OpenConext Authz-playground  OIDC - SURFnet",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -279,7 +313,9 @@
       "entityid": "https://imogen.surfnet.nl/testsp/module.php/saml/sp/metadata.php/default-sp",
       "metaDataFields": {
         "name:en": "Bas Test SP Imogen",
-        "name:nl": "Bas Test SP Imogen"
+        "name:nl": "Bas Test SP Imogen",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -293,7 +329,9 @@
       "entityid": "https://sp.mrvanes.com/saml2/module.php/saml/sp/metadata.php/test-sp",
       "metaDataFields": {
         "name:en": "MrVanes",
-        "name:nl": "MrVanes"
+        "name:nl": "MrVanes",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -307,7 +345,9 @@
       "entityid": "https://support.test2.surfconext.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp",
       "metaDataFields": {
         "name:en": "OpenConext test SP form",
-        "name:nl": "OpenConext test SP formulier"
+        "name:nl": "OpenConext test SP formulier",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -321,7 +361,9 @@
       "entityid": "https://www.ccreader.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp",
       "metaDataFields": {
         "name:en": "fsdsafd",
-        "name:nl": "fasdf"
+        "name:nl": "fasdf",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -357,7 +399,9 @@
       "entityid": "https://oidc.localhost.surfconext.nl",
       "metaDataFields": {
         "name:en": "OIDC Local",
-        "name:nl": "OIDC Local"
+        "name:nl": "OIDC Local",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -371,7 +415,9 @@
       "entityid": "https://surfdrive-tst.surf.nl/",
       "metaDataFields": {
         "name:en": "SURFdrive test",
-        "name:nl": "SURFdrive test"
+        "name:nl": "SURFdrive test",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -385,7 +431,9 @@
       "entityid": "https://mujina.sp.localhost.surfconext.nl ",
       "metaDataFields": {
         "name:en": "Localhost Mujina SP",
-        "name:nl": "Localhost Mujina SP"
+        "name:nl": "Localhost Mujina SP",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -410,7 +458,9 @@
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
         "name:en": "thki sid",
-        "name:nl": "thki sid"
+        "name:nl": "thki sid",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -424,8 +474,10 @@
       "entityid": "https://kibana.test2.surfconext.nl",
       "metaDataFields": {
         "coin:policy_enforcement_decision_required": "1",
-        "name:en": "SURFconext Kibana | SURFnet",
-        "name:nl": "SURFconext Kibana | SURFnet"
+        "name:en": "SURFconext Kibana",
+        "name:nl": "SURFconext Kibana",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -499,7 +551,9 @@
       "allowedall": false,
       "entityid": "https://manage.test2.surfconext.nl/shibboleth",
       "metaDataFields": {
-        "name:en": "Manage"
+        "name:en": "Manage",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -524,7 +578,9 @@
       "entityid": "https://sa-gw.test2.surfconext.nl/authentication/metadata",
       "metaDataFields": {
         "name:en": "Stepup-Gateway sa.gw.test2.surfconext.nl",
-        "name:nl": "Stepup-Gateway sa.gw.test2.surfconext.nl"
+        "name:nl": "Stepup-Gateway sa.gw.test2.surfconext.nl",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -538,7 +594,9 @@
       "entityid": "https://sa.test2.surfconext.nl/authentication/metadata",
       "metaDataFields": {
         "name:en": "Stepup-Selfservice sa.test2.surfconext.nl",
-        "name:nl": "Stepup-Selfservice sa.test2.surfconext.nl"
+        "name:nl": "Stepup-Selfservice sa.test2.surfconext.nl",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -552,7 +610,9 @@
       "entityid": "https://ra.test2.surfconext.nl/authentication/metadata",
       "metaDataFields": {
         "name:en": "Stepup-RA ra.test2.surfconext.nl",
-        "name:nl": "Stepup-RA ra.test2.surfconext.nl"
+        "name:nl": "Stepup-RA ra.test2.surfconext.nl",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -565,8 +625,10 @@
       "allowedall": true,
       "entityid": "https://spdashboard.test2.surfconext.nl/saml/metadata",
       "metaDataFields": {
-        "name:en": "SURFconext SPDashboard | SURFnet",
-        "name:nl": "SURFconext SPDashboard | SURFnet"
+        "name:en": "SURFconext SPDashboard",
+        "name:nl": "SURFconext SPDashboard",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -592,8 +654,10 @@
       "allowedall": false,
       "entityid": "https://link.test2.surfconext.nl/shibboleth",
       "metaDataFields": {
-        "name:en": "SURFconext Linking Service | SURFconext",
-        "name:nl": "SURFconext Linking Service | SURFconext"
+        "name:en": "SURFconext Linking Service",
+        "name:nl": "SURFconext Linking Service",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },
@@ -606,7 +670,9 @@
       "allowedall": true,
       "entityid": "https://sandbox.orcid.org/saml2/sp/1",
       "metaDataFields": {
-        "name:en": "ORCID Sandbox (test) SP"
+        "name:en": "ORCID Sandbox (test) SP",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -619,7 +685,9 @@
       "entityid": "https://rocva.print.ricoh.nl/DSF/",
       "metaDataFields": {
         "name:en": "ROCVA print",
-        "name:nl": "ROCVA print"
+        "name:nl": "ROCVA print",
+        "OrganizationName:en": "ROCVA EN",
+        "OrganizationName:nl": "ROCVA NL"
       },
       "state": "testaccepted"
     },
@@ -632,7 +700,9 @@
       "entityid": "https://hu.testvision.nl/online/services/SAML.svc",
       "metaDataFields": {
         "name:en": "TestVision Online",
-        "name:nl": "TestVision Online"
+        "name:nl": "TestVision Online",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -645,7 +715,9 @@
       "entityid": "https://sso.us.bitglass.net",
       "metaDataFields": {
         "name:en": "bitglas",
-        "name:nl": "bitglas"
+        "name:nl": "bitglas",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -658,8 +730,10 @@
       "allowedall": true,
       "entityid": "https://engine.surfconext.nl/authentication/sp/metadata/test/0943",
       "metaDataFields": {
-        "name:en": "SURFconext | SURFnet updated by spdash",
-        "name:nl": "SURFconext | SURFnet updated by spdash"
+        "name:en": "SPDash",
+        "name:nl": "SPDash",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -673,7 +747,9 @@
       "entityid": "http://sp.proto.utwente.nl",
       "metaDataFields": {
         "name:en": "S.A. Proto",
-        "name:nl": "S.A. Proto"
+        "name:nl": "S.A. Proto",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -687,7 +763,9 @@
       "entityid": "https://teams.surfconext.nl/shibboleth",
       "metaDataFields": {
         "name:en": "test teams bart",
-        "name:nl": "test teams bart"
+        "name:nl": "test teams bart",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -700,8 +778,10 @@
       "allowedall": true,
       "entityid": "https://engine.surfconext.nl/authentication/sp/metadata",
       "metaDataFields": {
-        "name:en": "SURFconext | SURFnet",
-        "name:nl": "SURFconext | SURFnet"
+        "name:en": "SURFconext",
+        "name:nl": "SURFconext",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "testaccepted"
     },
@@ -715,7 +795,9 @@
       "entityid": "https://mailer.pt-75.utr.surfcloud.nl",
       "metaDataFields": {
         "name:en": "Bart test RP",
-        "name:nl": "Bart test RP"
+        "name:nl": "Bart test RP",
+        "OrganizationName:en": "SURF EN",
+        "OrganizationName:nl": "SURF NL"
       },
       "state": "prodaccepted"
     },

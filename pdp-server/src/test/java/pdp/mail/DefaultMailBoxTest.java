@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
 @ActiveProfiles("mail")
+@SuppressWarnings("deprecation")
 public class DefaultMailBoxTest extends AbstractPdpIntegrationTest {
 
     @Autowired

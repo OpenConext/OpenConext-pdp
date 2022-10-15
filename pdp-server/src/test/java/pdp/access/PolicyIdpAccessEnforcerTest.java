@@ -167,11 +167,20 @@ public class PolicyIdpAccessEnforcerTest implements JsonMapper {
     }
 
     private Set<EntityMetaData> entityMetadata(String... entityIds) {
-        return asList(entityIds).stream().map(id -> new EntityMetaData(id, institutionId, null, null,
-                true, true, new HashSet<String>())).collect(toSet());
+        return asList(entityIds).stream().map(id ->
+                new EntityMetaData(
+                        id,
+                        institutionId,
+                        null,
+                        null,
+                        null,
+                        null,
+                        true,
+                        true,
+                        new HashSet<>())).collect(toSet());
     }
 
-    private List<PdpPolicyViolation> pdpPolicyViolation(String... idpEntityIds) throws IOException {
+    private List<PdpPolicyViolation> pdpPolicyViolation(String... idpEntityIds) {
         return asList(idpEntityIds).stream().map(idpEntityId -> new PdpPolicyViolation(new PdpPolicy(), jsonPolicyRequest(idpEntityId), idpEntityId, false)).collect(toList());
     }
 

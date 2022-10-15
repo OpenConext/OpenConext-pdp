@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
 @ActiveProfiles("dev")
+@SuppressWarnings("deprecation")
 public class MockMailBoxTest extends AbstractPdpIntegrationTest {
 
     @Autowired

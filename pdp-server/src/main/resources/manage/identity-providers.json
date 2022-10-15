@@ -7,7 +7,8 @@
       "entityid": "https://engine.test2.surfconext.nl/authentication/idp/metadata",
       "metaDataFields": {
         "name:en": "OpenConext Engine",
-        "name:nl": "OpenConext Engine"
+        "name:nl": "OpenConext Engine",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -22,7 +23,8 @@
       "metaDataFields": {
         "coin:institution_id": "surfconext",
         "name:en": "OpenConext Mujina IDP",
-        "name:nl": "OpenConext Mujina IDP"
+        "name:nl": "OpenConext Mujina IDP",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -52,7 +54,8 @@
       "entityid": "https://thki-sid.pt-48.utr.surfcloud.nl/ssp/saml2/idp/metadata.php",
       "metaDataFields": {
         "name:en": "thkidp",
-        "name:nl": "thkidp"
+        "name:nl": "thkidp",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -106,7 +109,8 @@
       "entityid": "https://idp.surfnet.nl",
       "metaDataFields": {
         "name:en": "SURFnet B.V. EN",
-        "name:nl": "SURFnet B.V. NL"
+        "name:nl": "SURFnet B.V. NL",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -120,7 +124,8 @@
       "entityid": "http://login.aai.braindrops.org/adfs/services/trust",
       "metaDataFields": {
         "name:en": "SURFdrops ADFS IdP",
-        "name:nl": "SURFdrops ADFS IdP"
+        "name:nl": "SURFdrops ADFS IdP",
+        "OrganizationName:en": "SURF"
       },
       "state": "testaccepted"
     },
@@ -138,7 +143,8 @@
       "entityid": "https://idin.surfconext.nl/saml2/idp/metadata.php",
       "metaDataFields": {
         "name:en": "iDIN",
-        "name:nl": "iDIN"
+        "name:nl": "iDIN",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -180,7 +186,8 @@
       "entityid": "https://idp.diy.surfconext.nl/saml2/idp/metadata.php",
       "metaDataFields": {
         "name:en": "SURFconext DIY IdP - This IdP is for testing only",
-        "name:nl": "SURFconext DIY IdP - This IdP is for testing only"
+        "name:nl": "SURFconext DIY IdP - This IdP is for testing only",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -222,7 +229,8 @@
       "entityid": "https://shibtestidp.pt-27.utr.surfcloud.nl/idp/shibboleth",
       "metaDataFields": {
         "name:en": "EncAssertion Shib IdP",
-        "name:nl": "EncAssertion Shib IdP"
+        "name:nl": "EncAssertion Shib IdP",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -236,7 +244,8 @@
       "entityid": "Miko test",
       "metaDataFields": {
         "name:en": "Miko test IdP",
-        "name:nl": "Miko test IdP"
+        "name:nl": "Miko test IdP",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -250,7 +259,8 @@
       "entityid": "https://pieter.aai.surfnet.nl/simplesamlphp/saml2/idp/metadata.php",
       "metaDataFields": {
         "name:en": "pieter.aai.surfnet.nl IdP",
-        "name:nl": "pieter.aai.surfnet.nl IdP"
+        "name:nl": "pieter.aai.surfnet.nl IdP",
+        "OrganizationName:en": "SURF"
       },
       "state": "testaccepted"
     },
@@ -264,7 +274,8 @@
       "entityid": "http://adfs-2012.test2.surfconext.nl/adfs/services/trust",
       "metaDataFields": {
         "name:en": "ADFS 2012 test2.surfconext.nl",
-        "name:nl": "ADFS 2012 test2.surfconext.nl"
+        "name:nl": "ADFS 2012 test2.surfconext.nl",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },
@@ -278,7 +289,8 @@
       "entityid": "https://beta.surfnet.nl/SURFdropjesIdP",
       "metaDataFields": {
         "name:en": "SURFdrops beta IdP",
-        "name:nl": "SURFdrops beta IdP"
+        "name:nl": "SURFdrops beta IdP",
+        "OrganizationName:en": "SURF"
       },
       "state": "prodaccepted"
     },

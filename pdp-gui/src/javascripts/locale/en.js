@@ -4,15 +4,16 @@
 // ie "Hello {{name}}" Do not add any spaces around the variable name.
 // Provide the values as: I18n.t("key", {name: "John Doe"})
 import I18n from "i18n-js";
-import isEmpty from "lodash/isEmpty";
+import isEmpty from "lodash/isEmpty.js";
 
 I18n.entityName = function (entity) {
-    let name = entity["name" + (I18n.locale === "en" ? "En" : "Nl")];
-    if (isEmpty(name)) {
-        name = entity["name" + (I18n.locale === "en" ? "Nl" : "En")];
-    }
-    return name;
+    const suffix = I18n.locale === "en" ? "En" : "Nl";
+    const name = entity["name" + suffix] || entity["name" + (suffix === "En") ? "Nl" : "En"];
+    const organisation = entity["organisationName" + suffix] || entity["organisationName" + (suffix === "En") ? "Nl" : "En"] || "";
+    const organisationPart = isEmpty(organisation) ? "" : ` | ${organisation}`;
+    return `${name}${organisationPart}`
 };
+
 I18n.translations.en = {
     code: "EN",
     name: "English",

@@ -10,12 +10,10 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -28,13 +26,13 @@ public class VootClientTest {
 
     @BeforeClass
     public static void doBeforeClass() {
-      System.setProperty("http.keepAlive", "false");
+        System.setProperty("http.keepAlive", "false");
     }
 
     @Test
-    public void testInstanceOf() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    public void testInstanceOf() throws ClassNotFoundException, IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Class<?> classForEngine = Class.forName("pdp.teams.TeamsPIP");
-        ConfigurableEngine teamsPIP = ConfigurableEngine.class.cast(classForEngine.newInstance());
+        ConfigurableEngine teamsPIP = ConfigurableEngine.class.cast(classForEngine.getDeclaredConstructor().newInstance());
         assertTrue(teamsPIP instanceof VootClientAware);
     }
 

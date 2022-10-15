@@ -9,10 +9,16 @@ import static org.junit.Assert.assertTrue;
 
 public class EntityMetaDataTest {
 
-    private EntityMetaData metaData = new EntityMetaData(PolicyLoader.authenticatingAuthority,
-        "institutionId", "nameEn",
-        "nameNl", true, false,
-        ImmutableSet.of("http://mock-sp", "http://dummy-sp"));
+    private EntityMetaData metaData = new EntityMetaData(
+            PolicyLoader.authenticatingAuthority,
+            "institutionId",
+            "nameEn",
+            "nameNl",
+            "organisationNameEn",
+            "organisationNameNl",
+            true,
+            false,
+            ImmutableSet.of("http://mock-sp", "http://dummy-sp"));
 
     @Test
     public void testIsAllowedFrom() throws Exception {

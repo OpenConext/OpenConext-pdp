@@ -3,6 +3,7 @@ package pdp.domain;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Arrays.stream;
@@ -31,9 +32,9 @@ public class EntityMetaData implements Serializable {
         this.entityId = entityId;
         this.institutionId = institutionId;
         this.nameEn = StringUtils.hasText(nameEn) ? nameEn : entityId;
-        this.nameNl = StringUtils.hasText(nameNl) ? nameNl : entityId;
+        this.nameNl = StringUtils.hasText(nameNl) ? nameNl : nameEn;
         this.organisationNameEn = StringUtils.hasText(organisationNameEn) ? organisationNameEn : "";
-        this.organisationNameNl = StringUtils.hasText(organisationNameNl) ? organisationNameEn : this.organisationNameEn;
+        this.organisationNameNl = StringUtils.hasText(organisationNameNl) ? organisationNameNl : this.organisationNameEn;
         this.policyEnforcementDecisionRequired = policyEnforcementDecisionRequired;
         this.allowedAll = allowedAll;
         this.allowedEntityIds = allowedEntityIds;
