@@ -82,12 +82,12 @@ class PolicyViolations extends React.Component {
         }.bind(this);
     }
 
-    getEntityName(id, type) {
+    getEntityName(id, type, isSP) {
         const name = id;
         const entities = this.props[type].filter(entity => entity.entityId === id);
         if (!isEmpty(entities)) {
             const entity = entities[0];
-            return I18n.entityName(entity);
+            return I18n.entityName(entity, isSP);
         }
         return name;
     }
@@ -215,9 +215,9 @@ class PolicyViolations extends React.Component {
         const renderRows = this.state.violations.map(violation => {
             const request = JSON.parse(violation.jsonRequest).Request;
             const idp = this.parseEntityId(request.Resource.Attribute, "IDPentityID");
-            const idpName = this.getEntityName(idp, "identityProviders");
+            const idpName = this.getEntityName(idp, "identityProviders", false);
             const sp = this.parseEntityId(request.Resource.Attribute, "SPentityID");
-            const spName = this.getEntityName(sp, "serviceProviders");
+            const spName = this.getEntityName(sp, "serviceProviders", true);
 
             const response = JSON.parse(violation.response).Response[0];
             const decision = response.Decision;

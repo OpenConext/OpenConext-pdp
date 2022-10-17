@@ -82,8 +82,8 @@ class PolicyDetail extends React.Component {
         this.setState({policy: {...this.state.policy, ...partialState}});
     }
 
-    parseEntities(entities) {
-        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity)}));
+    parseEntities(entities, isSP) {
+        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity, isSP)}));
     }
 
     handleChangeServiceProvider(newValue, newLabel) {
@@ -288,7 +288,7 @@ class PolicyDetail extends React.Component {
         const {currentUser} = this.context;
         const workflow = isEmpty(policy.serviceProviderIds) ? "failure" : "success";
         const scopeSPs = currentUser.policyIdpAccessEnforcementRequired && isEmpty(policy.identityProviderIds);
-        const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities) : this.parseEntities(this.props.serviceProviders);
+        const serviceProviders = scopeSPs ? this.parseEntities(currentUser.spEntities, true) : this.parseEntities(this.props.serviceProviders, true);
 
         return (
             <div>
@@ -324,7 +324,7 @@ class PolicyDetail extends React.Component {
                     <SelectWrapper
                         defaultValue={policy.identityProviderIds}
                         placeholder={I18n.t("policy_detail.idps_placeholder")}
-                        options={this.parseEntities(this.props.identityProviders)}
+                        options={this.parseEntities(this.props.identityProviders, false)}
                         dataChanged={false}
                         multiple={true}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>

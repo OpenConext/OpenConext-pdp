@@ -31,8 +31,8 @@ class Playground extends React.Component {
         getSamlAllowedAttributes().then(allowedSamlAttributes => this.setState({allowedSamlAttributes}));
     }
 
-    parseEntities(entities) {
-        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity)}));
+    parseEntities(entities, isSP) {
+        return entities.map(entity => ({value: entity.entityId, display: I18n.entityName(entity, isSP)}));
     }
 
     handleChangePolicy(newValue) {
@@ -168,7 +168,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.serviceProviderId}
                         placeholder={I18n.t("policy_detail.sp_placeholder")}
-                        options={this.parseEntities(this.props.serviceProviders)}
+                        options={this.parseEntities(this.props.serviceProviders, true)}
                         handleChange={this.handleChangeServiceProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>
@@ -185,7 +185,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.serviceProviderId}
                         placeholder={I18n.t("policy_detail.sp_placeholder")}
-                        options={this.parseEntities(this.props.serviceProviders)}
+                        options={this.parseEntities(this.props.serviceProviders, true)}
                         handleChange={this.handleChangeServiceProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>
@@ -203,7 +203,7 @@ class Playground extends React.Component {
                     <SelectWrapper
                         defaultValue={pdpRequest.identityProviderId}
                         placeholder={I18n.t("playground.idp_placeholder")}
-                        options={this.parseEntities(this.props.identityProviders)}
+                        options={this.parseEntities(this.props.identityProviders, false)}
                         handleChange={this.handleChangeIdentityProvider.bind(this)}/>
                 </div>
                 <div className="bottom"></div>

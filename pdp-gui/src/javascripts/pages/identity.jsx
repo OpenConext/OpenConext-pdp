@@ -25,7 +25,7 @@ class Identity extends React.Component {
 
     parseEntities(entities) {
         return entities.map(entity => {
-            return {value: entity.entityId, display: I18n.entityName(entity)};
+            return {value: entity.entityId, display: I18n.entityName(entity, false)};
         });
     }
 

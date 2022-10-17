@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.Executors.newScheduledThreadPool;
 import static java.util.stream.Collectors.toList;
@@ -55,16 +56,17 @@ public class PolicyMissingServiceProviderValidator {
             }
 
             List<String> spEntityIds = pd.getServiceProviderIds();
-            pd.setServiceProviderNames(serviceProviders.values().stream()
+            List<EntityMetaData> policyServiceProviderMetaData = serviceProviders.values().stream()
                     .filter(sp -> spEntityIds.contains(sp.getEntityId()))
+                    .collect(toList());
+            pd.setServiceProviderNames(policyServiceProviderMetaData.stream()
                     .map(sp -> sp.getNameEn())
                     .collect(toList()));
-            pd.setServiceProviderNamesNl(serviceProviders.values().stream()
-                    .filter(sp -> spEntityIds.contains(sp.getEntityId()))
+            pd.setServiceProviderNamesNl(policyServiceProviderMetaData.stream()
                     .map(sp -> sp.getNameNl())
                     .collect(toList()));
-            pd.setServiceProviderInvalidOrMissing(spEntityIds.stream().noneMatch(serviceProviders::containsKey) );
-            pd.setActivatedSr(serviceProviders.values().stream().allMatch(EntityMetaData::isPolicyEnforcementDecisionRequired));
+            pd.setServiceProviderInvalidOrMissing(spEntityIds.stream().noneMatch(spEntityId -> serviceProviders.containsKey(spEntityId)));
+            pd.setActivatedSr(policyServiceProviderMetaData.stream().allMatch(sp -> sp.isPolicyEnforcementDecisionRequired()));
 
             List<String> identityProviderIds = pd.getIdentityProviderIds();
             pd.setIdentityProviderNames(identityProviders.values().stream()
