@@ -322,7 +322,7 @@ public class PdpPolicyDefinition {
 
     @JsonIgnore
     public boolean isIdpOnly() {
-        return !this.identityProviderIds.isEmpty();
+        return this.identityProviderIds != null && !this.identityProviderIds.isEmpty();
     }
 
     @Override

@@ -116,8 +116,10 @@ public class PdpControllerShibbolethIntegrationTest extends AbstractPdpIntegrati
         PdpPolicyDefinition policyDefinition = pdpPolicyDefinitionParser.parse(policy);
         String initialDenyAdvice = policyDefinition.getDenyAdvice();
         policyDefinition.setDenyAdvice("advice_changed");
-
-        assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
+        Map<String, Object> map = objectMapper.convertValue(policyDefinition, new TypeReference<>() {
+        });
+        map.put("unknown", "value");
+        assertThat(post("/internal/policies", map).getStatusCode(), is(HttpStatus.OK));
 
         policyDefinition.setDenyAdvice("advice_changed_again");
         assertThat(post("/internal/policies", policyDefinition).getStatusCode(), is(HttpStatus.OK));
