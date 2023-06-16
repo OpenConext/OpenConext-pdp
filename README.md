@@ -22,6 +22,12 @@ Connect to your local mysql database: `mysql -uroot`
 Execute the following:
 
 ```sql
+DROP DATABASE IF EXISTS pdpserver;
+CREATE DATABASE pdpserver CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE USER 'pdpserver'@'localhost' IDENTIFIED BY 'secret';
+GRANT ALL privileges ON `pdpserver`.* TO 'pdpserver'@'localhost';
+
+
 CREATE DATABASE pdpserver DEFAULT CHARACTER SET latin1;
 create user 'root'@'localhost';
 grant all on pdpserver.* to 'root'@'localhost';
