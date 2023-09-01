@@ -108,9 +108,12 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
 
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-                TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
-                period, period, TimeUnit.MINUTES);
+        if (cachePolicies) {
+            Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+                    TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
+                    period, period, TimeUnit.MINUTES);
+
+        }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
