@@ -42,7 +42,7 @@ const AutoFormat = {
         const negate = passedCidrNotations[0].negate ? "not " : "";
         res +=  " with an IP address " + negate + "in the range(s): ";
         const lines = passedCidrNotations.map(notation => this.addQuotes(notation.ipAddress + "/" + notation.prefix));
-        return res + lines.join(" or");
+        return res + lines.join(" or ");
     },
 
     description: function (policy) {
