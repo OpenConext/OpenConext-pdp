@@ -86,7 +86,7 @@ public class WebSecurityConfig {
                 http.csrf().disable();
             }
 
-            if (environment.acceptsProfiles(Profiles.of("dev", "perf"))) {
+            if (environment.acceptsProfiles(Profiles.of("dev", "perf", "local"))) {
                 //we can't use @Profile, because we need to add it before the real filter
                 http.addFilterBefore(new MockShibbolethFilter(), ShibbolethPreAuthenticatedProcessingFilter.class);
             }

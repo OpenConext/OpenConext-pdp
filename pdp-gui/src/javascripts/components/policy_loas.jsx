@@ -79,6 +79,13 @@ class PolicyLoas extends React.Component {
         this.props.setLoasState({loas: newLoas});
     };
 
+    setNegateCidrNotationsState = loa => negate => {
+        const newLoas = [...this.state.loas];
+        const theLoa = newLoas.find(aLoa => aLoa.index === loa.index);
+        theLoa.negateCidrNotation = negate;
+        this.props.setLoasState({loas: newLoas});
+    };
+
     isInvalidLoa = loa => {
         const emptyAttributes = loa.attributes.filter(attr => {
             return isEmpty(attr.value);
@@ -113,6 +120,7 @@ class PolicyLoas extends React.Component {
                                       innerAttributes={true}/>
                     <hr/>
                     <PolicyCidrs loa={loa}
+                                 setNegateCidrNotationsState={this.setNegateCidrNotationsState(loa)}
                                  setCidrNotationsState={this.setCidrNotationsState(loa)}/>
                 </div>
             </div>

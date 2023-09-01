@@ -91,34 +91,35 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
             boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
                     .endsWith("function:and");
             loa.setAllAttributesMustMatch(allAttributesMustMatch);
-            this.parseArguments(loa, domApply.getArguments(), false);
+            this.parseArguments(loa, domApply.getArguments());
         }
 
         return loa;
     }
 
-    private LoA parseArguments(LoA loA, Iterator<Expression> iterator, boolean negated) {
+    private LoA parseArguments(LoA loA, Iterator<Expression> iterator) {
         List<Expression> expressions = iteratorToList(iterator);
         expressions.forEach(expression -> {
             if (expression instanceof DOMApply) {
-                parseDomApply(loA, DOMApply.class.cast(expression), negated);
+                parseDomApply(loA, DOMApply.class.cast(expression));
             }
         });
         return loA;
     }
 
-    private LoA parseDomApply(LoA loA, DOMApply domApply, boolean negated) {
+    private LoA parseDomApply(LoA loA, DOMApply domApply) {
         String functionID = domApply.getFunctionId().getUri().toString();
         if (functionID.endsWith("function:not")) {
-            return parseArguments(loA, domApply.getArguments(), true);
+            loA.setNegateCidrNotation(true);
+            return parseArguments(loA, domApply.getArguments());
         } else if (functionID.equals(IP_FUNCTION)) {
-            loA.getCidrNotations().add(parseCidrNotation(domApply, negated));
+            loA.getCidrNotations().add(parseCidrNotation(domApply));
             return loA;
         } else if (functionID.endsWith("function:string-is-in") || functionID.equals(NEGATE_FUNCTION)) {
             addArgumentToLoa(loA, domApply, functionID.equals(NEGATE_FUNCTION));
             return loA;
         }
-        return parseArguments(loA, domApply.getArguments(), negated);
+        return parseArguments(loA, domApply.getArguments());
     }
 
     private void addArgumentToLoa(LoA loA, DOMApply domApply, boolean negated) {
@@ -140,7 +141,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
                 .findFirst().get());
     }
 
-    private CidrNotation parseCidrNotation(DOMApply ipRange, boolean negate) {
+    private CidrNotation parseCidrNotation(DOMApply ipRange) {
         String functionId = ipRange.getFunctionId().getUri().toString();
         if (!functionId.equals(IP_FUNCTION)) {
             throw new IllegalArgumentException("Expected IP_FUNCTION, but got " + functionId);
@@ -151,7 +152,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
                 .findFirst().get();
         String cidrNotation = (String) AttributeValueExpression.class.cast(cidrNotationArgument).getAttributeValue().getValue();
         String[] splitted = cidrNotation.split("/");
-        return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]), negate,
+        return new CidrNotation(splitted[0], Integer.parseInt(splitted[1]),
                 getIpInfo(splitted[0], Integer.parseInt(splitted[1])));
     }
 

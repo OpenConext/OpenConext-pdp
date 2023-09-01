@@ -71,9 +71,9 @@
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
             {{/allAttributesMustMatch}}
                 {{#anyCidrNotations}}
-                {{#cidrNotationNegated}}
+                {{#negateCidrNotation}}
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
-                {{/cidrNotationNegated}}
+                {{/negateCidrNotation}}
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
                         {{#cidrNotations}}
                             <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:ip:range">
@@ -87,9 +87,9 @@
                             </Apply>
                         {{/cidrNotations}}
                     </Apply>
-                {{#cidrNotationNegated}}
+                {{#negateCidrNotation}}
                 </Apply>
-                {{/cidrNotationNegated}}
+                {{/negateCidrNotation}}
                 {{/anyCidrNotations}}
                 {{#anyAttributes}}
                     {{#allAttributesMustMatch}}

@@ -88,7 +88,7 @@ class PolicyDetail extends React.Component {
 
     handleChangeServiceProvider(newValue, newLabel) {
         const partialState = {serviceProviderIds: newValue, serviceProviderNames: newLabel};
-        this.setState({policy: {...this.state.policy, ...partialState }});
+        this.setState({policy: {...this.state.policy, ...partialState}});
     }
 
 
@@ -135,16 +135,16 @@ class PolicyDetail extends React.Component {
                 setFlash(I18n.t("policies.flash", {policyName: policy.name, action}));
                 this.context.router.transitionTo("/policies");
             }).catch(e => {
-                if (e.response.status === 400) {
-                    e.response.json()
-                        .then(body => {
-                            const message = body && body.details && body.details.name || "Error";
-                            setFlash(message, "error");
-                        });
-                } else {
-                    setFlash(e, "error");
-                }
-            });
+            if (e.response.status === 400) {
+                e.response.json()
+                    .then(body => {
+                        const message = body && body.details && body.details.name || "Error";
+                        setFlash(message, "error");
+                    });
+            } else {
+                setFlash(e, "error");
+            }
+        });
     }
 
     isValidPolicy() {

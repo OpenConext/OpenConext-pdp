@@ -36,8 +36,8 @@ class PolicyDetailHelpStepEn extends React.Component {
                     <h3>IP Ranges</h3>
 
                     <p>You can specify multiple IP addresses and their prefix to configure IP ranges. The IP
-                        address of the user is matched against the range and based on the negation the LoA is enforced or not. The checkbox 'negation'
-                    is a logical NOT for the IP range.</p>
+                        address of the user is matched against the range and based on the negation the LoA is enforced or not. The checkbox 'negate'
+                    is a logical NOT for the IP range(s).</p>
 
                     <p>Multiple IP ranges within a LoA always are defined as logical OR.</p>
 

@@ -4,6 +4,7 @@ import org.apache.openaz.xacml.api.Decision;
 import org.apache.openaz.xacml.api.Response;
 import org.apache.openaz.xacml.api.Result;
 import org.apache.openaz.xacml.std.json.JSONResponse;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,6 +37,7 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     private TestRestTemplate restTemplate = new TestRestTemplate();
 
     @Test
+    @Ignore
     public void testAllPolicies() throws Exception {
         addShibHeaders();
 

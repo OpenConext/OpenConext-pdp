@@ -29,6 +29,8 @@ public class LoA {
 
     private boolean allAttributesMustMatch;
 
+    private boolean negateCidrNotation;
+
     @Valid
     private List<PdpAttribute> attributes = new ArrayList<>();
 
@@ -38,11 +40,6 @@ public class LoA {
     @JsonIgnore
     public List<String> anyCidrNotations() {
         return CollectionUtils.isEmpty(this.cidrNotations) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
-    }
-
-    @JsonIgnore
-    public boolean cidrNotationNegated() {
-        return CollectionUtils.isEmpty(this.cidrNotations) ? false : this.cidrNotations.get(0).isNegate();
     }
 
     @JsonIgnore

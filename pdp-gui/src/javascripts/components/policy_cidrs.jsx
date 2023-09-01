@@ -68,13 +68,8 @@ class PolicyCidrs extends React.Component {
     };
 
     handleNegateNotation = e => {
-        const cidrNotations = this.state.cidrNotations.map(notation => {
-            notation.negate = e.target.checked;
-            return notation;
-        });
-        this.props.setCidrNotationsState({cidrNotations: cidrNotations});
+        this.props.setNegateCidrNotationsState(e.target.checked);
     };
-
 
     handleCidrsPrefixChanged = index => e => {
         preventProp(e);
@@ -151,14 +146,16 @@ class PolicyCidrs extends React.Component {
     };
 
     render() {
-        const cidrNotations = this.state.cidrNotations;
+        const {cidrNotations} = this.state;
+        const {loa} = this.props;
+
         return (
             <div className="all-cidrs">
                 {cidrNotations.length > 0 && <div className="negate">
                     <input type="checkbox"
                            id={"negate_cidr"}
                            name={"negate_cidr"}
-                           checked={cidrNotations[0].negate}
+                           checked={loa.negateCidrNotation}
                            onChange={this.handleNegateNotation}/>
                     <label htmlFor={"negate_cidr"}>{I18n.t("policy_cidr.negate")}</label>
                 </div>}
@@ -174,6 +171,7 @@ class PolicyCidrs extends React.Component {
 
 PolicyCidrs.propTypes = {
     setCidrNotationsState: React.PropTypes.func,
+    setNegateCidrNotationsState: React.PropTypes.func,
     loa: React.PropTypes.shape({
         cidrs: React.PropTypes.arrayOf(React.PropTypes.shape({}))
     })

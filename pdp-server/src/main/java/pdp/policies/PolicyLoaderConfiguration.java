@@ -22,21 +22,20 @@ public class PolicyLoaderConfiguration {
     @Autowired
     @Profile({"dev", "no-csrf"})
     public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") String policyBaseDir, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
-        return new NoopPrePolicyLoader();
-//        return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
+        return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
     }
 
     @Bean
     @Autowired
     @Profile({"perf"})
     public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, Manage
-        manage, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
+            manage, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         return new PerformancePrePolicyLoader(count, manage, pdpPolicyRepository, pdpPolicyViolationRepository);
     }
 
     @Bean
     @Autowired
-    @Profile({"test", "acc", "prod", "mail"})
+    @Profile({"local", "test", "acc", "prod", "mail"})
     public PolicyLoader noopPolicyLoader() {
         return new NoopPrePolicyLoader();
     }
