@@ -30,8 +30,7 @@ class PolicyDetailHelpRegEn extends React.Component {
 
                 <h2>Service</h2>
 
-                <p>The Service determines for which Service this policy applies. You can only link policies to one
-                    Service</p>
+                <p>The Service determines for which Service(s) this policy applies.</p>
 
                 <h2>Institution</h2>
 
