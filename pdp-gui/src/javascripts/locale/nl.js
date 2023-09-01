@@ -64,7 +64,7 @@ I18n.translations.nl = {
         type_reg: "EB",
         type_step: "Stepup",
         delete: "Verwijder",
-        created: "Datum"
+        created: "Gewijzigd"
     },
 
     datatable: {
@@ -105,7 +105,8 @@ I18n.translations.nl = {
         rule_info_add_2: "Een 'Deny' autorisatieregel wordt altijd geëvalueerd met de logische EN voor attribuutwaarden van verschillende attributen.",
         submit: "Verstuur",
         cancel: "Annuleer",
-        sub_title: "Aangemaakt door {{displayName}} op {{created}}",
+        sub_title: "Laatst gewijzigd door {{displayName}} op {{created}}",
+        created_title: "Aangemaakt door {{displayName}} op {{created}}",
         autoFormat: "AutoFormat regel omschrijving",
         isActiveDescription: "Markeer de regel actief",
         isActiveInfo: " Inactieve regels worden niet geëvalueerd in access-beslissingen",

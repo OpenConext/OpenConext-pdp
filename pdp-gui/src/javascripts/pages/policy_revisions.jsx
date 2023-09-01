@@ -124,7 +124,7 @@ class PolicyRevisions extends React.Component {
 
     renderRevisions() {
         this.state.revisions.sort((rev1, rev2) => {
-            return rev2.created - rev1.created;
+            return rev2.revisionNbr - rev1.revisionNbr;
         });
         return this.state.revisions.map((revision, index) => {
             return this.renderRevision(revision, index);
@@ -155,7 +155,7 @@ class PolicyRevisions extends React.Component {
     renderRevisionMetadata(revision) {
         return (<div><p className="label before-em">{revision.name}</p>
             <p className="before-em">{I18n.t("revisions.revision") + " " + revision.revisionNbr}</p>
-            <p className="before-em smaller">{I18n.t("policy_detail.sub_title", {
+            <p className="before-em smaller">{I18n.t("policy_detail.created_title", {
                 displayName: revision.userDisplayName,
                 created: this.createdDate(revision)
             })}</p>

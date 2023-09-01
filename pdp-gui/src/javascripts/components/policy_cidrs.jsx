@@ -67,11 +67,9 @@ class PolicyCidrs extends React.Component {
         this.props.setCidrNotationsState({cidrNotations: cidrNotations});
     };
 
-    handleNegateNotation = index => e => {
+    handleNegateNotation = e => {
         const cidrNotations = this.state.cidrNotations.map(notation => {
-            if (notation.index === index) {
-                notation.negate = e.target.checked;
-            }
+            notation.negate = e.target.checked;
             return notation;
         });
         this.props.setCidrNotationsState({cidrNotations: cidrNotations});
@@ -115,10 +113,10 @@ class PolicyCidrs extends React.Component {
             <span>{ipInfo.broadcastAddress}</span>
         </div>
         {ipInfo.ipv4 &&
-        <div>
-            <span className="label">{I18n.t("policy_cidr.capacity")}</span>
-            <span>{parseInt(ipInfo.capacity).toLocaleString("nl")}</span>
-        </div>}
+            <div>
+                <span className="label">{I18n.t("policy_cidr.capacity")}</span>
+                <span>{parseInt(ipInfo.capacity).toLocaleString("nl")}</span>
+            </div>}
     </section>;
 
     getPrefixes = notation => {
@@ -134,11 +132,6 @@ class PolicyCidrs extends React.Component {
         return (
             <div key={notation.index}>
                 <div className="cidr-container">
-                    <div className="negate">
-                        <input type="checkbox" id={id} name={id} checked={notation.negate}
-                               onChange={this.handleNegateNotation(notation.index)}/>
-                        <label htmlFor={id}>{I18n.t("policy_cidr.negate")}</label>
-                    </div>
                     <input type="text" className="form-input ip-address" value={notation.ipAddress}
                            onChange={this.handleCidrsIPAddressChanged(notation.index)}
                            onBlur={this.validateIPAddress(notation.index)}/>
@@ -161,6 +154,14 @@ class PolicyCidrs extends React.Component {
         const cidrNotations = this.state.cidrNotations;
         return (
             <div className="all-cidrs">
+                {cidrNotations.length > 0 && <div className="negate">
+                    <input type="checkbox"
+                           id={"negate_cidr"}
+                           name={"negate_cidr"}
+                           checked={cidrNotations[0].negate}
+                           onChange={this.handleNegateNotation}/>
+                    <label htmlFor={"negate_cidr"}>{I18n.t("policy_cidr.negate")}</label>
+                </div>}
                 {cidrNotations.map(notation => this.renderCidrNotation(notation))}
                 <a href="#" onClick={this.addCidrNotation} className="plus">
                     <i className="fa fa-plus"></i>

@@ -106,7 +106,7 @@ class PolicyLoas extends React.Component {
                                hideDetails={true}/>
                     <p className="loas-and-or-rule">{I18n.t("policy_loas.and_or_rule")}</p>
                     <PolicyAttributes policy={loa}
-                                      css="no-pad-right"
+                                      css={"no-pad-right"}
                                       allowedAttributes={this.props.allowedAttributes}
                                       negateAttributes={true}
                                       setAttributeState={this.setAttributeState(loa)}

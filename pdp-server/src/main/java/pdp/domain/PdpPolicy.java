@@ -220,6 +220,7 @@ public class PdpPolicy {
         clone.setRevisionNbr(parent.getRevisions().size() + 1);
         clone.setPolicyId(PolicyTemplateEngine.getPolicyId(newName));
         clone.setType(parent.getType());
+        clone.setCreated(new Date());
 
         parent.addRevision(clone);
 

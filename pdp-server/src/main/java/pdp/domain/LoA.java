@@ -41,6 +41,11 @@ public class LoA {
     }
 
     @JsonIgnore
+    public boolean cidrNotationNegated() {
+        return CollectionUtils.isEmpty(this.cidrNotations) ? false : this.cidrNotations.get(0).isNegate();
+    }
+
+    @JsonIgnore
     public List<String> anyAttributes() {
         return CollectionUtils.isEmpty(this.attributes) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
     }

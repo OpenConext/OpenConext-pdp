@@ -82,7 +82,7 @@ I18n.translations.en = {
         type_reg: "EB",
         type_step: "Stepup",
         delete: "Delete",
-        created: "Created"
+        created: "Last modified"
     },
 
     datatable: {
@@ -123,7 +123,8 @@ I18n.translations.en = {
         rule_info_add_2: "Note that a Deny access policy always and implicitly uses the logical AND for different attribute names.",
         submit: "Submit",
         cancel: "Cancel",
-        sub_title: "Created by {{displayName}} on {{created}}",
+        sub_title: "Last updated by {{displayName}} on {{created}}",
+        created_title: "Created by {{displayName}} on {{created}}",
         autoFormat: "AutoFormat policy description",
         isActiveDescription: "Mark the policy active",
         isActiveInfo: " Inactive policies are not evaluated in enforcement decisions",

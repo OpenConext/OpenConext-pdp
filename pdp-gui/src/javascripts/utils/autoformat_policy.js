@@ -22,7 +22,7 @@ const AutoFormat = {
         const length = attributeNames.length;
         const lines = attributeNames.map((attributeName, index) => {
             const values = attributes[attributeName].map(attribute => {
-                const negated = attribute.negated ? " NOT " : "";
+                const negated = attribute.negated ? "NOT " : "";
                 return negated + this.addQuotes(attribute.value);
             }).join(" or ");
             const logical = index === (length - 1) ? "" : allAttributesMustMatch ? " and " : " or ";
@@ -38,12 +38,11 @@ const AutoFormat = {
         if (passedCidrNotations.length === 0) {
             return "";
         }
-        const lines = passedCidrNotations.map((notation, index) => {
-            const res = (index === 0 && hasAttributes) ? (allAttributesMustMatch ? " and" : " or") : "";
-            const negate = notation.negate ? "not " : "";
-            return res + " with an IP address " + negate + "in the range " + this.addQuotes(notation.ipAddress + "/" + notation.prefix);
-        });
-        return lines.join(" or");
+        let res = hasAttributes ? (allAttributesMustMatch ? " and" : " or") : "";
+        const negate = passedCidrNotations[0].negate ? "not " : "";
+        res +=  " with an IP address " + negate + "in the range(s): ";
+        const lines = passedCidrNotations.map(notation => this.addQuotes(notation.ipAddress + "/" + notation.prefix))
+        return res + lines.join(" or");
     },
 
     description: function (policy) {
@@ -68,7 +67,18 @@ const AutoFormat = {
             if (attrLoa !== ".") {
                 txt = txt + " when " + attrLoa;
             }
-            txt = txt + this.cidrNotations(loa.cidrNotations, loa.allAttributesMustMatch, loa.attributes.length > 0);
+            const loaTeamMembershipAttr = loa.attributes.filter(attr => attr.name === "urn:collab:group:surfteams.nl");
+            const loaTeamMembership = loaTeamMembershipAttr.length > 0 ? " he/she is a member of the team " + loaTeamMembershipAttr
+                    .map(attr => {
+                        const negated = attr.negated ? "NOT " : "";
+                        return negated + this.addQuotes(attr.value);
+                    }).join(" or ") : "";
+
+            const cidrNotationTxt = this.cidrNotations(loa.cidrNotations, loa.allAttributesMustMatch, loa.attributes.length > 0);
+            txt = txt + cidrNotationTxt;
+            if (loaTeamMembership !== "") {
+                txt = txt + ((cidrNotationTxt !== "" || attrLoa !== ".") ? " and" : "") + " when" + loaTeamMembership;
+            }
             return txt;
         }).join(" and he /she ");
 

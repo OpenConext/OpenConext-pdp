@@ -57,13 +57,17 @@ class PolicyAttributes extends React.Component {
         }.bind(this);
     }
 
-    handleAttributeValueChanged(attrName, index) {
+    trim(value, trimRight) {
+        return isEmpty(value) ? "" : (trimRight ? value.trim() :value.trimStart());
+    }
+
+    handleAttributeValueChanged(attrName, index, trimRight) {
         return function (e) {
             preventProp(e);
             //change attribute value
             const attributes = this.state.attributes.map(attr => {
                 if (attr.name === attrName && attr.index === index) {
-                    attr.value = e.target.value;
+                    attr.value = this.trim(e.target.value, trimRight);
                 }
                 return attr;
             });
@@ -93,7 +97,7 @@ class PolicyAttributes extends React.Component {
     handleNewAttribute(e) {
         preventProp(e);
         //change attribute value
-        const attrName = e.target.value;
+        const attrName = this.trim(e.target.value);
         this.addAttribute(attrName);
     }
 
@@ -122,25 +126,28 @@ class PolicyAttributes extends React.Component {
         const className = this.renderAttributeInfo(attrName, index) === undefined ? "" : "before-em";
         const {negateAttributes} = this.props;
         return (
-            <div className="value-container" key={"div-" + attrName + "-" + attribute.index}>
-                {negateAttributes && <input type="checkbox"
-                       id={`${index}_${attrName}`}
-                       name={`${index}_${attrName}`}
-                       checked={attribute.negated}
-                       onChange={this.handleNegateAttribute(attrName, attribute.index)}/>}
-                {negateAttributes && <label htmlFor={`${index}_${attrName}`} className={"negate-label"}>
-                    {I18n.t("policy_cidr.negate")}
-                </label>}
-                <input type="text" name="value" className={"form-input " + className}
-                       key={attrName + "-" + attribute.index}
-                       value={attribute.value}
-                       placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
-                       onChange={this.handleAttributeValueChanged(attrName, attribute.index)}/>
-                {this.renderAttributeInfo(attrName, index)}
-                <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
-                    <i className="fa fa-remove"/>
-                </a>
+            <div key={"div-" + attrName + "-" + attribute.index}>
+                <div className="value-container" >
+                    {negateAttributes && <input type="checkbox"
+                                                id={`${index}_${attrName}`}
+                                                name={`${index}_${attrName}`}
+                                                checked={attribute.negated}
+                                                onChange={this.handleNegateAttribute(attrName, attribute.index)}/>}
+                    {negateAttributes && <label htmlFor={`${index}_${attrName}`} className={"negate-label"}>
+                        {I18n.t("policy_cidr.negate")}
+                    </label>}
+                    <input type="text" name="value" className={"form-input " + className}
+                           key={attrName + "-" + attribute.index}
+                           value={attribute.value}
+                           placeholder={I18n.t("policy_attributes.attribute_value_placeholder")}
+                           onBlur={this.handleAttributeValueChanged(attrName, attribute.index, true)}
+                           onChange={this.handleAttributeValueChanged(attrName, attribute.index, false)}/>
+                    <a href="#" className="remove" onClick={this.handleRemoveAttributeValue(attrName, attribute.index)}>
+                        <i className="fa fa-remove"/>
+                    </a>
 
+                </div>
+                {this.renderAttributeInfo(attrName, index)}
             </div>
         );
     }
@@ -164,11 +171,11 @@ class PolicyAttributes extends React.Component {
         return (
             <div className={className}>
                 {
-                    attrNames.map(attrName => {
+                    attrNames.map((attrName, index) => {
                         return (
-                            <div key={attrName}>
+                            <div key={index}>
 
-                                  <p className="label">{I18n.t("policy_attributes.attribute")}</p>
+                                <p className="label">{I18n.t("policy_attributes.attribute")}</p>
 
                                 <div className="attribute-container">
                                     <input type="text" name="attribute" className="form-input disabled" value={attrName}
@@ -194,7 +201,7 @@ class PolicyAttributes extends React.Component {
                     })
                 }
                 {!this.props.innerAttributes &&
-                <p className="label">{I18n.t("policy_attributes.attribute")}</p>}
+                    <p className="label">{I18n.t("policy_attributes.attribute")}</p>}
                 <select value="" onChange={self.handleNewAttribute.bind(self)}>
                     <option value="" disabled="disabled">{I18n.t("policy_attributes.new_attribute")}</option>
                     {
