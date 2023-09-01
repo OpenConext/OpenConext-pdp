@@ -123,7 +123,6 @@ class PolicyCidrs extends React.Component {
 
     renderCidrNotation = notation => {
         const prefixValues = this.getPrefixes(notation);
-        const id = `negate_${notation.index}`;
         return (
             <div key={notation.index}>
                 <div className="cidr-container">
