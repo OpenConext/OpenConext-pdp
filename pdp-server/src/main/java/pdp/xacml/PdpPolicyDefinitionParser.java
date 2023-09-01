@@ -91,39 +91,34 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
             boolean allAttributesMustMatch = domApply.getFunctionId().getUri().toString()
                     .endsWith("function:and");
             loa.setAllAttributesMustMatch(allAttributesMustMatch);
-            this.parseArguments(loa, domApply.getArguments());
+            this.parseArguments(loa, domApply.getArguments(), false);
         }
 
         return loa;
     }
 
-    private LoA parseArguments(LoA loA, Iterator<Expression> iterator) {
+    private LoA parseArguments(LoA loA, Iterator<Expression> iterator, boolean negated) {
         List<Expression> expressions = iteratorToList(iterator);
         expressions.forEach(expression -> {
             if (expression instanceof DOMApply) {
-                parseDomApply(loA, DOMApply.class.cast(expression));
+                parseDomApply(loA, DOMApply.class.cast(expression), negated);
             }
         });
         return loA;
     }
 
-    private LoA parseDomApply(LoA loA, DOMApply domApply) {
+    private LoA parseDomApply(LoA loA, DOMApply domApply, boolean negated) {
         String functionID = domApply.getFunctionId().getUri().toString();
         if (functionID.endsWith("function:not")) {
-            DOMApply ipRange = (DOMApply) domApply.getArguments().next();
-            String ipRangeFunctionId = ipRange.getFunctionId().getUri().toString();
-            if (ipRangeFunctionId.equals(IP_FUNCTION)) {
-                loA.getCidrNotations().add(parseCidrNotation(ipRange, true));
-            }
-            return loA;
+            return parseArguments(loA, domApply.getArguments(), true);
         } else if (functionID.equals(IP_FUNCTION)) {
-            loA.getCidrNotations().add(parseCidrNotation(domApply, false));
+            loA.getCidrNotations().add(parseCidrNotation(domApply, negated));
             return loA;
         } else if (functionID.endsWith("function:string-is-in") || functionID.equals(NEGATE_FUNCTION)) {
             addArgumentToLoa(loA, domApply, functionID.equals(NEGATE_FUNCTION));
             return loA;
         }
-        return parseArguments(loA, domApply.getArguments());
+        return parseArguments(loA, domApply.getArguments(), negated);
     }
 
     private void addArgumentToLoa(LoA loA, DOMApply domApply, boolean negated) {
