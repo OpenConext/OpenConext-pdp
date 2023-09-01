@@ -25,7 +25,7 @@ public class MailConfiguration {
     }
 
     @Bean
-    @Profile({"dev", "no-csrf", "perf"})
+    @Profile({"dev", "no-csrf", "perf", "local"})
     @Primary
     public MailBox mailSenderDev() {
         return new MockMailBox(baseUrl, emailTo, emailFrom);

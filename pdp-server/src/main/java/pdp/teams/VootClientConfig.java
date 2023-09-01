@@ -39,7 +39,7 @@ public class VootClientConfig {
     }
 
     @Bean
-    @Profile({"dev", "perf", "no-csrf", "mail"})
+    @Profile({"dev", "perf", "no-csrf", "mail", "local"})
     public VootClient mockVootClient() {
         return new VootClient(vootRestTemplate(), vootServiceUrl) {
             @Override

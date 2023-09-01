@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 public class ManageConfiguration {
 
     @Bean
-    @Profile({"dev", "no-csrf", "perf", "mail"})
+    @Profile({"dev", "local", "no-csrf", "perf", "mail"})
     public Manage classPathResourceManage() {
         return new ClassPathResourceManage();
     }

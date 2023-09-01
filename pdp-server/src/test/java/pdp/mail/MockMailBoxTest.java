@@ -20,7 +20,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static pdp.domain.PdpPolicyDefinition.policyDefinition;
 
-@ActiveProfiles("dev")
+@ActiveProfiles(value = {"dev"})
 @SuppressWarnings("deprecation")
 public class MockMailBoxTest extends AbstractPdpIntegrationTest {
 
