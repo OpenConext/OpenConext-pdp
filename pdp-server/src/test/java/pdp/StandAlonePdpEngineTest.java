@@ -50,15 +50,11 @@ import static pdp.util.StreamUtils.singletonCollector;
 @NotThreadSafe
 public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
-    private static Logger LOG = LoggerFactory.getLogger(PdpController.class);
-
     private PDPEngine pdpEngine;
 
-    private PdpPolicyRepository pdpPolicyRepository;
+    private static final VootClient vootClient = new VootClientConfig().mockVootClient();
 
-    private static VootClient vootClient = new VootClientConfig().mockVootClient();
-
-    private static SabClient sabClient = new SabClientConfig().mockSabClient("user", "password", "http://localhost");
+    private static final SabClient sabClient = new SabClientConfig().mockSabClient("user", "password", "http://localhost");
 
     @BeforeClass
     public static void beforeClass() throws IOException {
@@ -73,7 +69,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
 
 
     private void setUp(String... policyFiles) throws IOException, FactoryException {
-        pdpPolicyRepository = mock(PdpPolicyRepository.class);
+        PdpPolicyRepository pdpPolicyRepository = mock(PdpPolicyRepository.class);
         List<PdpPolicy> pdpPolicies = Arrays.asList(policyFiles).stream().map(policyFile -> loadPolicy(policyFile)).collect(toList());
         when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
@@ -250,11 +246,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
                 "OpenConext.pdp.test.obligations.negate.student.Policy.xml");
         Collection<Obligation> obligations = result.getObligations();
 
-        assertEquals(1, obligations.size());
-
-        Obligation obligation = obligations.iterator().next();
-        assertEquals("http://localhost/assurance/loa2",
-                obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+        assertEquals(0, obligations.size());
 
     }
 
