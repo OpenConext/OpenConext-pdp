@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
+        PolicyId="urn:surfconext:xacml:policy:id:bug_rule"
+        Version="1"
+        RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+    <Description>A user is required to authenticate with LoA &#39;http://localhost/assurance/loa2&#39; when he/she has the value NOT &#39;student&#39; for attribute &#39;urn:mace:dir:attribute-def:eduPersonScopedAffiliation&#39; when accessing &#39;Bart test RP | SURF EN&#39;</Description>
+    <PolicyDefaults>
+        <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
+    </PolicyDefaults>
+    <Target>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">https://imogen.surfnet.nl/testsp/module.php/saml/sp/metadata.php/default-sp</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="SPentityID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
+        <AnyOf>
+            <AllOf>
+                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">EngineBlock</AttributeValue>
+                    <AttributeDesignator
+                            AttributeId="ClientID"
+                            DataType="http://www.w3.org/2001/XMLSchema#string"
+                            Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                            MustBePresent="true"
+                    />
+                </Match>
+            </AllOf>
+        </AnyOf>
+    </Target>
+    <Rule Effect="Permit"
+          RuleId="urn:surfconext:xacml:rule:id:permit">
+        <Description />
+        <Target/>
+        <Condition>
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    <Apply FunctionId="urn:surfnet:cbac:custom:function:3.0:negation">
+                        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">student</AttributeValue>
+                        <AttributeDesignator
+                                AttributeId="urn:mace:dir:attribute-def:eduPersonScopedAffiliation"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject"
+                                MustBePresent="false"
+                        />
+                    </Apply>
+                </Apply>
+            </Apply>
+        </Condition>
+        <ObligationExpressions>
+            <ObligationExpression ObligationId="urn:openconext:stepup:loa" FulfillOn="Permit">
+                <AttributeAssignmentExpression
+                        AttributeId="urn:loa:level"
+                        Category="urn:oasis:names:tc:xacml:1.0:subject-category:access-subject">
+                    <AttributeValue
+                            DataType="http://www.w3.org/2001/XMLSchema#string">http://localhost/assurance/loa2</AttributeValue>
+                </AttributeAssignmentExpression>
+            </ObligationExpression>
+        </ObligationExpressions>
+    </Rule>
+    <Rule Effect="Permit"
+          RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.DenyRulePolicyEmptyPermit.permitAccess">
+        <Description />
+        <Target />
+    </Rule>
+</Policy>

@@ -232,6 +232,33 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
     }
 
     @Test
+    public void multiValueNegatedRequest() throws Exception {
+        Result result = doDecideTest("json_policy_negated_multi_value_loa_request.json", Decision.PERMIT,
+                "OpenConext.pdp.test.obligations.negate.student.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://localhost/assurance/loa2",
+                obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+    }
+
+    @Test
+    public void multiValueNegatedNoMatchRequest() throws Exception {
+        Result result = doDecideTest("json_policy_negated_multi_value_request.json", Decision.PERMIT,
+                "OpenConext.pdp.test.obligations.negate.student.Policy.xml");
+        Collection<Obligation> obligations = result.getObligations();
+
+        assertEquals(1, obligations.size());
+
+        Obligation obligation = obligations.iterator().next();
+        assertEquals("http://localhost/assurance/loa2",
+                obligation.getAttributeAssignments().iterator().next().getAttributeValue().getValue());
+
+    }
+
+    @Test
     public void testIpRangeAndAffiliationObligation() throws Exception {
         Result result = doDecideTest("json_policy_ip_range_and_affiliation_request.json",
             Decision.PERMIT, "OpenConext.pdp.test.obligations.multiple.and.Policy.xml");

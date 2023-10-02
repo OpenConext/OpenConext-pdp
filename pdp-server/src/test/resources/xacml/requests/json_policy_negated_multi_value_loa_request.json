@@ -1,0 +1,36 @@
+{
+  "Request": {
+    "AccessSubject": {
+      "Attribute": [
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "teacher"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "employee"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+          "Value": "none-match"
+        }
+      ]
+    },
+    "Resource": {
+      "Attribute": [
+        {
+          "AttributeId": "SPentityID",
+          "Value": "https://imogen.surfnet.nl/testsp/module.php/saml/sp/metadata.php/default-sp"
+        },
+        {
+          "AttributeId": "IDPentityID",
+          "Value": "https://shibtestidp.pt-27.utr.surfcloud.nl/idp/shibboleth"
+        },
+        {
+          "AttributeId": "ClientID",
+          "Value": "EngineBlock"
+        }
+      ]
+    }
+  }
+}

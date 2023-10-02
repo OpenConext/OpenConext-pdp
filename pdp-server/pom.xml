@@ -64,6 +64,7 @@
             <artifactId>spring-security-oauth2</artifactId>
             <version>2.5.1.RELEASE</version>
         </dependency>
+        <!-- See https://github.com/OpenConext/incubator-openaz-openconext/tree/openconext/develop -->
         <dependency>
             <groupId>org.apache.openaz</groupId>
             <artifactId>openaz-xacml</artifactId>
