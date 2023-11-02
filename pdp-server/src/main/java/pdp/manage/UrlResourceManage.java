@@ -14,6 +14,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 import pdp.domain.EntityMetaData;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.SocketAddress;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -51,6 +55,17 @@ public class UrlResourceManage implements Manage {
         SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) restTemplate
                 .getRequestFactory();
         requestFactory.setConnectTimeout(10 * 1000);
+
+        String proxyHost = System.getProperty("http.proxyHost");
+        String proxyPortString = System.getProperty("http.proxyPort");
+        int proxyPort = StringUtils.hasText(proxyPortString) ? Integer.parseInt(proxyPortString) : 8080;
+
+        if (proxyHost != null) {
+            SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+
+            requestFactory.setProxy(proxy);
+        }
     }
 
     private Resource getIdpResource(String body) {
