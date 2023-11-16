@@ -58,3 +58,13 @@ jobs:
         push: true
         tags: |
           ghcr.io/openconext/openconext-pdp/pdp-gui:${{ github.ref_name }}
+
+    - name: Build and push the pdp server image
+      uses: docker/build-push-action@v4
+      with:
+        context: pdp-server
+        file: pdp-server/docker/Dockerfile
+        platforms: linux/amd64
+        push: true
+        tags: |
+          ghcr.io/openconext/openconext-pdp/pdp-server:${{ github.ref_name }}
