@@ -93,6 +93,7 @@ class Header extends React.Component {
         const node = document.getElementById("app");
         unmountComponentAtNode(node);
         render(<Logout/>, node);
+        location.href = "/Shibboleth.sso/Logout";
     }
 
     handleToggle(e) {
