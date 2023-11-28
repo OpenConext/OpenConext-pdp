@@ -33,6 +33,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
+    - name: Determine the version
+      run: echo ::set-output name=version::$(mvn -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)
+      id: versioncheck
+
+    - name: Exit when workflow_dispatch is triggered, and the version does not contain SNAPSHOT in it's name
+      run: |
+        echo "Only SNAPSHOT releases can be triggered with the workflow_dispatch"
+        exit 1
+      if: github.event_name == 'workflow_dispatch' && ( !endsWith(steps.versioncheck.outputs.version, '-SNAPSHOT'))
+
+    - name: Exit when a production build is triggered, and the github tag is not the same as the version in pom.xml
+      run: |
+        echo "Project version ${{ steps.versioncheck.outputs.version }} does not match git tag ${{ github.ref_name }}"
+        exit 1
+      if: github.event_name != 'workflow_dispatch' && steps.versioncheck.outputs.version != github.ref_name
+
     - name: Deploy with Maven
       run: mvn --batch-mode deploy -DskipTests
       env:
@@ -57,7 +73,7 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
-          ghcr.io/openconext/openconext-pdp/pdp-gui:${{ github.ref_name }}
+          ghcr.io/openconext/openconext-pdp/pdp-gui:${{ steps.versioncheck.outputs.version }}
 
     - name: Build and push the pdp server image
       uses: docker/build-push-action@v4
@@ -67,4 +83,4 @@ jobs:
         platforms: linux/amd64
         push: true
         tags: |
-          ghcr.io/openconext/openconext-pdp/pdp-server:${{ github.ref_name }}
+          ghcr.io/openconext/openconext-pdp/pdp-server:${{ steps.versioncheck.outputs.version }}
