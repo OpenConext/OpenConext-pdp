@@ -57,10 +57,11 @@ public class UrlResourceManage implements Manage {
         requestFactory.setConnectTimeout(10 * 1000);
 
         String proxyHost = System.getProperty("http.proxyHost");
+        String ignoreProxySettings = System.getProperty("http.ignoreProxySettings");
         String proxyPortString = System.getProperty("http.proxyPort");
         int proxyPort = StringUtils.hasText(proxyPortString) ? Integer.parseInt(proxyPortString) : 8080;
 
-        if (proxyHost != null) {
+        if (StringUtils.hasText(proxyHost) && !Boolean.parseBoolean(ignoreProxySettings)) {
             SocketAddress addr = new InetSocketAddress(proxyHost, proxyPort);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
 
