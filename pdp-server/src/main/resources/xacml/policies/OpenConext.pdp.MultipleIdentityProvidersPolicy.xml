@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Policy xmlns="urn:oasis:names:tc:xacml:3.0:core:schema:wd-17"
-        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProversPolicy"
+        PolicyId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProvidersPolicy"
         Version="1"
         RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
     <Description>Policy met multiple IDP's in target
@@ -70,7 +70,7 @@
     </Target>
     <Rule
             Effect="Permit"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProversPolicy.permitAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProvidersPolicy.permitAccess">
         <Description/>
         <Target>
             <AnyOf>
@@ -91,7 +91,7 @@
     </Rule>
     <Rule
             Effect="Deny"
-            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProversPolicy.denyAccess">
+            RuleId="http://axiomatics.com/alfa/identifier/OpenConext.pdp.MultipleIdentityProvidersPolicy.denyAccess">
         <Description/>
         <Target/>
         <AdviceExpressions>
