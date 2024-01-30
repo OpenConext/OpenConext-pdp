@@ -89,7 +89,7 @@ public class FederatedUserBuilder {
     }
 
     private Set<EntityMetaData> getSpEntities(Set<EntityMetaData> idpEntities) {
-        //By contract we have at least one Idp - otherwise an Exception is already raised
+        //By contract, we have at least one Idp - otherwise an Exception is already raised
         String institutionId = idpEntities.iterator().next().getInstitutionId();
         return manage.serviceProvidersByInstitutionId(institutionId);
     }

@@ -34,6 +34,7 @@ import pdp.domain.*;
 import pdp.mail.MailBox;
 import pdp.manage.Manage;
 import pdp.policies.PolicyMissingServiceProviderValidator;
+import pdp.repositories.PdpMigratedPolicyRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.stats.StatsContext;
@@ -43,6 +44,7 @@ import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -83,6 +85,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final List<String> loaLevels;
 
     private final ReentrantLock lock = new ReentrantLock();
+    private final boolean pushTestMode;
+    private final PdpMigratedPolicyRepository migratedPolicyRepository;
 
     // Can't be final as we need to swap this reference for reloading policies in production
     private volatile PDPEngine pdpEngine;
@@ -90,20 +94,24 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     @Autowired
     public PdpController(@Value("${period.policies.refresh.minutes}") int period,
                          @Value("${policies.cachePolicies}") boolean cachePolicies,
+                         @Value("${manage.pushTestMode}") boolean pushTestMode,
                          @Value("${loa.levels}") String loaLevelsCommaSeparated,
                          PdpPolicyViolationRepository pdpPolicyViolationRepository,
                          PdpPolicyRepository pdpPolicyRepository,
+                         PdpMigratedPolicyRepository migratedPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
                          Manage manage,
                          MailBox mailBox,
                          PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator) {
         this.cachePolicies = cachePolicies;
+        this.pushTestMode = pushTestMode;
         this.loaLevels = Stream.of(loaLevelsCommaSeparated.split(",")).map(String::trim).collect(toList());
         this.pdpEngineHolder = pdpEngineHolder;
         this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
         this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
         this.pdpPolicyRepository = pdpPolicyRepository;
+        this.migratedPolicyRepository = migratedPolicyRepository;
         this.manage = manage;
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
@@ -195,6 +203,41 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     public ResponseEntity<Void> options(HttpServletResponse response) {
         response.setHeader(HttpHeaders.ALLOW, Joiner.on(",").join(ImmutableList.of(GET, POST, PUT, DELETE)));
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(method = PUT, value = {"/manage/push"})
+    @Transactional
+    public void pushPolicyDefinitions(List<PdpPolicyDefinition> policyDefinitions) {
+        List<PdpPolicy> policies = policyDefinitions.stream().map(policyDefinition -> {
+            String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
+            Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml);
+            //If there are null's then something is wrong
+            Assert.notNull(parsedPolicy, "ParsedPolicy is not valid");
+            return new PdpPolicy(
+                    policyXml,
+                    policyDefinition.getName(),
+                    true,
+                    policyDefinition.getUserDisplayName(),
+                    policyDefinition.getAuthenticatingAuthorityName(),
+                    policyIdpAccessEnforcer.userDisplayName(),
+                    policyDefinition.isActive(),
+                    policyDefinition.getType());
+        }).collect(toList());
+        if (this.pushTestMode) {
+            List<PdpMigratedPolicy> migratedPolicies = policies.stream().map(PdpMigratedPolicy::new).collect(toList());
+            this.migratedPolicyRepository.deleteAll();
+            this.migratedPolicyRepository.saveAll(migratedPolicies);
+        } else {
+            //We will implement this later, for now only refresh
+            this.refreshPolicies();
+        }
+    }
+
+    @RequestMapping(method = GET, value = {"/manage/policies"})
+    public List<PdpPolicyDefinition> allPolicyDefinitions() {
+        return pdpPolicyRepository.findAll().stream()
+                .map(pdpPolicyDefinitionParser::parse)
+                .collect(toList());
     }
 
     @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})

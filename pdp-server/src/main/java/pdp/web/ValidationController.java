@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 
@@ -28,8 +29,8 @@ public class ValidationController implements IPAddressProvider {
     private final Map<String,Validator> validators;
 
     public ValidationController() {
-        this.validators = Arrays.asList(
-            new IPAddressValidator()).stream().collect(toMap(Validator::getType, Function.identity()));
+        this.validators = Stream.of(
+            new IPAddressValidator()).collect(toMap(Validator::getType, Function.identity()));
     }
 
 

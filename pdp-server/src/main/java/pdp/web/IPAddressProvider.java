@@ -1,6 +1,5 @@
 package pdp.web;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import pdp.ip.IPInfo;
 import pdp.util.CIDRUtils;
 
@@ -29,7 +28,7 @@ public interface IPAddressProvider {
         }
         int byteSize = isIpv4 ? 32 : 128;
         double capacity = Math.pow(2, byteSize - networkPrefix);
-        return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(),capacity, isIpv4, networkPrefix);
+        return new IPInfo(cidrUtils.getNetworkAddress(), cidrUtils.getBroadcastAddress(), capacity, isIpv4, networkPrefix);
     }
 
 }

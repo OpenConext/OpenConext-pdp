@@ -35,7 +35,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
             //null is how the contract for AbstractPreAuthenticatedProcessingFilter works
             return null;
         }
-        //Now we are certain a shib admin user is logged in and we can check if there is impersonation requested
+        //Now we are certain a shib admin user is logged in, and we can check if there is impersonation requested
         if (hasText(getHeader(X_IMPERSONATE, request))) {
             federatedUser = federatedUserBuilder.basicAuthUser(request, apiAuthorities);
         }
@@ -49,7 +49,7 @@ public class ShibbolethPreAuthenticatedProcessingFilter extends AbstractPreAuthe
 
     @Override
     protected boolean principalChanged(HttpServletRequest request, Authentication currentAuthentication) {
-        //the Javascript client has the functionality to impersonate an user. If this functionality is off then
+        //the Javascript client has the functionality to impersonate a user. If this functionality is off then
         //only need to check if the currentAuthentication is not a previous cached impersonation
         return hasText(getHeader(X_IMPERSONATE, request)) || currentAuthentication.getPrincipal() instanceof RunAsFederatedUser;
     }

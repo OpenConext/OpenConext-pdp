@@ -42,7 +42,8 @@ public class WebSecurityConfig {
         authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
         auth.authenticationProvider(authenticationProvider);
 
-        BasicAuthenticationProvider basicAuthenticationProvider = new BasicAuthenticationProvider(policyEnforcementPointUserName, policyEnforcementPointPassword);
+        BasicAuthenticationProvider basicAuthenticationProvider =
+                new BasicAuthenticationProvider(policyEnforcementPointUserName, policyEnforcementPointPassword);
         auth.authenticationProvider(basicAuthenticationProvider);
 
     }
@@ -95,7 +96,7 @@ public class WebSecurityConfig {
     }
 
     @Configuration
-    @Order
+    @Order(3)
     public static class ApiSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
 
         @Autowired
@@ -113,7 +114,7 @@ public class WebSecurityConfig {
                             BasicAuthenticationFilter.class
                     )
                     .authorizeRequests()
-                    .antMatchers("/protected/**", "/decide/policy")
+                    .antMatchers("/protected/**", "/decide/policy", "/manage/**")
                     .hasAnyRole("PEP", "ADMIN");
         }
 
