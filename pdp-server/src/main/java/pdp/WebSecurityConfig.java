@@ -37,7 +37,7 @@ public class WebSecurityConfig {
     private String policyEnforcementPointPassword;
 
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configureGlobal(AuthenticationManagerBuilder auth) {
         PreAuthenticatedAuthenticationProvider authenticationProvider = new PreAuthenticatedAuthenticationProvider();
         authenticationProvider.setPreAuthenticatedUserDetailsService(new ShibbolethUserDetailService());
         auth.authenticationProvider(authenticationProvider);
