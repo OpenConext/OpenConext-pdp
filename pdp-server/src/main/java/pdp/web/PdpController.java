@@ -207,7 +207,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     @RequestMapping(method = PUT, value = {"/manage/push"})
     @Transactional
-    public void pushPolicyDefinitions(List<PdpPolicyDefinition> policyDefinitions) {
+    public void pushPolicyDefinitions(@RequestBody List<PdpPolicyDefinition> policyDefinitions) {
         List<PdpPolicy> policies = policyDefinitions.stream().map(policyDefinition -> {
             String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
             Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml);

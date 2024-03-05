@@ -70,7 +70,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
             parseDeny(policyXml, definition, rules);
 
             //we need to sort to get a consistent attribute list for testing - run-time it makes no difference
-            Collections.sort(definition.getAttributes(), (a1, a2) -> a1.getName().compareTo(a2.getName()));
+            Collections.sort(definition.getAttributes(), Comparator.comparing(PdpAttribute::getName));
         }
 
         return definition;

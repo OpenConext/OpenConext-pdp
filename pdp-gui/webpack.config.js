@@ -75,7 +75,7 @@ module.exports = {
                     return pathname.match("^/pdp");
                 },
                 target: {
-                    port: 8080
+                    port: 8081
                 }
             }
         ]
