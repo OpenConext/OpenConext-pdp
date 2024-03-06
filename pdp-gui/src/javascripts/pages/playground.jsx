@@ -217,12 +217,14 @@ class Playground extends React.Component {
 
     renderAttributes(pdpRequest) {
         //we need state changes from the child component
-        return (<PolicyAttributes
-            policy={pdpRequest}
-            negateAttributes={false}
-            allowedAttributes={this.state.allowedSamlAttributes}
-            setAttributeState={this.setAttributeState.bind(this)}
-            css="split"/>);
+        return (
+            <PolicyAttributes policy={pdpRequest}
+                              negateAttributes={false}
+                              allowedAttributes={this.state.allowedSamlAttributes}
+                              setAttributeState={this.setAttributeState.bind(this)}
+                              css={"split"}
+            />
+        );
     }
 
     renderStatus(responseJSON) {

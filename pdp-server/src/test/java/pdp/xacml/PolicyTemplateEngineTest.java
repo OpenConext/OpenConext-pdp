@@ -18,7 +18,7 @@ public class PolicyTemplateEngineTest extends AbstractXacmlTest {
 
     private PdpPolicyDefinition policyDefinition() {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
-        definition.setId(1L);
+        definition.setId("1");
         definition.setName("Name Instelling");
         definition.setDescription("The long description");
         definition.setDenyAdvice("Sorry, no access");

@@ -32,7 +32,7 @@ import static java.util.stream.Collectors.groupingBy;
 @ToString
 public class PdpPolicyDefinition {
 
-    private Long id;
+    private String id;
 
     @NotNull
     @Size(min = 1)

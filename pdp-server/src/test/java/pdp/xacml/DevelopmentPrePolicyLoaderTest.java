@@ -17,9 +17,9 @@ import static org.mockito.Mockito.mock;
 
 public class DevelopmentPrePolicyLoaderTest {
 
-    private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
+    private final DevelopmentPrePolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
-    private Pattern policyIdPattern = Pattern.compile("PolicyId=\"(.*?)\"");
+    private final Pattern policyIdPattern = Pattern.compile("PolicyId=\"(.*?)\"");
 
     @Test
     public void testGetPoliciesWithCorrectPolicyId() throws Exception {

@@ -225,7 +225,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         }).collect(toList());
         if (this.pushTestMode) {
             List<PdpMigratedPolicy> migratedPolicies = policies.stream().map(PdpMigratedPolicy::new).collect(toList());
-            this.migratedPolicyRepository.deleteAll();
+            this.migratedPolicyRepository.deleteAllFlush();
             this.migratedPolicyRepository.saveAll(migratedPolicies);
         } else {
             //We will implement this later, for now only refresh
@@ -259,7 +259,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
         List<Object[]> revisionCountPerId = pdpPolicyRepository.findRevisionCountPerId();
         Map<Number, Number> revisionCountPerIdMap = revisionCountPerId.stream().collect(toMap((obj) -> (Number) obj[0], (obj) -> (Number) obj[1]));
-        policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId().intValue(), 0).intValue()));
+        policies.forEach(policy -> policy.setNumberOfRevisions(revisionCountPerIdMap.getOrDefault(policy.getId(), 0).intValue()));
 
         return policyIdpAccessEnforcer.filterPdpPolicies(policies);
     }
@@ -295,7 +295,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
         PdpPolicy policy;
         if (pdpPolicyDefinition.getId() != null) {
-            PdpPolicy fromDB = findPolicyById(pdpPolicyDefinition.getId(), WRITE);
+            PdpPolicy fromDB = findPolicyById(Long.parseLong(pdpPolicyDefinition.getId()) , WRITE);
             policy = fromDB.getParentPolicy() != null ? fromDB.getParentPolicy() : fromDB;
             //Cascade.ALL
             PdpPolicy.revision(pdpPolicyDefinition.getName(), policy, policyXml, policyIdpAccessEnforcer.username(),

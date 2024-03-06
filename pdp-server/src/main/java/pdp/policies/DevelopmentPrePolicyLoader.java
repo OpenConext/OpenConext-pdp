@@ -32,7 +32,8 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
     private final PdpPolicyRepository pdpPolicyRepository;
     private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
 
-    public DevelopmentPrePolicyLoader(Resource baseDirResource, PdpPolicyRepository pdpPolicyRepository,
+    public DevelopmentPrePolicyLoader(Resource baseDirResource,
+                                      PdpPolicyRepository pdpPolicyRepository,
                                       PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         this.pdpPolicyRepository = pdpPolicyRepository;
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
@@ -62,7 +63,7 @@ public class DevelopmentPrePolicyLoader implements PolicyLoader {
     }
 
     private PdpPolicy createPdpPolicy(String xml, String fileName) {
-        String name = fileNameToPolicyName(fileName);
+        String name = fileNameToPolicyName(fileName).trim();
         xml = xml.replaceFirst("PolicyId=\".*\"", "PolicyId=\"" + getPolicyId(name) + "\"");
         return new PdpPolicy(xml, name, true, userIdentifier, authenticatingAuthority, userDisplayName, true, "reg");
     }
