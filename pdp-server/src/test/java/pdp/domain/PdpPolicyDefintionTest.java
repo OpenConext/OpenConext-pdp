@@ -20,13 +20,13 @@ public class PdpPolicyDefintionTest extends AbstractXacmlTest {
 
     private final PolicyTemplateEngine templateEngine = new PolicyTemplateEngine();
     private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
-    private PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
+    private final PolicyLoader policyLoader = new DevelopmentPrePolicyLoader(new ClassPathResource("xacml/policies"), mock(PdpPolicyRepository.class), mock(PdpPolicyViolationRepository.class));
 
 
     @Test
     public void fromPolicyXml() throws Exception {
     /*
-     * We need to check if we construct a PdpPolicyDefinition based on a XML policy and then re-create
+     * We need to check if we construct a PdpPolicyDefinition based on an XML policy and then re-create
      * the XML policy from the PdpPolicyDefinition using the PolicyTemplateEngine and then revert it
      * back to the PdPPolicyDefinition again the output is the same as the input
      */

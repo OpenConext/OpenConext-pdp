@@ -68,7 +68,7 @@ public class PdpPolicyDefinition {
 
     private boolean allAttributesMustMatch;
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Date created;
 
     private String userDisplayName;
@@ -109,6 +109,26 @@ public class PdpPolicyDefinition {
         return this.identityProviderIds != null && !this.identityProviderIds.isEmpty();
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PdpPolicyDefinition that = (PdpPolicyDefinition) o;
+        return Objects.equals(denyRule, that.denyRule) &&
+                Objects.equals(allAttributesMustMatch, that.allAttributesMustMatch) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(serviceProviderIds, that.serviceProviderIds) &&
+                Objects.equals(identityProviderIds, that.identityProviderIds) &&
+                Objects.equals(attributes, that.attributes) &&
+                Objects.equals(denyAdvice, that.denyAdvice) &&
+                Objects.equals(denyAdviceNl, that.denyAdviceNl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, serviceProviderIds, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
+    }
 
     public static PdpPolicyDefinition policyDefinition(List<String> serviceProviderIds, List<String> identityProvidersIds) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();

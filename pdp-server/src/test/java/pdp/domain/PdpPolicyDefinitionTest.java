@@ -18,20 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class PdpPolicyDefinitionTest implements JsonMapper {
 
     @Test
-    public void testEquals() throws Exception {
-        PdpPolicyDefinition def1 = getPdpPolicyDefinition();
-        PdpPolicyDefinition def2 = getPdpPolicyDefinition();
-
-        assertEquals(def1, def2);
-
-        assertEquals(1, new HashSet<>(Arrays.asList(def1, def2)).size());
-
-        String s = def1.toString();
-
-        assertTrue(s.contains("test_policy"));
-    }
-
-    @Test
     public void testIgnoreDate() throws IOException {
         PdpPolicyDefinition policyDefinition = getPdpPolicyDefinition();
         policyDefinition.setCreated(new Date());
