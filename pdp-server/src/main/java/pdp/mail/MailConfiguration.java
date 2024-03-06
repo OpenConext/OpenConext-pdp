@@ -19,7 +19,7 @@ public class MailConfiguration {
     private String emailTo;
 
     @Bean
-    @Profile({"test", "acc", "prod", "mail"})
+    @Profile({"docker", "test", "acc", "prod", "mail"})
     public MailBox mailSenderProd() {
         return new DefaultMailBox(baseUrl, emailTo, emailFrom);
     }

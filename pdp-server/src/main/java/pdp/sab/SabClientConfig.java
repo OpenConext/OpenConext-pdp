@@ -15,7 +15,7 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 public class SabClientConfig {
 
     @Bean
-    @Profile({"test", "acc", "prod"})
+    @Profile({"docker", "test", "acc", "prod"})
     public SabClient sabClient(@Value("${sab.userName}") String userName,
                                @Value("${sab.password}") String password,
                                @Value("${sab.endpoint}") String endpoint) {
