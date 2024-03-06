@@ -3,6 +3,9 @@ package pdp.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.springframework.util.CollectionUtils;
 import pdp.xacml.PolicyTemplateEngine;
 
@@ -24,6 +27,9 @@ import static java.util.stream.Collectors.groupingBy;
 
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
+@ToString
 public class PdpPolicyDefinition {
 
     private Long id;
@@ -87,228 +93,6 @@ public class PdpPolicyDefinition {
 
     private Long parentId;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<String> getIdentityProviderIds() {
-        return identityProviderIds;
-    }
-
-    public void setIdentityProviderIds(List<String> identityProviderIds) {
-        this.identityProviderIds = identityProviderIds;
-    }
-
-    public List<PdpAttribute> getAttributes() {
-        return attributes;
-    }
-
-    public void setAttributes(List<PdpAttribute> attributes) {
-        this.attributes = attributes;
-    }
-
-    public List<LoA> getLoas() {
-        return loas;
-    }
-
-    public void setLoas(List<LoA> loas) {
-        this.loas = loas;
-    }
-
-    public String getDenyAdvice() {
-        return denyAdvice;
-    }
-
-    public void setDenyAdvice(String denyAdvice) {
-        this.denyAdvice = denyAdvice;
-    }
-
-    public boolean isDenyRule() {
-        return denyRule;
-    }
-
-    public void setDenyRule(boolean denyRule) {
-        this.denyRule = denyRule;
-    }
-
-    public boolean isAllAttributesMustMatch() {
-        return allAttributesMustMatch;
-    }
-
-    public void setAllAttributesMustMatch(boolean allAttributesMustMatch) {
-        this.allAttributesMustMatch = allAttributesMustMatch;
-    }
-
-    public String getPolicyId() {
-        return PolicyTemplateEngine.getPolicyId(name);
-    }
-
-    public List<String> getServiceProviderNames() {
-        return serviceProviderNames;
-    }
-
-    public List<String> getServiceProviderIds() {
-        return serviceProviderIds;
-    }
-
-    public void setServiceProviderIds(List<String> serviceProviderIds) {
-        this.serviceProviderIds = serviceProviderIds;
-    }
-
-    public void setServiceProviderNames(List<String> serviceProviderNames) {
-        this.serviceProviderNames = serviceProviderNames;
-    }
-
-    public boolean isServiceProviderInvalidOrMissing() {
-        return serviceProviderInvalidOrMissing;
-    }
-
-    public void setServiceProviderInvalidOrMissing(boolean serviceProviderInvalidOrMissing) {
-        this.serviceProviderInvalidOrMissing = serviceProviderInvalidOrMissing;
-    }
-
-    public List<String> getIdentityProviderNames() {
-        return identityProviderNames;
-    }
-
-    public void setIdentityProviderNames(List<String> identityProviderNames) {
-        this.identityProviderNames = identityProviderNames;
-    }
-
-    public List<String> getIdentityProviderNamesNl() {
-        return identityProviderNamesNl;
-    }
-
-    public void setIdentityProviderNamesNl(List<String> identityProviderNamesNl) {
-        this.identityProviderNamesNl = identityProviderNamesNl;
-    }
-
-    public int getNumberOfViolations() {
-        return numberOfViolations;
-    }
-
-    public void setNumberOfViolations(int numberOfViolations) {
-        this.numberOfViolations = numberOfViolations;
-    }
-
-    public void setDenyAdviceNl(String denyAdviceNl) {
-        this.denyAdviceNl = denyAdviceNl;
-    }
-
-    public String getDenyAdviceNl() {
-        return denyAdviceNl;
-    }
-
-    public int getNumberOfRevisions() {
-        return numberOfRevisions;
-    }
-
-    public void setNumberOfRevisions(int numberOfRevisions) {
-        this.numberOfRevisions = numberOfRevisions;
-    }
-
-    public String getClientId() {
-        return clientId;
-    }
-
-    public void setClientId(String clientId) {
-        this.clientId = clientId;
-    }
-
-    @JsonProperty
-    public Date getCreated() {
-        return created;
-    }
-
-    @JsonIgnore
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getUserDisplayName() {
-        return userDisplayName;
-    }
-
-    public void setUserDisplayName(String userDisplayName) {
-        this.userDisplayName = userDisplayName;
-    }
-
-    public void setRevisionNbr(int revisionNbr) {
-        this.revisionNbr = revisionNbr;
-    }
-
-    public int getRevisionNbr() {
-        return revisionNbr;
-    }
-
-    public boolean isActivatedSr() {
-        return isActivatedSr;
-    }
-
-    public void setActivatedSr(boolean activatedSr) {
-        isActivatedSr = activatedSr;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isActionsAllowed() {
-        return actionsAllowed;
-    }
-
-    public void setActionsAllowed(boolean actionsAllowed) {
-        this.actionsAllowed = actionsAllowed;
-    }
-
-    public String getAuthenticatingAuthorityName() {
-        return authenticatingAuthorityName;
-    }
-
-    public void setAuthenticatingAuthorityName(String authenticatingAuthorityName) {
-        this.authenticatingAuthorityName = authenticatingAuthorityName;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public Long getParentId() {
-        return parentId;
-    }
-
-    public void setParentId(Long parentId) {
-        this.parentId = parentId;
-    }
-
     //used in the mustache templates
     @JsonIgnore
     public List<String> anyIdentityProviders() {
@@ -325,41 +109,6 @@ public class PdpPolicyDefinition {
         return this.identityProviderIds != null && !this.identityProviderIds.isEmpty();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PdpPolicyDefinition that = (PdpPolicyDefinition) o;
-        return Objects.equals(denyRule, that.denyRule) &&
-            Objects.equals(allAttributesMustMatch, that.allAttributesMustMatch) &&
-            Objects.equals(name, that.name) &&
-            Objects.equals(description, that.description) &&
-            Objects.equals(serviceProviderIds, that.serviceProviderIds) &&
-            Objects.equals(identityProviderIds, that.identityProviderIds) &&
-            Objects.equals(attributes, that.attributes) &&
-            Objects.equals(denyAdvice, that.denyAdvice) &&
-            Objects.equals(denyAdviceNl, that.denyAdviceNl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, serviceProviderIds, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
-    }
-
-    @Override
-    public String toString() {
-        return "PdpPolicyDefinition{" + "\n" +
-            "name='" + name + '\'' + "\n" +
-            ", description='" + description + '\'' + "\n" +
-            ", serviceProviderId='" + serviceProviderIds + '\'' + "\n" +
-            ", identityProviderIds=" + identityProviderIds + "\n" +
-            ", attributes=" + attributes + "\n" +
-            ", denyAdvice='" + denyAdvice + '\'' + "\n" +
-            ", denyAdviceNl='" + denyAdviceNl + '\'' + "\n" +
-            ", denyRule=" + denyRule + "\n" +
-            ", allAttributesMustMatch=" + allAttributesMustMatch + "\n" +
-            '}';
-    }
 
     public static PdpPolicyDefinition policyDefinition(List<String> serviceProviderIds, List<String> identityProvidersIds) {
         PdpPolicyDefinition definition = new PdpPolicyDefinition();
@@ -375,11 +124,4 @@ public class PdpPolicyDefinition {
         Collections.sort(this.loas, Comparator.comparing(LoA::getLevel).reversed());
     }
 
-    public List<String> getServiceProviderNamesNl() {
-        return serviceProviderNamesNl;
-    }
-
-    public void setServiceProviderNamesNl(List<String> serviceProviderNamesNl) {
-        this.serviceProviderNamesNl = serviceProviderNamesNl;
-    }
 }

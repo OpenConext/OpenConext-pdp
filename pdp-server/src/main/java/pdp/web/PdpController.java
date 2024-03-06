@@ -219,7 +219,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                     true,
                     policyDefinition.getUserDisplayName(),
                     policyDefinition.getAuthenticatingAuthorityName(),
-                    policyIdpAccessEnforcer.userDisplayName(),
+                    "manage",
                     policyDefinition.isActive(),
                     policyDefinition.getType());
         }).collect(toList());
