@@ -19,14 +19,16 @@ public class PolicyTemplateEngine {
 
     private final MustacheFactory mf = new DefaultMustacheFactory();
 
-    public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefintion) {
-        String type = pdpPolicyDefintion.getType();
-        pdpPolicyDefintion.sortLoas();
+    public String createPolicyXml(PdpPolicyDefinition pdpPolicyDefinition) {
+        String type = pdpPolicyDefinition.getType();
+        pdpPolicyDefinition.sortLoas();
+        pdpPolicyDefinition.sortAttributes();
+        pdpPolicyDefinition.setPolicyId(PolicyTemplateEngine.getPolicyId(pdpPolicyDefinition.getName()));
         String template = type.equals("step") ? "templates/policy-definition-step.xml" : "templates/policy-definition.xml";
         Mustache mustache = mf.compile(template);
         StringWriter writer = new StringWriter();
         try {
-            mustache.execute(writer, pdpPolicyDefintion).flush();
+            mustache.execute(writer, pdpPolicyDefinition).flush();
             String policyXml = writer.toString();
 
             LOG.debug("Returning policyXml {}", policyXml);

@@ -38,7 +38,7 @@ class Playground extends React.Component {
     handleChangePolicy(newValue) {
         if (newValue) {
             const policy = this.state.policies.filter(policy => {
-                return policy.id === parseInt(newValue);
+                return parseInt(policy.id) === parseInt(newValue);
             })[0];
             const idp = policy.identityProviderIds && policy.identityProviderIds.length > 0 ?
                 policy.identityProviderIds[0] : null;

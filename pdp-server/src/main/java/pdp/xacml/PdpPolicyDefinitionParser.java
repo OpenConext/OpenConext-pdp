@@ -45,6 +45,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
         Long id = pdpPolicy.getId();
         definition.setId(id != null ? id.toString() : null);
         definition.setName(pdpPolicy.getName());
+        definition.setPolicyId(pdpPolicy.getPolicyId());
         definition.setDescription(policy.getDescription());
         definition.setCreated(pdpPolicy.getCreated());
         definition.setUserDisplayName(pdpPolicy.getUserDisplayName());

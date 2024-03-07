@@ -235,14 +235,16 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     @RequestMapping(method = GET, value = {"/manage/policies"})
     public List<PdpPolicyDefinition> allPolicyDefinitions() {
-        return pdpPolicyRepository.findAll().stream()
+        List<PdpPolicy> pdpPolicies = pdpPolicyRepository.findAll();
+        return pdpPolicies.stream()
                 .map(pdpPolicyDefinitionParser::parse)
                 .collect(toList());
     }
 
     @RequestMapping(method = GET, value = {"/internal/policies", "/protected/policies"})
     public List<PdpPolicyDefinition> policyDefinitions() {
-        List<PdpPolicyDefinition> policies = pdpPolicyRepository.findAll().stream()
+        List<PdpPolicy> pdpPolicies = pdpPolicyRepository.findAll();
+        List<PdpPolicyDefinition> policies = pdpPolicies.stream()
                 .map(policy -> {
                     PdpPolicyDefinition pdpPolicyDefinition = pdpPolicyDefinitionParser.parse(policy);
                     return addAccessRules(policy, pdpPolicyDefinition);

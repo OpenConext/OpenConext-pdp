@@ -34,6 +34,8 @@ public class PdpPolicyDefinition {
 
     private String id;
 
+    private String policyId;
+
     @NotNull
     @Size(min = 1)
     private String name;
@@ -142,6 +144,11 @@ public class PdpPolicyDefinition {
     @JsonIgnore
     public void sortLoas() {
         Collections.sort(this.loas, Comparator.comparing(LoA::getLevel).reversed());
+    }
+
+    @JsonIgnore
+    public void sortAttributes() {
+        Collections.sort(this.attributes, Comparator.comparing(PdpAttribute::getName));
     }
 
 }

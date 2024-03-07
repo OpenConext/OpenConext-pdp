@@ -8,15 +8,15 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 public class ManageConfiguration {
 
-    @Bean
-    @Profile({"dev", "local", "no-csrf", "perf", "mail"})
-    public Manage classPathResourceManage() {
-        return new ClassPathResourceManage();
-    }
+//    @Bean
+//    @Profile({"dev", "local", "no-csrf", "perf", "mail"})
+//    public Manage classPathResourceManage() {
+//        return new ClassPathResourceManage();
+//    }
 
 
     @Bean
-    @Profile({"test", "acc", "prod"})
+//    @Profile({"test", "acc", "prod"})
     public Manage urlResourceManage(
         @Value("${manage.username}") String username,
         @Value("${manage.password}") String password,
