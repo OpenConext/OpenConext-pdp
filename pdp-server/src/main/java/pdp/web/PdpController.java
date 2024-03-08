@@ -135,6 +135,11 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         return doDecide(payload, true);
     }
 
+    @RequestMapping(method = RequestMethod.POST, value =  "/manage/decide")
+    public String decideManage(@RequestBody String payload) throws Exception {
+        return doDecide(payload, true);
+    }
+
     private String doDecide(String payload, boolean isPlayground) throws Exception {
         StatsContext stats = StatsContextHolder.getContext();
 
