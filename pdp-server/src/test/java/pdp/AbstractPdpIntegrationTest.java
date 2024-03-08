@@ -57,8 +57,8 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AbstractPdpIntegrationTest implements JsonMapper {
 
-    protected static final String policyId = "urn:surfconext:xacml:policy:id:_open_conextpdp_single_attribute";
-    protected static final String policyIdToDelete = "urn:surfconext:xacml:policy:id:_open_conextpdp_deny_rule_policy_empty_permit";
+    protected static final String policyId = "urn:surfconext:xacml:policy:id:open_conextpdp_single_attribute";
+    protected static final String policyIdToDelete = "urn:surfconext:xacml:policy:id:open_conextpdp_deny_rule_policy_empty_permit";
 
     @Autowired
     protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
