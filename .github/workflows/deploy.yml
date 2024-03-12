@@ -98,6 +98,8 @@ jobs:
             latest=false
           tags: |
             type=ref,event=tag
+            type=raw,event=tag,value=latest
+            type=raw,event=workflow_dispatch,value=snapshot
             type=semver,pattern={{version}},value=${{ steps.versioncheck.outputs.version }}
             type=sha
 
@@ -110,6 +112,8 @@ jobs:
             latest=false
           tags: |
             type=ref,event=tag
+            type=raw,event=tag,value=latest
+            type=raw,event=workflow_dispatch,value=snapshot
             type=semver,pattern={{version}},value=${{ steps.versioncheck.outputs.version }}
             type=sha
 
