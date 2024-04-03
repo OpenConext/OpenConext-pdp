@@ -33,7 +33,7 @@ public class VootClientConfig {
     private String vootServiceUrl;
 
     @Bean
-    @Profile({"test", "acc", "prod"})
+    @Profile({"devconf", "test", "acc", "prod"})
     public VootClient vootClient() {
         return new VootClient(vootRestTemplate(), vootServiceUrl);
     }

@@ -35,7 +35,7 @@ public class PolicyLoaderConfiguration {
 
     @Bean
     @Autowired
-    @Profile({"local", "test", "acc", "prod", "mail"})
+    @Profile({"local", "devconf", "test", "acc", "prod", "mail"})
     public PolicyLoader noopPolicyLoader() {
         return new NoopPrePolicyLoader();
     }

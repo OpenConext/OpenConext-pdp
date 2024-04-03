@@ -16,7 +16,7 @@ public class ManageConfiguration {
 
 
     @Bean
-    @Profile({"test", "acc", "prod"})
+    @Profile({"devconf", "test", "acc", "prod"})
     public Manage urlResourceManage(
         @Value("${manage.username}") String username,
         @Value("${manage.password}") String password,
