@@ -35,6 +35,7 @@ import pdp.mail.MailBox;
 import pdp.manage.Manage;
 import pdp.policies.PolicyMissingServiceProviderValidator;
 import pdp.repositories.PdpMigratedPolicyRepository;
+import pdp.repositories.PdpPolicyPushVersionRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.stats.StatsContext;
@@ -51,6 +52,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -87,9 +89,11 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final ReentrantLock lock = new ReentrantLock();
     private final boolean pushTestMode;
     private final PdpMigratedPolicyRepository migratedPolicyRepository;
+    private final PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository;
 
     // Can't be final as we need to swap this reference for reloading policies in production
     private volatile PDPEngine pdpEngine;
+    private final AtomicLong policiesPushVersion = new AtomicLong();
 
     @Autowired
     public PdpController(@Value("${period.policies.refresh.minutes}") int period,
@@ -102,7 +106,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                          PDPEngineHolder pdpEngineHolder,
                          Manage manage,
                          MailBox mailBox,
-                         PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator) {
+                         PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator,
+                         PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository) {
         this.cachePolicies = cachePolicies;
         this.pushTestMode = pushTestMode;
         this.loaLevels = Stream.of(loaLevelsCommaSeparated.split(",")).map(String::trim).collect(toList());
@@ -115,17 +120,24 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         this.manage = manage;
         this.mailBox = mailBox;
         this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
+        this.pdpPolicyPushVersionRepository = pdpPolicyPushVersionRepository;
+        this.policiesPushVersion.set(pdpPolicyPushVersionRepository.findById(1L).get().getVersion());
 
-        if (cachePolicies) {
+        if (cachePolicies && pushTestMode) {
             Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
                     TaskUtils.decorateTaskWithErrorHandler(this::refreshPolicies, t -> LOG.error("Exception in refreshPolicies task", t), true),
                     period, period, TimeUnit.MINUTES);
-
         }
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
     public String decide(@RequestBody String payload) throws Exception {
+        if (!pushTestMode) {
+            Long currentPoliciesPushVersion = pdpPolicyPushVersionRepository.findById(1L).get().getVersion();
+            if (currentPoliciesPushVersion != this.policiesPushVersion.get()) {
+                refreshPolicies();
+            }
+        }
         return doDecide(payload, false);
     }
 
@@ -233,8 +245,12 @@ public class PdpController implements JsonMapper, IPAddressProvider {
             this.migratedPolicyRepository.deleteAllFlush();
             this.migratedPolicyRepository.saveAll(migratedPolicies);
         } else {
-            //We will implement this later, for now only refresh
-            this.refreshPolicies();
+            //Refresh, but also increment the counter so other instances will refresh also
+            pdpPolicyRepository.deleteAll();
+            pdpPolicyRepository.saveAll(policies);
+            this.pdpPolicyPushVersionRepository.incrementVersion();
+            this.policiesPushVersion.incrementAndGet();
+
         }
     }
 
