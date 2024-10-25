@@ -47,7 +47,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
                                               VootClient vootClient,
                                               SabClient sabClient,
                                               boolean cachePolicies,
-                                              boolean includeInactivePolicies) throws IOException {
+                                              boolean includeInactivePolicies) {
         this.pdpPolicyRepository = pdpPolicyRepository;
         this.cachePolicies = cachePolicies;
         this.includeInactivePolicies = includeInactivePolicies;
