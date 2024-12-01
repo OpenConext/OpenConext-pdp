@@ -59,7 +59,7 @@
     "uglifyjs-webpack-plugin": "^0.4.3",
     "url-loader": "0.5.7",
     "webpack": "1.13.2",
-    "webpack-dev-server": "1.16.1",
+    "webpack-dev-server": "5.0.4",
     "braces": ">=2.3.1",
     "clean-css": ">=4.1.11",
     "js-yaml": ">=3.13.1",
