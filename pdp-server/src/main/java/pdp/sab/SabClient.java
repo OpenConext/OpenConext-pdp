@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -35,15 +36,23 @@ public class SabClient {
 
     @SuppressWarnings("unchecked")
     public List<String> roles(String userId) {
-        LOG.debug("Starting to fetch SAB roles for {} from {}", userId, sabRestEndpoint);
         String[] splitted = userId.split(":");
         if (splitted.length < 3) {
             throw new IllegalArgumentException(String.format("Illegal userId. Not a valid unspecified %s", userId));
         }
         String uid = splitted[splitted.length - 1];
-        String schacHome = splitted[splitted.length - 2];
+        String idp = splitted[splitted.length - 2];
 
-        Map result = this.restTemplate.getForObject(sabRestEndpoint, Map.class, uid, schacHome);
+        LOG.debug("Starting to fetch SAB roles for schacHome {} for uid {} using templateURI {}",
+                idp, userId, sabRestEndpoint);
+        Map result;
+        try {
+            result = this.restTemplate.getForObject(sabRestEndpoint, Map.class, uid, idp);
+        } catch (RestClientException e) {
+            LOG.error("Error from restTemplate in SabClient", e);
+            throw e;
+        }
+
         if (result == null || !result.containsKey("message") || !result.get("message").equals("OK")) {
             LOG.warn("Error from SAB roles for {} from {}. Returning empty List", userId, sabRestEndpoint);
             return emptyList();
