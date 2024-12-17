@@ -36,10 +36,6 @@
         {
           "short": "SUP",
           "role": "Superuser"
-        },
-        {
-          "short": "IBV",
-          "role": "Instellingsbevoegde"
         }
       ]
     }

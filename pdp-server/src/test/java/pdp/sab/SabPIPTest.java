@@ -10,18 +10,18 @@ public class SabPIPTest {
     private SabPIP sabPIP;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         sabPIP = new SabPIP();
         sabPIP.setSabClient(new SabClientConfig().sabClient("userName", "password", "http://nope"));
     }
 
     @Test
-    public void testGetDescription() throws Exception {
+    public void testGetDescription() {
         assertEquals("Sab Policy Information Point", sabPIP.getDescription());
     }
 
     @Test(expected = RuntimeException.class)
-    public void testGetAttributes() throws Exception {
+    public void testGetAttributes() {
         sabPIP.getAttributes("urn");
     }
 }
