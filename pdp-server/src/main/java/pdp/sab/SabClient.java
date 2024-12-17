@@ -17,8 +17,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.ByteArrayInputStream;
@@ -26,78 +28,68 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.toList;
 
 public class SabClient {
 
     private final static Logger LOG = LoggerFactory.getLogger(SabClient.class);
 
-    private static final DateTimeFormatter dateTimeFormatter = ISODateTimeFormat.dateTimeNoMillis().withZone
-        (DateTimeZone.UTC);
-
-    private final String sabUserName;
-    private final String sabPassword;
-    private final String sabEndpoint;
+    private final String sabRestEndpoint;
 
     private final RestTemplate restTemplate;
-    private final String template;
-
-    private final SabResponseParser parser = new SabResponseParser();
 
     public SabClient(String sabUserName, String sabPassword, String sabEndpoint) {
-        this.sabUserName = sabUserName;
-        this.sabPassword = sabPassword;
-        this.sabEndpoint = sabEndpoint;
-
-        try {
-            this.template = IOUtils.toString(new ClassPathResource("sab/request.xml").getInputStream(), Charset
-                .defaultCharset());
-            this.restTemplate = new RestTemplate(asList(new ByteArrayHttpMessageConverter(), new
-                StringHttpMessageConverter()));
-            this.restTemplate.setRequestFactory(getRequestFactory());
-        } catch (IOException e) {
-            //fail fast
-            throw new RuntimeException(e);
+        if (!sabEndpoint.endsWith("/")) {
+            sabEndpoint += "/";
         }
+        sabEndpoint += "api/profile?uid={uid}&idp={idp}";
+        this.sabRestEndpoint = sabEndpoint;
+
+        this.restTemplate = new RestTemplate();
+        this.restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(
+                sabUserName, sabPassword
+        ));
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> roles(String userId) {
-        String request = request(userId);
-        ResponseEntity<byte[]> response = restTemplate.exchange(sabEndpoint, HttpMethod.POST, new HttpEntity<>
-            (request), byte[].class);
-        try {
-            List<String> roles = parser.parse(new ByteArrayInputStream(response.getBody()));
-            LOG.debug("Retrieved SAB roles with request: {} and response: {}", request, response);
-            return roles;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        LOG.debug("Starting to fetch SAB roles for {} from {}", userId, sabRestEndpoint);
+        String[] splitted = userId.split(":");
+        if (splitted.length < 3) {
+            throw new IllegalArgumentException(String.format("Illegal userId. Not a valid unspecified %s", userId));
         }
+        String uid = splitted[splitted.length -1 ];
+        String schacHome = splitted[splitted.length -2 ];
+
+        Map result = this.restTemplate.getForObject(sabRestEndpoint, Map.class, uid, schacHome);
+        if (result == null || !result.containsKey("message") || !result.get("message").equals("OK")) {
+            LOG.warn("Error from SAB roles for {} from {}. Returning empty List", userId, sabRestEndpoint);
+            return emptyList();
+        }
+        List<Map<String, Object>> profiles = (List<Map<String, Object>>) result.get("profiles");
+        if (CollectionUtils.isEmpty(profiles)) {
+            return emptyList();
+        }
+        Map<String, Object> profile = profiles.get(0);
+        return getAuthorisationEntitlements(profile);
     }
 
-
-    private String request(String userId) {
-        String issueInstant = dateTimeFormatter.print(System.currentTimeMillis());
-        return MessageFormat.format(template, UUID.randomUUID().toString(), issueInstant, userId);
-    }
-
-    //lot of code to prevent preemptive authentication
-    private ClientHttpRequestFactory getRequestFactory() throws MalformedURLException {
-        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().evictExpiredConnections()
-            .evictIdleConnections(10L, TimeUnit.SECONDS);
-        BasicCredentialsProvider basicCredentialsProvider = new BasicCredentialsProvider();
-        basicCredentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(sabUserName,
-            sabPassword));
-        httpClientBuilder.setDefaultCredentialsProvider(basicCredentialsProvider);
-        int timeOut = 1000 * 10;
-        httpClientBuilder.setDefaultRequestConfig(RequestConfig.custom().setConnectionRequestTimeout(timeOut)
-            .setConnectTimeout(timeOut).setSocketTimeout(timeOut).build());
-
-        CloseableHttpClient httpClient = httpClientBuilder.build();
-        return new PreemptiveAuthenticationHttpComponentsClientHttpRequestFactory(httpClient, sabEndpoint);
+    private List<String> getAuthorisationEntitlements(Map<String, Object> profile) {
+        if (profile.containsKey("authorisations")) {
+            List<Map<String, String>> authorisations = (List<Map<String, String>>) profile.get("authorisations");
+            return authorisations.stream()
+                    .map(m -> "urn:mace:surfnet.nl:surfnet.nl:sab:role:" + m.get("role"))
+                    .collect(toList());
+        }
+        return new ArrayList<>();
     }
 
 }

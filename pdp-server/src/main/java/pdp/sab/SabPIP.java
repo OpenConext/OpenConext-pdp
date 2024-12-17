@@ -2,12 +2,14 @@ package pdp.sab;
 
 import pdp.xacml.AbstractConfigurableEngine;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class SabPIP extends AbstractConfigurableEngine implements SabClientAware {
 
     public static final String SAB_URN = "urn:collab:sab:surfnet.nl";
+
     private SabClient sabClient;
 
     @Override
@@ -27,7 +29,7 @@ public class SabPIP extends AbstractConfigurableEngine implements SabClientAware
 
     @Override
     protected List<Object> getAttributes(String userUrn) {
-        return getSabClient().roles(userUrn).stream().collect(Collectors.toList());
+        return new ArrayList<>(getSabClient().roles(userUrn));
     }
 
     public SabClient getSabClient() {
