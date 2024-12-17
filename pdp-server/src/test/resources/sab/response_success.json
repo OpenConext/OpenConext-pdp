@@ -1,0 +1,43 @@
+{
+  "message": "OK",
+  "code": 0,
+  "profiles": [
+    {
+      "firstname": "Henny",
+      "middlename": "",
+      "surname": "Bekker",
+      "email": "henny.bekker@surfnet.nl",
+      "mobile": "+31622803490",
+      "idp": "surfnet.nl",
+      "uid": "henny",
+      "guid": "e31bc3d1-1211-e511-80d0-005056956c1a",
+      "organisation": {
+        "abbrev": "SURFNET",
+        "name": "SURFnet bv",
+        "guid": "ad93daef-0911-e511-80d0-005056956c1a"
+      },
+      "authorisations": [
+        {
+          "short": "IBV",
+          "role": "Instellingsbevoegde"
+        },
+        {
+          "short": "DNS",
+          "role": "DNS-Beheerder"
+        },
+        {
+          "short": "CONBEH",
+          "role": "SURFconextbeheerder"
+        },
+        {
+          "short": "SOB",
+          "role": "SURFopzichter-beheerder"
+        },
+        {
+          "short": "SUP",
+          "role": "Superuser"
+        }
+      ]
+    }
+  ]
+}
