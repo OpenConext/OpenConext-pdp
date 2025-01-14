@@ -9,7 +9,7 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 
 ### System Requirements
 
-- Java 11
+- Java 21
 - Maven 3
 - MySQL 5.5+
 - npm 5.4.2
