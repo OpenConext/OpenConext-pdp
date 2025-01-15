@@ -12,8 +12,6 @@ OpenConext implementation of a XACML based PDP engine for access policy enforcem
 - Java 11
 - Maven 3
 - MySQL 5.5+
-- npm 5.4.2
-- NodeJS v8.7.0 (best managed with `nvm`, current version in [.node-version](dashboard/.node-version)
 
 ### Create database
 
@@ -45,28 +43,6 @@ This project uses Spring Boot and Maven. To run locally, type:
 
 When developing, it's convenient to just execute the applications main-method, which is in [PdpApplication](pdp-server/src/main/java/pdp/PdpApplication.java). Don't forget
 to set the active profile to dev otherwise the application uses the real VOOT client on the test environment.
-
-### The pdp-gui
-
-    cd pdp-gui
-
-Initial setup if you do:
-
-    npm install
-
-Add new dependencies to `devDependencies`:
-
-    npm install ${dep} --dev
-
-To build:
-
-    npm run webpack
-
-To run locally:
-
-    npm run local
-
-Browse to the [application homepage](http://localhost:8001/).
 
 ## Testing
 
