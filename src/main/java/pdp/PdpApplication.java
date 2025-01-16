@@ -12,17 +12,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
 import pdp.stats.StatsContextHolder;
 import pdp.teams.VootClient;
-import pdp.web.SessionAliveInterceptor;
 import pdp.xacml.PDPEngineHolder;
 
 import java.io.IOException;
@@ -64,15 +60,6 @@ public class PdpApplication {
         policyLoader.loadPolicies();
 
         return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
-    }
-
-    @Configuration
-    public static class WebMvcConfig implements WebMvcConfigurer {
-
-    @Override
-        public void addInterceptors(InterceptorRegistry registry) {
-            registry.addInterceptor(new SessionAliveInterceptor());
-        }
     }
 
 }

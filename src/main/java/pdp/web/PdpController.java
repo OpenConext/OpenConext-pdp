@@ -24,14 +24,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import pdp.JsonMapper;
-import pdp.access.PolicyIdpAccessEnforcer;
-import pdp.conflicts.PolicyConflictService;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.domain.PdpPolicyViolation;
-import pdp.mail.MailBox;
-import pdp.manage.Manage;
-import pdp.policies.PolicyMissingServiceProviderValidator;
 import pdp.repositories.PdpPolicyPushVersionRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -51,7 +46,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static org.apache.openaz.xacml.api.Decision.DENY;
@@ -71,14 +65,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final PdpPolicyRepository pdpPolicyRepository;
     private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
     private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
-    private final PolicyConflictService policyConflictService = new PolicyConflictService();
-    private final Manage manage;
-    private final PolicyIdpAccessEnforcer policyIdpAccessEnforcer = new PolicyIdpAccessEnforcer();
     private final PDPEngine playgroundPdpEngine;
     private final boolean cachePolicies;
-    private final MailBox mailBox;
-    private final PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator;
-    private final List<String> loaLevels;
 
     private final ReentrantLock lock = new ReentrantLock();
     private final PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository;
@@ -90,24 +78,16 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     @Autowired
     public PdpController(@Value("${period.policies.refresh.minutes}") int period,
                          @Value("${policies.cachePolicies}") boolean cachePolicies,
-                         @Value("${loa.levels}") String loaLevelsCommaSeparated,
                          PdpPolicyViolationRepository pdpPolicyViolationRepository,
                          PdpPolicyRepository pdpPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
-                         Manage manage,
-                         MailBox mailBox,
-                         PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator,
                          PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository) {
         this.cachePolicies = cachePolicies;
-        this.loaLevels = Stream.of(loaLevelsCommaSeparated.split(",")).map(String::trim).collect(toList());
         this.pdpEngineHolder = pdpEngineHolder;
         this.playgroundPdpEngine = pdpEngineHolder.newPdpEngine(false, true);
         this.pdpEngine = pdpEngineHolder.newPdpEngine(cachePolicies, false);
         this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
         this.pdpPolicyRepository = pdpPolicyRepository;
-        this.manage = manage;
-        this.mailBox = mailBox;
-        this.policyMissingServiceProviderValidator = policyMissingServiceProviderValidator;
         this.pdpPolicyPushVersionRepository = pdpPolicyPushVersionRepository;
         this.policiesPushVersion.set(pdpPolicyPushVersionRepository.findById(1L).get().getVersion());
 

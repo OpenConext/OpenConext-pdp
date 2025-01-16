@@ -21,7 +21,6 @@ public class FederatedUserBuilder {
 
     private static final Collection<? extends GrantedAuthority> shibAuthorities = createAuthorityList("ROLE_USER", "ROLE_ADMIN");
 
-    public static final Collection<? extends GrantedAuthority> apiAuthorities = createAuthorityList("ROLE_USER", "ROLE_PEP");
 
     //shib headers
     public static final String UID_HEADER_NAME = "uid";

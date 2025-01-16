@@ -5,16 +5,22 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
+import java.util.Collection;
+
+import static org.springframework.security.core.authority.AuthorityUtils.createAuthorityList;
 import static org.springframework.util.Assert.notNull;
-import static pdp.access.FederatedUserBuilder.apiAuthorities;
 
 /**
  * EngineBlock and Dashboard call the PDP and we don't want to use OAuth for this as
  * they are trusted clients
  */
 public class BasicAuthenticationProvider implements AuthenticationProvider {
+
+    private static final Collection<? extends GrantedAuthority> API_AUTHORITIES = createAuthorityList("ROLE_USER", "ROLE_PEP");
+
 
     private final String userName;
     private final String password;
@@ -37,9 +43,9 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Bad credentials");
         }
         return new UsernamePasswordAuthenticationToken(
-            authentication.getPrincipal(),
-            authentication.getCredentials(),
-            apiAuthorities);
+                authentication.getPrincipal(),
+                authentication.getCredentials(),
+                API_AUTHORITIES);
     }
 
     @Override

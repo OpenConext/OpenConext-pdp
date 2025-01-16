@@ -39,8 +39,6 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
     @Test
     @Ignore
     public void testAllPolicies() throws Exception {
-        addShibHeaders();
-
         JsonPolicyRequest policyRequest = getJsonPolicyRequest();
         List<PdpPolicy> policies = policyLoader.getPolicies();
 
@@ -48,14 +46,6 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
         for (PdpPolicy policy : policies) {
             doTestPolicy(policyRequest, policy);
         }
-    }
-
-    @Test
-    public void testCrsfConfiguration() throws Exception {
-        Map<String, Object> jsonResponse = postForObject("/internal/decide/policy", getJsonPolicyRequest(), new ParameterizedTypeReference<>() {
-        });
-
-        assertEquals(403, jsonResponse.get("status"));
     }
 
     @Override
@@ -111,7 +101,6 @@ public class PdpEngineTest extends AbstractPdpIntegrationTest {
 
     private void becomeAnApiClientSoWeDontNeedACSRFToken() {
         restTemplate = new TestRestTemplate("pdp_admin", "secret");
-        impersonate(PolicyLoader.authenticatingAuthority, "urn:collab:person:example.com:mary.doe", "Mary Doe");
     }
 
     private void postDecide(PdpPolicy policy, JsonPolicyRequest policyRequest, Decision expectedDecision, String statusCodeValue) throws Exception {

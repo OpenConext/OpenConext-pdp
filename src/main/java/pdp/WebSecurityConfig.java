@@ -4,23 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.Profiles;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CsrfFilter;
 import pdp.access.BasicAuthenticationProvider;
-import pdp.access.PolicyIdpAccessEnforcerFilter;
 import pdp.manage.Manage;
-import pdp.web.CsrfProtectionMatcher;
-import pdp.web.CsrfTokenResponseHeaderBindingFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -38,7 +29,6 @@ public class WebSecurityConfig {
         BasicAuthenticationProvider basicAuthenticationProvider =
                 new BasicAuthenticationProvider(policyEnforcementPointUserName, policyEnforcementPointPassword);
         auth.authenticationProvider(basicAuthenticationProvider);
-
     }
 
     @Configuration
@@ -62,10 +52,6 @@ public class WebSecurityConfig {
                     .and()
                     .csrf()
                     .disable()
-                    .addFilterBefore(
-                            new PolicyIdpAccessEnforcerFilter(authenticationManager(), manage),
-                            BasicAuthenticationFilter.class
-                    )
                     .authorizeRequests()
                     .antMatchers("/protected/**", "/decide/policy", "/manage/**")
                     .hasAnyRole("PEP", "ADMIN");

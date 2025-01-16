@@ -12,15 +12,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 import pdp.domain.JsonPolicyRequest;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
@@ -39,14 +33,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static pdp.access.FederatedUserBuilder.DISPLAY_NAME_HEADER_NAME;
-import static pdp.access.FederatedUserBuilder.SHIB_AUTHENTICATING_AUTHORITY;
-import static pdp.access.FederatedUserBuilder.UID_HEADER_NAME;
-import static pdp.access.FederatedUserBuilder.X_DISPLAY_NAME;
-import static pdp.access.FederatedUserBuilder.X_IDP_ENTITY_ID;
-import static pdp.access.FederatedUserBuilder.X_IMPERSONATE;
-import static pdp.access.FederatedUserBuilder.X_UNSPECIFIED_NAME_ID;
-import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 
 /**
  * Note this class is slow. it starts up the entire Spring boot app.
@@ -58,7 +44,6 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 public abstract class AbstractPdpIntegrationTest implements JsonMapper {
 
     protected static final String policyId = "urn:surfconext:xacml:policy:id:open_conextpdp_single_attribute";
-    protected static final String policyIdToDelete = "urn:surfconext:xacml:policy:id:open_conextpdp_deny_rule_policy_empty_permit";
 
     @Autowired
     protected PdpPolicyViolationRepository pdpPolicyViolationRepository;
@@ -93,24 +78,6 @@ public abstract class AbstractPdpIntegrationTest implements JsonMapper {
 
     protected JsonPolicyRequest getJsonPolicyRequest() throws IOException {
         return objectMapper.readValue(new ClassPathResource("xacml/requests/base_request.json").getInputStream(), JsonPolicyRequest.class);
-    }
-
-    protected void addShibHeaders() {
-        headers.set(UID_HEADER_NAME, "urn:collab:person:example.com:admin");
-        headers.set(SHIB_AUTHENTICATING_AUTHORITY, PolicyLoader.authenticatingAuthority);
-        headers.set(DISPLAY_NAME_HEADER_NAME, "John Doe");
-    }
-
-    protected void impersonate(String idp, String nameId, String displayName) {
-        headers.set(X_IDP_ENTITY_ID, idp);
-        headers.set(X_UNSPECIFIED_NAME_ID, nameId);
-        headers.set(X_DISPLAY_NAME, displayName);
-        headers.set(X_IMPERSONATE, "true");
-    }
-
-    protected ResponseEntity<String> getImpersonated(String path, String idp) {
-        impersonate(idp, URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN, "John Doe");
-        return doExchange(path, new HttpEntity<>(headers), HttpMethod.GET);
     }
 
     protected ResponseEntity<String> get(String path) {
