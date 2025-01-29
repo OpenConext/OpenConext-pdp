@@ -59,15 +59,8 @@ If you want to test policies against a full test system (e.g. the VM) then you c
 
 ### Design considerations
 
-The XACML framework works with policies defined in XML. We store the policies as XML strings in the database. However to
+The XACML framework works with policies defined in XML. We store the policies we receive from Manage as XML strings in the database. However to
 effectively let XACML evaluate policies we need to convert them to the internal XACML format - see [OpenConextEvaluationContextFactory](pdp-server/src/main/java/pdp/xacml/OpenConextEvaluationContextFactory.java).
-
-Working with XML on the pdp-gui does not work well and we want to keep the pdp-gui simple. Therefore the PdpPolicyDefinition is used as an
-intermediate format for policies that is easy to work with for the pdp-gui and also enables the server to transform
-it easily into the desired - yet very complex - XML format.
-
-Using the internal XACML Policy class hierarchy for communication back and forth with the client was not an option because
-of the cyclic dependencies in the hierarchy (and not desirable because of the complexity it would have caused).
 
 ### Architecture
 
@@ -95,7 +88,7 @@ The policies that can be created are limited in functionality:
 
 ### Policy access
 
-The Admin GUI has no restrictions in the accessibility of policies. The external API for trusted applications restricts access to policies based on the Identity Provider
+The external API for trusted applications restricts access to policies based on the Identity Provider
 and the possible associated Service Provider(s) of the user and the corresponding Service and Identity Provider(s) of the policy. See
  [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/pdp-gui/src/images/PdP_policies_access.001.jpeg) for an overview of the logic applied in determining accessibility.
 
@@ -105,16 +98,6 @@ We don't provide flyway migrations to load initial policies.
 
 However if you start up the application with the spring.profiles.active=dev then all the policies
 in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any other policies already in the database are deleted.
-
-### Manage
-
-The pdp-server needs to access the metadata of Identity and Service providers from Manage. In production modus the content is read (and periodically refreshed)
-from the API exposed by [Manage](https://github.com/OpenConext/OpenConext-manage/wiki/API)
-
-In any other modus the content is read from the file system:
-
-* [saml20-idp-remote.json](pdp-server/src/main/resources/manage/saml20-idp-remote.json)
-* [saml20-sp-remote.json](pdp-server/src/main/resources/manage/saml20-sp-remote.json)
 
 ### Configuration and Deployment
 
