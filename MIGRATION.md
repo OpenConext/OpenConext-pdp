@@ -17,8 +17,8 @@ The storage in Manage is done in JSON format. Upon PUSH in Manage this is sent t
 A new policies table is added to PDP next to the existing one. Manage can import the existing policies, process and store them and push them to the new table.
 
 The migration can be done in two stages:
-1. The new table exists besides the old one but is not used for policy evaluation. Manage can pull from the old table (as often as desired), and push back to the new table. Manage can then also show any differences between old and new, so certainty can be gained that the conversion is successful. Changing policies at this time still happens from PDP GUI.
-2. The new table is switched to production. The old table is no longer used and the PDP GUI also not.
+1. A new table exists besides the old one but is not used for policy evaluation. Manage can pull from the current table (as often as desired), and push back to the new table. Manage can then also show any differences between current and new, so certainty can be gained that the conversion is successful. Changing policies at this time still happens from PDP GUI.
+2. The Manage PUSH can be switched to push to update the current table, so anything stored in Manage will determine the content of the actual policy evaluation. The new table is no longer used and the PDP GUI also not.
 
 ## Requirements
 
@@ -30,7 +30,15 @@ To migrate your rules from PDP to Manage, you need:
 
 ## Preparation
 
-Ensure that Manage's `application.yml` contains a PUSH section for PDP and a Spring MySQL datasouce (for comparing the result, only needed during the migration).
+In PDP's `application.properties`, set pushTestMode=True:
+```
+policy.enforcement.point.user.name=pdp_admin
+policy.enforcement.point.user.password=secret
+[...]
+manage.pushTestMode=True
+```
+
+Ensure that Manage's `application.yml` contains a PUSH section for PDP (look for the credentials in the PDP `application.properties` under `policy.enforcement.point.user.*` as listed above) and a Spring MySQL datasouce (for comparing the result, only needed during the migration).
 
 ```
 push:
@@ -51,14 +59,15 @@ spring:
     driverClassName: org.mariadb.jdbc.Driver
 ```
 
-In PDP's `application.properies`, besides the API user listed above, also set pushTestMode=True:
-```
-manage.pushTestMode=True
-```
-
 ## Load policies in Manage and test
 
-Now in Manage, you can ask Manage to import all policies from PDP under the Policies tab. This will report what it does and if you push it back, it also provides ways to compare. You can view the imported policies under a related entity (e.g. an SP) in the Policies tab for that entity. You can repeat the fetch and push as often as you like as long as `manage.pushTestMode=False`.
+Now in Manage, you can ask Manage to import all policies from PDP under the Policies tab. This will report what it does and if you push it back, it also provides ways to compare.
+
+You can view the imported policies under a related entity (e.g. an SP) in the Policies tab for that entity.
+You can also get an overview of all policies in the Policies tab which is located at the second level
+(where you can find "Service Providers" etc).
+
+You can repeat the fetch and push as often as you like as long as `manage.pushTestMode=False`.
 
 ## The switchover
 
