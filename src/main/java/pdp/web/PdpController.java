@@ -200,7 +200,9 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         //Refresh, but also increment the counter so other instances will refresh also
         pdpPolicyRepository.deleteAll();
         pdpPolicyRepository.saveAll(policies);
+
         LOG.info("/manage/push saved policies:" + policies.size());
+
         this.pdpPolicyPushVersionRepository.incrementVersion();
         this.policiesPushVersion.incrementAndGet();
         this.refreshPolicies();

@@ -1,13 +1,11 @@
 package pdp.policies;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 import pdp.PolicyViolationRetentionPeriodCleaner;
-import pdp.mail.MailBox;
 import pdp.manage.Manage;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.repositories.PdpPolicyViolationRepository;
@@ -45,14 +43,6 @@ public class PolicyLoaderConfiguration {
                                                                                        PdpPolicyViolationRepository pdpPolicyViolationRepository,
                                                                                        @Value("${pdpCronJobResponsible}") boolean pdpCronJobResponsible) {
         return new PolicyViolationRetentionPeriodCleaner(retentionPeriodDays, pdpPolicyViolationRepository, pdpCronJobResponsible);
-    }
-
-    @Bean
-    public PolicyMissingServiceProviderValidator policyMissingServiceProviderValidator(MailBox mailBox,
-                                                                                       Manage manage,
-                                                                                       PdpPolicyRepository pdpPolicyRepository,
-                                                                                       @Value("${pdpCronJobResponsible}") boolean pdpCronJobResponsible) {
-        return new PolicyMissingServiceProviderValidator(mailBox, manage, pdpPolicyRepository, pdpCronJobResponsible);
     }
 
 
