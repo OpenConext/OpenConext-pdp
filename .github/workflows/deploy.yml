@@ -92,20 +92,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for GUI Docker
-        id: meta_gui
-        uses: docker/metadata-action@v5
-        with:
-          images: ghcr.io/openconext/openconext-pdp/pdp-gui
-          flavor: |
-            latest=false
-          tags: |
-            type=ref,event=tag
-            type=raw,event=tag,value=latest
-            type=raw,event=workflow_dispatch,value=snapshot
-            type=semver,pattern={{version}},value=${{ steps.versioncheck.outputs.version }}
-            type=sha
-
       - name: Extract metadata (tags, labels) for Server Docker
         id: meta_server
         uses: docker/metadata-action@v5
