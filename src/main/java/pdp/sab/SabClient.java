@@ -43,8 +43,8 @@ public class SabClient {
         String uid = splitted[splitted.length - 1];
         String idp = splitted[splitted.length - 2];
 
-        LOG.debug("Starting to fetch SAB roles for schacHome {} for uid {} using templateURI {}",
-                idp, userId, sabRestEndpoint);
+        LOG.debug("Starting to fetch SAB roles for userId {}, schacHome {}, uid {} using templateURI {}",
+                userId, idp, userId, sabRestEndpoint);
         Map result;
         try {
             result = this.restTemplate.getForObject(sabRestEndpoint, Map.class, uid, idp);

@@ -1,5 +1,7 @@
 package pdp.teams;
 
+import lombok.Getter;
+import lombok.Setter;
 import pdp.xacml.AbstractConfigurableEngine;
 
 import java.util.List;
@@ -10,6 +12,8 @@ public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAw
 
     public static final String GROUP_URN = "urn:collab:group:surfteams.nl";
 
+    @Getter
+    @Setter
     private VootClient vootClient;
 
     @Override
@@ -32,12 +36,8 @@ public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAw
         return getVootClient().groups(userUrn).stream().collect(Collectors.toList());
     }
 
-    public VootClient getVootClient() {
-        return vootClient;
+    @Override
+    public boolean useUnspecifiedURN() {
+        return true;
     }
-
-    public void setVootClient(VootClient vootClient) {
-        this.vootClient = vootClient;
-    }
-
 }

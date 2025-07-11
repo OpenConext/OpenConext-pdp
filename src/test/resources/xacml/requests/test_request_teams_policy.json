@@ -7,6 +7,14 @@
         {
           "AttributeId": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
           "Value": "urn:collab:person:example.com:admin"
+        },
+        {
+          "AttributeId": "urn:mace:dir:attribute-def:uid",
+          "Value": "admin"
+        },
+        {
+          "AttributeId": "urn:mace:terena.org:attribute-def:schacHomeOrganization",
+          "Value": "example.com"
         }
       ]
     },

@@ -31,6 +31,8 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
     public static final String SP_ENTITY_ID = "SPentityID";
     public static final String IDP_ENTITY_ID = "IDPentityID";
     public static final String NAME_ID = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified";
+    public static final String UID = "urn:mace:dir:attribute-def:uid";
+    public static final String SCHAC_HOME_ORGANIZATION = "urn:mace:terena.org:attribute-def:schacHomeOrganization";
     public static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
     public static final String NEGATE_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:negation";
 

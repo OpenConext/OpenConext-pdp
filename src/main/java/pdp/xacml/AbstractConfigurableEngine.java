@@ -30,13 +30,15 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static java.util.stream.Collectors.toList;
-import static pdp.xacml.PdpPolicyDefinitionParser.NAME_ID;
+import static pdp.xacml.PdpPolicyDefinitionParser.*;
 
 public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
 
     private final Logger LOG = LoggerFactory.getLogger(getClass());
 
-    protected PIPRequest requiredAttribute;
+    protected PIPRequest requiredAttributeUnspecifiedURN;
+    protected PIPRequest requiredAttributeSchacHome;
+    protected PIPRequest requiredAttributeUID;
     protected PIPRequest providedAttribute;
 
     protected PIPResponse empty;
@@ -49,28 +51,24 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         IdentifierImpl identifierDataType = new IdentifierImpl("http://www.w3.org/2001/XMLSchema#string");
         IdentifierImpl attributeCategory = new IdentifierImpl("urn:oasis:names:tc:xacml:1.0:subject-category:access-subject");
 
-        requiredAttribute = requiredAttribute(identifierDataType, attributeCategory);
+        requiredAttributeUnspecifiedURN = new StdPIPRequest(attributeCategory, new IdentifierImpl(NAME_ID), identifierDataType);
+        requiredAttributeSchacHome = new StdPIPRequest(attributeCategory, new IdentifierImpl(SCHAC_HOME_ORGANIZATION), identifierDataType);
+        requiredAttributeUID = new StdPIPRequest(attributeCategory, new IdentifierImpl(UID), identifierDataType);
 
         IdentifierImpl identifierAttribute = new IdentifierImpl(getIdentifierProvidedAttribute());
-        providedAttribute = providedAttribute(identifierDataType, attributeCategory, identifierAttribute);
+        providedAttribute = new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
 
         Attribute attribute = new StdAttribute(attributeCategory, identifierAttribute, Collections.emptyList(), null, true);
         empty = new StdSinglePIPResponse(attribute);
         missingNameId = new StdMutablePIPResponse(new StdStatus(StdStatusCode.STATUS_CODE_MISSING_ATTRIBUTE, NAME_ID + " attribute missing"));
-
-    }
-
-    protected StdPIPRequest providedAttribute(IdentifierImpl identifierDataType, IdentifierImpl attributeCategory, IdentifierImpl identifierAttribute) {
-        return new StdPIPRequest(attributeCategory, identifierAttribute, identifierDataType);
-    }
-
-    protected StdPIPRequest requiredAttribute(IdentifierImpl identifierDataType, IdentifierImpl attributeCategory) {
-        return new StdPIPRequest(attributeCategory, new IdentifierImpl(NAME_ID), identifierDataType);
     }
 
     @Override
     public Collection<PIPRequest> attributesRequired() {
-        return Arrays.asList(requiredAttribute);
+        if (useUnspecifiedURN()) {
+            return List.of(requiredAttributeUnspecifiedURN);
+        }
+        return List.of(requiredAttributeSchacHome, requiredAttributeUID);
     }
 
     @Override
@@ -84,18 +82,25 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
             //this PIP requires a PIP dependent rule to be present in the Policy
             return empty;
         }
-        PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(requiredAttribute, this);
-        Optional<Attribute> nameAttributeOptional = matchingAttributes.getAttributes().stream().findFirst();
-        if (!nameAttributeOptional.isPresent()) {
-            return missingNameId;
+        String userUrn;
+        if (useUnspecifiedURN()) {
+            Optional<String> userUrnOptional = getAttribute(requiredAttributeUnspecifiedURN, pipFinder);
+            if (!userUrnOptional.isPresent()) {
+                return missingNameId;
+            }
+            userUrn = userUrnOptional.get();
+        } else {
+            Optional<String> schacHomeOptional = getAttribute(requiredAttributeSchacHome, pipFinder);
+            if (!schacHomeOptional.isPresent()) {
+                return missingNameId;
+            }
+            Optional<String> uidOptional = getAttribute(requiredAttributeUID, pipFinder);
+            if (!uidOptional.isPresent()) {
+                return missingNameId;
+            }
+            //Seems hackey, but the alternative is to have no common code between SAB and Teams PIP
+            userUrn = String.format("urn:collab:person:%s:%s", schacHomeOptional.get(), uidOptional.get());
         }
-        Attribute nameAttribute = nameAttributeOptional.get();
-        Collection<AttributeValue<?>> values = nameAttribute.getValues();
-        if (CollectionUtils.isEmpty(values)) {
-            return missingNameId;
-        }
-        String userUrn = (String) values.stream().findFirst().get().getValue();
-
         StatsContext stats = StatsContextHolder.getContext();
         long start = System.currentTimeMillis();
 
@@ -115,7 +120,18 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         return new StdSinglePIPResponse(responseAttr);
     }
 
+    private Optional<String> getAttribute(PIPRequest pipRequest, PIPFinder pipFinder) throws PIPException {
+        PIPResponse matchingAttributes = pipFinder.getMatchingAttributes(pipRequest, this);
+        Optional<Attribute> nameAttributeOptional = matchingAttributes.getAttributes().stream().findFirst();
+        if (nameAttributeOptional.isEmpty() || CollectionUtils.isEmpty(nameAttributeOptional.get().getValues())) {
+            return Optional.empty();
+        }
+        return Optional.of( (String) nameAttributeOptional.get().getValues().stream().findFirst().get().getValue());
+    }
+
     protected abstract List<Object> getAttributes(String userUrn);
 
     public abstract String getIdentifierProvidedAttribute();
+
+    public abstract boolean useUnspecifiedURN();
 }

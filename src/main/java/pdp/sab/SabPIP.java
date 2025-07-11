@@ -1,5 +1,7 @@
 package pdp.sab;
 
+import lombok.Getter;
+import lombok.Setter;
 import pdp.xacml.AbstractConfigurableEngine;
 
 import java.util.ArrayList;
@@ -10,6 +12,8 @@ public class SabPIP extends AbstractConfigurableEngine implements SabClientAware
 
     public static final String SAB_URN = "urn:collab:sab:surfnet.nl";
 
+    @Getter
+    @Setter
     private SabClient sabClient;
 
     @Override
@@ -32,12 +36,8 @@ public class SabPIP extends AbstractConfigurableEngine implements SabClientAware
         return new ArrayList<>(getSabClient().roles(userUrn));
     }
 
-    public SabClient getSabClient() {
-        return sabClient;
-    }
-
     @Override
-    public void setSabClient(SabClient sabClient) {
-        this.sabClient = sabClient;
+    public boolean useUnspecifiedURN() {
+        return false;
     }
 }
