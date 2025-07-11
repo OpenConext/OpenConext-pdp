@@ -13,6 +13,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
+import org.springframework.web.reactive.function.client.WebClient;
 import pdp.policies.PolicyLoader;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
@@ -57,6 +61,18 @@ public class PdpApplication {
         policyLoader.loadPolicies();
 
         return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
+    }
+
+    @Bean
+    public WebClient webClient(ClientRegistrationRepository clients,
+                               OAuth2AuthorizedClientRepository authClients) {
+        ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 =
+                new ServletOAuth2AuthorizedClientExchangeFilterFunction(clients, authClients);
+        oauth2.setDefaultClientRegistrationId("voot");
+
+        return WebClient.builder()
+                .apply(oauth2.oauth2Configuration())
+                .build();
     }
 
 }

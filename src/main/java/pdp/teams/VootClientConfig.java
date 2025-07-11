@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.oauth2.client.OAuth2RestTemplate;
-import org.springframework.security.oauth2.client.token.grant.client.ClientCredentialsResourceDetails;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,31 +16,20 @@ public class VootClientConfig {
 
     public static final String URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN = "urn:collab:person:example.com:admin";
 
-    @Value("${voot.accessTokenUri}")
-    private String accessTokenUri;
-
-    @Value("${voot.clientId}")
-    private String clientId;
-
-    @Value("${voot.clientSecret}")
-    private String clientSecret;
-
-    @Value("${voot.scopes}")
-    private String spaceDelimitedScopes;
-
     @Value("${voot.serviceUrl}")
     private String vootServiceUrl;
 
+
     @Bean
     @Profile({"devconf", "test", "acc", "prod"})
-    public VootClient vootClient() {
-        return new VootClient(vootRestTemplate(), vootServiceUrl);
+    public VootClient vootClient(WebClient webClient) {
+        return new VootClient(webClient, vootServiceUrl);
     }
 
     @Bean
     @Profile({"dev", "perf", "no-csrf", "mail", "local"})
     public VootClient mockVootClient() {
-        return new VootClient(vootRestTemplate(), vootServiceUrl) {
+        return new VootClient(WebClient.builder().build(), vootServiceUrl) {
             @Override
             public List<String> groups(String userUrn) {
                 /*
@@ -58,15 +46,5 @@ public class VootClientConfig {
         };
     }
 
-    @SuppressWarnings("deprecation")
-    private OAuth2RestTemplate vootRestTemplate() {
-        ClientCredentialsResourceDetails details = new ClientCredentialsResourceDetails();
-        details.setId("pdp");
-        details.setClientId(clientId);
-        details.setClientSecret(clientSecret);
-        details.setAccessTokenUri(accessTokenUri);
-        details.setScope((spaceDelimitedScopes != null) ? asList(spaceDelimitedScopes.split(" ")) : Collections.emptyList());
-        return new OAuth2RestTemplate(details);
-    }
 
 }

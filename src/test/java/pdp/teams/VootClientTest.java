@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -19,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class VootClientTest {
 
-    private final VootClient subject = new VootClient(new RestTemplate(), "http://localhost:8889");
+    private final VootClient subject = new VootClient(WebClient.builder().build(), "http://localhost:8889");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8889);

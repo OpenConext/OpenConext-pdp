@@ -1,0 +1,132 @@
+spring:
+  flyway:
+    enabled: 'true'
+    table: schema_version
+    validate-on-migrate: 'false'
+  mail:
+    host: localhost
+    port: '3025'
+  profiles:
+    active: dev
+  datasource:
+    password: ''
+    url: jdbc:mariadb://localhost/pdpserver
+    driverClassName: org.mariadb.jdbc.Driver
+    username: root
+  mvc:
+    dispatch-options-request: 'true'
+  security:
+    oauth2:
+      client:
+        registration:
+          voot:
+            client-id: pdp
+            client-secret: secret
+            authorization-grant-type: client_credentials
+            scope: groups
+        provider:
+          voot:
+            token-uri: https://authz.test2.surfconext.nl/oauth/token
+invalid:
+  policies:
+    email:
+      to: to@test.nl
+xacml:
+  properties:
+    path: classpath:xacml.conext.properties
+email:
+  base_url: http://localhost:8001/#conflicts
+  to: to@test.nl
+  from: from@test.nl
+voot:
+  serviceUrl: https://voot.test2.surfconext.nl
+sab:
+  password: secret
+  userName: pdp
+  endpoint: http://localhost
+policies:
+  cachePolicies: 'false'
+manage:
+  pushTestMode: 'true'
+  username: pdp
+  password: secret
+  manageBaseUrl: https://manage.test2.surfconext.nl
+policy:
+  enforcement:
+    point:
+      user:
+        password: secret
+        name: pdp_admin
+  include:
+    aggregated:
+      attributes: 'true'
+  base:
+    dir: classpath:/xacml/policies
+  violation:
+    retention:
+      period:
+        days: '30'
+session-timeout: '28800'
+logging:
+  level:
+    pdp: INFO
+    org:
+      springframework:
+        security: TRACE
+endpoints:
+  health:
+    sensitive: 'false'
+    enabled: 'true'
+  enabled: 'false'
+  info:
+    enabled: 'true'
+pdpCronJobResponsible: 'true'
+server:
+  error:
+    path: /error
+  port: '8081'
+  servlet:
+    context-path: /pdp/api
+performance:
+  pre:
+    policy:
+      loader:
+        count: '0'
+period:
+  policies:
+    refresh:
+      minutes: '1'
+loa:
+  levels: http://localhost/assurance/loa1.5,http://localhost/assurance/loa2,http://localhost/assurance/loa3
+provision:
+  policies:
+    directory: provision-policies
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,prometheus"
+      base-path: "/internal"
+  endpoint:
+    info:
+      access: unrestricted
+    health:
+      access: unrestricted
+      show-details: when_authorized
+    prometheus:
+      access: unrestricted
+      show-details: always
+    mappings:
+      access: none
+    metrics:
+      access: unrestricted
+  info:
+    git:
+      mode: full
+
+# used by the git plugin
+info:
+  build:
+    artifact: "@project.artifactId@"
+    version: "@project.version@"
