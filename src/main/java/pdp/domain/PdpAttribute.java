@@ -2,8 +2,7 @@ package pdp.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.*;
@@ -51,7 +52,7 @@ public abstract class AbstractPdpIntegrationTest implements JsonMapper {
     @Autowired
     protected PdpPolicyRepository pdpPolicyRepository;
 
-    @Value("${local.server.port}")
+    @LocalServerPort
     protected int port;
 
     protected HttpHeaders headers;

@@ -3,6 +3,8 @@ package pdp.web;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.net.HttpHeaders;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.apache.openaz.xacml.api.*;
 import org.apache.openaz.xacml.api.pdp.PDPEngine;
 import org.apache.openaz.xacml.pdp.policy.Policy;
@@ -36,8 +38,6 @@ import pdp.xacml.PDPEngineHolder;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Comparator;

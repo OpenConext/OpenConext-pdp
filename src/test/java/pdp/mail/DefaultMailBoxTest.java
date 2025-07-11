@@ -2,17 +2,16 @@ package pdp.mail;
 
 import com.icegreen.greenmail.junit.GreenMailRule;
 import com.icegreen.greenmail.util.ServerSetupTest;
+import jakarta.mail.Message;
+import jakarta.mail.internet.MimeMessage;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
 import pdp.AbstractPdpIntegrationTest;
 import pdp.domain.PdpPolicyDefinition;
 
-import javax.mail.Message;
-import javax.mail.internet.MimeMessage;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;

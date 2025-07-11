@@ -3,26 +3,16 @@ package pdp.domain;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.util.CollectionUtils;
-import pdp.xacml.PolicyTemplateEngine;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-import static com.fasterxml.jackson.annotation.JsonProperty.Access.WRITE_ONLY;
 import static java.util.stream.Collectors.groupingBy;
 
 
@@ -46,9 +36,9 @@ public class PdpPolicyDefinition {
 
     @NotNull
     @Size(min = 1)
-    private List<String> serviceProviderIds= new ArrayList<>();
-    private List<String> serviceProviderNames= new ArrayList<>();
-    private List<String> serviceProviderNamesNl= new ArrayList<>();
+    private List<String> serviceProviderIds = new ArrayList<>();
+    private List<String> serviceProviderNames = new ArrayList<>();
+    private List<String> serviceProviderNamesNl = new ArrayList<>();
 
     private boolean serviceProviderInvalidOrMissing;
 

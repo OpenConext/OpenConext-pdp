@@ -1,5 +1,6 @@
 package pdp.access;
 
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +18,7 @@ import static org.springframework.util.Assert.notNull;
  * EngineBlock and Dashboard call the PDP and we don't want to use OAuth for this as
  * they are trusted clients
  */
-public class BasicAuthenticationProvider implements AuthenticationProvider {
+public class BasicAuthenticationProvider implements AuthenticationManager {
 
     private static final Collection<? extends GrantedAuthority> API_AUTHORITIES = createAuthorityList("ROLE_USER", "ROLE_PEP");
 
@@ -48,8 +49,4 @@ public class BasicAuthenticationProvider implements AuthenticationProvider {
                 API_AUTHORITIES);
     }
 
-    @Override
-    public boolean supports(Class<?> authentication) {
-        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
-    }
 }

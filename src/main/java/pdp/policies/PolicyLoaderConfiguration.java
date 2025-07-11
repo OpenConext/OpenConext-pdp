@@ -15,18 +15,19 @@ import pdp.repositories.PdpPolicyViolationRepository;
 @Configuration
 public class PolicyLoaderConfiguration {
 
-    @Autowired
-    private ResourceLoader resourceLoader;
+    private final ResourceLoader resourceLoader;
+
+    public PolicyLoaderConfiguration(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
 
     @Bean
-    @Autowired
     @Profile({"dev", "no-csrf"})
     public PolicyLoader developmentPrePolicyLoader(@Value("${policy.base.dir}") String policyBaseDir, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
         return new DevelopmentPrePolicyLoader(resourceLoader.getResource(policyBaseDir), pdpPolicyRepository, pdpPolicyViolationRepository);
     }
 
     @Bean
-    @Autowired
     @Profile({"perf"})
     public PolicyLoader performancePrePolicyLoader(@Value("${performance.pre.policy.loader.count}") int count, Manage
             manage, PdpPolicyRepository pdpPolicyRepository, PdpPolicyViolationRepository pdpPolicyViolationRepository) {
@@ -34,7 +35,6 @@ public class PolicyLoaderConfiguration {
     }
 
     @Bean
-    @Autowired
     @Profile({"local", "devconf", "test", "acc", "prod", "mail"})
     public PolicyLoader noopPolicyLoader() {
         return new NoopPrePolicyLoader();

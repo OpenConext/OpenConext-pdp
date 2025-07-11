@@ -1,6 +1,8 @@
 package pdp.mail;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -9,8 +11,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import pdp.JsonMapper;
 import pdp.domain.PdpPolicyDefinition;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class DefaultMailBox implements MailBox, JsonMapper {
     }
 
     private void sendMail(String templateName, String subject, Map<String, String> variables) throws
-        MessagingException, IOException {
+            MessagingException, IOException, jakarta.mail.MessagingException {
         String html = IOUtils.toString(new ClassPathResource(templateName).getInputStream(), Charset.defaultCharset());
         for (Map.Entry<String, String> var : variables.entrySet()) {
             String value = var.getValue();
@@ -70,15 +70,15 @@ public class DefaultMailBox implements MailBox, JsonMapper {
             html = html.replaceAll(var.getKey(), value);
         }
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setSubject(subject);
-        helper.setTo(to);
-        setText(html, helper);
-        helper.setFrom(from);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message, true);
+        mimeMessageHelper.setSubject(subject);
+        mimeMessageHelper.setTo(to);
+        setText(html, mimeMessageHelper);
+        mimeMessageHelper.setFrom(from);
         doSendMail(message);
     }
 
-    protected void setText(String html, MimeMessageHelper helper) throws MessagingException {
+    protected void setText(String html, MimeMessageHelper helper) throws jakarta.mail.MessagingException {
         helper.setText(html, true);
     }
 

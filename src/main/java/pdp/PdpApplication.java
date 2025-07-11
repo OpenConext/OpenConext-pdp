@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -26,8 +25,6 @@ import java.io.IOException;
 @SpringBootApplication(exclude = {
         FreeMarkerAutoConfiguration.class,
         AuditAutoConfiguration.class,
-        SecurityAutoConfiguration.class,
-        HttpTraceAutoConfiguration.class,
         MetricsAutoConfiguration.class})
 public class PdpApplication {
 

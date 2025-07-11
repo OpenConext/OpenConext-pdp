@@ -7,7 +7,7 @@ import org.springframework.util.StringUtils;
 import pdp.domain.EntityMetaData;
 import pdp.manage.Manage;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Optional;
