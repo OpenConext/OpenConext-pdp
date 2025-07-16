@@ -214,7 +214,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                 .collect(singletonCollector());
         Collection<Attribute> attributes = req.getAttributes();
         stats.setIdentityProvider(getAttributeValue(attributes, "IDPentityID").orElse(""));
-        stats.setServiceProvicer(getAttributeValue(attributes, "SPentityID").orElse(""));
+        stats.setServiceProvider(getAttributeValue(attributes, "SPentityID").orElse(""));
     }
 
     private Optional<String> getAttributeValue(Collection<Attribute> attributes, String attributeId) {
