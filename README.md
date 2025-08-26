@@ -94,7 +94,7 @@ and the possible associated Service Provider(s) of the user and the correspondin
 
 ### Local database content
 
-We don't provide flyway migrations to load initial policies. 
+We don't provide flyway migrations to load initial policies.
 
 However if you start up the application with the spring.profiles.active=dev then all the policies
 in the folder `OpenConext-pdp/pdp-server/src/main/resources/xacml/policies` are added to the database. Do note that any other policies already in the database are deleted.
@@ -115,14 +115,13 @@ The API can be tested with cUrl. See [WebSecurityConfig](pdp-server/src/main/jav
 the mock Shib headers are added automatically.
 
 ```
-curl -ik -H "Content-Type: application/json" http://localhost:8080/pdp/api/internal/policies
-curl -ik --user "pdp_admin:secret" -H "Content-Type: application/json" -H "X-IDP-ENTITY-ID: http://mock-idp" -H "X-UNSPECIFIED-NAME-ID: test" -H "X-DISPLAY-NAME: okke" http://localhost:8080/pdp/api/protected/policies
-curl -ik -X POST --data-binary @./src/test/resources/xacml/requests/test_request_sab_policy.json --user "pdp_admin:secret" -H "Content-Type: application/json" http://localhost:8080/pdp/api/decide/policy
+curl -ik -X POST --data-binary @./src/test/resources/xacml/requests/test_request_sab_policy.json --user "pdp_admin:secret" -H "Content-Type: application/json" http://localhost:8081/pdp/api/decide/policy
+curl -ik -X POST --data-binary @./src/test/resources/xacml/requests/policy_definition_parse.json --user "pdp_admin:secret" -H "Content-Type: application/json" http://localhost:8081/pdp/api/manage/parse
 ```
 
 ### OpenAZ dependency
 
-The OpenConext-pdp project heavily uses the PD framework https://github.com/apache/incubator-openaz. This repo is cloned in 
+The OpenConext-pdp project heavily uses the PD framework https://github.com/apache/incubator-openaz. This repo is cloned in
 https://github.com/OpenConext/incubator-openaz-openconext and changes - e.g. distribution management, some bug fixes and minor optimizations - are
 pushed to openconext/develop branch in https://github.com/OpenConext/incubator-openaz-openconext.
 

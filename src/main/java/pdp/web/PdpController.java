@@ -214,6 +214,13 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         this.refreshPolicies();
     }
 
+    @RequestMapping(method = POST, value = {"/manage/parse"})
+    public ResponseEntity<String> parsePolicyDefinition(@RequestBody PdpPolicyDefinition policyDefinition) {
+        LOG.info("/manage/parse");
+        String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
+        return ResponseEntity.ok(policyXml);
+    }
+
     private void addStatsDetails(StatsContext stats, Request request) {
         RequestAttributes req = request.getRequestAttributes().stream()
                 .filter(ra -> ra.getCategory().getUri().toString().equals("urn:oasis:names:tc:xacml:3.0:attribute-category:resource"))

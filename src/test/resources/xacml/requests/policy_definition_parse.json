@@ -1,0 +1,15 @@
+{
+    "name" : "test",
+    "description" : "Test",
+    "serviceProviderIds" : [ "https://mujina-sp" ],
+    "attributes" : [ {
+        "name" : "eduPersonEntitlement",
+        "value" : "teacher",
+        "negated" : false
+    } ],
+    "denyRule" : false,
+    "allAttributesMustMatch" : true,
+    "type" : "regular",
+    "denyAdvice": "Not allowed",
+    "denyAdviceNl": "Niet toegstaan"
+}
