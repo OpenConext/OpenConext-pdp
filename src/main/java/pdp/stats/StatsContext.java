@@ -11,7 +11,7 @@ import java.util.Map;
 @Setter
 public class StatsContext {
 
-    private String serviceProvicer;
+    private String serviceProvider;
     private String identityProvider;
     private long responseTimeMs;
     private Map<String, Long> pipResponses = new HashMap<>();
