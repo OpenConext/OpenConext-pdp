@@ -3,9 +3,18 @@ package pdp.domain;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.validation.constraints.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 import java.util.Objects;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
+@EqualsAndHashCode
+@ToString
 public class PdpAttribute {
 
     @NotNull
@@ -15,6 +24,8 @@ public class PdpAttribute {
     @NotNull
     @Size(min = 1)
     private String value;
+
+    private int groupID;
 
     private boolean negated;
 
@@ -50,25 +61,4 @@ public class PdpAttribute {
         this.negated = negated;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PdpAttribute that = (PdpAttribute) o;
-        return Objects.equals(name, that.name) &&
-            Objects.equals(value, that.value);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, value);
-    }
-
-    @Override
-    public String toString() {
-        return "PdpAttribute{" +
-            "name='" + name + '\'' +
-            ", value='" + value + '\'' +
-            '}';
-    }
 }

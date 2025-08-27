@@ -2,14 +2,34 @@
     "name" : "test",
     "description" : "Test",
     "serviceProviderIds" : [ "https://mujina-sp" ],
-    "attributes" : [ {
-        "name" : "eduPersonEntitlement",
-        "value" : "teacher",
-        "negated" : false
-    } ],
+    "loas": [
+        {
+          "level": "http://test2.surfconext.nl/assurance/loa1.5",
+          "allAttributesMustMatch": false,
+          "negateCidrNotation": false,
+          "attributes": [
+            {
+              "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+              "value": "student",
+              "negated": true
+            },
+            {
+              "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+              "value": "pre-student",
+              "negated": true
+            },
+            {
+              "name": "urn:mace:dir:attribute-def:eduPersonEntitlement",
+              "value": "test",
+              "negated": true
+            }
+          ],
+          "cidrNotations": []
+        }
+      ],
     "denyRule" : false,
     "allAttributesMustMatch" : true,
-    "type" : "regular",
+    "type" : "step",
     "denyAdvice": "Not allowed",
     "denyAdviceNl": "Niet toegstaan"
 }

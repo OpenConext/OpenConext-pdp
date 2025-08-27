@@ -92,8 +92,9 @@ public class PdpPolicyDefinition {
     }
 
     @JsonIgnore
-    public Set<Map.Entry<String, List<PdpAttribute>>> allAttributesGrouped() {
-        return this.attributes.stream().collect(groupingBy(PdpAttribute::getName)).entrySet();
+    public Set<Map.Entry<Map.Entry<String, Integer>, List<PdpAttribute>>> allAttributesGrouped() {
+        return this.attributes.stream().collect(groupingBy(attribute -> Map.entry(attribute.getName(), attribute.getGroupID())))
+            .entrySet();
     }
 
     @JsonIgnore

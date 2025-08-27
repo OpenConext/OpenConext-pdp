@@ -130,12 +130,6 @@ public abstract class AbstractPdpIntegrationTest implements JsonMapper {
         return getRestTemplate().exchange(getServerUri(path), method, requestEntity, responseType).getBody();
     }
 
-    protected PdpPolicy setUpViolation(String policyId) {
-        PdpPolicy policy = getExistingPolicy(policyId);
-        pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, "json", "response", true));
-        return policy;
-    }
-
     protected PdpPolicy getExistingPolicy(String id) {
         return pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(id, true).get();
     }
@@ -144,17 +138,4 @@ public abstract class AbstractPdpIntegrationTest implements JsonMapper {
         return getExistingPolicy(policyId);
     }
 
-    protected PdpPolicyDefinition getPdpPolicyDefinitionFromExistingPolicy() {
-        PdpPolicy policy = getExistingPolicy();
-        return pdpPolicyDefinitionParser.parse(policy);
-    }
-
-    protected void assertPolicyIsDeleted(PdpPolicy policy) {
-        try {
-            ResponseEntity<String> response = get("/internal/policies/" + policy.getId());
-            assertEquals(404, response.getStatusCode().value());
-        } catch (HttpClientErrorException e) {
-            assertEquals(404, e.getStatusCode().value());
-        }
-    }
 }
