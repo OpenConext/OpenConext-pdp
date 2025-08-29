@@ -8,6 +8,7 @@
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
     <Target>
+        {{#anyServiceProviders}}
         <AnyOf>
             {{#serviceProviderIds}}
             <AllOf>
@@ -24,6 +25,7 @@
             </AllOf>
             {{/serviceProviderIds}}
         </AnyOf>
+        {{/anyServiceProviders}}
         {{#anyIdentityProviders}}
         <AnyOf>
             {{#identityProviderIds}}

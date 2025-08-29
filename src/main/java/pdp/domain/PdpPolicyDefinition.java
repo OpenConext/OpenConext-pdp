@@ -34,11 +34,11 @@ public class PdpPolicyDefinition {
     @Size(min = 1)
     private String description;
 
-    @NotNull
-    @Size(min = 1)
     private List<String> serviceProviderIds = new ArrayList<>();
     private List<String> serviceProviderNames = new ArrayList<>();
     private List<String> serviceProviderNamesNl = new ArrayList<>();
+
+    private boolean serviceProvidersNegated;
 
     private boolean serviceProviderInvalidOrMissing;
 
@@ -88,7 +88,13 @@ public class PdpPolicyDefinition {
     //used in the mustache templates
     @JsonIgnore
     public List<String> anyIdentityProviders() {
-        return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.emptyList() : Arrays.asList("will-iterate-once");
+        return CollectionUtils.isEmpty(this.identityProviderIds) ? Collections.emptyList() : List.of("will-iterate-once");
+    }
+
+    //used in the mustache templates
+    @JsonIgnore
+    public List<String> anyServiceProviders() {
+        return CollectionUtils.isEmpty(this.serviceProviderIds) ? Collections.emptyList() : List.of("will-iterate-once");
     }
 
     @JsonIgnore

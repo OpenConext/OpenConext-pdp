@@ -8,6 +8,8 @@
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
     <Target>
+        {{^serviceProvidersNegated}}
+        {{#anyServiceProviders}}
         <AnyOf>
             {{#serviceProviderIds}}
             <AllOf>
@@ -24,6 +26,8 @@
             </AllOf>
             {{/serviceProviderIds}}
         </AnyOf>
+        {{/anyServiceProviders}}
+        {{/ serviceProvidersNegated}}
         {{#anyIdentityProviders}}
         <AnyOf>
             {{#identityProviderIds}}
@@ -64,6 +68,27 @@
         <Target/>
         {{^empty}}
         <Condition>
+            {{#serviceProvidersNegated}}
+            {{#anyServiceProviders}}
+            <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
+                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
+                    <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
+                    {{#serviceProviderIds}}
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
+                            <AttributeDesignator
+                                AttributeId="SPentityID"
+                                DataType="http://www.w3.org/2001/XMLSchema#string"
+                                Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                MustBePresent="true"/>
+                        </Apply>
+                    {{/serviceProviderIds}}
+                    </Apply>
+                </Apply>
+            {{/anyServiceProviders}}
+            {{/serviceProvidersNegated}}
+
+
             {{#allAttributesMustMatch}}
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
             {{/allAttributesMustMatch}}
@@ -100,6 +125,11 @@
                     {{/allAttributesMustMatch}}
                 {{/anyAttributes}}
             </Apply>
+            {{#serviceProvidersNegated}}
+            {{#anyServiceProviders}}
+            </Apply>
+            {{/anyServiceProviders}}
+            {{/serviceProvidersNegated}}
         </Condition>
         {{/empty}}
         <ObligationExpressions>
