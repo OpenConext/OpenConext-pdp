@@ -74,7 +74,7 @@
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:not">
                     <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
                     {{#serviceProviderIds}}
-                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+                        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-is-in">
                             <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
                             <AttributeDesignator
                                 AttributeId="SPentityID"
