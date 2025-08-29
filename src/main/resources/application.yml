@@ -84,7 +84,7 @@ pdpCronJobResponsible: 'true'
 server:
   error:
     path: /error
-  port: '8081'
+  port: 8082
   servlet:
     context-path: /pdp/api
 performance:
