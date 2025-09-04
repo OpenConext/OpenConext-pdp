@@ -8,6 +8,7 @@
         <XPathVersion>http://www.w3.org/TR/1999/REC-xpath-19991116</XPathVersion>
     </PolicyDefaults>
     <Target>
+        {{^serviceProvidersNegated}}
         {{#anyServiceProviders}}
         <AnyOf>
             {{#serviceProviderIds}}
@@ -26,6 +27,7 @@
             {{/serviceProviderIds}}
         </AnyOf>
         {{/anyServiceProviders}}
+        {{/serviceProvidersNegated}}
         {{#anyIdentityProviders}}
         <AnyOf>
             {{#identityProviderIds}}
@@ -59,6 +61,11 @@
             </AllOf>
         </AnyOf>
     </Target>
+    {{#serviceProvidersNegated}}
+    {{#anyServiceProviders}}
+    {{> negated-service-providers-policy.xml}}
+    {{/anyServiceProviders}}
+    {{/serviceProvidersNegated}}
     {{^denyRule}}
     <Rule Effect="Permit"
           RuleId="urn:surfconext:xacml:rule:id:permit">

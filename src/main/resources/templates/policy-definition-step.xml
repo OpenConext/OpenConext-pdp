@@ -27,7 +27,7 @@
             {{/serviceProviderIds}}
         </AnyOf>
         {{/anyServiceProviders}}
-        {{/ serviceProvidersNegated}}
+        {{/serviceProvidersNegated}}
         {{#anyIdentityProviders}}
         <AnyOf>
             {{#identityProviderIds}}
@@ -87,8 +87,6 @@
                 </Apply>
             {{/anyServiceProviders}}
             {{/serviceProvidersNegated}}
-
-
             {{#allAttributesMustMatch}}
             <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:and">
             {{/allAttributesMustMatch}}
