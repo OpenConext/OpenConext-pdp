@@ -31,10 +31,11 @@ public class PolicyTemplateEngine {
             mustache.execute(writer, pdpPolicyDefinition).flush();
             String policyXml = writer.toString();
 
-            LOG.debug("Returning policyXml {}", policyXml);
+            LOG.trace("Returning policyXml {}", policyXml);
 
             return policyXml;
         } catch (IOException e) {
+            LOG.error("Error in creating Policy XML for pdpDefinition: " + pdpPolicyDefinition, e);
             throw new RuntimeException(e);
         }
     }
