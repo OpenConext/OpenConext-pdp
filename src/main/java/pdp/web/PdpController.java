@@ -190,7 +190,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                         );
                     }
                     String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
-                    Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml);
+                    Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml, policyDefinition.getName());
                     //If there are null's then something is wrong
                     Assert.notNull(parsedPolicy, "ParsedPolicy is not valid");
                     return new PdpPolicy(

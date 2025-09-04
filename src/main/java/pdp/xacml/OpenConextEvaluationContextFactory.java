@@ -96,7 +96,7 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     }
 
     private PolicyDef convertToPolicyDef(PdpPolicy pdpPolicy) {
-        Policy policyDef = policyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml());
+        Policy policyDef = policyDefinitionParser.parsePolicy(pdpPolicy.getPolicyXml(), pdpPolicy.getName());
         policyDef.setIdentifier(new IdentifierImpl(getPolicyId(pdpPolicy.getName())));
         policyDef.getRules().forEachRemaining(rule -> {
                 if (rule.getRuleEffect().getDecision().equals(Decision.DENY)) {
