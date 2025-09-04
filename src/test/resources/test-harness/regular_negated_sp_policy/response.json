@@ -1,0 +1,26 @@
+{
+    "Response": [
+        {
+            "Status": {
+                "StatusCode": {
+                    "Value": "urn:oasis:names:tc:xacml:1.0:status:ok"
+                }
+            },
+            "PolicyIdentifier": {
+                "PolicySetIdReference": [
+                    {
+                        "Version": "1.0",
+                        "Id": "urn:openconext:pdp:root:policyset"
+                    }
+                ],
+                "PolicyIdReference": [
+                    {
+                        "Version": "1",
+                        "Id": "urn:surfconext:xacml:policy:id:negate_regular_policy"
+                    }
+                ]
+            },
+            "Decision": "Permit"
+        }
+    ]
+}
