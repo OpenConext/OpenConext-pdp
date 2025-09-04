@@ -2,20 +2,17 @@
     <Description>
         Permit access if SPEntityID is negated and present
     </Description>
-    <Target>
-        <AnyOf>
-            <AllOf>
-                <Match MatchId="urn:oasis:names:tc:xacml:1.0:function:any-of">
-                    <Function FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal"/>
-                    {{#serviceProviderIds}}
-                    <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
-                    {{/serviceProviderIds}}
-                    <AttributeDesignator AttributeId="SPentityID"
-                                         DataType="http://www.w3.org/2001/XMLSchema#string"
-                                         Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
-                                         MustBePresent="false"/>
-                </Match>
-            </AllOf>
-        </AnyOf>
-    </Target>
+    <Target/>
+    <Condition>
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:any-of">
+            <Function FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-equal"/>
+            <AttributeDesignator AttributeId="SPentityID"
+                                 DataType="http://www.w3.org/2001/XMLSchema#string"
+                                 Category="urn:oasis:names:tc:xacml:3.0:attribute-category:resource"
+                                 MustBePresent="false"/>
+            {{#serviceProviderIds}}
+            <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">{{toString}}</AttributeValue>
+            {{/serviceProviderIds}}
+        </Apply>
+    </Condition>
 </Rule>
