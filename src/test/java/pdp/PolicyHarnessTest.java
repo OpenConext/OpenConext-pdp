@@ -61,21 +61,20 @@ public class PolicyHarnessTest {
     @SneakyThrows
     @Test
     void test() {
-        policyRepository.deleteAll();
         String policy = System.getProperty("policy");
         Stream.of(new ClassPathResource("test-harness").getFile()
                 .listFiles())
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
-            .forEach(directory -> testPolicy(directory));
+            .forEach(this::testPolicy);
 
     }
 
     @SneakyThrows
     private void testPolicy(File policyDirectory) {
+        policyRepository.deleteAll();
         List<File> files = List.of(policyDirectory.listFiles());
         String request = this.readFile(files, "request.json");
-        String response = this.readFile(files, "response.json");
         File responseFile = files.stream()
             .filter(file -> file.getName().equalsIgnoreCase("response.json"))
             .findFirst().orElseThrow();
@@ -83,7 +82,7 @@ public class PolicyHarnessTest {
         });
         files.stream()
             .filter(file -> file.getName().toLowerCase().startsWith("policy"))
-            .forEach(file -> storePolicy(file));
+            .forEach(this::storePolicy);
 
         Map<String, Object> result = given()
             .auth().preemptive().basic("pdp_admin", "secret")
