@@ -90,7 +90,7 @@ The policies that can be created are limited in functionality:
 
 The external API for trusted applications restricts access to policies based on the Identity Provider
 and the possible associated Service Provider(s) of the user and the corresponding Service and Identity Provider(s) of the policy. See
- [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/pdp-gui/src/images/PdP_policies_access.001.jpeg) for an overview of the logic applied in determining accessibility.
+ [this image](https://raw.githubusercontent.com/OpenConext/OpenConext-pdp/master/PdP_policies_access.001.jpeg) for an overview of the logic applied in determining accessibility.
 
 ### Local database content
 
