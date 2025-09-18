@@ -183,12 +183,6 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         LOG.info("/manage/push");
         List<PdpPolicy> policies = policyDefinitions.stream()
                 .map(policyDefinition -> {
-                    if (CollectionUtils.isEmpty(policyDefinition.getServiceProviderIds())) {
-                        throw new IllegalArgumentException(
-                                String.format("Policy %s has no serviceProviderIds. This is invalid",
-                                        policyDefinition.getName())
-                        );
-                    }
                     String policyXml = policyTemplateEngine.createPolicyXml(policyDefinition);
                     Policy parsedPolicy = pdpPolicyDefinitionParser.parsePolicy(policyXml, policyDefinition.getName());
                     //If there are null's then something is wrong
