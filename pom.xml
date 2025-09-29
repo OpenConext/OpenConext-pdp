@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.openconext</groupId>
-    <version>7.2.0</version>
+    <version>7.3.0-SNAPSHOT</version>
     <artifactId>pdp-server</artifactId>
     <packaging>jar</packaging>
     <name>pdp-server</name>
