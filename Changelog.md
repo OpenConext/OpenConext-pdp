@@ -2,6 +2,10 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.2.1
+
+- Expose port 8082 in the container image
+
 ## 7.2.0
 
 - Support grouped attribute conditions to allow AND between multiple values of the same attribute; added endpoint for Manage to
