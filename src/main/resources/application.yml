@@ -26,6 +26,7 @@ spring:
             token-uri: https://authz.test2.surfconext.nl/oauth/token
 xacml:
   properties:
+    #Note, this must be an absolute path when running PdP as a standalone executable JAr file (e.g. docker deployment)
     path: classpath:xacml.conext.properties
 voot:
   serviceUrl: https://voot.test2.surfconext.nl
