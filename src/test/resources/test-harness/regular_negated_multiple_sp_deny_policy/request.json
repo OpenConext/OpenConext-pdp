@@ -1,0 +1,28 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "Value": "pre-student"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://1234aaab.nl"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://idp.test2.surfconext.nl"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

@@ -78,7 +78,7 @@ server:
     path: /error
   port: 8082
   servlet:
-    context-path: /pdp/api
+    context-path:
 performance:
   pre:
     policy:

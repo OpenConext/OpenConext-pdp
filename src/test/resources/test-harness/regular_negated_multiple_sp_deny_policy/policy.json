@@ -1,0 +1,34 @@
+{
+    "id": "f7a84f34-e928-4f57-93eb-0a8274e7aa75",
+    "policyId": "urn:surfconext:xacml:policy:id:test_negated_deny_policy",
+    "name": "Test Negated Deny Policy",
+    "description": "A user from 'IdP test 2' is not allowed to access NOT 'OpenConext Valid SP, OpenConext Profile, OpenConext Mujina SP, OpenConext ServiceRegistry, OpenConext ServiceRegistry Mock, testoidc' when he/she has the value 'pre-student' for attribute 'urn:mace:dir:attribute-def:eduPersonAffiliation'",
+    "serviceProviderIds": [
+        "Duis ad do",
+        "https://profile.test2.surfconext.nl/authentication/metadata",
+        "http://mock-sp",
+        "https://serviceregistry.test2.surfconext.nl/simplesaml/module.php/saml/sp/metadata.php/default-sp"
+    ],
+    "serviceProvidersNegated": true,
+    "identityProviderIds": [
+        "https://idp.test2.surfconext.nl"
+    ],
+    "attributes": [
+        {
+            "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+            "value": "pre-student",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "created": "2025-11-19T12:02:17.758822Z",
+    "denyAdvice": "Test",
+    "denyAdviceNl": "Test",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}
