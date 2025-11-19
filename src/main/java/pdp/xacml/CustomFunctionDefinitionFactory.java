@@ -4,6 +4,7 @@ import org.apache.openaz.xacml.api.Identifier;
 import org.apache.openaz.xacml.pdp.policy.FunctionDefinition;
 import org.apache.openaz.xacml.pdp.std.StdFunctionDefinitionFactory;
 import org.springframework.util.ReflectionUtils;
+import pdp.bag.BagFunctionDefinition;
 import pdp.ip.IPRangeFunctionDefinition;
 import pdp.negate.NegateFunctionDefinition;
 
@@ -26,8 +27,10 @@ public class CustomFunctionDefinitionFactory extends StdFunctionDefinitionFactor
 
         IPRangeFunctionDefinition ipRangeFunctionDefinition = new IPRangeFunctionDefinition();
         NegateFunctionDefinition negateFunctionDefinition = new NegateFunctionDefinition();
+        BagFunctionDefinition bagFunctionDefinition = new BagFunctionDefinition();
 
         mapFunctionDefinitions.put(ipRangeFunctionDefinition.getId(), ipRangeFunctionDefinition);
         mapFunctionDefinitions.put(negateFunctionDefinition.getId(), negateFunctionDefinition);
+        mapFunctionDefinitions.put(bagFunctionDefinition.getId(), bagFunctionDefinition);
     }
 }

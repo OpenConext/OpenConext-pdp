@@ -62,7 +62,9 @@ logging:
     pdp: INFO
     org:
       springframework:
-        security: TRACE
+        security: WARN
+      apache:
+        openaz: DEBUG
 endpoints:
   health:
     sensitive: 'false'

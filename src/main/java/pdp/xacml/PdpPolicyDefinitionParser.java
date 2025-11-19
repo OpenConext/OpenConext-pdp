@@ -35,6 +35,7 @@ public class PdpPolicyDefinitionParser implements IPAddressProvider {
     public static final String SCHAC_HOME_ORGANIZATION = "urn:mace:terena.org:attribute-def:schacHomeOrganization";
     public static final String IP_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:ip:range";
     public static final String NEGATE_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:negation";
+    public static final String BAG_FUNCTION = "urn:surfnet:cbac:custom:function:3.0:bag";
 
     private static final String CLIENT_ID = "ClientID";
 
