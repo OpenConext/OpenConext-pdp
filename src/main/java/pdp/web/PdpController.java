@@ -131,7 +131,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         stats.setResponseTimeMs(took);
         LOG.debug("decide response: {} took: {} ms", response, took);
 
-        reportPossiblePolicyViolation(pdpResponse, response, payload, isPlayground);
+//        reportPossiblePolicyViolation(pdpResponse, response, payload, isPlayground);
         provideStatsContext(stats, pdpResponse);
 
         return response;
