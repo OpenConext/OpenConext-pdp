@@ -42,7 +42,7 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
     }
 
     private void saveContext(StatsContext context) {
-        if (context.getServiceProvicer() == null) {
+        if (context.getServiceProvider() == null) {
             return;
         }
         try {
