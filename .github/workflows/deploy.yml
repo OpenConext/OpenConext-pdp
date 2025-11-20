@@ -107,7 +107,7 @@ jobs:
             type=sha
 
       - name: Build and push the pdp server image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: docker/Dockerfile
