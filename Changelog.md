@@ -2,6 +2,15 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.3.0
+
+- Change API paths to match the former PDP‑gui proxy rewrites; PDP now serves `/pdp/api/**` directly and exposes
+  `/internal/health` and `/internal/info` endpoints without the GUI proxy (#251).
+- Fix IdP‑based policies with multiple exempted (negated) Service Providers that previously generated a broken XACML
+  condition and resulted in an `Indeterminate` decision; evaluation now works correctly (#250).
+- Remove obsolete mail configuration and templates from the distribution.
+- Fix dependabot
+
 ## 7.2.1
 
 - Expose port 8082 in the container image
