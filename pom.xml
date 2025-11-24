@@ -100,7 +100,6 @@
             <artifactId>flyway-mysql</artifactId>
             <version>11.10.0</version>
         </dependency>
-
         <!--        <dependency>-->
         <!--            <groupId>org.flywaydb</groupId>-->
         <!--            <artifactId>flyway-core</artifactId>-->
@@ -208,7 +207,12 @@
             <version>5.5.6</version>
             <scope>test</scope>
         </dependency>
-
+        <dependency>
+            <groupId>io.github.java-diff-utils</groupId>
+            <artifactId>java-diff-utils</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

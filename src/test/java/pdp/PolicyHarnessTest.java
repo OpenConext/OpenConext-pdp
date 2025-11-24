@@ -9,7 +9,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +24,9 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.patch.Patch;
+import com.github.difflib.UnifiedDiffUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +37,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -96,7 +99,27 @@ public class PolicyHarnessTest {
             .post("/pdp/api/manage/decide")
             .as(new TypeRef<>() {
             });
-        assertEquals(responseMap, result);
+
+        if (responseMap.equals(result)) {
+            assertTrue(true);  /* probably superfluous */
+        } else { /* pretty-print the diff */
+            String expected = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
+            String actual = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+            // Use java-diff-utils to produce a readable unified diff
+            java.util.List<String> expectedLines = expected.lines().toList();
+            java.util.List<String> actualLines = actual.lines().toList();
+            Patch<String> patch = DiffUtils.diff(expectedLines, actualLines);
+            List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
+
+            String message = "Response did not match expected JSON\n" +
+                "===== Expected =====\n" +
+                expected + "\n" +
+                "===== Actual   =====\n" +
+                actual + "\n" +
+                "===== Unified Diff (expected vs actual) =====\n" +
+                String.join("\n", unifiedDiff) + "\n";
+            fail(message);
+        }
     }
 
     @SneakyThrows
