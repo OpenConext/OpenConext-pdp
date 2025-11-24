@@ -10,6 +10,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -58,16 +60,17 @@ public class PolicyHarnessTest {
         RestAssured.port = port;
     }
 
-    @SneakyThrows
-    @Test
-    void test() {
+    @TestFactory
+    Stream<DynamicTest> policyHarness() throws Exception {
         String policy = System.getProperty("policy");
-        Stream.of(new ClassPathResource("test-harness").getFile()
+        return Stream.of(new ClassPathResource("test-harness").getFile()
                 .listFiles())
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
-            .forEach(this::testPolicy);
-
+            .map(directory -> DynamicTest.dynamicTest(
+                "Policy harness: " + directory.getName(),
+                () -> testPolicy(directory)
+            ));
     }
 
     @SneakyThrows
