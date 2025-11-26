@@ -1,5 +1,21 @@
 from __future__ import annotations
 
+"""
+This module provides a test harness for the PDP (Policy Decision Point) system.
+It contains classes for constructing policies, requests and responses in a
+consistent JSON format that can be used to test the PDP behavior.
+
+See generate-tests.py for examples of how to use these classes to
+create test cases by:
+
+1. Creating a PDPPolicy with allow/deny rules, attributes and entity IDs
+2. Creating a PDPRequest with attributes to test against the policy
+3. Creating a PDPTest that combines policy and request with expected decision
+4. Writing the test files (policy.json, request.json, response.json) to disk
+
+The generated test files can then be executed by the Java PolicyHarnessTest.
+"""
+
 import copy
 import json
 import random

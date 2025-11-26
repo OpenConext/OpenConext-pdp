@@ -4,7 +4,8 @@ import os
 from pathlib import Path
 from pdp_harness import PDPPolicy, PDPRequest, PDPResponse, PDPDecision, PDPTest
 
-
+# very simple test; generate policy, requests and responses and write them to the screen
+# use for debugging
 def test():
     policy = PDPPolicy(
         idp_entityids=["http://idp1"],
@@ -48,7 +49,8 @@ def test():
     print(response_deny.to_json())
 
 
-def generate_harnass_tests():
+# generate some simple tests
+def generate_tests():
     # write all tests to this directory
     os.chdir(Path(__file__).parent)
 
@@ -76,16 +78,19 @@ def generate_harnass_tests():
     test2 = test1.copy()
     test2.policy.attributes = {"eduPersonAffiliation":  ["notmember"]}
     test2.policy.decision = PDPDecision.Deny
+    # copy the test and adjust the attribute to give a Deny
     test2.write()
 
     test3 = test1.copy()
+    # copy the test and adjust the SP to give a NotApplicable
     test3.request.sp_entityid = "http://sp2"
     test3.policy.decision = PDPDecision.NotApplicable
+    # copy the test and adjust the response to fail the test
     test3.write()
 
 
 def main():
-    generate_harnass_tests()
+    generate_tests()
 
 
 if __name__ == '__main__':
