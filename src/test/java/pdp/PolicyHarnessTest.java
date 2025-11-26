@@ -72,6 +72,7 @@ public class PolicyHarnessTest {
                 Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness-generated").getFile().listFiles()))
             )
             .filter(File::isDirectory)
+            .filter(file -> (file.getName().matches("^[a-zA-Z].*")))
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
                 "Policy harness: " + directory.getName(),
