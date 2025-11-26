@@ -74,7 +74,7 @@ def generate_harnass_tests():
     test1.write()
 
     test2 = test1.copy()
-    test2.policy.attributes["eduPersonAffiliation"] = ["notmember"]
+    test2.policy.attributes = {"eduPersonAffiliation":  ["notmember"]}
     test2.policy.decision = PDPDecision.Deny
     test2.write()
 
