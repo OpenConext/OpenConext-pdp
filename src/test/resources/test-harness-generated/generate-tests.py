@@ -54,18 +54,16 @@ def generate_tests():
     # write all tests to this directory
     os.chdir(Path(__file__).parent)
 
-    policy = PDPPolicy(
-        idp_entityids=["http://idp1"],
-        sp_entityids=["http://sp1"],
-        is_sp_negated=False,
-        attributes={
-            "eduPersonAffiliation": ["member", "staff"],
-        }
-    )
-
     test1 = PDPTest(
         name="simple_attr_allow",
-        policy=policy,
+        policy=PDPPolicy(
+            idp_entityids=["http://idp1"],
+            sp_entityids=["http://sp1"],
+            is_sp_negated=False,
+            attributes={
+                "eduPersonAffiliation": ["member", "staff"],
+            }
+        ),
         request=PDPRequest(
             idp_entityid="http://idp1",
             sp_entityid="http://sp1",
