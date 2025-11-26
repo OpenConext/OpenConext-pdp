@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import json
+import random
+import string
 from dataclasses import dataclass, field, asdict, InitVar
 from enum import StrEnum
+from pathlib import Path
 
 from jinja2 import Template, StrictUndefined
 import uuid
@@ -26,7 +29,7 @@ class PDPPolicy:
 
     def __post_init__(self):
         if self.id is None:
-            self.id = str(uuid.uuid4())
+            self.id = ''.join(random.choices("0123456789abcdef", k=16))
 
     @property
     def flat_attributes(self):
@@ -115,7 +118,7 @@ def render_request(request: PDPRequest) -> str:
                     {%- for attr_name, value in r.flat_attributes -%}
                         {%- if not loop.first %},{% endif %}
                         {
-                            "AttributeId": "{{ attr_name }}",
+                            "AttributeId": "urn:mace:dir:attribute-def:{{ attr_name }}",
                             "Value": "{{ value }}"
                         }
                     {%- endfor -%}
@@ -176,6 +179,19 @@ def render_response(response: PDPResponse) -> str:
                    "Id": "urn:surfconext:xacml:policy:id:{{ r.policy.id }}"
                 }
             ],
+            {%- elif r.decision == 'Permit' %}
+            {#- TODO: this is a bit annoying, because typically you don't really want to
+                      have to specify which rule matches exactly #}
+            {#- TODO: also unclear what whould be in here, exactly.  Even for complex rules,
+                      this still contains only 1 attribute #}
+            "Category" : [ {
+                "CategoryId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
+                "Attribute" : [ {
+                    "AttributeId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
+                    "Value" : "{{ r.policy.flat_attributes[0][1] }}",
+                    "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+                } ]
+            } ],
             {%- endif %}
             "PolicyIdentifier": {
                 "PolicySetIdReference": [{
@@ -218,9 +234,7 @@ def test():
     request = PDPRequest(
         idp_entityid="http://idp1",
         sp_entityid="http://sp1",
-        attributes={
-            "urn:mace:dir:attribute-def:eduPersonAffiliation": ["member", "staff"]
-        }
+        attributes={"eduPersonAffiliation": ["member", "staff"]}
     )
     print("Request:")
     print(render_request(request))
@@ -245,8 +259,40 @@ def test():
     print(render_response(response_deny))
 
 
+def generate_harnass_tests():
+    # create a new directory for the generated tests
+    base_dir = Path(__file__).parent
+
+    test_dir = base_dir / "my_first_test"
+    test_dir.mkdir(exist_ok=True)
+
+    policy = PDPPolicy(
+        idp_entityids=["http://idp1"],
+        sp_entityids=["http://sp1"],
+        is_sp_negated=False,
+        attributes={
+            "eduPersonAffiliation": ["member", "staff"],
+        }
+    )
+    request = PDPRequest(
+        idp_entityid="http://idp1",
+        sp_entityid="http://sp1",
+        attributes={"eduPersonAffiliation": ["member"]}
+    )
+    response = PDPResponse(
+        policy=policy,
+        decision=PDPDecision.Permit
+    )
+
+    print(f"writing to {test_dir}")
+    for f in test_dir.glob("*"): f.unlink()
+    (test_dir / "policy.json").write_text(render_policy(policy))
+    (test_dir / "request.json").write_text(render_request(request))
+    (test_dir / "response.json").write_text(render_response(response))
+
+
 def main():
-    test()
+    generate_harnass_tests()
 
 
 if __name__ == '__main__':
