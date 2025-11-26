@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 import random
 import datetime
@@ -224,3 +225,31 @@ class PDPResponse:
 
         # check if the JSON is correct and reformat
         return json.dumps(json.loads(json_str), indent=4)
+
+
+@dataclass
+class PDPTest:
+    name: str
+    policy: PDPPolicy
+    request: PDPRequest
+    # need to specify either one of these:
+    response: PDPResponse | None = None
+    decision: PDPDecision | None = None
+
+    def __post_init__(self):
+        if self.response is None and self.decision is None:
+            raise ValueError("either response or decision must be specified")
+        if self.response is None:
+            self.response = PDPResponse(self.policy, self.decision)
+
+    def write(self, basedir: Path = Path('.')):
+        output_dir = basedir / self.name
+        print(f"writing to {output_dir.absolute()}")
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        for f in output_dir.glob("*"):
+            f.unlink()
+
+        self.policy.write_json(output_dir / "policy.json")
+        self.request.write_json(output_dir / "request.json")
+        self.response.write_json(output_dir / "response.json")

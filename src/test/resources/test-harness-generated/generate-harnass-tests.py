@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
-from pdp_harness import PDPPolicy, PDPRequest, PDPResponse, PDPDecision
+from pdp_harness import PDPPolicy, PDPRequest, PDPResponse, PDPDecision, PDPTest
 
 
 def test():
@@ -48,11 +49,8 @@ def test():
 
 
 def generate_harnass_tests():
-    # create a new directory for the generated tests
-    base_dir = Path(__file__).parent
-
-    test_dir = base_dir / "my_first_test"
-    test_dir.mkdir(exist_ok=True)
+    # write all tests to this directory
+    os.chdir(Path(__file__).parent)
 
     policy = PDPPolicy(
         idp_entityids=["http://idp1"],
@@ -62,21 +60,42 @@ def generate_harnass_tests():
             "eduPersonAffiliation": ["member", "staff"],
         }
     )
-    request = PDPRequest(
-        idp_entityid="http://idp1",
-        sp_entityid="http://sp1",
-        attributes={"eduPersonAffiliation": ["member"]}
-    )
-    response = PDPResponse(
+
+    test1 = PDPTest(
+        name="simple_attr_allow",
         policy=policy,
+        request=PDPRequest(
+            idp_entityid="http://idp1",
+            sp_entityid="http://sp1",
+            attributes={"eduPersonAffiliation": ["member"]}
+        ),
         decision=PDPDecision.Permit
     )
+    test1.write()
 
-    print(f"writing to {test_dir}")
-    for f in test_dir.glob("*"): f.unlink()
-    policy.write_json(test_dir / "policy.json")
-    request.write_json(test_dir / "request.json")
-    response.write_json(test_dir / "response.json")
+    test2 = PDPTest(
+        name="simple_attr_deny",
+        policy=policy,
+        request=PDPRequest(
+            idp_entityid="http://idp1",
+            sp_entityid="http://sp1",
+            attributes={"eduPersonAffiliation": ["notmember"]}
+        ),
+        decision=PDPDecision.Deny
+    )
+    test2.write()
+
+    test1 = PDPTest(
+        name="simple_attr_na",
+        policy=policy,
+        request=PDPRequest(
+            idp_entityid="http://idp1",
+            sp_entityid="http://sp2",
+            attributes={"eduPersonAffiliation": ["member"]}
+        ),
+        decision=PDPDecision.NotApplicable
+    )
+    test1.write()
 
 
 def main():
