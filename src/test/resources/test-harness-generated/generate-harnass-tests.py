@@ -40,6 +40,49 @@ class PDPPolicy:
         ]
         return flat
 
+    def write_json(self, path: Path):
+        path.write_text(self.to_json())
+
+    def to_json(self) -> str:
+        """Render this policy as normalized JSON using a Jinja2 template."""
+        policy_template = """
+        {
+            "id": "{{ p.id }}",
+            "policyId": "urn:surfconext:xacml:policy:id:{{ p.id }}",
+            "name": "{{ p.id }}",
+            "description": "This is the description of the policy",
+            "serviceProviderIds": {{ p.sp_entityids | list | tojson }},
+            "serviceProvidersNegated": {{ p.is_sp_negated | tojson }},
+            "identityProviderIds": {{ p.idp_entityids | list | tojson }},
+            "attributes": [
+                {%- for attr_name, attr_value in p.flat_attributes -%}
+                {%- if not loop.first %},{% endif %}
+                {
+                    "name": "urn:mace:dir:attribute-def:{{ attr_name }}",
+                    "value": "{{ attr_value }}",
+                    "negated": false,
+                    "groupID": 0 {#- TODO: the groupID is required for more advanced attribute combinations (see https://github.com/OpenConext/OpenConext-manage/issues/579) #}
+                }
+                {%- endfor -%}
+            ],
+            "denyRule": {{ p.is_deny | tojson }},
+            "allAttributesMustMatch": {{ p.is_and | tojson }},
+            "created": "{{ p.created.isoformat() }}",
+            "denyAdvice": "NOT ALLOWED",
+            "denyAdviceNl": "MAG NIET",
+            "active": true,
+            "actionsAllowed": false,
+            "type": "reg",
+            "revisionNbr": 0,
+            "activatedSr": false
+        }
+        """
+        template = Template(policy_template, undefined=StrictUndefined)
+        json_str = template.render(p=self)
+
+        # check if the json is correct and reformat
+        return json.dumps(json.loads(json_str), indent=4)
+
 
 @dataclass
 class PDPRequest:
@@ -56,6 +99,46 @@ class PDPRequest:
         ]
         return flat
 
+    def write_json(self, path: Path):
+        path.write_text(self.to_json())
+
+    def to_json(self) -> str:
+        """Render this request as normalized JSON using a Jinja2 template."""
+        request_template = """
+        {
+            "Request": {
+                "AccessSubject": {
+                    "Attribute": [
+                        {%- for attr_name, value in r.flat_attributes -%}
+                            {%- if not loop.first %},{% endif %}
+                            {
+                                "AttributeId": "urn:mace:dir:attribute-def:{{ attr_name }}",
+                                "Value": "{{ value }}"
+                            }
+                        {%- endfor -%}
+                    ]
+                },
+                "Resource": {
+                    "Attribute": [{
+                        "AttributeId": "SPentityID",
+                        "Value": "{{ r.sp_entityid }}"
+                    },{
+                        "AttributeId": "IDPentityID",
+                        "Value": "{{ r.idp_entityid }}"
+                    },{
+                        "AttributeId": "ClientID",
+                        "Value": "EngineBlock"
+                    }]
+               }
+            }
+        }
+        """
+        template = Template(request_template, undefined=StrictUndefined)
+        json_str = template.render(r=self)
+
+        # check if the json is correct and reformat
+        return json.dumps(json.loads(json_str), indent=4)
+
 
 class PDPDecision(StrEnum):
     Permit = "Permit"
@@ -68,152 +151,80 @@ class PDPResponse:
     policy: PDPPolicy
     decision: PDPDecision
 
+    def write_json(self, path: Path):
+        path.write_text(self.to_json())
 
-def render_policy(policy: PDPPolicy) -> str:
-    policy_template = """
-    {
-        "id": "{{ p.id }}",
-        "policyId": "urn:surfconext:xacml:policy:id:{{ p.id }}",
-        "name": "{{ p.id }}",
-        "description": "This is the description of the policy",
-        "serviceProviderIds": {{ p.sp_entityids | list | tojson }},
-        "serviceProvidersNegated": {{ p.is_sp_negated | tojson }},
-        "identityProviderIds": {{ p.idp_entityids | list | tojson }},
-        "attributes": [
-            {%- for attr_name, attr_value in p.flat_attributes -%}
-            {%- if not loop.first %},{% endif %}
-            {
-                "name": "urn:mace:dir:attribute-def:{{ attr_name }}",
-                "value": "{{ attr_value }}",
-                "negated": false,
-                "groupID": 0 {#- TODO: the groupID is required for more advanced attribute combinations (see https://github.com/OpenConext/OpenConext-manage/issues/579) #}
-            }
-            {%- endfor -%}
-        ],
-        "denyRule": {{ p.is_deny | tojson }},
-        "allAttributesMustMatch": {{ p.is_and | tojson }},
-        "created": "{{ p.created.isoformat() }}",
-        "denyAdvice": "NOT ALLOWED",
-        "denyAdviceNl": "MAG NIET",
-        "active": true,
-        "actionsAllowed": false,
-        "type": "reg",
-        "revisionNbr": 0,
-        "activatedSr": false
-    }
-    """
-    template = Template(policy_template, undefined=StrictUndefined)
-    json_str = template.render(p=policy)
-
-    # check if the json is correct and reformat:
-    return json.dumps(json.loads(json_str), indent=4)
-
-
-def render_request(request: PDPRequest) -> str:
-    request_template = """
-    {
-        "Request": {
-            "AccessSubject": {
-                "Attribute": [
-                    {%- for attr_name, value in r.flat_attributes -%}
-                        {%- if not loop.first %},{% endif %}
-                        {
-                            "AttributeId": "urn:mace:dir:attribute-def:{{ attr_name }}",
-                            "Value": "{{ value }}"
-                        }
-                    {%- endfor -%}
-                ]
-            },
-            "Resource": {
-                "Attribute": [{
-                    "AttributeId": "SPentityID",
-                    "Value": "{{ r.sp_entityid }}"
-                },{
-                    "AttributeId": "IDPentityID",
-                    "Value": "{{ r.idp_entityid }}"
-                },{
-                    "AttributeId": "ClientID",
-                    "Value": "EngineBlock"
-                }]
-           }
+    def to_json(self) -> str:
+        """Render this response as normalized JSON using a Jinja2 template."""
+        response_template = """
+        {
+            "Response": [{
+                "Status": {
+                    "StatusCode": { "Value": "urn:oasis:names:tc:xacml:1.0:status:ok" }
+                },
+                {%- if r.decision == 'Deny' %}
+                "AssociatedAdvice": [
+                    {
+                       "AttributeAssignment": [
+                          {
+                             "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+                             "AttributeId": "DenyMessage:en",
+                             "Value": "NOT ALLOWED",
+                             "DataType": "http://www.w3.org/2001/XMLSchema#string"
+                          },
+                          {
+                             "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+                             "AttributeId": "DenyMessage:nl",
+                             "Value": "MAG NIET",
+                             "DataType": "http://www.w3.org/2001/XMLSchema#string"
+                          },
+                          {
+                             "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+                             "AttributeId": "IdPOnly",
+                             "Value": true,
+                             "DataType": "http://www.w3.org/2001/XMLSchema#boolean"
+                          }
+                       ],
+                       "Id": "urn:surfconext:xacml:policy:id:{{ r.policy.id }}"
+                    }
+                ],
+                {%- elif r.decision == 'Permit' %}
+                {#- TODO: this is a bit annoying, because typically you don't really want to
+                          have to specify which rule matches exactly #}
+                {#- TODO: also unclear what whould be in here, exactly.  Even for complex rules,
+                          this still contains only 1 attribute #}
+                "Category" : [ {
+                    "CategoryId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
+                    "Attribute" : [ {
+                        "AttributeId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
+                        "Value" : "{{ r.policy.flat_attributes[0][1] }}",
+                        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+                    } ]
+                } ],
+                {%- endif %}
+                "PolicyIdentifier": {
+                    "PolicySetIdReference": [{
+                        "Version": "1.0",
+                        "Id": "urn:openconext:pdp:root:policyset"
+                    }]
+                    {%- if r.decision != 'NotApplicable' -%},
+                    "PolicyIdReference": [{
+                        "Version": "1",
+                        "Id": "urn:surfconext:xacml:policy:id:{{ r.policy.id }}"
+                    }]
+                    {%- endif -%}
+                },
+                "Decision": "{{ r.decision }}"
+            }]
         }
-    }
-    """
-    template = Template(request_template, undefined=StrictUndefined)
-    json_str = template.render(r=request)
+        """
+        template = Template(response_template, undefined=StrictUndefined)
+        json_str = template.render(r=self)
 
-    # check if the json is correct and reformat:
-    return json.dumps(json.loads(json_str), indent=4)
+        # check if the json is correct and reformat
+        return json.dumps(json.loads(json_str), indent=4)
 
 
-def render_response(response: PDPResponse) -> str:
-    response_template = """
-    {
-        "Response": [{
-            "Status": {
-                "StatusCode": { "Value": "urn:oasis:names:tc:xacml:1.0:status:ok" }
-            },
-            {%- if r.decision == 'Deny' %}
-            "AssociatedAdvice": [
-                {
-                   "AttributeAssignment": [
-                      {
-                         "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
-                         "AttributeId": "DenyMessage:en",
-                         "Value": "NOT ALLOWED",
-                         "DataType": "http://www.w3.org/2001/XMLSchema#string"
-                      },
-                      {
-                         "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
-                         "AttributeId": "DenyMessage:nl",
-                         "Value": "MAG NIET",
-                         "DataType": "http://www.w3.org/2001/XMLSchema#string"
-                      },
-                      {
-                         "Category": "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
-                         "AttributeId": "IdPOnly",
-                         "Value": true,
-                         "DataType": "http://www.w3.org/2001/XMLSchema#boolean"
-                      }
-                   ],
-                   "Id": "urn:surfconext:xacml:policy:id:{{ r.policy.id }}"
-                }
-            ],
-            {%- elif r.decision == 'Permit' %}
-            {#- TODO: this is a bit annoying, because typically you don't really want to
-                      have to specify which rule matches exactly #}
-            {#- TODO: also unclear what whould be in here, exactly.  Even for complex rules,
-                      this still contains only 1 attribute #}
-            "Category" : [ {
-                "CategoryId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
-                "Attribute" : [ {
-                    "AttributeId" : "urn:mace:dir:attribute-def:{{ r.policy.flat_attributes[0][0] }}",
-                    "Value" : "{{ r.policy.flat_attributes[0][1] }}",
-                    "DataType" : "http://www.w3.org/2001/XMLSchema#string"
-                } ]
-            } ],
-            {%- endif %}
-            "PolicyIdentifier": {
-                "PolicySetIdReference": [{
-                    "Version": "1.0",
-                    "Id": "urn:openconext:pdp:root:policyset"
-                }]
-                {%- if r.decision != 'NotApplicable' -%},
-                "PolicyIdReference": [{
-                    "Version": "1",
-                    "Id": "urn:surfconext:xacml:policy:id:{{ r.policy.id }}"
-                }]
-                {%- endif -%}
-            },
-            "Decision": "{{ r.decision }}"
-        }]
-    }
-    """
-    template = Template(response_template, undefined=StrictUndefined)
-    json_str = template.render(r=response)
-
-    # check if the json is correct and reformat:
-    return json.dumps(json.loads(json_str), indent=4)
 
 
 def test():
@@ -229,7 +240,7 @@ def test():
         is_and=True
     )
     print("Policy:")
-    print(render_policy(policy))
+    print(policy.to_json())
 
     request = PDPRequest(
         idp_entityid="http://idp1",
@@ -237,7 +248,7 @@ def test():
         attributes={"eduPersonAffiliation": ["member", "staff"]}
     )
     print("Request:")
-    print(render_request(request))
+    print(request.to_json())
 
     response_permit = PDPResponse(
         policy=policy,
@@ -252,11 +263,11 @@ def test():
         decision=PDPDecision.Deny
     )
     print("Response permit:")
-    print(render_response(response_permit))
+    print(response_permit.to_json())
     print("Response na:")
-    print(render_response(response_na))
+    print(response_na.to_json())
     print("Response deny:")
-    print(render_response(response_deny))
+    print(response_deny.to_json())
 
 
 def generate_harnass_tests():
@@ -286,9 +297,9 @@ def generate_harnass_tests():
 
     print(f"writing to {test_dir}")
     for f in test_dir.glob("*"): f.unlink()
-    (test_dir / "policy.json").write_text(render_policy(policy))
-    (test_dir / "request.json").write_text(render_request(request))
-    (test_dir / "response.json").write_text(render_response(response))
+    policy.write_json(test_dir / "policy.json")
+    request.write_json(test_dir / "request.json")
+    response.write_json(test_dir / "response.json")
 
 
 def main():
