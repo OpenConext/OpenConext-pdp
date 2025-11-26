@@ -76,8 +76,12 @@ public class PolicyHarnessTest {
         String policy = System.getProperty("policy");
         boolean record = Boolean.parseBoolean(System.getProperty("record", "false"));
         String resourceRoot = record ? "test-harness" : "test-harness";
-        return Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles()))
+        return Stream.concat(
+                Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles())),
+                Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness-generated").getFile().listFiles()))
+            )
             .filter(File::isDirectory)
+            .filter(file -> (file.getName().matches("^[a-zA-Z].*")))
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
                 "Policy harness: " + directory.getName(),
