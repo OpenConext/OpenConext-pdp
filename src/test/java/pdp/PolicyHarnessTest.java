@@ -66,8 +66,10 @@ public class PolicyHarnessTest {
     @TestFactory
     Stream<DynamicTest> policyHarness() throws Exception {
         String policy = System.getProperty("policy");
-        return Stream.of(new ClassPathResource("test-harness").getFile()
-                .listFiles())
+        return Stream.concat(
+                Stream.of(new ClassPathResource("test-harness").getFile().listFiles()),
+                Stream.of(new ClassPathResource("test-harness-generated").getFile().listFiles())
+            )
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
