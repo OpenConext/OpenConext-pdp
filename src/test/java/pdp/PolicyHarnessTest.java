@@ -2,6 +2,10 @@ package pdp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.patch.Patch;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -24,9 +28,6 @@ import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
-import com.github.difflib.DiffUtils;
-import com.github.difflib.patch.Patch;
-import com.github.difflib.UnifiedDiffUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +39,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
@@ -103,24 +103,30 @@ public class PolicyHarnessTest {
             .as(new TypeRef<>() {
             });
 
-        if (responseMap.equals(result)) {
-            assertTrue(true);  /* probably superfluous */
-        } else { /* pretty-print the diff */
-            String expected = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
-            String actual = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+        if (!responseMap.equals(result)) {
+            ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+            String expected = objectWriter.writeValueAsString(responseMap);
+            String actual = objectWriter.writeValueAsString(result);
             // Use java-diff-utils to produce a readable unified diff
-            java.util.List<String> expectedLines = expected.lines().toList();
-            java.util.List<String> actualLines = actual.lines().toList();
+            List<String> expectedLines = expected.lines().toList();
+            List<String> actualLines = actual.lines().toList();
             Patch<String> patch = DiffUtils.diff(expectedLines, actualLines);
-            List<String> unifiedDiff = UnifiedDiffUtils.generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
-
-            String message = "Response did not match expected JSON\n" +
-                "===== Expected =====\n" +
-                expected + "\n" +
-                "===== Actual   =====\n" +
-                actual + "\n" +
-                "===== Unified Diff (expected vs actual) =====\n" +
-                String.join("\n", unifiedDiff) + "\n";
+            List<String> unifiedDiff = UnifiedDiffUtils
+                .generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
+            // pretty-print the diff
+            String message = """
+                Response did not match expected JSON
+                ===== Expected =====
+                %s
+                ===== Actual   =====
+                %s
+                ===== Unified Diff (expected vs actual) =====
+                %s
+                """.formatted(
+                expected,
+                actual,
+                String.join("\n", unifiedDiff)
+            );
             fail(message);
         }
     }
