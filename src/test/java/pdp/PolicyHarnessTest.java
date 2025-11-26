@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
@@ -67,8 +68,8 @@ public class PolicyHarnessTest {
     Stream<DynamicTest> policyHarness() throws Exception {
         String policy = System.getProperty("policy");
         return Stream.concat(
-                Stream.of(new ClassPathResource("test-harness").getFile().listFiles()),
-                Stream.of(new ClassPathResource("test-harness-generated").getFile().listFiles())
+                Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness").getFile().listFiles())),
+                Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness-generated").getFile().listFiles()))
             )
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
@@ -81,7 +82,7 @@ public class PolicyHarnessTest {
     @SneakyThrows
     private void testPolicy(File policyDirectory) {
         policyRepository.deleteAll();
-        List<File> files = List.of(policyDirectory.listFiles());
+        List<File> files = List.of(Objects.requireNonNull(policyDirectory.listFiles()));
         String request = this.readFile(files, "request.json");
         File responseFile = files.stream()
             .filter(file -> file.getName().equalsIgnoreCase("response.json"))
