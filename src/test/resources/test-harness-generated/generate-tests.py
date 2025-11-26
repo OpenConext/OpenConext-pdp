@@ -75,17 +75,21 @@ def generate_tests():
     )
     test1.write()
 
-    test2 = test1.copy()
-    test2.policy.attributes = {"eduPersonAffiliation":  ["notmember"]}
-    test2.policy.decision = PDPDecision.Deny
     # copy the test and adjust the attribute to give a Deny
+    test2 = test1.copy("simple_attr_deny")
+    test2.request.attributes = {"eduPersonAffiliation":  ["notmember"]}
+    test2.response.decision = PDPDecision.Deny
     test2.write()
 
-    test3 = test1.copy()
     # copy the test and adjust the SP to give a NotApplicable
+    test3 = test1.copy("simple_attr_na")
     test3.request.sp_entityid = "http://sp2"
-    test3.policy.decision = PDPDecision.NotApplicable
+    test3.response.decision = PDPDecision.NotApplicable
+    test3.write()
+
     # copy the test and adjust the response to fail the test
+    test3 = test1.copy("simple_attr_fail")
+    test3.response.decision = PDPDecision.NotApplicable
     test3.write()
 
 
