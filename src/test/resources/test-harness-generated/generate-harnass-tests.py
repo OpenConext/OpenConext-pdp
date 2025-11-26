@@ -73,29 +73,15 @@ def generate_harnass_tests():
     )
     test1.write()
 
-    test2 = PDPTest(
-        name="simple_attr_deny",
-        policy=policy,
-        request=PDPRequest(
-            idp_entityid="http://idp1",
-            sp_entityid="http://sp1",
-            attributes={"eduPersonAffiliation": ["notmember"]}
-        ),
-        decision=PDPDecision.Deny
-    )
+    test2 = test1.copy()
+    test2.policy.attributes["eduPersonAffiliation"] = ["notmember"]
+    test2.policy.decision = PDPDecision.Deny
     test2.write()
 
-    test1 = PDPTest(
-        name="simple_attr_na",
-        policy=policy,
-        request=PDPRequest(
-            idp_entityid="http://idp1",
-            sp_entityid="http://sp2",
-            attributes={"eduPersonAffiliation": ["member"]}
-        ),
-        decision=PDPDecision.NotApplicable
-    )
-    test1.write()
+    test3 = test1.copy()
+    test3.request.sp_entityid = "http://sp2"
+    test3.policy.decision = PDPDecision.NotApplicable
+    test3.write()
 
 
 def main():

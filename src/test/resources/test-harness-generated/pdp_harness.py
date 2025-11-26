@@ -242,6 +242,9 @@ class PDPTest:
         if self.response is None:
             self.response = PDPResponse(self.policy, self.decision)
 
+    def copy(self) -> PDPTest:
+        return copy.deepcopy(self)
+
     def write(self, basedir: Path = Path('.')):
         output_dir = basedir / self.name
         print(f"writing to {output_dir.absolute()}")
