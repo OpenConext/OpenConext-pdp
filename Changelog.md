@@ -2,6 +2,13 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.4.0
+
+- Do not use the feature toggle `cachePolicies`, Use the increment version of the policy_version database to decide
+  if policies need to be refreshed (e.g. only after push in another node).
+- Do not differentiate between the decision endpoints in EB and Manage Playground
+- Pretty-print failures of the `HarnassTest`.
+
 ## 7.3.0
 
 - Change API paths to match the former PDP‑gui proxy rewrites; PDP now serves `/pdp/api/**` directly and exposes
