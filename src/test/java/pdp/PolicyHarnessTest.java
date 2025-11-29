@@ -25,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.repositories.PdpPolicyPushVersionRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
@@ -59,6 +60,9 @@ public class PolicyHarnessTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository;
+
     @BeforeEach
     protected void beforeEach() {
         RestAssured.port = port;
@@ -78,7 +82,9 @@ public class PolicyHarnessTest {
 
     @SneakyThrows
     private void testPolicy(File policyDirectory) {
-        policyRepository.deleteAll();
+        this.policyRepository.deleteAll();
+        //This will force a reload
+        this.pdpPolicyPushVersionRepository.incrementVersion();
         List<File> files = List.of(Objects.requireNonNull(policyDirectory.listFiles()));
         String request = this.readFile(files, "request.json");
         File responseFile = files.stream()

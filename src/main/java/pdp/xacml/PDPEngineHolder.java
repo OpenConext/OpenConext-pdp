@@ -24,10 +24,10 @@ public class PDPEngineHolder {
         this.sabClient = sabClient;
     }
 
-    public PDPEngine newPdpEngine(boolean cachePolicies, boolean includeInactivePolicies) {
+    public PDPEngine newPdpEngine(boolean includeInactivePolicies) {
         try {
             OpenConextPDPEngineFactory factory = new OpenConextPDPEngineFactory();
-            return factory.newEngine(cachePolicies, includeInactivePolicies, pdpPolicyRepository, vootClient, sabClient);
+            return factory.newEngine(includeInactivePolicies, pdpPolicyRepository, vootClient, sabClient);
         } catch (IOException | FactoryException e) {
             LOG.error("Exception while re-creating PDPEngine", e);
             throw new RuntimeException(e);

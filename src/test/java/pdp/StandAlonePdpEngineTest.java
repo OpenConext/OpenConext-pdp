@@ -74,7 +74,7 @@ public class StandAlonePdpEngineTest extends AbstractXacmlTest {
         when(pdpPolicyRepository.findAll()).thenReturn(pdpPolicies);
 
         OpenConextPDPEngineFactory pdpEngineFactory = new OpenConextPDPEngineFactory();
-        this.pdpEngine = pdpEngineFactory.newEngine(true, false, pdpPolicyRepository, vootClient, sabClient);
+        this.pdpEngine = pdpEngineFactory.newEngine(false, pdpPolicyRepository, vootClient, sabClient);
     }
 
     private PdpPolicy loadPolicy(String policyFile) {
