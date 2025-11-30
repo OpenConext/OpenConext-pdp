@@ -15,7 +15,6 @@ import org.apache.openaz.xacml.util.Wrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
@@ -28,10 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import pdp.JsonMapper;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
-import pdp.domain.PdpPolicyViolation;
 import pdp.repositories.PdpPolicyPushVersionRepository;
 import pdp.repositories.PdpPolicyRepository;
-import pdp.repositories.PdpPolicyViolationRepository;
 import pdp.stats.StatsContext;
 import pdp.stats.StatsContextHolder;
 import pdp.xacml.PDPEngineHolder;
@@ -48,8 +45,6 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
-import static org.apache.openaz.xacml.api.Decision.DENY;
-import static org.apache.openaz.xacml.api.Decision.INDETERMINATE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 import static pdp.util.StreamUtils.singletonCollector;
 import static pdp.util.StreamUtils.singletonOptionalCollector;
@@ -64,7 +59,6 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
     private final PDPEngineHolder pdpEngineHolder;
-    private final PdpPolicyViolationRepository pdpPolicyViolationRepository;
     private final PdpPolicyRepository pdpPolicyRepository;
     private final PolicyTemplateEngine policyTemplateEngine = new PolicyTemplateEngine();
     private final PdpPolicyDefinitionParser pdpPolicyDefinitionParser = new PdpPolicyDefinitionParser();
@@ -77,13 +71,11 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     private final AtomicLong policiesPushVersion = new AtomicLong();
 
     @Autowired
-    public PdpController(PdpPolicyViolationRepository pdpPolicyViolationRepository,
-                         PdpPolicyRepository pdpPolicyRepository,
+    public PdpController(PdpPolicyRepository pdpPolicyRepository,
                          PDPEngineHolder pdpEngineHolder,
                          PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository) {
         this.pdpEngineHolder = pdpEngineHolder;
         this.pdpEngine = pdpEngineHolder.newPdpEngine(false);
-        this.pdpPolicyViolationRepository = pdpPolicyViolationRepository;
         this.pdpPolicyRepository = pdpPolicyRepository;
         this.pdpPolicyPushVersionRepository = pdpPolicyPushVersionRepository;
         this.policiesPushVersion.set(pdpPolicyPushVersionRepository.findById(1L).get().getVersion());
@@ -92,9 +84,9 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
     public String decide(@RequestBody String payload) throws Exception {
-        Long currentPoliciesPushVersion = pdpPolicyPushVersionRepository.findById(1L).get().getVersion();
-        if (currentPoliciesPushVersion != this.policiesPushVersion.get()) {
-            refreshPolicies();
+        Long currentDatabasePoliciesPushVersion = pdpPolicyPushVersionRepository.getCurrentVersion();
+        if (currentDatabasePoliciesPushVersion != this.policiesPushVersion.get()) {
+            this.refreshPolicies();
         }
         return doDecide(payload);
     }
@@ -115,8 +107,8 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
         returnPolicyIdInList(request);
         Response pdpResponse;
+        lock.lock();
         try {
-            lock.lock();
             pdpResponse = pdpEngine.decide(request);
         } finally {
             lock.unlock();
@@ -128,7 +120,6 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         stats.setResponseTimeMs(took);
         LOG.debug("decide response: {} took: {} ms", response, took);
 
-//        reportPossiblePolicyViolation(pdpResponse, response, payload, isPlayground);
         provideStatsContext(stats, pdpResponse);
 
         return response;
@@ -194,14 +185,12 @@ public class PdpController implements JsonMapper, IPAddressProvider {
                     policyDefinition.isActive(),
                     policyDefinition.getType());
             }).collect(toList());
-        //Refresh, but also increment the counter so other instances will refresh also
-        pdpPolicyRepository.deleteAll();
-        pdpPolicyRepository.saveAll(policies);
 
         LOG.info("/manage/push saved policies:" + policies.size());
 
-        this.pdpPolicyPushVersionRepository.incrementVersion();
-        this.policiesPushVersion.incrementAndGet();
+        //Delete all first to prevent finding out any delta between existing and new policies
+        pdpPolicyRepository.deleteAll();
+        pdpPolicyRepository.saveAll(policies);
         this.refreshPolicies();
     }
 
@@ -226,26 +215,10 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         return attribute.map(attr -> (String) attr.getValues().iterator().next().getValue());
     }
 
-    private void reportPossiblePolicyViolation(Response pdpResponse, String response, String payload, boolean isPlayground) {
-        Collection<Result> results = pdpResponse.getResults();
-
-        Optional<Result> deniesOrIndeterminate = results.stream().filter(result ->
-            result.getDecision().equals(DENY) || result.getDecision().equals(INDETERMINATE)).findAny();
-        deniesOrIndeterminate.ifPresent(result -> {
-            Optional<IdReference> idReferenceOptional = getPolicyId(result);
-            idReferenceOptional.ifPresent(idReference -> {
-                String policyId = idReference.getId().stringValue();
-                Optional<PdpPolicy> policyOptional = pdpPolicyRepository.findFirstByPolicyIdAndLatestRevision(policyId, true);
-                policyOptional.ifPresent(policy -> pdpPolicyViolationRepository.save(new PdpPolicyViolation(policy, payload, response, isPlayground)));
-            });
-        });
-    }
-
     private Optional<String> getOptionalLoa(Response pdpResponse) {
-        return pdpResponse.getResults().stream().map(result -> result.getObligations().stream()
+        return pdpResponse.getResults().stream().flatMap(result -> result.getObligations().stream()
                 .map(obligation -> obligation.getAttributeAssignments().stream()
                     .map(attributeAssignment -> String.class.cast(attributeAssignment.getAttributeValue().getValue()))))
-            .flatMap(Function.identity())
             .flatMap(Function.identity())
             .max(Comparator.naturalOrder());
     }
@@ -259,10 +232,20 @@ public class PdpController implements JsonMapper, IPAddressProvider {
     }
 
     private void refreshPolicies() {
+        LOG.info("Starting reloading policies");
+        long start = System.currentTimeMillis();
+
+        lock.lock();
         try {
-            lock.lock();
-            LOG.info("Starting reloading policies");
-            long start = System.currentTimeMillis();
+            // Increment the database counter so other nodes will refresh also
+            this.pdpPolicyPushVersionRepository.incrementVersion();
+            Long newDatabasePoliciesPushVersion = this.pdpPolicyPushVersionRepository.getCurrentVersion();
+            // Set  with the current database counter to prevent an endless loop of refreshes
+            LOG.info("Updating new DB policy push version, old memory value {}, new value database {}",
+                this.policiesPushVersion.get(), newDatabasePoliciesPushVersion);
+
+            this.policiesPushVersion.set(newDatabasePoliciesPushVersion);
+            //this will cause a reload of all policies
             this.pdpEngine = pdpEngineHolder.newPdpEngine(false);
             LOG.info("Finished reloading policies in {} ms", System.currentTimeMillis() - start);
         } finally {

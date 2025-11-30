@@ -59,12 +59,12 @@ policy:
 session-timeout: '28800'
 logging:
   level:
-    pdp: INFO
+    pdp: DEBUG
     org:
       springframework:
         security: WARN
       apache:
-        openaz: DEBUG
+        openaz: INFO
 endpoints:
   health:
     sensitive: 'false'
