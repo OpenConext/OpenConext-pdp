@@ -2,6 +2,11 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.5.0
+
+- Bugfix for syncing policy cache in multi-node env. After the in-memory policy cache version is
+  permanently out of sync, the policies where refreshed in each call to the /decision endpoint. This has been fixed.
+
 ## 7.4.0
 
 - Do not use the feature toggle `cachePolicies`, Use the increment version of the policy_version database to decide
