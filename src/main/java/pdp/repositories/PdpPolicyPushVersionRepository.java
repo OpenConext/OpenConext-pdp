@@ -14,7 +14,10 @@ public interface PdpPolicyPushVersionRepository extends CrudRepository<PdpPolicy
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE pdp_policy_push_version SET version = version + 1", nativeQuery = true)
+    @Query(value = "UPDATE pdp_policy_push_version SET version = version + 1 WHERE id = 1", nativeQuery = true)
     void incrementVersion();
+
+    @Query(value = "SELECT version FROM pdp_policy_push_version WHERE id = 1", nativeQuery = true)
+    Long getCurrentVersion();
 
 }
