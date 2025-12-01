@@ -84,9 +84,9 @@ public class PdpController implements JsonMapper, IPAddressProvider {
 
     @RequestMapping(method = RequestMethod.POST, value = "/decide/policy")
     public String decide(@RequestBody String payload) throws Exception {
-        Long currentDatabasePoliciesPushVersion = pdpPolicyPushVersionRepository.getCurrentVersion();
+        Long currentDatabasePoliciesPushVersion = this.pdpPolicyPushVersionRepository.getCurrentVersion();
         if (currentDatabasePoliciesPushVersion != this.policiesPushVersion.get()) {
-            this.refreshPolicies();
+            this.refreshPolicies(false);
         }
         return doDecide(payload);
     }
@@ -191,7 +191,7 @@ public class PdpController implements JsonMapper, IPAddressProvider {
         //Delete all first to prevent finding out any delta between existing and new policies
         pdpPolicyRepository.deleteAll();
         pdpPolicyRepository.saveAll(policies);
-        this.refreshPolicies();
+        this.refreshPolicies(true);
     }
 
     @RequestMapping(method = POST, value = {"/manage/parse"})
@@ -231,16 +231,19 @@ public class PdpController implements JsonMapper, IPAddressProvider {
             policySetIdentifiers.stream().collect(singletonOptionalCollector());
     }
 
-    private void refreshPolicies() {
-        LOG.info("Starting reloading policies");
+    private void refreshPolicies(boolean incrementDatabase) {
+        LOG.info("Starting reloading policies with increment database {}", incrementDatabase);
         long start = System.currentTimeMillis();
 
         lock.lock();
         try {
             // Increment the database counter so other nodes will refresh also
-            this.pdpPolicyPushVersionRepository.incrementVersion();
+            if (incrementDatabase) {
+                this.pdpPolicyPushVersionRepository.incrementVersion();
+            }
+
             Long newDatabasePoliciesPushVersion = this.pdpPolicyPushVersionRepository.getCurrentVersion();
-            // Set  with the current database counter to prevent an endless loop of refreshes
+            // Set with the current database counter to prevent an endless loop of refreshes
             LOG.info("Updating new DB policy push version, old memory value {}, new value database {}",
                 this.policiesPushVersion.get(), newDatabasePoliciesPushVersion);
 

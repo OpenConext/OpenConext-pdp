@@ -2,6 +2,10 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.6.0
+
+- Only increment the database policy push version when the push endpoint is called, not when the current node cache is outdated.
+
 ## 7.5.0
 
 - Bugfix for syncing policy cache in multi-node env. After the in-memory policy cache version is
