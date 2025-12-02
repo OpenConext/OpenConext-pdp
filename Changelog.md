@@ -2,6 +2,10 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 7.7.0
+
+- Removed all obsolete functionality used in the Dashboard API, Pdp GUI and usages of the Manage API
+
 ## 7.6.0
 
 - Only increment the database policy push version when the push endpoint is called, not when the current node cache is outdated.

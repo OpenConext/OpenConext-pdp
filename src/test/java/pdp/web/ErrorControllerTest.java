@@ -1,5 +1,6 @@
 package pdp.web;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -13,15 +14,15 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.MapBindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import pdp.PdpPolicyException;
-import pdp.access.PolicyIdpAccessMismatchIdentityProvidersException;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 public class ErrorControllerTest {
 
@@ -40,22 +41,6 @@ public class ErrorControllerTest {
 
         this.subject = new ErrorController();
         ReflectionTestUtils.setField(subject, "errorAttributes", this.errorAttributes);
-    }
-
-    @Test
-    public void testErrorWithForbiddenAnnotated() throws Exception {
-        HttpServletRequest request = new MockHttpServletRequest();
-
-        when(errorAttributes.getError(any())).thenReturn(new PolicyIdpAccessMismatchIdentityProvidersException("test"));
-
-        ResponseEntity<Map<String, Object>> response = subject.error(request);
-
-        assertEquals(FORBIDDEN, response.getStatusCode());
-
-        Map<String, Object> body = response.getBody();
-        //there were no details, so we expect the 'exception' and 'message' still in here
-        assertTrue(body.containsKey("exception"));
-        assertTrue(body.containsKey("message"));
     }
 
     @Test
