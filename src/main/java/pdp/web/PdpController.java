@@ -54,7 +54,7 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
     value = {"/pdp/api"},
     headers = {"Content-Type=application/json"},
     produces = {"application/json"})
-public class PdpController implements JsonMapper, IPAddressProvider {
+public class PdpController implements JsonMapper {
 
     private final static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
