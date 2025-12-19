@@ -2,9 +2,10 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
-## 7.7.0
+## 8.0.0
 
-- Removed all obsolete functionality used in the Dashboard API, Pdp GUI and usages of the Manage API
+- Removed all obsolete functionality previously used in the Dashboard API, Pdp GUI and usages of the Manage API. Added test
+  cases to the `test-harnass`.
 
 ## 7.6.0
 

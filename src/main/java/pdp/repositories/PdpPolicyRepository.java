@@ -11,17 +11,6 @@ import java.util.Optional;
 
 public interface PdpPolicyRepository extends CrudRepository<PdpPolicy, Long> {
 
-    Optional<PdpPolicy> findFirstByPolicyIdAndLatestRevision(String policyId, boolean latestRevision);
-
-    Optional<PdpPolicy> findByNameAndLatestRevision(String name, boolean latestRevision);
-
-    @Override
-    @Query(value = "SELECT * FROM pdp_policies p WHERE p.latest_revision = 1", nativeQuery = true)
-    List<PdpPolicy> findAll();
-
-    @Query(value = "SELECT p.id, (SELECT COUNT(*) FROM pdp_policies p2 WHERE p2.revision_parent_id = p.revision_parent_id) AS revision_count FROM pdp_policies p WHERE latest_revision = 1", nativeQuery = true)
-    List<Object[]> findRevisionCountPerId();
-
     @Override
     @Transactional
     @Modifying

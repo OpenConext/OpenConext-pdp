@@ -145,10 +145,6 @@ public class PolicyHarnessTest {
             policyXml,
             policyDefinition.getName(),
             true,
-            "manage",
-            "manage",
-            "manage",
-            true,
             policyDefinition.getType());
         policyRepository.save(policy);
     }

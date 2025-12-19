@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import pdp.JsonMapper;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
 import pdp.repositories.PdpPolicyPushVersionRepository;
@@ -54,7 +53,7 @@ import static pdp.util.StreamUtils.singletonOptionalCollector;
     value = {"/pdp/api"},
     headers = {"Content-Type=application/json"},
     produces = {"application/json"})
-public class PdpController implements JsonMapper {
+public class PdpController {
 
     private final static Logger LOG = LoggerFactory.getLogger(PdpController.class);
 
@@ -178,10 +177,6 @@ public class PdpController implements JsonMapper {
                 return new PdpPolicy(
                     policyXml,
                     policyDefinition.getName(),
-                    true,
-                    policyDefinition.getUserDisplayName(),
-                    policyDefinition.getAuthenticatingAuthorityName(),
-                    "manage",
                     policyDefinition.isActive(),
                     policyDefinition.getType());
             }).collect(toList());

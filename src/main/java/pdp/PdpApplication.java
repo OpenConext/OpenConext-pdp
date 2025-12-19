@@ -1,5 +1,6 @@
 package pdp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class PdpApplication {
     }
 
     @Bean
-    public StatsContextHolder statsContextHolder() {
-        return new StatsContextHolder("decide/policy");
+    public StatsContextHolder statsContextHolder(ObjectMapper objectMapper) {
+        return new StatsContextHolder("decide/policy", objectMapper);
     }
 
     @Bean

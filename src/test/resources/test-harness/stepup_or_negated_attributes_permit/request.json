@@ -1,0 +1,36 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "Value": "student"
+                },
+                {
+                    "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "Value": "teacher"
+                },
+                {
+                    "AttributeId": "urn:mace:dir:attribute-def:eduPersonScopedAffiliation",
+                    "Value": "test"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "super-sp.com"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "http://mock-idp"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

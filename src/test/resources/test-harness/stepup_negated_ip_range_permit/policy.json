@@ -1,0 +1,39 @@
+{
+    "id": "badee9f5-17f6-4aec-aa9d-18456a426127",
+    "policyId": "urn:surfconext:xacml:policy:id:stepup_test_negated_ip",
+    "name": "StepUp test negated IP",
+    "description": "A user from 'Dummy IdP' is required to authenticate with LoA 'http://test2.surfconext.nl/assurance/loa2' when  with an IP address in the range(s): '145.0.0.1/24' when accessing all connected Service Providers",
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "http://mock-idp"
+    ],
+    "loas": [
+        {
+            "level": "http://test2.surfconext.nl/assurance/loa2",
+            "allAttributesMustMatch": true,
+            "negateCidrNotation": true,
+            "attributes": [],
+            "cidrNotations": [
+                {
+                    "ipAddress": "145.0.0.1",
+                    "prefix": 16,
+                    "ipInfo": {
+                        "networkAddress": "145.0.0.0",
+                        "broadcastAddress": "145.0.255.255",
+                        "capacity": 65536,
+                        "ipv4": true,
+                        "prefix": 16
+                    }
+                }
+            ]
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "created": "2025-12-19T12:00:16.202157590Z",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}
