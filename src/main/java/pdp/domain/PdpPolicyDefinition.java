@@ -35,16 +35,12 @@ public class PdpPolicyDefinition {
     private String description;
 
     private List<String> serviceProviderIds = new ArrayList<>();
-    private List<String> serviceProviderNames = new ArrayList<>();
-    private List<String> serviceProviderNamesNl = new ArrayList<>();
 
     private boolean serviceProvidersNegated;
 
     private boolean serviceProviderInvalidOrMissing;
 
     private List<String> identityProviderIds = new ArrayList<>();
-    private List<String> identityProviderNames = new ArrayList<>();
-    private List<String> identityProviderNamesNl = new ArrayList<>();
 
     private String clientId;
 
@@ -97,45 +93,17 @@ public class PdpPolicyDefinition {
         return CollectionUtils.isEmpty(this.serviceProviderIds) ? Collections.emptyList() : List.of("will-iterate-once");
     }
 
+    //used in the mustache templates
     @JsonIgnore
     public Set<Map.Entry<Map.Entry<String, Integer>, List<PdpAttribute>>> allAttributesGrouped() {
         return this.attributes.stream().collect(groupingBy(attribute -> Map.entry(attribute.getName(), attribute.getGroupID())))
             .entrySet();
     }
 
+    //used in the mustache templates
     @JsonIgnore
     public boolean isIdpOnly() {
         return this.identityProviderIds != null && !this.identityProviderIds.isEmpty();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PdpPolicyDefinition that = (PdpPolicyDefinition) o;
-        return Objects.equals(denyRule, that.denyRule) &&
-                Objects.equals(allAttributesMustMatch, that.allAttributesMustMatch) &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(description, that.description) &&
-                Objects.equals(serviceProviderIds, that.serviceProviderIds) &&
-                Objects.equals(identityProviderIds, that.identityProviderIds) &&
-                Objects.equals(attributes, that.attributes) &&
-                Objects.equals(denyAdvice, that.denyAdvice) &&
-                Objects.equals(denyAdviceNl, that.denyAdviceNl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, description, serviceProviderIds, identityProviderIds, attributes, denyAdvice, denyRule, allAttributesMustMatch);
-    }
-
-    public static PdpPolicyDefinition policyDefinition(List<String> serviceProviderIds, List<String> identityProvidersIds) {
-        PdpPolicyDefinition definition = new PdpPolicyDefinition();
-        definition.setServiceProviderIds(serviceProviderIds);
-        definition.setServiceProviderNames(serviceProviderIds);
-        definition.setIdentityProviderIds(identityProvidersIds);
-        definition.setType("reg");
-        return definition;
     }
 
     @JsonIgnore

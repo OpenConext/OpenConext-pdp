@@ -29,8 +29,8 @@ public class WebSecurityConfig {
                 .securityMatcher("/**")
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/internal/health", "/internal/info", "/public/**").permitAll()
-                        .requestMatchers("/protected/**", "/decide/policy", "/manage/**").hasRole("PEP")
-                        .requestMatchers("/internal/**").authenticated())
+                        .requestMatchers("/pdp/api/protected/**", "/pdp/api/decide/policy", "/pdp/api/manage/**").hasRole("PEP")
+                        .requestMatchers("/pdp/api/internal/**").authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)

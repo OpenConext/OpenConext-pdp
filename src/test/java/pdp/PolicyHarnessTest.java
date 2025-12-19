@@ -2,6 +2,10 @@ package pdp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.github.difflib.DiffUtils;
+import com.github.difflib.UnifiedDiffUtils;
+import com.github.difflib.patch.Patch;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.http.ContentType;
@@ -9,7 +13,8 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.openaz.xacml.pdp.policy.Policy;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +25,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.Assert;
 import pdp.domain.PdpPolicy;
 import pdp.domain.PdpPolicyDefinition;
+import pdp.repositories.PdpPolicyPushVersionRepository;
 import pdp.repositories.PdpPolicyRepository;
 import pdp.xacml.PdpPolicyDefinitionParser;
 import pdp.xacml.PolicyTemplateEngine;
@@ -30,10 +36,11 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
@@ -53,27 +60,32 @@ public class PolicyHarnessTest {
     @Autowired
     protected ObjectMapper objectMapper;
 
+    @Autowired
+    protected PdpPolicyPushVersionRepository pdpPolicyPushVersionRepository;
+
     @BeforeEach
     protected void beforeEach() {
         RestAssured.port = port;
     }
 
-    @SneakyThrows
-    @Test
-    void test() {
+    @TestFactory
+    Stream<DynamicTest> policyHarness() throws Exception {
         String policy = System.getProperty("policy");
-        Stream.of(new ClassPathResource("test-harness").getFile()
-                .listFiles())
+        return Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness").getFile().listFiles()))
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
-            .forEach(this::testPolicy);
-
+            .map(directory -> DynamicTest.dynamicTest(
+                "Policy harness: " + directory.getName(),
+                () -> testPolicy(directory)
+            ));
     }
 
     @SneakyThrows
     private void testPolicy(File policyDirectory) {
-        policyRepository.deleteAll();
-        List<File> files = List.of(policyDirectory.listFiles());
+        this.policyRepository.deleteAll();
+        //This will force a reload
+        this.pdpPolicyPushVersionRepository.incrementVersion();
+        List<File> files = List.of(Objects.requireNonNull(policyDirectory.listFiles()));
         String request = this.readFile(files, "request.json");
         File responseFile = files.stream()
             .filter(file -> file.getName().equalsIgnoreCase("response.json"))
@@ -93,7 +105,33 @@ public class PolicyHarnessTest {
             .post("/pdp/api/manage/decide")
             .as(new TypeRef<>() {
             });
-        assertEquals(responseMap, result);
+
+        if (!responseMap.equals(result)) {
+            ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+            String expected = objectWriter.writeValueAsString(responseMap);
+            String actual = objectWriter.writeValueAsString(result);
+            // Use java-diff-utils to produce a readable unified diff
+            List<String> expectedLines = expected.lines().toList();
+            List<String> actualLines = actual.lines().toList();
+            Patch<String> patch = DiffUtils.diff(expectedLines, actualLines);
+            List<String> unifiedDiff = UnifiedDiffUtils
+                .generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
+            // pretty-print the diff
+            String message = """
+                Response did not match expected JSON
+                ===== Expected =====
+                %s
+                ===== Actual   =====
+                %s
+                ===== Unified Diff (expected vs actual) =====
+                %s
+                """.formatted(
+                expected,
+                actual,
+                String.join("\n", unifiedDiff)
+            );
+            fail(message);
+        }
     }
 
     @SneakyThrows
@@ -106,10 +144,6 @@ public class PolicyHarnessTest {
         PdpPolicy policy = new PdpPolicy(
             policyXml,
             policyDefinition.getName(),
-            true,
-            "manage",
-            "manage",
-            "manage",
             true,
             policyDefinition.getType());
         policyRepository.save(policy);

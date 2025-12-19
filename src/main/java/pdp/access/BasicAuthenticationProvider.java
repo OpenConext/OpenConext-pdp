@@ -15,7 +15,7 @@ import static org.springframework.security.core.authority.AuthorityUtils.createA
 import static org.springframework.util.Assert.notNull;
 
 /**
- * EngineBlock and Dashboard call the PDP and we don't want to use OAuth for this as
+ * EngineBlock and Dashboard call the PDP, and we don't want to use OAuth for this as
  * they are trusted clients
  */
 public class BasicAuthenticationProvider implements AuthenticationManager {

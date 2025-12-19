@@ -1,8 +1,16 @@
+---
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: "/**"
+  # Maintain dependencies for Java
+  - package-ecosystem: "maven"
+    directory: "/"
     schedule:
       interval: "weekly"
     allow:
       - dependency-type: "production"
+
+  # Maintain dependencies for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

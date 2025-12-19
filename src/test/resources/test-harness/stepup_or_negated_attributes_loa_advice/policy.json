@@ -1,0 +1,46 @@
+{
+    "id": "b0f6a2cf-f77f-4b42-8dea-c23644815e7f",
+    "policyId": "urn:surfconext:xacml:policy:id:stepup_multiple_or_arguments",
+    "name": "Stepup multiple OR arguments",
+    "description": "A user from 'Dummy IdP' is required to authenticate with LoA 'http://test2.surfconext.nl/assurance/loa3' when he/she has the values NOT 'student' or NOT 'teacher' for attribute 'urn:mace:dir:attribute-def:eduPersonAffiliation' or he/she has the value NOT 'test' for attribute 'urn:mace:dir:attribute-def:eduPersonScopedAffiliation' when accessing all connected Service Providers",
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "http://mock-idp"
+    ],
+    "loas": [
+        {
+            "level": "http://test2.surfconext.nl/assurance/loa3",
+            "allAttributesMustMatch": false,
+            "negateCidrNotation": false,
+            "attributes": [
+                {
+                    "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "value": "student",
+                    "negated": true,
+                    "groupID": 0
+                },
+                {
+                    "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "value": "teacher",
+                    "negated": true,
+                    "groupID": 0
+                },
+                {
+                    "name": "urn:mace:dir:attribute-def:eduPersonScopedAffiliation",
+                    "value": "test",
+                    "negated": true,
+                    "groupID": 0
+                }
+            ],
+            "cidrNotations": []
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "created": "2025-12-19T12:27:48.370686689Z",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

@@ -3,9 +3,6 @@ spring:
     enabled: 'true'
     table: schema_version
     validate-on-migrate: 'false'
-  mail:
-    host: localhost
-    port: '3025'
   profiles:
     active: dev
   datasource:
@@ -27,17 +24,10 @@ spring:
         provider:
           voot:
             token-uri: https://authz.test2.surfconext.nl/oauth/token
-invalid:
-  policies:
-    email:
-      to: to@test.nl
 xacml:
   properties:
+    #Note, this must be an absolute path when running PdP as a standalone executable JAr file (e.g. docker deployment)
     path: classpath:xacml.conext.properties
-email:
-  base_url: http://localhost:8001/#conflicts
-  to: to@test.nl
-  from: from@test.nl
 voot:
   serviceUrl: https://voot.test2.surfconext.nl
 sab:
@@ -69,10 +59,12 @@ policy:
 session-timeout: '28800'
 logging:
   level:
-    pdp: INFO
+    pdp: DEBUG
     org:
       springframework:
-        security: TRACE
+        security: WARN
+      apache:
+        openaz: INFO
 endpoints:
   health:
     sensitive: 'false'
@@ -86,7 +78,7 @@ server:
     path: /error
   port: 8082
   servlet:
-    context-path: /pdp/api
+    context-path:
 performance:
   pre:
     policy:

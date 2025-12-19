@@ -85,17 +85,17 @@ public abstract class AbstractConfigurableEngine implements ConfigurableEngine {
         String userUrn;
         if (useUnspecifiedURN()) {
             Optional<String> userUrnOptional = getAttribute(requiredAttributeUnspecifiedURN, pipFinder);
-            if (!userUrnOptional.isPresent()) {
+            if (userUrnOptional.isEmpty()) {
                 return missingNameId;
             }
             userUrn = userUrnOptional.get();
         } else {
             Optional<String> schacHomeOptional = getAttribute(requiredAttributeSchacHome, pipFinder);
-            if (!schacHomeOptional.isPresent()) {
+            if (schacHomeOptional.isEmpty()) {
                 return missingNameId;
             }
             Optional<String> uidOptional = getAttribute(requiredAttributeUID, pipFinder);
-            if (!uidOptional.isPresent()) {
+            if (uidOptional.isEmpty()) {
                 return missingNameId;
             }
             //Seems hackey, but the alternative is to have no common code between SAB and Teams PIP

@@ -40,28 +40,16 @@ public class OpenConextEvaluationContextFactory extends StdEvaluationContextFact
     private final PdpPolicyDefinitionParser policyDefinitionParser = new PdpPolicyDefinitionParser();
 
     private final PdpPolicyRepository pdpPolicyRepository;
-    private final boolean cachePolicies;
     private final boolean includeInactivePolicies;
 
     public OpenConextEvaluationContextFactory(PdpPolicyRepository pdpPolicyRepository,
                                               VootClient vootClient,
                                               SabClient sabClient,
-                                              boolean cachePolicies,
                                               boolean includeInactivePolicies) {
         this.pdpPolicyRepository = pdpPolicyRepository;
-        this.cachePolicies = cachePolicies;
         this.includeInactivePolicies = includeInactivePolicies;
         setPolicyFinder(loadPolicyFinder());
         setPIPFinder(loadPIPFinder(vootClient, sabClient));
-    }
-
-    @Override
-    protected PolicyFinder getPolicyFinder() {
-        if (cachePolicies) {
-            return super.getPolicyFinder();
-        } else {
-            return loadPolicyFinder();
-        }
     }
 
     private PolicyFinder loadPolicyFinder() {

@@ -1,9 +1,9 @@
 package pdp.stats;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pdp.JsonMapper;
 
 import jakarta.servlet.ServletRequestEvent;
 import jakarta.servlet.ServletRequestListener;
@@ -13,16 +13,18 @@ import jakarta.servlet.http.HttpServletRequest;
  * We need to keep track of response times, but we do not have the correct hooks in the XACML lib. So
  * we use ThreadLocal to store stats and clear and instantiate them here
  */
-public class StatsContextHolder implements ServletRequestListener, JsonMapper {
+public class StatsContextHolder implements ServletRequestListener {
 
     private static final ThreadLocal<StatsContext> contextHolder = new ThreadLocal<>();
     private static final Logger logger = LoggerFactory.getLogger("analytics");
 
     private final String path;
+    private final ObjectMapper objectMapper;
 
 
-    public StatsContextHolder(String path) {
+    public StatsContextHolder(String path, ObjectMapper objectMapper) {
         this.path = path;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class StatsContextHolder implements ServletRequestListener, JsonMapper {
     }
 
     private void saveContext(StatsContext context) {
-        if (context.getServiceProvicer() == null) {
+        if (context.getServiceProvider() == null) {
             return;
         }
         try {

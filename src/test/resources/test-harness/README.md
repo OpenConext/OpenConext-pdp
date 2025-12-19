@@ -13,7 +13,7 @@ The `request.json` is the data send from EB to PdP and contains the SP, IdP and 
 The `response.json` is the expected response from PdP. You can capture examples in the policy playground in Manage
 for both the requests and responses.
 
-With `mvn test` all the tests are run, with `mvn test -Dtest=PolicyHarnessTest#test -Dpolicy={policy_dir_name}` only the policy in
+With `mvn test` all the tests are run, with `mvn test -Dtest=PolicyHarnessTest -Dpolicy={policy_dir_name}` only the policy in
 directory `policy_dir_name` is tested.
 
 If you want to test with multiple - possible conflicting - policies, you can add multiple policy_XYZ.json in

@@ -1,0 +1,28 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+                    "Value": "nope"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://mujina-sp.test2.surfconext.nl/shibboleth"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://original.org"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}
