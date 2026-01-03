@@ -16,6 +16,10 @@ log/
 logs/
 target/
 
+# python
+/.venv/
+__pycache__/
+
 *.log
 pdp-gui/json
 dependency.tree
