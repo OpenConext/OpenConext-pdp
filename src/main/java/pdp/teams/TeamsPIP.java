@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import pdp.xacml.AbstractConfigurableEngine;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class TeamsPIP extends AbstractConfigurableEngine implements VootClientAw
 
     @Override
     protected List<Object> getAttributes(String userUrn) {
-        return getVootClient().groups(userUrn).stream().collect(Collectors.toList());
+        return new ArrayList<>(getVootClient().groups(userUrn));
     }
 
     @Override
