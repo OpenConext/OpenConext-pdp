@@ -22,11 +22,7 @@ public class SabClient {
     private final RestTemplate restTemplate;
 
     public SabClient(String sabUserName, String sabPassword, String sabEndpoint) {
-        if (!sabEndpoint.endsWith("/")) {
-            sabEndpoint += "/";
-        }
-        sabEndpoint += "api/profile?uid={uid}&idp={idp}";
-        this.sabRestEndpoint = sabEndpoint;
+        this.sabRestEndpoint = sabEndpoint + "?uid={uid}&idp={idp}";
 
         this.restTemplate = new RestTemplate();
         this.restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(

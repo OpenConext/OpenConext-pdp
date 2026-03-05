@@ -22,7 +22,7 @@ import static pdp.teams.VootClientConfig.URN_COLLAB_PERSON_EXAMPLE_COM_ADMIN;
 public class SabClientTest {
 
     private final SabClient subject = new SabClientConfig()
-            .sabClient("user", "password", "http://localhost:8889");
+            .sabClient("user", "password", "http://localhost:8889/api/profile");
 
     @Rule
     public WireMockRule wireMockRule = new WireMockRule(8889);
