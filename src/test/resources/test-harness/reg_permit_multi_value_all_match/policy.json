@@ -1,0 +1,37 @@
+{
+    "id": "permit_multi_value_all_match",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_multi_value_all_match",
+    "name": "permit_multi_value_all_match",
+    "description": "Harness case: permit_multi_value_all_match",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:role",
+            "value": "admin",
+            "negated": false,
+            "groupID": 0
+        },
+        {
+            "name": "urn:example:attribute:department",
+            "value": "it",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": true,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

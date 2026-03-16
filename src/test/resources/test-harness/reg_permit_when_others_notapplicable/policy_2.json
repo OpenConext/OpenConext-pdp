@@ -1,0 +1,31 @@
+{
+    "id": "permit_when_others_notapplicable_other",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_when_others_notapplicable_other",
+    "name": "permit_when_others_notapplicable_other",
+    "description": "Harness case: permit_when_others_notapplicable_other",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:role",
+            "value": "contractor",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

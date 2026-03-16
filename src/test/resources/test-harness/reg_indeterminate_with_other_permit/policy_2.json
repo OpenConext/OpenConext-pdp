@@ -1,0 +1,31 @@
+{
+    "id": "indeterminate_with_other_permit_permit",
+    "policyId": "urn:surfconext:xacml:policy:id:indeterminate_with_other_permit_permit",
+    "name": "indeterminate_with_other_permit_permit",
+    "description": "Harness case: indeterminate_with_other_permit_permit",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:role",
+            "value": "employee",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

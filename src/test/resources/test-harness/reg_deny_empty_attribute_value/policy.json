@@ -1,0 +1,31 @@
+{
+    "id": "deny_empty_attribute_value",
+    "policyId": "urn:surfconext:xacml:policy:id:deny_empty_attribute_value",
+    "name": "deny_empty_attribute_value",
+    "description": "Harness case: deny_empty_attribute_value",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:department",
+            "value": "finance",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

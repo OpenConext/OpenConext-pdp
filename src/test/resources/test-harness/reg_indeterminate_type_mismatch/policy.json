@@ -1,0 +1,31 @@
+{
+    "id": "indeterminate_type_mismatch",
+    "policyId": "urn:surfconext:xacml:policy:id:indeterminate_type_mismatch",
+    "name": "indeterminate_type_mismatch",
+    "description": "Harness case: indeterminate_type_mismatch",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:department",
+            "value": "finance",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

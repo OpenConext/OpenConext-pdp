@@ -1,0 +1,22 @@
+{
+  "Response" : [ {
+    "Status" : {
+      "StatusDetail" : "<MissingAttributeDetail Category=\\\"urn:oasis:names:tc:xacml:1.0:subject-category:access-subject\\\" AttributeId=\\\"urn:example:attribute:department\\\" DataType=\\\"http://www.w3.org/2001/XMLSchema#string\\\"></MissingAttributeDetail>",
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:missing-attribute"
+      },
+      "StatusMessage" : "Missing required attribute"
+    },
+    "PolicyIdentifier" : {
+      "PolicySetIdReference" : [ {
+        "Version" : "1.0",
+        "Id" : "urn:openconext:pdp:root:policyset"
+      } ],
+      "PolicyIdReference" : [ {
+        "Version" : "1",
+        "Id" : "urn:surfconext:xacml:policy:id:deny_missing_required_attr"
+      } ]
+    },
+    "Decision" : "Indeterminate"
+  } ]
+}

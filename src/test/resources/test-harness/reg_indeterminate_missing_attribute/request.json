@@ -1,0 +1,23 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": []
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://sp.example.org/shibboleth"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://idp.example.org"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

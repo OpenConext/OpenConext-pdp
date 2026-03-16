@@ -1,0 +1,45 @@
+{
+    "id": "permit_double_negation",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_double_negation",
+    "name": "permit_double_negation",
+    "description": "Harness case: permit_double_negation",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [],
+    "loas": [
+        {
+            "level": "urn:example:loa:2",
+            "allAttributesMustMatch": true,
+            "negateCidrNotation": false,
+            "attributes": [
+                {
+                    "name": "urn:example:attribute:role",
+                    "value": "blocked",
+                    "negated": true,
+                    "groupID": 0
+                },
+                {
+                    "name": "urn:example:attribute:group",
+                    "value": "banned",
+                    "negated": true,
+                    "groupID": 0
+                }
+            ],
+            "cidrNotations": []
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

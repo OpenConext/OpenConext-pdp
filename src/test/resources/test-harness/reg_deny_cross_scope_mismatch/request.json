@@ -1,0 +1,28 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:example:attribute:role",
+                    "Value": "employee"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://sp.other.org/shibboleth"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://idp.other.org"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

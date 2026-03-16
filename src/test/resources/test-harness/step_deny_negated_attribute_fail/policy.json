@@ -1,0 +1,39 @@
+{
+    "id": "deny_negated_attribute_fail",
+    "policyId": "urn:surfconext:xacml:policy:id:deny_negated_attribute_fail",
+    "name": "deny_negated_attribute_fail",
+    "description": "Harness case: deny_negated_attribute_fail",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [],
+    "loas": [
+        {
+            "level": "urn:example:loa:2",
+            "allAttributesMustMatch": false,
+            "negateCidrNotation": false,
+            "attributes": [
+                {
+                    "name": "urn:example:attribute:role",
+                    "value": "blocked",
+                    "negated": true,
+                    "groupID": 0
+                }
+            ],
+            "cidrNotations": []
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

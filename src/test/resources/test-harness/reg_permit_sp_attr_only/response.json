@@ -1,0 +1,28 @@
+{
+  "Response" : [ {
+    "Status" : {
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok"
+      }
+    },
+    "Category" : [ {
+      "CategoryId" : "urn:example:attribute:sp-flag",
+      "Attribute" : [ {
+        "AttributeId" : "urn:example:attribute:sp-flag",
+        "Value" : "allow",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      } ]
+    } ],
+    "PolicyIdentifier" : {
+      "PolicySetIdReference" : [ {
+        "Version" : "1.0",
+        "Id" : "urn:openconext:pdp:root:policyset"
+      } ],
+      "PolicyIdReference" : [ {
+        "Version" : "1",
+        "Id" : "urn:surfconext:xacml:policy:id:permit_sp_attr_only"
+      } ]
+    },
+    "Decision" : "Permit"
+  } ]
+}

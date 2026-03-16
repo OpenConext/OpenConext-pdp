@@ -1,0 +1,31 @@
+{
+    "id": "indeterminate_missing_attribute",
+    "policyId": "urn:surfconext:xacml:policy:id:indeterminate_missing_attribute",
+    "name": "indeterminate_missing_attribute",
+    "description": "Harness case: indeterminate_missing_attribute",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:role",
+            "value": "employee",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

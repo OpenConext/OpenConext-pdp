@@ -1,0 +1,31 @@
+{
+    "id": "permit_numeric_range_upper_bound",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_numeric_range_upper_bound",
+    "name": "permit_numeric_range_upper_bound",
+    "description": "Harness case: permit_numeric_range_upper_bound",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:age",
+            "value": "^(18|19|20)$",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

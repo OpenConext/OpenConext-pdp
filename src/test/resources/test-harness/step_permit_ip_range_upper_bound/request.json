@@ -1,0 +1,28 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:mace:surfnet.nl:collab:xacml-attribute:ip-address",
+                    "Value": "192.168.0.255"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://sp.example.org/shibboleth"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://idp.example.org"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

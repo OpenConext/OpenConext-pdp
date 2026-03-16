@@ -1,0 +1,39 @@
+{
+    "id": "permit_loa_equal_required",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_loa_equal_required",
+    "name": "permit_loa_equal_required",
+    "description": "Harness case: permit_loa_equal_required",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [],
+    "loas": [
+        {
+            "level": "urn:example:loa:2",
+            "allAttributesMustMatch": false,
+            "negateCidrNotation": false,
+            "attributes": [
+                {
+                    "name": "urn:example:attribute:stepup",
+                    "value": "required",
+                    "negated": false,
+                    "groupID": 0
+                }
+            ],
+            "cidrNotations": []
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

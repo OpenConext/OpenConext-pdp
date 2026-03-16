@@ -13,8 +13,16 @@ The `request.json` is the data send from EB to PdP and contains the SP, IdP and 
 The `response.json` is the expected response from PdP. You can capture examples in the policy playground in Manage
 for both the requests and responses.
 
+Policy XML files are not used by the harness and are intentionally not used.
+
 With `mvn test` all the tests are run, with `mvn test -Dtest=PolicyHarnessTest -Dpolicy={policy_dir_name}` only the policy in
 directory `policy_dir_name` is tested.
+
+To re-record responses from the running PdP, use record mode:
+
+`mvn clean test -Dtest=PolicyHarnessTest -Drecord=true`
+This overwrites each `response.json` with the actual response.
+
 
 If you want to test with multiple - possible conflicting - policies, you can add multiple policy_XYZ.json in
 the directory, and these will all be used in the test.

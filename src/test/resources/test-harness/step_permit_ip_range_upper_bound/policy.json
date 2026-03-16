@@ -1,0 +1,37 @@
+{
+    "id": "permit_ip_range_upper_bound",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_ip_range_upper_bound",
+    "name": "permit_ip_range_upper_bound",
+    "description": "Harness case: permit_ip_range_upper_bound",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [],
+    "loas": [
+        {
+            "level": "urn:example:loa:2",
+            "allAttributesMustMatch": false,
+            "negateCidrNotation": false,
+            "attributes": [],
+            "cidrNotations": [
+                {
+                    "ipAddress": "192.168.0.0",
+                    "prefix": 24
+                }
+            ]
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

@@ -1,0 +1,37 @@
+{
+    "id": "deny_ip_range_outside",
+    "policyId": "urn:surfconext:xacml:policy:id:deny_ip_range_outside",
+    "name": "deny_ip_range_outside",
+    "description": "Harness case: deny_ip_range_outside",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [],
+    "loas": [
+        {
+            "level": "urn:example:loa:2",
+            "allAttributesMustMatch": false,
+            "negateCidrNotation": false,
+            "attributes": [],
+            "cidrNotations": [
+                {
+                    "ipAddress": "192.168.0.0",
+                    "prefix": 24
+                }
+            ]
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "step",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

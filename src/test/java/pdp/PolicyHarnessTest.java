@@ -34,6 +34,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -71,7 +74,9 @@ public class PolicyHarnessTest {
     @TestFactory
     Stream<DynamicTest> policyHarness() throws Exception {
         String policy = System.getProperty("policy");
-        return Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness").getFile().listFiles()))
+        boolean record = Boolean.parseBoolean(System.getProperty("record", "false"));
+        String resourceRoot = record ? "test-harness" : "test-harness";
+        return Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles()))
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
@@ -82,6 +87,7 @@ public class PolicyHarnessTest {
 
     @SneakyThrows
     private void testPolicy(File policyDirectory) {
+        boolean record = Boolean.parseBoolean(System.getProperty("record", "false"));
         this.policyRepository.deleteAll();
         //This will force a reload
         this.pdpPolicyPushVersionRepository.incrementVersion();
@@ -94,6 +100,7 @@ public class PolicyHarnessTest {
         });
         files.stream()
             .filter(file -> file.getName().toLowerCase().startsWith("policy"))
+            .filter(file -> file.getName().toLowerCase().endsWith(".json"))
             .forEach(this::storePolicy);
 
         Map<String, Object> result = given()
@@ -105,6 +112,21 @@ public class PolicyHarnessTest {
             .post("/pdp/api/manage/decide")
             .as(new TypeRef<>() {
             });
+
+        if (record) {
+            String prettyResult = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+            Path writePath = resolveWritableResponsePath(responseFile.toPath());
+            Files.createDirectories(writePath.getParent());
+            Files.writeString(writePath, prettyResult, StandardCharsets.UTF_8);
+            System.out.printf(
+                "Recorded response.json for %s%nRead path:  %s%nWrite path: %s%n%s%n",
+                policyDirectory.getName(),
+                responseFile.toPath(),
+                writePath,
+                prettyResult
+            );
+            return;
+        }
 
         if (!responseMap.equals(result)) {
             ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
@@ -156,5 +178,15 @@ public class PolicyHarnessTest {
                 .findFirst()
                 .orElseThrow()), Charset.defaultCharset()
         );
+    }
+
+    private Path resolveWritableResponsePath(Path responsePath) {
+        String responseString = responsePath.toString();
+        String targetSegment = File.separator + "target" + File.separator + "test-classes" + File.separator;
+        String sourceSegment = File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator;
+        if (responseString.contains(targetSegment)) {
+            return Path.of(responseString.replace(targetSegment, sourceSegment));
+        }
+        return responsePath;
     }
 }

@@ -1,0 +1,32 @@
+{
+    "id": "ca837420-dc1b-45b1-a834-785d62cbf9ce",
+    "policyId": "urn:surfconext:xacml:policy:id:negate_regular_policy",
+    "name": "Negate Regular Policy",
+    "description": "A user from 'okke' is only allowed to access NOT 'SURFconext TEST2 Mujina SP', 'Other' when he/she has the value 'test' for attribute 'urn:mace:dir:attribute-def:eduPersonAffiliation'",
+    "serviceProviderIds": [
+        "https://mujina-sp.test2.surfconext.nl/shibboleth",
+        "https://mujina-sp.test2.surfconext.nl/other"
+    ],
+    "serviceProvidersNegated": true,
+    "identityProviderIds": [
+        "https://original.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:mace:dir:attribute-def:eduPersonAffiliation",
+            "value": "test",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "created": "2025-09-04T12:35:42.143772584Z",
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

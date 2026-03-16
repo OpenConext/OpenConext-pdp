@@ -1,0 +1,32 @@
+{
+    "Request": {
+        "AccessSubject": {
+            "Attribute": [
+                {
+                    "AttributeId": "urn:example:attribute:group",
+                    "Value": "non-matching-value"
+                },
+                {
+                    "AttributeId": "urn:example:attribute:group",
+                    "Value": "non-matching-value"
+                }
+            ]
+        },
+        "Resource": {
+            "Attribute": [
+                {
+                    "AttributeId": "SPentityID",
+                    "Value": "https://sp.example.org/shibboleth"
+                },
+                {
+                    "AttributeId": "IDPentityID",
+                    "Value": "https://idp.example.org"
+                },
+                {
+                    "AttributeId": "ClientID",
+                    "Value": "EngineBlock"
+                }
+            ]
+        }
+    }
+}

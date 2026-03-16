@@ -1,0 +1,31 @@
+{
+    "id": "deny_overrides_permit_deny",
+    "policyId": "urn:surfconext:xacml:policy:id:deny_overrides_permit_deny",
+    "name": "deny_overrides_permit_deny",
+    "description": "Harness case: deny_overrides_permit_deny",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:role",
+            "value": "blocked",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

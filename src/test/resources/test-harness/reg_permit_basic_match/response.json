@@ -1,0 +1,28 @@
+{
+  "Response" : [ {
+    "Status" : {
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok"
+      }
+    },
+    "Category" : [ {
+      "CategoryId" : "urn:example:attribute:role",
+      "Attribute" : [ {
+        "AttributeId" : "urn:example:attribute:role",
+        "Value" : "employee",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      } ]
+    } ],
+    "PolicyIdentifier" : {
+      "PolicySetIdReference" : [ {
+        "Version" : "1.0",
+        "Id" : "urn:openconext:pdp:root:policyset"
+      } ],
+      "PolicyIdReference" : [ {
+        "Version" : "1",
+        "Id" : "urn:surfconext:xacml:policy:id:permit_basic_match"
+      } ]
+    },
+    "Decision" : "Permit"
+  } ]
+}

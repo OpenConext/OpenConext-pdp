@@ -1,0 +1,31 @@
+{
+    "id": "deny_missing_required_attr",
+    "policyId": "urn:surfconext:xacml:policy:id:deny_missing_required_attr",
+    "name": "deny_missing_required_attr",
+    "description": "Harness case: deny_missing_required_attr",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:department",
+            "value": "finance",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

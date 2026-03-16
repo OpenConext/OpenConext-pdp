@@ -1,0 +1,31 @@
+{
+    "id": "permit_with_multiple_advice_two",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_with_multiple_advice_two",
+    "name": "permit_with_multiple_advice_two",
+    "description": "Harness case: permit_with_multiple_advice_two",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:flag",
+            "value": "deny",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": true,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN two",
+    "denyAdviceNl": "Denied NL two",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

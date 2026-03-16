@@ -1,0 +1,31 @@
+{
+    "id": "order_insensitive_multi_value",
+    "policyId": "urn:surfconext:xacml:policy:id:order_insensitive_multi_value",
+    "name": "order_insensitive_multi_value",
+    "description": "Harness case: order_insensitive_multi_value",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:group",
+            "value": "staff",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

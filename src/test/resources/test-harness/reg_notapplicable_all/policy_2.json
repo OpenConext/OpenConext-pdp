@@ -1,0 +1,31 @@
+{
+    "id": "notapplicable_all_two",
+    "policyId": "urn:surfconext:xacml:policy:id:notapplicable_all_two",
+    "name": "notapplicable_all_two",
+    "description": "Harness case: notapplicable_all_two",
+    "serviceProviderIds": [
+        "https://sp.example.org/shibboleth"
+    ],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:department",
+            "value": "finance",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}

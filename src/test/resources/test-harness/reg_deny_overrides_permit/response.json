@@ -1,0 +1,47 @@
+{
+  "Response" : [ {
+    "Status" : {
+      "StatusCode" : {
+        "Value" : "urn:oasis:names:tc:xacml:1.0:status:ok"
+      }
+    },
+    "Category" : [ {
+      "CategoryId" : "urn:example:attribute:role",
+      "Attribute" : [ {
+        "AttributeId" : "urn:example:attribute:role",
+        "Value" : "blocked",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      } ]
+    } ],
+    "AssociatedAdvice" : [ {
+      "AttributeAssignment" : [ {
+        "Category" : "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "AttributeId" : "DenyMessage:en",
+        "Value" : "Denied EN",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      }, {
+        "Category" : "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "AttributeId" : "DenyMessage:nl",
+        "Value" : "Denied NL",
+        "DataType" : "http://www.w3.org/2001/XMLSchema#string"
+      }, {
+        "Category" : "urn:oasis:names:tc:xacml:3.0:attribute-category:resource",
+        "AttributeId" : "IdPOnly",
+        "Value" : true,
+        "DataType" : "http://www.w3.org/2001/XMLSchema#boolean"
+      } ],
+      "Id" : "urn:surfconext:xacml:policy:id:deny_overrides_permit_deny"
+    } ],
+    "PolicyIdentifier" : {
+      "PolicySetIdReference" : [ {
+        "Version" : "1.0",
+        "Id" : "urn:openconext:pdp:root:policyset"
+      } ],
+      "PolicyIdReference" : [ {
+        "Version" : "1",
+        "Id" : "urn:surfconext:xacml:policy:id:deny_overrides_permit_deny"
+      } ]
+    },
+    "Decision" : "Deny"
+  } ]
+}

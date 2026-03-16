@@ -1,0 +1,29 @@
+{
+    "id": "permit_idp_attr_only",
+    "policyId": "urn:surfconext:xacml:policy:id:permit_idp_attr_only",
+    "name": "permit_idp_attr_only",
+    "description": "Harness case: permit_idp_attr_only",
+    "serviceProviderIds": [],
+    "serviceProvidersNegated": false,
+    "identityProviderIds": [
+        "https://idp.example.org"
+    ],
+    "attributes": [
+        {
+            "name": "urn:example:attribute:idp-flag",
+            "value": "allow",
+            "negated": false,
+            "groupID": 0
+        }
+    ],
+    "loas": [],
+    "denyRule": false,
+    "allAttributesMustMatch": false,
+    "denyAdvice": "Denied EN",
+    "denyAdviceNl": "Denied NL",
+    "active": true,
+    "actionsAllowed": false,
+    "type": "reg",
+    "revisionNbr": 0,
+    "activatedSr": false
+}
