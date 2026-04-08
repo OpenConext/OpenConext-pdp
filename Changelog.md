@@ -6,6 +6,7 @@ Starting from version 7.0.0, we note changes and new features per release in thi
 
 - Removed all obsolete functionality previously used in the Dashboard API, Pdp GUI and usages of the Manage API. Added test
   cases to the `test-harnass`.
+- Altered the primary key of `pdp_policies` from `medium_int` to `big_int`
 
 ## 7.6.0
 
