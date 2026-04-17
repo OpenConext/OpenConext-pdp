@@ -4,9 +4,12 @@ Starting from version 7.0.0, we note changes and new features per release in thi
 
 ## 8.0.0
 
-- Removed all obsolete functionality previously used in the Dashboard API, Pdp GUI and usages of the Manage API. Added test
-  cases to the `test-harnass`.
+- Removed all obsolete functionality previously used in the Dashboard API, Pdp GUI and usages of
+  the Manage API.([#246](https://github.com/OpenConext/OpenConext-pdp/issues/246))
+- Added test cases to the `test-harnass`.
 - Altered the primary key of `pdp_policies` from `medium_int` to `big_int`
+  ([#285](https://github.com/OpenConext/OpenConext-pdp/issues/285))
+- Updated dependencies
 
 ## 7.6.0
 
@@ -20,7 +23,7 @@ Starting from version 7.0.0, we note changes and new features per release in thi
 ## 7.4.0
 
 - Do not use the feature toggle `cachePolicies`, Use the increment version of the policy_version database to decide
-  if policies need to be refreshed (e.g. only after push in another node).
+  if policies need to be refreshed (e.g., only after push in another node).
 - Do not differentiate between the decision endpoints in EB and Manage Playground
 - Pretty-print failures of the `HarnassTest`.
 
@@ -52,7 +55,7 @@ Starting from version 7.0.0, we note changes and new features per release in thi
   when using the "exclude SPs" feature above.
 - Logging improvements: log policy name on exceptions; only display policy XML in TRACE mode.
 - Development: default local port changed to 8082 for the dev profile.
-Configuration notes:
+  Configuration notes:
 - The new Manage features (negated SPs, grouped attributes, XACML preview) require a compatible Manage release
   (OpenConext-manage 9.4.0 or newer). This version of PDP will run fine Manage >=9.0.1 releases, but the new features
   will not be available.

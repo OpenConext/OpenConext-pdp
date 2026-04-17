@@ -22,3 +22,5 @@ dependency.tree
 TODO.txt
 spieldata
 .factorypath
+
+__pycache__/
