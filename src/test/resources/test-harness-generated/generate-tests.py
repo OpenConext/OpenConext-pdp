@@ -104,10 +104,10 @@ def generate_tests():
     test3.response.decision = PDPDecision.NotApplicable
     test3.write()
 
-    # copy the test and adjust the response to fail the test
-    test4 = test1.copy("simple_attr_fail")
-    test4.response.decision = PDPDecision.NotApplicable
-    test4.write()
+    # copy the test and adjust the response to fail the test (for testing the tests)
+    #test4 = test1.copy("simple_attr_fail")
+    #test4.response.decision = PDPDecision.NotApplicable
+    #test4.write()
 
 
 def main():
