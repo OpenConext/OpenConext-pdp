@@ -2,6 +2,12 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 8.1.0
+- Add database migration to remove obsolete columns and tables.
+
+## 8.0.1
+- Revert database migration to retain backward compatibility.
+
 ## 8.0.0
 
 - Removed all obsolete functionality previously used in the Dashboard API, Pdp GUI and usages of
