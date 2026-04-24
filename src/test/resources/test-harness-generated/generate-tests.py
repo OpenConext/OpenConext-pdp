@@ -4,6 +4,22 @@ import os
 from pathlib import Path
 from pdp_harness import PDPPolicy, PDPRequest, PDPResponse, PDPDecision, PDPTest
 
+
+def clean_tests(dir: Path | str = Path('.')):
+    # remove all existing test directories
+    for item in Path(dir).iterdir():
+        if item.is_dir() and item.name[0].isalpha():
+            print(f"cleaning {item.name}")
+            json_files = ['policy.json', 'request.json', 'response.json', 'decision.json']
+            for json_file in json_files:
+                file_path = item / json_file
+                if file_path.exists():
+                    file_path.unlink()
+            try:
+                item.rmdir()
+            except OSError:
+                pass
+
 # very simple test; generate policy, requests and responses and write them to the screen
 # use for debugging
 def test():
@@ -51,6 +67,9 @@ def test():
 
 # generate some simple tests
 def generate_tests():
+    # remove old tests
+    clean_tests(Path(__file__).parent)
+
     # write all tests to this directory
     os.chdir(Path(__file__).parent)
 
