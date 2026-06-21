@@ -1,7 +1,14 @@
 package pdp.sab;
 
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
@@ -10,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.emptyList;
 
@@ -24,10 +32,35 @@ public class SabClient {
     public SabClient(String sabUserName, String sabPassword, String sabEndpoint) {
         this.sabRestEndpoint = sabEndpoint + "?uid={uid}&idp={idp}";
 
-        this.restTemplate = new RestTemplate();
+        this.restTemplate = new RestTemplate(getRequestFactory());
         this.restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(
                 sabUserName, sabPassword
         ));
+    }
+
+    private ClientHttpRequestFactory getRequestFactory() {
+        ConnectionConfig connectionConfig = ConnectionConfig
+            .custom()
+            .setTimeToLive(60, TimeUnit.SECONDS)
+            .setConnectTimeout(5L,TimeUnit.SECONDS)
+            .build();
+
+        PoolingHttpClientConnectionManager connManager =
+            PoolingHttpClientConnectionManagerBuilder
+                .create()
+                .setDefaultConnectionConfig(connectionConfig)
+                .build();
+
+        CloseableHttpClient httpClient = HttpClients.custom()
+            .setConnectionManager(connManager)
+            .disableCookieManagement()
+            .build();
+
+        HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
+        // Set the connectionRequestTimeout value to 10 seconds
+        requestFactory.setConnectionRequestTimeout(10000);
+        requestFactory.setReadTimeout(10000);
+        return requestFactory;
     }
 
     @SuppressWarnings("unchecked")
