@@ -40,9 +40,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static io.restassured.RestAssured.given;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @ExtendWith(SpringExtension.class)
@@ -76,8 +78,12 @@ public class PolicyHarnessTest {
         String policy = System.getProperty("policy");
         boolean record = Boolean.parseBoolean(System.getProperty("record", "false"));
         String resourceRoot = record ? "test-harness" : "test-harness";
-        return Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles()))
+        return Stream.concat(
+                Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles())),
+                Stream.of(Objects.requireNonNull(new ClassPathResource("test-harness-generated").getFile().listFiles()))
+            )
             .filter(File::isDirectory)
+            .filter(file -> (file.getName().matches("^[a-zA-Z].*")))
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
                 "Policy harness: " + directory.getName(),
@@ -92,17 +98,42 @@ public class PolicyHarnessTest {
         //This will force a reload
         this.pdpPolicyPushVersionRepository.incrementVersion();
         List<File> files = List.of(Objects.requireNonNull(policyDirectory.listFiles()));
-        String request = this.readFile(files, "request.json");
-        File responseFile = files.stream()
-            .filter(file -> file.getName().equalsIgnoreCase("response.json"))
-            .findFirst().orElseThrow();
-        Map<String, Object> responseMap = objectMapper.readValue(new FileInputStream(responseFile), new TypeReference<>() {
-        });
+
+        // read policies
         files.stream()
             .filter(file -> file.getName().toLowerCase().startsWith("policy"))
             .filter(file -> file.getName().toLowerCase().endsWith(".json"))
             .forEach(this::storePolicy);
 
+        // read request
+        String request = this.readFile(files, "request.json");
+
+        // read either response.json or decision.json
+        Optional<File> responseFileOpt = files.stream()
+            .filter(file -> file.getName().equalsIgnoreCase("response.json"))
+            .findFirst();
+        Optional<File> decisionFileOpt = files.stream()
+            .filter(file -> file.getName().equalsIgnoreCase("decision.json"))
+            .findFirst();
+
+        Map<String, Object> responseMap = null;
+        Map<String, Object> decisionMap = null;
+
+        if (responseFileOpt.isPresent() && decisionFileOpt.isPresent()) {
+            throw new IllegalStateException("Both response.json and decision.json exist. Only one should be present.");
+        } else if (responseFileOpt.isPresent()) {
+            responseMap = objectMapper.readValue(
+                new FileInputStream(responseFileOpt.get()), new TypeReference<>() {
+                });
+        } else if (decisionFileOpt.isPresent()) {
+            decisionMap = objectMapper.readValue(
+                new FileInputStream(decisionFileOpt.get()), new TypeReference<>() {
+                });
+        } else {
+            throw new IllegalStateException("Neither response.json nor decision.json found");
+        }
+
+        // send request to PDP
         Map<String, Object> result = given()
             .auth().preemptive().basic("pdp_admin", "secret")
             .when()
@@ -128,31 +159,46 @@ public class PolicyHarnessTest {
             return;
         }
 
-        if (!responseMap.equals(result)) {
-            ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
-            String expected = objectWriter.writeValueAsString(responseMap);
-            String actual = objectWriter.writeValueAsString(result);
-            // Use java-diff-utils to produce a readable unified diff
-            List<String> expectedLines = expected.lines().toList();
-            List<String> actualLines = actual.lines().toList();
-            Patch<String> patch = DiffUtils.diff(expectedLines, actualLines);
-            List<String> unifiedDiff = UnifiedDiffUtils
-                .generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
-            // pretty-print the diff
-            String message = """
-                Response did not match expected JSON
-                ===== Expected =====
-                %s
-                ===== Actual   =====
-                %s
-                ===== Unified Diff (expected vs actual) =====
-                %s
-                """.formatted(
-                expected,
-                actual,
-                String.join("\n", unifiedDiff)
-            );
-            fail(message);
+        if (decisionMap != null) {
+            // compare the decision only
+            Object decisionExpected = decisionMap.get("Decision");
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> responses = (List<Map<String, Object>>) result.get("Response");
+            Map<String, Object> firstResponse = responses.getFirst();
+            Object decisionActual = firstResponse.get("Decision");
+
+            assertEquals(decisionExpected, decisionActual,
+                "Decision mismatch for policy " + policyDirectory.getName());
+        } else {
+            //compare the full response
+            if (!responseMap.equals(result)) {
+                ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+                String expected = objectWriter.writeValueAsString(responseMap);
+                String actual = objectWriter.writeValueAsString(result);
+                // Use java-diff-utils to produce a readable unified diff
+                List<String> expectedLines = expected.lines().toList();
+                List<String> actualLines = actual.lines().toList();
+                Patch<String> patch = DiffUtils.diff(expectedLines, actualLines);
+                List<String> unifiedDiff = UnifiedDiffUtils
+                    .generateUnifiedDiff("expected", "actual", expectedLines, patch, 3);
+                // pretty-print the diff
+                String message = """
+                    Response did not match expected JSON for policy %s
+                    ===== Expected =====
+                    %s
+                    ===== Actual   =====
+                    %s
+                    ===== Unified Diff (expected vs actual) =====
+                    %s
+                    """.formatted(
+                    policyDirectory.getName(),
+                    expected,
+                    actual,
+                    String.join("\n", unifiedDiff)
+                );
+                fail(message);
+            }
         }
     }
 
