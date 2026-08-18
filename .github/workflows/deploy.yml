@@ -94,7 +94,7 @@ jobs:
 
       - name: Extract metadata (tags, labels) for Server Docker
         id: meta_server
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ghcr.io/openconext/openconext-pdp/pdp-server
           flavor: |
