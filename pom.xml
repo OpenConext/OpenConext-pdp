@@ -19,6 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>21</java.version>
+        <flyway.version>12.11.0</flyway.version>
     </properties>
 
     <dependencies>
