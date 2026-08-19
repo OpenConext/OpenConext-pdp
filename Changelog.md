@@ -2,6 +2,9 @@
 
 Starting from version 7.0.0, we note changes and new features per release in this file.
 
+## 8.2.0
+- Migrated to Spring Boot 4.1.0
+
 ## 8.1.0
 - Add database migration to remove obsolete columns and tables.
 
