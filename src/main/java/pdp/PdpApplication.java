@@ -1,5 +1,7 @@
 package pdp;
 
+import lombok.SneakyThrows;
+import org.apache.hc.core5.http.HttpHost;
 import org.apache.openaz.xacml.util.FactoryException;
 import org.apache.openaz.xacml.util.XACMLProperties;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfigurati
 import org.springframework.boot.micrometer.metrics.autoconfigure.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import tools.jackson.databind.ObjectMapper;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -20,9 +23,14 @@ import pdp.repositories.PdpPolicyRepository;
 import pdp.sab.SabClient;
 import pdp.stats.StatsContextHolder;
 import pdp.teams.VootClient;
+import pdp.web.HttpHostProvider;
 import pdp.xacml.PDPEngineHolder;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.transport.ProxyProvider;
 
 import java.io.IOException;
+import java.net.URI;
+import java.util.Optional;
 
 @SpringBootApplication(exclude = {
     AuditAutoConfiguration.class,
@@ -57,14 +65,26 @@ public class PdpApplication {
         return new PDPEngineHolder(pdpPolicyRepository, vootClient, sabClient);
     }
 
+    @SneakyThrows
     @Bean
     public WebClient webClient(ClientRegistrationRepository clients,
-                               OAuth2AuthorizedClientRepository authClients) {
+                               OAuth2AuthorizedClientRepository authClients,
+                               @Value("${voot.serviceUrl}") String vootServiceUrl) {
         ServletOAuth2AuthorizedClientExchangeFilterFunction oauth2 =
             new ServletOAuth2AuthorizedClientExchangeFilterFunction(clients, authClients);
         oauth2.setDefaultClientRegistrationId("voot");
 
+        HttpClient httpClient = HttpClient.create();
+        Optional<HttpHost> proxyHost = HttpHostProvider.resolveHttpHost(URI.create(vootServiceUrl).toURL());
+        if (proxyHost.isPresent()) {
+            HttpHost httpHost = proxyHost.get();
+            httpClient = httpClient.proxy(proxySpec -> proxySpec.type(ProxyProvider.Proxy.HTTP)
+                .host(httpHost.getHostName())
+                .port(httpHost.getPort()));
+        }
+
         return WebClient.builder()
+            .clientConnector(new ReactorClientHttpConnector(httpClient))
             .apply(oauth2.oauth2Configuration())
             .build();
     }

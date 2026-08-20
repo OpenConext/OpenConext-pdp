@@ -1,10 +1,14 @@
 package pdp.sab;
 
+import lombok.SneakyThrows;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner;
+import org.apache.hc.core5.http.HttpHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -13,10 +17,13 @@ import org.springframework.http.client.support.BasicAuthenticationInterceptor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import pdp.web.HttpHostProvider;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.Collections.emptyList;
@@ -32,13 +39,14 @@ public class SabClient {
     public SabClient(String sabUserName, String sabPassword, String sabEndpoint) {
         this.sabRestEndpoint = sabEndpoint + "?uid={uid}&idp={idp}";
 
-        this.restTemplate = new RestTemplate(getRequestFactory());
+        this.restTemplate = new RestTemplate(getRequestFactory(sabEndpoint));
         this.restTemplate.getInterceptors().add(new BasicAuthenticationInterceptor(
                 sabUserName, sabPassword
         ));
     }
 
-    private ClientHttpRequestFactory getRequestFactory() {
+    @SneakyThrows
+    private ClientHttpRequestFactory getRequestFactory(String sabEndpoint) {
         ConnectionConfig connectionConfig = ConnectionConfig
             .custom()
             .setTimeToLive(60, TimeUnit.SECONDS)
@@ -51,10 +59,14 @@ public class SabClient {
                 .setDefaultConnectionConfig(connectionConfig)
                 .build();
 
-        CloseableHttpClient httpClient = HttpClients.custom()
+        HttpClientBuilder httpClientBuilder = HttpClients.custom()
             .setConnectionManager(connManager)
-            .disableCookieManagement()
-            .build();
+            .disableCookieManagement();
+
+        Optional<HttpHost> proxyHost = HttpHostProvider.resolveHttpHost(URI.create(sabEndpoint).toURL());
+        proxyHost.ifPresent(httpHost -> httpClientBuilder.setRoutePlanner(new DefaultProxyRoutePlanner(httpHost)));
+
+        CloseableHttpClient httpClient = httpClientBuilder.build();
 
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
         // Set the connectionRequestTimeout value to 10 seconds
