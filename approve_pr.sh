@@ -52,11 +52,24 @@ merge_pr() {
   echo "PR #${pr_number} found. Branch: ${branch_name}"
   echo "Merging with method: ${MERGE_METHOD}..."
 
-  # Merge the PR and delete the branch (gh can do both in one call)
-  gh pr merge "$pr_number" \
+  # Merge the PR and delete the branch (gh can do both in one call).
+  # `gh pr merge` can exit 0 even when the underlying GraphQL mutation was
+  # rejected (e.g. missing `workflow` OAuth scope for PRs touching
+  # .github/workflows/*), so don't trust the exit code alone — verify the
+  # PR actually ended up merged before declaring success.
+  local merge_output merge_status
+  merge_output=$(gh pr merge "$pr_number" \
     --repo "$REPO_FULL" \
     --"${MERGE_METHOD}" \
-    --delete-branch
+    --delete-branch 2>&1) || true
+  echo "$merge_output"
+
+  merge_status=$(gh pr view "$pr_number" --repo "$REPO_FULL" --json state --jq '.state')
+
+  if [[ "$merge_status" != "MERGED" ]]; then
+    echo "Error: PR #${pr_number} was not merged (state: ${merge_status})." >&2
+    return 1
+  fi
 
   echo "PR #${pr_number} merged successfully and branch '${branch_name}' deleted."
 }
