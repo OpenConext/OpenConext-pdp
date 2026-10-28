@@ -77,6 +77,7 @@ public class PolicyHarnessTest {
         boolean record = Boolean.parseBoolean(System.getProperty("record", "false"));
         String resourceRoot = record ? "test-harness" : "test-harness";
         return Stream.of(Objects.requireNonNull(new ClassPathResource(resourceRoot).getFile().listFiles()))
+            .sorted()
             .filter(File::isDirectory)
             .filter(file -> policy == null || file.getName().equalsIgnoreCase(policy))
             .map(directory -> DynamicTest.dynamicTest(
@@ -91,7 +92,7 @@ public class PolicyHarnessTest {
         this.policyRepository.deleteAll();
         //This will force a reload
         this.pdpPolicyPushVersionRepository.incrementVersion();
-        List<File> files = List.of(Objects.requireNonNull(policyDirectory.listFiles()));
+        List<File> files = Stream.of(Objects.requireNonNull(policyDirectory.listFiles())).sorted().toList();
         String request = this.readFile(files, "request.json");
         File responseFile = files.stream()
             .filter(file -> file.getName().equalsIgnoreCase("response.json"))
